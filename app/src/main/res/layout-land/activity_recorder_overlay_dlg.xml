@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/overlayView"
+    style="@style/HomageDarkOverlay"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <!-- Background dark overlay glass image -->
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/glass_dark_semi_transparent" />
+
+    <!-- An icon at the top -->
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_above="@+id/descriptionContainer"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="28dp"
+        android:src="@drawable/recorder_icon_trophy"
+        android:contentDescription="icon" />
+
+    <!-- Container that will hold the title, the description text and the main action button of this dlg -->
+    <RelativeLayout
+        android:id="@+id/descriptionContainer"
+        android:layout_width="430dp"
+        android:layout_height="160dp"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/linearLayout">
+
+        <!-- The title -->
+        <TextView
+            android:id="@+id/bigImpactTitle"
+            style="@style/HomageBigTitle"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="@string/title_great_job" />
+
+        <!-- Some description text -->
+        <TextView
+            android:id="@+id/descriptionText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/placeholder_text"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/dismissButton"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+
+        <!-- Main action button for this dialogue -->
+
+
+    </RelativeLayout>
+
+    <!-- More action buttons at the bottom of the screen -->
+    <LinearLayout style="@style/HomageImpactButtonsContainer" android:weightSum="2"
+        android:id="@+id/linearLayout">
+        <Button
+            android:id="@+id/button1"
+            style="@style/HomageImpactButton"
+            android:drawableStart="@drawable/icon_small_retake_scene_black"
+            android:text="@string/button_retake_last_scene" />
+        <View android:layout_width="1dp" android:layout_height="fill_parent" />
+        <Button
+            android:id="@+id/button2"
+            style="@style/HomageImpactButton"
+            android:drawableStart="@drawable/icon_small_preview_black"
+            android:text="@string/button_can_i_see_a_preview" />
+    </LinearLayout>
+
+ </RelativeLayout>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android" android:fillAfter="true" >
+    <alpha
+        android:duration="@android:integer/config_shortAnimTime"
+        android:fromAlpha="0.0"
+
+        android:interpolator="@android:anim/accelerate_interpolator"
+        android:toAlpha="1.0"
+
+        />
+
+    <scale
+        android:fromXScale="1.323"
+        android:toXScale="1.0"
+
+        android:fromYScale="1.323"
+        android:toYScale="1.0"
+
+        android:duration="@android:integer/config_shortAnimTime"
+        android:startOffset="0"
+
+        android:fillAfter="true"
+
+        android:pivotX="50%"
+        android:pivotY="50%"
+
+
+        />
+
+</set>

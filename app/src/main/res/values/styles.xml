@@ -1,0 +1,62 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="android:Theme.Holo">
+        <!-- Customize your theme here. -->
+        <!--
+        <item name="android:editTextColor">#295055</item>
+        <item name="android:textColorPrimary">#295055</item>
+        <item name="android:textColorSecondary">#295055</item>
+        <item name="android:textColorTertiary">#295055</item>
+        <item name="android:textColorPrimaryInverse">#295055</item>
+        <item name="android:textColorSecondaryInverse">#295055</item>
+        <item name="android:textColorTertiaryInverse">#295055</item>
+        <item name="android:windowBackground">@drawable/custom_background</item>
+        -->
+    </style>
+
+    <style name="Theme.Transparent" parent="android:Theme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="HomageDarkOverlay">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:background">@color/homage_dark_overlay</item>
+    </style>
+
+    <style name="HomageBigTitle">
+        <item name="android:textSize">34dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:typeface">monospace</item>
+    </style>
+
+    <style name="HomageImpactButtonsContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">80dp</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:background">@color/homage_void</item>
+    </style>
+
+    <style name="HomageImpactButton">
+        <item name="android:textSize">18dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/selector_impact_button</item>
+        <item name="android:textColor">@color/homage_button_text</item>
+        <item name="android:paddingLeft">40dp</item>
+        <item name="android:paddingRight">40dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+
+
+</resources>

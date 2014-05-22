@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Homage</string>
+    <string name="test">TEST!</string>
+
+    <!-- placeholders -->
+    <string name="placeholder_text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet.</string>
+
+    <!-- Buttons -->
+    <string name="button_retake_last_scene">RETAKE LAST SCENE</string>
+    <string name="button_can_i_see_a_preview">CAN I SEE A PREVIEW?</string>
+
+    <!-- Titles -->
+    <string name="title_great_job">GREAT JOB!</string>
+
+</resources>
