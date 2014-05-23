@@ -75,6 +75,7 @@
             android:name=".Recorder.RecorderActivity"
             android:screenOrientation="landscape"
             >
+
         </activity>
 
         <!--

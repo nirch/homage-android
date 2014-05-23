@@ -13,16 +13,16 @@
     <string name="server_prod_protocol">http</string>
 
     <!-- Named URLS -->
-    <string name="report_inappropriate">remake/report</string>
-    <string name="update_user">user</string>
-    <string name="new_user">user</string>
-    <string name="stories">stories</string>
-    <string name="new_remake">remake</string>
-    <string name="existing_remake">remake</string>
-    <string name="delete_remake">remake</string>
-    <string name="user_remakes">remakes/user</string>
-    <string name="story_remakes">remakes/story</string>
-    <string name="footage">footage</string>
-    <string name="text">text</string>
-    <string name="render">render</string>
+    <string name="url_report_inappropriate">remake/report</string>
+    <string name="url_update_user">user</string>
+    <string name="url_new_user">user</string>
+    <string name="url_stories">stories</string>
+    <string name="url_new_remake">remake</string>
+    <string name="url_existing_remake">remake</string>
+    <string name="url_delete_remake">remake</string>
+    <string name="url_user_remakes">remakes/user</string>
+    <string name="url_story_remakes">remakes/story</string>
+    <string name="url_footage">footage</string>
+    <string name="url_text">text</string>
+    <string name="url_render">render</string>
 </resources>
