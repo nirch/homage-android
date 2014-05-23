@@ -14,38 +14,21 @@
 
                             Activity
 */
-package com.homage.app;
+package com.homage.app.Recorder;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.hardware.Camera;
-import android.media.CamcorderProfile;
-import android.media.MediaRecorder;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.OrientationEventListener;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
-import com.amazonaws.services.s3.model.Bucket;
-import com.homage.media.CameraHelper;
+import com.homage.app.R;
 import com.homage.media.CameraManager;
 import com.homage.views.ActivityHelper;
-
-import java.io.IOException;
-import java.util.List;
-
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 
 
 /*
@@ -61,10 +44,9 @@ public class RecorderActivity extends Activity {
     String TAG = getClass().getName();
 
     // For showing the camera preview on screen.
-    private TextureView recPreview;
+    private FrameLayout recPreviewContainer;
 
-    private AmazonS3Client s3Client = new AmazonS3Client(
-            new BasicAWSCredentials("test", "test"));
+    private OrientationEventListener onOrientationChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,17 +62,15 @@ public class RecorderActivity extends Activity {
         setContentView(R.layout.activity_recorder);
         //endregion
 
-        new S3Test().execute();
-
-        //region *** Camera video recording preparation ***
-        if (recPreview==null) {
+        //region *** Camera video preview preparation ***
+        if (recPreviewContainer==null) {
             // We will show the video feed of the camera
             // on a preview texture in the background.
-            recPreview = (TextureView)findViewById(R.id.preview_view);
+            recPreviewContainer = (FrameLayout)findViewById(R.id.preview_container);
 
             // Tell the camera manager to prepare in the background.
-            CameraManager cm = CameraManager.getInstance();
-            cm.prepareVideoAsync();
+            CameraManager cm = CameraManager.sh();
+            cm.startCameraPreviewInView(this, recPreviewContainer);
         }
         //endregion
 
@@ -99,14 +79,12 @@ public class RecorderActivity extends Activity {
         //endregion
     }
 
-    private class S3Test extends AsyncTask {
-        @Override
-        protected Object doInBackground(Object... arg0) {
-            List<Bucket> bucketsList = s3Client.listBuckets();
-
-            Log.d(TAG, bucketsList.toString());
-            return null;
-        }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        CameraManager cm = CameraManager.sh();
+        cm.releaseMediaRecorder();
+        cm.releaseCamera();
     }
 
     //region *** UI event handlers ***

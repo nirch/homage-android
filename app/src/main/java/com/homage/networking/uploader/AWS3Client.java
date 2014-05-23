@@ -40,6 +40,6 @@ public class AWS3Client {
      * @return Returns the S3TransferOperation object for this upload operation.
      */
     public Upload startUploadJobForWorker(UploadS3Worker s3Worker) {
-
+        return null;
     }
 }

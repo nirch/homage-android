@@ -15,14 +15,11 @@
         android:src="@drawable/placeholder_preview"
         android:visibility="invisible" />
 
-    <!--____________________________________________________________________
-    The background preview view,
-    showing to the user what the camera
-    is currently seeing/recording -->
-    <TextureView
+    <!-- The camera preview container -->
+    <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/preview_view" />
+        android:id="@+id/preview_container" />
 
     <Button
         android:layout_width="wrap_content"

@@ -42,9 +42,9 @@ public class UploadS3Worker implements UploadWorker {
 
     @Override
     public void stopWorking() {
-        Upload uploadTransferOperation = self.userInfo.get("transferOperation");
-        uploadTransferOperation.
+        //Upload uploadTransferOperation = self.userInfo.get("transferOperation");
+        //uploadTransferOperation.
 
-        PutObjectRequest putRequest = uploadTransferOperation.
+        //PutObjectRequest putRequest = uploadTransferOperation.
     }
 }
