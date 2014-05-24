@@ -17,15 +17,15 @@
 package com.homage.app.recorder;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.View;
-import android.widget.Button;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
@@ -43,11 +43,11 @@ import com.homage.views.ActivityHelper;
  * @since   0.1
  */
 public class RecorderActivity extends Activity {
-    String TAG = "TAG_"+getClass().getName();
-    AQuery aq;
-    View controlsDrawer;
-    int viewHeightForClosingCotnrolsDrawer;
-    boolean viewsInitialized;
+    private String TAG = "TAG_"+getClass().getName();
+    private AQuery aq;
+    private View controlsDrawer;
+    private int viewHeightForClosingControlsDrawer;
+    private boolean viewsInitialized;
 
     private enum State {
         JUST_STARTED,
@@ -59,7 +59,8 @@ public class RecorderActivity extends Activity {
         FINISHED_ALL_SCENES_MESSAGE,
         USER_REQUEST_TO_CHECK_WHAT_NEXT,
         HELP_SCREENS
-    };
+    }
+
     private State currentState;
 
     // For showing the camera preview on screen.
@@ -104,8 +105,8 @@ public class RecorderActivity extends Activity {
         //endregion
 
         //region *** Bind to UI event handlers ***
-        aq.id(R.id.recorderTestButton).clicked(onUIClickedTestButton);
-        controlsDrawer.setOnDragListener(onDraggingControlsDrawer);
+        // aq.id(R.id.recorderTestButton).clicked(onUIClickedTestButton);
+        controlsDrawer.setOnTouchListener(onDraggingControlsDrawer);
         //endregion
     }
 
@@ -130,14 +131,14 @@ public class RecorderActivity extends Activity {
         viewsInitialized = true;
 
         // When closing the drawer, we will move it down according to its height.
-        viewHeightForClosingCotnrolsDrawer = controlsDrawer.getHeight();
+        viewHeightForClosingControlsDrawer = controlsDrawer.getHeight();
 
         // But we will still want to see the record buttons and the short details
         // panel at the bottom of the screen, so we will take them into account.
-        viewHeightForClosingCotnrolsDrawer -= aq.id(R.id.recorderShortDetailsContainer).getView().getHeight();
-        viewHeightForClosingCotnrolsDrawer -= aq.id(R.id.recorderRecordButton).getView().getHeight()/2;
+        viewHeightForClosingControlsDrawer -= aq.id(R.id.recorderShortDetailsContainer).getView().getHeight();
+        viewHeightForClosingControlsDrawer -= aq.id(R.id.recorderRecordButton).getView().getHeight()/2;
 
-        closeContolsDrawer(false);
+        closeControlsDrawer(false);
 
     }
     //endregion
@@ -154,17 +155,71 @@ public class RecorderActivity extends Activity {
         return controlsDrawer.getTranslationY() == 0;
     }
 
-    private void closeContolsDrawer(boolean animated) {
-        controlsDrawer.setTranslationY(viewHeightForClosingCotnrolsDrawer);
+    private void closeControlsDrawer(boolean animated) {
+        if (animated) {
+            float deltaToClosed = controlsDrawer.getTranslationY() - viewHeightForClosingControlsDrawer;
+            TranslateAnimation anim = new TranslateAnimation(0,0,0,-deltaToClosed);
+            anim.setDuration(250);
+            anim.setFillAfter(true);
+            anim.setFillEnabled(true);
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    // Silly hack for solving the ugly flicker effect on animation end.
+                    animation = new TranslateAnimation(0.0f, 0.0f, 0.0f, 0.0f);
+                    animation.setDuration(1);
+                    controlsDrawer.startAnimation(animation);
+                    controlsDrawer.setTranslationY(viewHeightForClosingControlsDrawer);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            controlsDrawer.startAnimation(anim);
+        } else {
+            controlsDrawer.setTranslationY(viewHeightForClosingControlsDrawer);
+        }
     }
 
     private void openControlsDrawer(boolean animated) {
-        controlsDrawer.setTranslationY(0);
+        if (animated) {
+            float deltaToZero = controlsDrawer.getTranslationY();
+            TranslateAnimation anim = new TranslateAnimation(0,0,0,-deltaToZero);
+            anim.setDuration(250);
+            anim.setFillAfter(true);
+            anim.setFillEnabled(true);
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    // Silly hack for solving the ugly flicker effect on animation end.
+                    animation = new TranslateAnimation(0.0f, 0.0f, 0.0f, 0.0f);
+                    animation.setDuration(1);
+                    controlsDrawer.startAnimation(animation);
+                    controlsDrawer.setTranslationY(0);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            controlsDrawer.startAnimation(anim);
+        } else {
+            controlsDrawer.setTranslationY(0);
+        }
     }
 
     private void toggleControlsDrawer(boolean animated) {
         if (isControlsDrawerOpen()) {
-            closeContolsDrawer(animated);
+            closeControlsDrawer(animated);
         } else {
             openControlsDrawer(animated);
         }
@@ -181,10 +236,7 @@ public class RecorderActivity extends Activity {
     final View.OnClickListener onUIClickedTestButton = new View.OnClickListener() {
         @Override
         public void onClick(View button) {
-            toggleControlsDrawer(false);
-
-
-
+            toggleControlsDrawer(true);
 //            Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlayDlgActivity.class);
 //            RecorderActivity.this.startActivity(myIntent);
 //            overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
@@ -192,13 +244,56 @@ public class RecorderActivity extends Activity {
     };
 
 
-    final View.OnDragListener onDraggingControlsDrawer = new View.OnDragListener() {
+//    private final View.OnDragListener onDraggingControlsDrawer = new View.OnDragListener() {
+//        @Override
+//        public boolean onDrag(View view, DragEvent dragEvent) {
+//            Log.d(TAG, "XXX");
+//            return false;
+//        }
+//    };
+
+
+    private final View.OnTouchListener onDraggingControlsDrawer = new View.OnTouchListener() {
+        float startPosTouch, deltaTouch, startPosView, newPosView;
+
         @Override
-        public boolean onDrag(View view, DragEvent dragEvent) {
-            Log.d(TAG, "XXX");
+        public boolean onTouch(final View v,final MotionEvent event)
+        {
+            switch(event.getAction())
+            {
+                case MotionEvent.ACTION_DOWN:
+                {
+                    startPosTouch = event.getRawY();
+                    startPosView = controlsDrawer.getTranslationY();
+                    return true;
+                }
+                case MotionEvent.ACTION_MOVE:
+                {
+                    deltaTouch = startPosTouch - event.getRawY();
+                    newPosView = startPosView - deltaTouch;
+                    if (newPosView < 0) newPosView = 0;
+                    controlsDrawer.setTranslationY(newPosView);
+                    return true;
+                }
+                case MotionEvent.ACTION_UP:
+                {
+                    deltaTouch = startPosTouch - event.getRawY();
+                    newPosView = startPosView - deltaTouch;
+                    Log.d(TAG, String.format(">> %f", newPosView));
+
+                    if (newPosView < viewHeightForClosingControlsDrawer / 2) {
+                        openControlsDrawer(true);
+                    } else {
+                        closeControlsDrawer(true);
+                    }
+
+
+                    return true;
+                }
+            }
             return false;
         }
-    };
+     };
 
     //endregion
 

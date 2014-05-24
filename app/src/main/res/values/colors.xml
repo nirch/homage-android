@@ -17,6 +17,7 @@
     <color name="test_red">#FF0000</color>
     <color name="test_green">#00FF00</color>
     <color name="test_blue">#0000FF</color>
+    <color name="test_yellow">#FFFF00</color>
+    <color name="test_bg">#112233</color>
 
-    <integer name="gaga">435</integer>
 </resources>

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+    android:background="@color/test_bg"
     tools:context=".RecorderActivity">
 
     <ImageView
@@ -42,24 +43,74 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="60dp"
-            android:background="@color/test_blue"
             android:layout_alignParentTop="true"
             android:layout_marginTop="40dp"
             android:id="@+id/recorderShortDetailsContainer"
-            android:orientation="horizontal"
+            android:background="@color/test_blue"
+            android:weightSum="2"
             >
+
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:weightSum="1"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                >
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="0.45"
+                    >
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="7 SEC"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="0.1"
+                    >
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_small_clock"
+                        android:layout_margin="0dp"
+                        android:layout_gravity="center"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="0.45"
+                    >
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="7 SEC"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="80dp"
                 android:layout_height="fill_parent"
                 android:background="@color/test_green"
-                android:layout_weight="0.5"
                 >
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:background="@color/test_red"
-                android:layout_weight="0.5"
+                android:background="@color/test_yellow"
+                android:layout_weight="1"
                 >
             </LinearLayout>
         </LinearLayout>
@@ -74,16 +125,6 @@
             />
 
 
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:text="Press me!"
-            android:id="@+id/recorderTestButton"
-            />
-
     </RelativeLayout>
 
 
@@ -93,7 +134,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:src="@drawable/icon_close"
-        />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <ImageButton
         style="@style/HomageRecorderOnTopButton"
@@ -101,13 +143,15 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="60dp"
         android:src="@drawable/icon_scene_description_bw"
-        />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <ImageButton
         style="@style/HomageRecorderOnTopButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:src="@drawable/icon_camera_flip"
-        />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>
