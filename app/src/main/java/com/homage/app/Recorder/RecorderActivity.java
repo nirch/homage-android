@@ -17,6 +17,7 @@
 package com.homage.app.recorder;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
@@ -48,8 +49,7 @@ public class RecorderActivity extends Activity {
     private View controlsDrawer;
     private int viewHeightForClosingControlsDrawer;
     private boolean viewsInitialized;
-
-    private enum State {
+    static private enum RecorderState {
         JUST_STARTED,
         INTRO_MESSAGE,
         SCENE_MESSAGE,
@@ -60,12 +60,10 @@ public class RecorderActivity extends Activity {
         USER_REQUEST_TO_CHECK_WHAT_NEXT,
         HELP_SCREENS
     }
-
-    private State currentState;
-
-    // For showing the camera preview on screen.
+    private RecorderStateMachine stateMachine;
     private FrameLayout recPreviewContainer;
-    private OrientationEventListener onOrientationChanged;
+
+
 
     //region *** Activity lifecycle ***
     @Override
@@ -99,14 +97,26 @@ public class RecorderActivity extends Activity {
         }
         //endregion
 
+
         //region *** State initialization ***
-        currentState = State.JUST_STARTED;
-        handleCurrentState();
+        stateMachine = new RecorderStateMachine();
         //endregion
 
+
         //region *** Bind to UI event handlers ***
-        // aq.id(R.id.recorderTestButton).clicked(onUIClickedTestButton);
-        controlsDrawer.setOnTouchListener(onDraggingControlsDrawer);
+        /**********************************/
+        /** Binding to UI event handlers **/
+        /**********************************/
+
+        // Dragging the drawer up and down.
+        aq.id(R.id.recorderControlsDrawer).getView().setOnTouchListener(new OnDraggingControlsDrawerListener(this));
+
+        // Clicked on the close controls drawer button.
+        aq.id(R.id.recorderCloseDrawerButton).clicked(onClickedCloseDrawerButton);
+
+        // Dismissing the recorder.
+        aq.id(R.id.recorderDismissButton).clicked(onClickedRecorderDismissButton);
+
         //endregion
     }
 
@@ -119,7 +129,8 @@ public class RecorderActivity extends Activity {
     }
     //endregion
 
-    //region Views Initilizations
+
+    //region *** Views Initializations ***
     @Override
     public void onWindowFocusChanged (boolean hasFocus) {
         if (!viewsInitialized) initViews();
@@ -143,19 +154,52 @@ public class RecorderActivity extends Activity {
     }
     //endregion
 
-    //region Recorder's state machine.
-    private void handleCurrentState() {
-
-
-    }
-    //endregion
 
     //region *** Controls Drawer **
+    /**
+     The controls drawer
+     Can be dragged open or closed.
+
+     **********************************
+     *                                *
+     *               ==               *
+     *==============|  |==============*
+     *    Scene 1    ==   ▢▢▢▢▢▢▢▢▢▢  *
+     *    Scene 2    ||   ▢▢▢▢▢▢▢▢▢▢  *
+     *    Scene 3    ||****************
+     *    Scene 4    ||  dir | script *
+     **********************************
+
+     Allows to start recording when closed.
+     Shows more info about the story/scene when opened.
+     */
+
+    /**
+     *
+     * @return
+     */
+    public float getHeightForClosingDrawer() {
+        return viewHeightForClosingControlsDrawer;
+    }
+
+    public float getControlsDrawerPosition() {
+        return controlsDrawer.getTranslationY();
+    }
+
+    public void setControlsDrawerPosition(float newPotision) {
+        float part = newPotision / viewHeightForClosingControlsDrawer;
+        part = part < 0 ? 0 : part;
+        part = part > 1 ? 1 : part;
+        controlsDrawer.setTranslationY(newPotision);
+
+        Log.d(TAG, String.format("%f", part));
+    }
+
     private boolean isControlsDrawerOpen() {
         return controlsDrawer.getTranslationY() == 0;
     }
 
-    private void closeControlsDrawer(boolean animated) {
+    public void closeControlsDrawer(boolean animated) {
         if (animated) {
             float deltaToClosed = controlsDrawer.getTranslationY() - viewHeightForClosingControlsDrawer;
             TranslateAnimation anim = new TranslateAnimation(0,0,0,-deltaToClosed);
@@ -186,7 +230,7 @@ public class RecorderActivity extends Activity {
         }
     }
 
-    private void openControlsDrawer(boolean animated) {
+    public void openControlsDrawer(boolean animated) {
         if (animated) {
             float deltaToZero = controlsDrawer.getTranslationY();
             TranslateAnimation anim = new TranslateAnimation(0,0,0,-deltaToZero);
@@ -226,75 +270,69 @@ public class RecorderActivity extends Activity {
     }
     //endregion
 
-    //region *** UI event handlers ***
-    // -------------------
-    // UI handlers.
-    // -------------------
 
-    //
-    // Pressed the test button (used for debugging)
-    final View.OnClickListener onUIClickedTestButton = new View.OnClickListener() {
+    //region *** Recorder's state machine. ***
+    /**
+     *   ============================
+     *   The recorder's state machine
+     *   ============================
+     */
+    private class RecorderStateMachine {
+        RecorderState currentState;
+
+        public RecorderStateMachine() {
+            this.currentState = RecorderState.JUST_STARTED;
+        }
+
+        private void handleCurrentState() {
+
+        }
+    }
+    //endregion
+
+
+    //region *** Recorder's actions ***
+    /**
+     *   ======================
+     *   The recorder's actions
+     *   ======================
+     */
+
+    private void recorderDone() {
+        /**
+         This is the end, beautiful friend
+         This is the end, my only friend, the end
+         Of our elaborate plans, the end
+         Of everything that stands, the end
+         No safety or surprise, the end
+         I'll never look into your eyes, again
+         */
+        finish();
+        overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
+    }
+    //endregion
+
+
+    //region *** UI event handlers ***
+    /**
+     *  ==========================
+     *      UI event handlers.
+     *  ==========================
+     */
+    View.OnClickListener onClickedCloseDrawerButton = new View.OnClickListener() {
         @Override
-        public void onClick(View button) {
-            toggleControlsDrawer(true);
-//            Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlayDlgActivity.class);
-//            RecorderActivity.this.startActivity(myIntent);
-//            overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
+        public void onClick(View view) {
+            closeControlsDrawer(true);
         }
     };
 
-
-//    private final View.OnDragListener onDraggingControlsDrawer = new View.OnDragListener() {
-//        @Override
-//        public boolean onDrag(View view, DragEvent dragEvent) {
-//            Log.d(TAG, "XXX");
-//            return false;
-//        }
-//    };
-
-
-    private final View.OnTouchListener onDraggingControlsDrawer = new View.OnTouchListener() {
-        float startPosTouch, deltaTouch, startPosView, newPosView;
-
+    View.OnClickListener onClickedRecorderDismissButton = new View.OnClickListener() {
         @Override
-        public boolean onTouch(final View v,final MotionEvent event)
-        {
-            switch(event.getAction())
-            {
-                case MotionEvent.ACTION_DOWN:
-                {
-                    startPosTouch = event.getRawY();
-                    startPosView = controlsDrawer.getTranslationY();
-                    return true;
-                }
-                case MotionEvent.ACTION_MOVE:
-                {
-                    deltaTouch = startPosTouch - event.getRawY();
-                    newPosView = startPosView - deltaTouch;
-                    if (newPosView < 0) newPosView = 0;
-                    controlsDrawer.setTranslationY(newPosView);
-                    return true;
-                }
-                case MotionEvent.ACTION_UP:
-                {
-                    deltaTouch = startPosTouch - event.getRawY();
-                    newPosView = startPosView - deltaTouch;
-                    Log.d(TAG, String.format(">> %f", newPosView));
-
-                    if (newPosView < viewHeightForClosingControlsDrawer / 2) {
-                        openControlsDrawer(true);
-                    } else {
-                        closeControlsDrawer(true);
-                    }
-
-
-                    return true;
-                }
-            }
-            return false;
+        public void onClick(View view) {
+            recorderDone();
         }
-     };
-
+    };
     //endregion
+
 
 }

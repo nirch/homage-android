@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+            <gradient android:angle="270"
+                android:startColor="@color/homage_recroder_close_drawer"
+                android:endColor="@color/homage_recroder_close_drawer2" />
+            <stroke android:width="12px" android:color="@color/homage_recroder_close_drawer2"/>
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+            <gradient android:angle="270"
+                android:startColor="@color/homage_recroder_close_drawer"
+                android:endColor="@color/homage_recroder_close_drawer2" />
+            <stroke android:width="12px" android:color="@color/homage_recroder_close_drawer2"/>
+        </shape>
+    </item>
+    <item>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+            <solid android:color="@color/homage_recroder_close_drawer" />
+            <stroke android:width="8px" android:color="@color/homage_recroder_close_drawer"/>
+        </shape>
+    </item>
+</selector>

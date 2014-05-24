@@ -22,7 +22,23 @@
         android:layout_height="fill_parent"
         android:id="@+id/preview_container" />
 
-    <!-- The controls drawer -->
+    <!--
+                    The controls drawer
+               Can be dragged open or closed.
+            **********************************
+            *                                *
+            *               ==               *
+            *==============|  |==============*
+            *    Scene 1    ==   ▢▢▢▢▢▢▢▢▢▢  *
+            *    Scene 2    ||   ▢▢▢▢▢▢▢▢▢▢  *
+            *    Scene 3    ||****************
+            *    Scene 4    ||  dir | script *
+            **********************************
+
+            Allows to start recording when closed.
+      Shows more info about the story/scene when opened.
+    -->
+    The controls drawer -->
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="280dp"
@@ -36,7 +52,7 @@
             android:layout_height="fill_parent"
             android:layout_marginTop="40dp"
             android:layout_alignParentBottom="true"
-            android:background="@color/homage_dark_transparent_overlay"
+            android:background="@color/homage_dark_overlay"
             >
         </RelativeLayout>
 
@@ -46,7 +62,6 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="40dp"
             android:id="@+id/recorderShortDetailsContainer"
-            android:background="@color/test_blue"
             android:weightSum="2"
             >
 
@@ -68,7 +83,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:text="7 SEC"
+                        android:text="SCENE 1"
                         />
                 </LinearLayout>
                 <LinearLayout
@@ -102,20 +117,37 @@
             <LinearLayout
                 android:layout_width="80dp"
                 android:layout_height="fill_parent"
-                android:background="@color/test_green"
                 >
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="fill_parent"
-                android:background="@color/test_yellow"
                 android:layout_weight="1"
                 >
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="Use Solid Color Background"
+                    android:textColor="@color/homage_impact"
+                    />
+
             </LinearLayout>
         </LinearLayout>
 
         <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/recorderCloseDrawerButton"
+            android:src="@drawable/close"
+            android:background="@drawable/selector_recorder_close_drawer_button"
+            android:layout_centerHorizontal="true"
+            />
+
+        <ImageButton
+            android:visibility="invisible"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:id="@+id/recorderRecordButton"
@@ -128,30 +160,38 @@
     </RelativeLayout>
 
 
-    <!-- Buttons Overlaying the recorder -->
+    <!--
+         Buttons overlaying the recorder.
+              X - Dismiss recorder
+              i - Scene info button
+              C - Camera switching (front/back)
+
+            ***********************
+            *X                   C*
+            *i                    *
+            *                     *
+            *                     *
+            *                     *
+            ***********************
+    -->
     <ImageButton
         style="@style/HomageRecorderOnTopButton"
+        android:id="@+id/recorderDismissButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:src="@drawable/icon_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:src="@drawable/icon_close" />
 
     <ImageButton
         style="@style/HomageRecorderOnTopButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_marginTop="60dp"
-        android:src="@drawable/icon_scene_description_bw"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:src="@drawable/icon_scene_description_bw" />
 
     <ImageButton
         style="@style/HomageRecorderOnTopButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:src="@drawable/icon_camera_flip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:src="@drawable/icon_camera_flip" />
 
 </RelativeLayout>
