@@ -17,10 +17,10 @@
         android:visibility="invisible" />
 
     <!-- The camera preview container -->
-    <FrameLayout
+    <FrameLayout android:id="@+id/preview_container"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/preview_container" />
+        />
 
     <!--
                     The controls drawer
@@ -38,16 +38,15 @@
             Allows to start recording when closed.
       Shows more info about the story/scene when opened.
     -->
-    The controls drawer -->
-    <RelativeLayout
+    <RelativeLayout android:id="@+id/recorderControlsDrawer"
         android:layout_width="fill_parent"
         android:layout_height="280dp"
         android:layout_alignParentBottom="true"
         android:background="@android:color/transparent"
-        android:id="@+id/recorderControlsDrawer"
-
         >
-        <RelativeLayout
+
+        <!-- The dark overlay -->
+        <RelativeLayout android:id="@+id/recorderDrawerDarkOverlay"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_marginTop="40dp"
@@ -56,39 +55,32 @@
             >
         </RelativeLayout>
 
-        <LinearLayout
+        <!-- Short details container.
+             Shown when the drawer is closed. -->
+        <LinearLayout android:id="@+id/recorderShortDetailsContainer"
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="60dp"
             android:layout_alignParentTop="true"
             android:layout_marginTop="40dp"
-            android:id="@+id/recorderShortDetailsContainer"
             android:weightSum="2"
             >
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
+            <LinearLayout android:id="@+id/recorderShortDetailsLeftContainer"
+                style="@style/weightedWidth"
                 android:layout_weight="1"
-                android:weightSum="1"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
                 >
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
+                    style="@style/weightedWidth"
                     android:layout_weight="0.45"
                     >
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:text="SCENE 1"
+                        style="@style/HCenteredText"
+                        android:text="@string/placeholder_text_scene_1"
                         />
                 </LinearLayout>
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
+                    style="@style/weightedWidth"
                     android:layout_weight="0.1"
                     >
                     <ImageView
@@ -100,62 +92,57 @@
                         />
                 </LinearLayout>
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
+                    style="@style/weightedWidth"
                     android:layout_weight="0.45"
                     >
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:text="7 SEC"
+                        style="@style/HCenteredText"
+                        android:text="@string/placeholder_text_7_sec"
                         />
                 </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
+            <LinearLayout android:id="@+id/recorderShortDetailsSpacerContainer"
                 android:layout_width="80dp"
                 android:layout_height="fill_parent"
                 >
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
+            <LinearLayout android:id="@+id/recorderShortDetailsRightContainer"
+                style="@style/weightedWidth"
                 android:layout_weight="1"
                 >
                 <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
+                    style="@style/HCenteredText"
                     android:text="Use Solid Color Background"
                     android:textColor="@color/homage_impact"
                     />
-
             </LinearLayout>
+
         </LinearLayout>
 
-        <ImageButton
+        <!-- Close drawer button.
+             A round button in the place of the recording button,
+             shown when the controls drawer is open.
+             Clicking on it will close the drawer and reshow the
+             recording button again -->
+        <ImageButton android:id="@+id/recorderCloseDrawerButton"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:id="@+id/recorderCloseDrawerButton"
+
             android:src="@drawable/close"
             android:background="@drawable/selector_recorder_close_drawer_button"
             android:layout_centerHorizontal="true"
-            />
+            tools:ignore="ContentDescription" />
 
-        <ImageButton
-            android:visibility="invisible"
+        <!-- Recording button -->
+        <ImageButton android:id="@+id/recorderRecordButton"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:id="@+id/recorderRecordButton"
             android:background="@android:color/transparent"
             android:src="@drawable/selector_recorder_record_button"
             android:layout_centerHorizontal="true"
             />
-
 
     </RelativeLayout>
 
@@ -164,7 +151,7 @@
          Buttons overlaying the recorder.
               X - Dismiss recorder
               i - Scene info button
-              C - Camera switching (front/back)
+              C - Camera Flipping (front/back)
 
             ***********************
             *X                   C*
@@ -174,21 +161,19 @@
             *                     *
             ***********************
     -->
-    <ImageButton
+    <ImageButton android:id="@+id/recorderDismissButton"
         style="@style/HomageRecorderOnTopButton"
-        android:id="@+id/recorderDismissButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:src="@drawable/icon_close" />
 
-    <ImageButton
+    <ImageButton android:id="@+id/recorderSceneDescriptionButton"
         style="@style/HomageRecorderOnTopButton"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="60dp"
+        android:layout_alignTop="@+id/recorderDismissButton"
+        android:layout_marginTop="55dp"
         android:src="@drawable/icon_scene_description_bw" />
 
-    <ImageButton
+    <ImageButton android:id="@+id/recorderFlipCameraButton"
         style="@style/HomageRecorderOnTopButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"

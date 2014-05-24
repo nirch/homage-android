@@ -65,7 +65,11 @@
         <item name="android:imageButtonStyle">?android:actionButtonStyle</item>
     </style>
 
-
+    <style name="weightedWidth">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_height">fill_parent</item>
+    </style>
 
     <style name="GenericProgressBackground" parent="android:Theme">
         <item name="android:layout_width">fill_parent</item>
@@ -75,6 +79,13 @@
     </style>
     <style name="GenericProgressIndicator" parent="@android:style/Widget.ProgressBar.Small">
         <item name="android:indeterminate">true</item>
+    </style>
+
+    <style name="HCenteredText" parent="@android:style/Widget.ProgressBar.Small">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_gravity">fill</item>
+        <item name="android:gravity">center</item>
     </style>
 
 </resources>
