@@ -2,6 +2,8 @@ package com.homage.networking.parsers;
 
 import android.util.Log;
 
+import com.homage.model.Story;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,7 +11,7 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 
 public class StoriesParser extends Parser {
-    String TAG = getClass().getName();
+    String TAG = "TAG_"+getClass().getName();
 
     public StoriesParser() {
         super();

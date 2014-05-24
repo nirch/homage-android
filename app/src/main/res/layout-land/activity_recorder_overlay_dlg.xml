@@ -60,7 +60,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true" />
 
-        <!-- Main action button for this dialogue -->
+        <!-- main action button for this dialogue -->
 
 
     </RelativeLayout>

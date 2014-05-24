@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.homage.media;
+package com.homage.media.camera;
 
 import android.media.*;
 import android.os.Handler;

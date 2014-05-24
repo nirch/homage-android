@@ -1,5 +1,6 @@
 package com.homage.networking.parsers;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -12,7 +13,9 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 
 public class Parser {
-    String TAG = getClass().getName();
+    String TAG = "TAG_"+getClass().getName();
+
+    protected Context context;
 
     protected String parserName;
     protected Class expectedObjectClass;
@@ -20,6 +23,15 @@ public class Parser {
     public HashMap<String, Error> errors;
     public Error error;
     public HashMap<String, Object> parseInfo;
+
+    public Parser() {
+        super();
+        this.context = context;
+    }
+
+    public static String parseOID(JSONObject obj) throws JSONException {
+        return obj.getJSONObject("_id").getString("$oid");
+    }
 
     public void readResponseBuffer(BufferedReader rd) throws IOException, JSONException {
         StringBuilder sb = new StringBuilder();

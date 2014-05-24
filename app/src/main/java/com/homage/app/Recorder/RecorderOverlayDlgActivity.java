@@ -1,4 +1,4 @@
-package com.homage.app.Recorder;
+package com.homage.app.recorder;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -9,7 +9,7 @@ import android.widget.Button;
 import com.homage.app.R;
 
 public class RecorderOverlayDlgActivity extends Activity {
-    String TAG = getClass().getName();
+    String TAG = "TAG_"+getClass().getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +28,6 @@ public class RecorderOverlayDlgActivity extends Activity {
         //region *** Bind to UI event handlers ***
         ((Button)findViewById(R.id.dismissButton)).setOnClickListener(onUIClickedDismissButton);
         //endregion
-
-
-
     }
 
 

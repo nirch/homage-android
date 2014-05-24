@@ -27,7 +27,7 @@ import com.homage.networking.parsers.StoriesParser;
 import java.util.ArrayList;
 
 public class HomageServer extends Server {
-    String TAG = getClass().getName();
+    String TAG = "TAG_"+getClass().getName();
 
     final static public String INTENT_USER_CREATION             = "intent user creation";
 

@@ -2,11 +2,13 @@ package com.homage.networking.parsers;
 
 import android.util.Log;
 
+import com.homage.model.Story;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class StoryParser extends Parser {
-    String TAG = getClass().getName();
+    String TAG = "TAG_"+getClass().getName();
 
      /**
      *
@@ -80,7 +82,19 @@ public class StoryParser extends Parser {
 
     @Override
     public void parse() throws JSONException {
-        JSONObject story = (JSONObject)objectToParse;
-        Log.v("Parsing a story:", story.getString("name"));
+        JSONObject storyInfo = (JSONObject)objectToParse;
+        Log.v(TAG, String.format("Parsing a story: %s", storyInfo.getString("name")));
+
+        Story story = Story.findOrCreate(Parser.parseOID(storyInfo));
+        story.remakesNum =      storyInfo.getInt("remakes_num");
+        story.thumbnail =       storyInfo.getString("thumbnail");
+        story.level =           storyInfo.getInt("level");
+        story.description =     storyInfo.getString("description");
+        story.name =            storyInfo.getString("name");
+        story.active =          storyInfo.getBoolean("active");
+        story.thumbnailRip =    storyInfo.getInt("thumbnail_rip");
+        story.orderId =         storyInfo.getInt("order_id");
+        story.video =           storyInfo.getString("video");
+        story.save();
     }
 }

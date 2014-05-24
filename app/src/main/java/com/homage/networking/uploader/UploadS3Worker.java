@@ -8,7 +8,7 @@ import com.amazonaws.services.s3.transfer.Upload;
 import java.util.Dictionary;
 
 public class UploadS3Worker implements UploadWorker {
-    String TAG = getClass().getName();
+    String TAG = "TAG_"+getClass().getName();
 
     private String source;
     private String destination;

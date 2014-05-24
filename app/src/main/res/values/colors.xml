@@ -2,12 +2,17 @@
 <resources>
     <color name="homage_void">#000000</color>
     <color name="homage_dark_overlay">#aa000000</color>
+    <color name="homage_dark_transparent_overlay">#33000000</color>
     <color name="homage_text">#FFFFFF</color>
     <color name="homage_impact">#FF7D5F</color>
     <color name="homage_button_text">#000000</color>
     <color name="homage_button_bg">#FF7D5F</color>
     <color name="homage_button_bg2">#ff592a2a</color>
     <color name="homage_button_bg3">#ff363636</color>
+
+    <color name="homage_record_highlight">#ffff4034</color>
+    <color name="homage_record_button">#FF7D5F</color>
+    <color name="homage_record_button_stroke">#FFFFFF</color>
 
     <color name="test_red">#FF0000</color>
     <color name="test_green">#00FF00</color>

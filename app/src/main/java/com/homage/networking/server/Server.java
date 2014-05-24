@@ -28,6 +28,7 @@
 package com.homage.networking.server;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -35,10 +36,8 @@ import android.util.Log;
 import com.homage.app.R;
 import com.homage.networking.parsers.Parser;
 
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -48,15 +47,18 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Map;
+
+import android.support.v4.content.LocalBroadcastManager;
+
 
 abstract public class Server {
-    String TAG = getClass().getName();
+    String TAG = "TAG_"+getClass().getName();
+
+    public static String SR_SUCCESS = "success";
+
 
     private boolean isProductionServer;
     private String host;
@@ -138,6 +140,12 @@ abstract public class Server {
      * operation.
      */
     class BackgroundRequest extends AsyncTask<Object, Void, Boolean> {
+        private String method;
+        private String url;
+        private HashMap<String,String> parameters;
+        private String intentName;
+        private HashMap<String,Object> info;
+        private Parser parser;
 
         protected HttpRequestBase requestForMethod(String method) throws ServerException {
             method = method.toUpperCase();
@@ -156,12 +164,12 @@ abstract public class Server {
 
         @Override
         protected Boolean doInBackground(Object... arg) {
-            String method = (String)arg[0];
-            String url = (String)arg[1];
-            HashMap<String,String> parameters = (HashMap<String,String>)arg[2];
-            String intentName = (String)arg[3];
-            HashMap<String,Object> info = (HashMap<String,Object>)arg[4];
-            Parser parser = (Parser)arg[5];
+            method = (String)arg[0];
+            url = (String)arg[1];
+            parameters = (HashMap<String,String>)arg[2];
+            intentName = (String)arg[3];
+            info = (HashMap<String,Object>)arg[4];
+            parser = (Parser)arg[5];
             Log.d(TAG, String.format("Request: %s %s %s", method, url, parameters != null ? parameters.toString() : ""));
 
             try {
@@ -210,6 +218,9 @@ abstract public class Server {
         @Override
         protected void onPostExecute(Boolean result) {
             Log.v(TAG, String.format("Response result: %b", result));
+            Intent intent = new Intent(intentName);
+            intent.putExtra(SR_SUCCESS, result);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         }
     }
 

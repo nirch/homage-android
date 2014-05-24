@@ -24,27 +24,20 @@
   This singleton will be also used from outside of activities,
   for example from the HomageApplication class that extends Application.
  */
-package com.homage.media;
+package com.homage.media.camera;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.hardware.Camera;
-import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.util.Log;
-import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.TextureView;
 import android.widget.FrameLayout;
 
 import java.io.IOException;
-import java.util.List;
 
 public class CameraManager {
-    String TAG = getClass().getName();
+    String TAG = "TAG_"+getClass().getName();
 
     private int recordingWidth;
     private int recordingHeight;
