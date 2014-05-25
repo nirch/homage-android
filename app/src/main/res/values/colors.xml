@@ -16,6 +16,9 @@
     <color name="homage_recroder_close_drawer">#FFFFFF</color>
     <color name="homage_recroder_close_drawer2">#999999</color>
 
+    <color name="homage_dark_void_1">#ff000000</color>
+    <color name="homage_dark_void_2">#ff341a1a</color>
+
 
 
     <color name="test_red">#FF0000</color>

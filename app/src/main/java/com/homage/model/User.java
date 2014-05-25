@@ -14,7 +14,6 @@ import java.util.List;
 public class User extends SugarRecord<User> {
     String oid;
 
-
     //region *** Fields ***
     public String email;
     public boolean isFirstUse;

@@ -29,7 +29,6 @@ public class StoriesParser extends Parser {
             storyParser.objectToParse = story;
             storyParser.parse();
         }
-
     }
 
 }

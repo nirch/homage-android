@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.homage.model.Footage;
 import com.homage.model.Remake;
-import com.homage.model.Story;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,8 +22,6 @@ public class FootagesParser extends Parser {
     @Override
     public void parse() throws JSONException {
         JSONArray footagesInfo = (JSONArray)objectToParse;
-        assert(remake != null);
-
         for (int i=0; i<footagesInfo.length();i++) {
             JSONObject footageInfo = footagesInfo.getJSONObject(i);
             parseFootage(footageInfo);

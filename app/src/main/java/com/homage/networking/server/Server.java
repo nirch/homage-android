@@ -266,6 +266,7 @@ abstract public class Server {
                 // Exception in response or while parsing response.
                 //
                 Log.e(TAG, String.format("Request/Response error: %s %s", e.getClass().toString(), e.getMessage()));
+                Log.v(TAG, "Full stack trace", e);
                 return false;
             }
 

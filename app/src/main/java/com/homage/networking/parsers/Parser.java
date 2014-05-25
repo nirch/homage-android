@@ -50,16 +50,6 @@ public class Parser {
         return null;
     }
 
-    public static String safeStringFromJSONObject(JSONObject obj, String key) throws JSONException {
-        if (obj.has(key)) return obj.getString(key);
-        return null;
-    }
-
-    public static int safeIntFromJSONObject(JSONObject obj, String key) throws JSONException {
-        if (obj.has(key)) return obj.getInt(key);
-        return 0;
-    }
-
     public void readResponseBuffer(BufferedReader rd) throws IOException, JSONException {
         StringBuilder sb = new StringBuilder();
         String line;
@@ -87,4 +77,54 @@ public class Parser {
     public void parse() throws JSONException {
         throw new UnsupportedOperationException("parse not implemented for derived parser.");
     }
+
+
+    //region *** Helpers for parsing JSON objects ***
+    protected String parseString(String key, String defaultValue) throws JSONException {
+        return parseString((JSONObject)objectToParse, key, defaultValue);
+    }
+    protected String parseString(JSONObject obj, String key, String defaultValue) throws JSONException {
+        if (obj.has(key)) return obj.getString(key);
+        return defaultValue;
+    }
+
+    protected boolean parseBool(String key, boolean defaultValue) throws JSONException {
+        return parseBool((JSONObject)objectToParse, key, defaultValue);
+    }
+    protected boolean parseBool(JSONObject obj, String key, boolean defaultValue) throws JSONException {
+        if (obj.has(key)) return obj.getBoolean(key);
+        return defaultValue;
+    }
+
+    protected int parseInt(String key, int defaultValue) throws JSONException {
+        return parseInt((JSONObject)objectToParse, key, defaultValue);
+    }
+    protected int parseInt(JSONObject obj, String key, int defaultValue) throws JSONException {
+        if (obj.has(key)) return obj.getInt(key);
+        return defaultValue;
+    }
+
+    protected double parseDouble(String key, double defaultValue) throws JSONException {
+        return parseDouble((JSONObject)objectToParse, key, defaultValue);
+    }
+    protected double parseDouble(JSONObject obj, String key, double defaultValue) throws JSONException {
+        if (obj.has(key)) return obj.getDouble(key);
+        return defaultValue;
+    }
+
+    protected Date parseDate(String key, Date defaultValue) throws JSONException {
+        return parseDate((JSONObject)objectToParse, key, defaultValue);
+    }
+    protected Date parseDate(JSONObject obj, String key, Date defaultValue) throws JSONException {
+        if (!obj.has(key)) return defaultValue;
+        String sDate = obj.getString(key);
+        try {
+            return dateFormatter.parse(sDate);
+        } catch (Exception ex) {
+            return defaultValue;
+        }
+    }
+
+
+    //endregion
 }

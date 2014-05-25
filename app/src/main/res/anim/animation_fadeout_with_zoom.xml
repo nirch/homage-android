@@ -11,10 +11,10 @@
 
     <scale
         android:fromXScale="1.0"
-        android:toXScale="1.323"
+        android:toXScale="0.9"
 
         android:fromYScale="1.0"
-        android:toYScale="1.323"
+        android:toYScale="0.9"
 
         android:duration="@android:integer/config_shortAnimTime"
         android:startOffset="0"

@@ -30,8 +30,8 @@
 
         <!-- Sugar ORM settings -->
         <!-- (A spoon full of Sugar, makes a database go down?) -->
-        <meta-data android:name="DATABASE" android:value="DBHomage.db" />
-        <meta-data android:name="VERSION" android:value="109" />
+        <meta-data android:name="DATABASE" android:value="Homage.db" />
+        <meta-data android:name="VERSION" android:value="202" />
         <meta-data android:name="QUERY_LOG" android:value="true" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.homage.model" />
 

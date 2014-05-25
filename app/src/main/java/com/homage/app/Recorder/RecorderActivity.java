@@ -18,6 +18,7 @@ package com.homage.app.recorder;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
@@ -35,6 +36,8 @@ import com.homage.app.R;
 import com.homage.media.camera.CameraManager;
 import com.homage.views.ActivityHelper;
 
+import java.util.logging.Handler;
+
 
 /*
  * This class consists ...
@@ -50,10 +53,12 @@ public class RecorderActivity extends Activity {
     private String TAG = "TAG_"+getClass().getName();
     private AQuery aq;
 
+    private View recoderView;
     private View controlsDrawer;
     private View recordButton;
     private View recorderFullDetailsContainer;
     private View recorderShortDetailsContainer;
+
 
     private Animation fadeInAnimation, fadeOutAnimation;
 
@@ -74,6 +79,12 @@ public class RecorderActivity extends Activity {
     private RecorderStateMachine stateMachine;
     private FrameLayout recPreviewContainer;
 
+    public class RecorderException extends Exception {
+        public RecorderException(String message) {
+            super(message);
+        }
+    }
+
 
     //region *** Activity lifecycle ***
     @Override
@@ -92,6 +103,7 @@ public class RecorderActivity extends Activity {
 
         // Set the content layout, load resources and store some references to views
         setContentView(R.layout.activity_recorder);
+        recoderView = aq.id(R.id.recoderView).getView();
         controlsDrawer = aq.id(R.id.recorderControlsDrawer).getView();
         recordButton = aq.id(R.id.recorderRecordButton).getView();
         recorderFullDetailsContainer = aq.id(R.id.recorderFullDetailsContainer).getView();
@@ -102,21 +114,14 @@ public class RecorderActivity extends Activity {
 
         //region *** Camera video preview preparation ***
         if (recPreviewContainer==null) {
-            // We will show the video feed of the camera
-            // on a preview texture in the background.
-            recPreviewContainer = (FrameLayout)findViewById(R.id.preview_container);
-
-            // Tell the camera manager to prepare in the background.
-            //CameraManager cm = CameraManager.sh();
-            //cm.startCameraPreviewInView(this, recPreviewContainer);
+            initCameraPreview();
         }
         //endregion
 
-
         //region *** State initialization ***
         stateMachine = new RecorderStateMachine();
+        stateMachine.handleCurrentState();
         //endregion
-
 
         //region *** Bind to UI event handlers ***
         /**********************************/
@@ -131,7 +136,6 @@ public class RecorderActivity extends Activity {
 
         // Dismissing the recorder.
         aq.id(R.id.recorderDismissButton).clicked(onClickedRecorderDismissButton);
-
         //endregion
     }
 
@@ -168,6 +172,34 @@ public class RecorderActivity extends Activity {
         closeControlsDrawer(false);
     }
     //endregion
+
+    private void initCameraPreview() {
+        // We will show the video feed of the camera
+        // on a preview texture in the background.
+        recPreviewContainer = (FrameLayout)findViewById(R.id.preview_container);
+
+        recoderView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                CameraManager cm = CameraManager.sh();
+                cm.startCameraPreviewInView(RecorderActivity.this, recPreviewContainer);
+
+                // After initialized, fade in the camera by fading out the "curtains" slowly
+                Animation removeCurtainsAnim = AnimationUtils.loadAnimation(RecorderActivity.this, R.anim.animation_fadeout);
+                removeCurtainsAnim.setDuration(1500);
+                aq.id(R.id.recorderCurtains).animate(removeCurtainsAnim);
+
+            }
+        }, 800);
+
+        // Tell the camera manager to prepare in the background.
+//        new AsyncTask<Void, Void, Void>(){
+//            @Override
+//            protected Void doInBackground(Void... params) {
+//                return null;
+//            }
+//        }.execute();
+    }
 
 
     //region *** Controls Drawer **
@@ -323,8 +355,14 @@ public class RecorderActivity extends Activity {
             this.currentState = RecorderState.JUST_STARTED;
         }
 
-        private void handleCurrentState() {
-
+        private void handleCurrentState() throws RecorderException {
+            switch (currentState) {
+                case JUST_STARTED:
+                    
+                    break;
+                default:
+                    throw new RecorderException(String.format("Unimplemented recorder state %s", currentState);
+            }
         }
     }
     //endregion

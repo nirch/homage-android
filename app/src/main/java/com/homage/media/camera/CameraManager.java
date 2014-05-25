@@ -44,6 +44,8 @@ public class CameraManager {
     private int previewWidth;
     private int previewHeight;
 
+    public CameraPreview cameraPreview;
+
     Camera.Size optimalSizeForPreview;
     Camera.Size optimalSizeForRecording;
 

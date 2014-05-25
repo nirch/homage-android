@@ -7,7 +7,6 @@ import android.content.Context;
 
 import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
-import com.orm.dsl.Ignore;
 
 import java.util.List;
 
@@ -51,8 +50,23 @@ public class Story extends SugarRecord<Story> {
         if (res.size()==1) return res.get(0);
         return null;
     }
-    //endregion
 
+    public Scene findSceneOrCreate(int sceneID) {
+        Scene scene = findScene(sceneID);
+        if (scene != null) return scene;
+        return new Scene(this, sceneID);
+    }
+
+    public Scene findScene(int sceneID) {
+        List<Scene> res = Scene.find(
+                Scene.class,
+                "story = ? and scene_id = ?",
+                getId().toString(),
+                String.valueOf(sceneID));
+        if (res.size() > 0) return res.get(0);
+        return null;
+    }
+    //endregion
 
     //region *** Logic ***
     //endregion
