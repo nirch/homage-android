@@ -10,7 +10,10 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 public class Parser {
     String TAG = "TAG_"+getClass().getName();
@@ -24,6 +27,8 @@ public class Parser {
     public Error error;
     public HashMap<String, Object> parseInfo;
 
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     /**
      * By default, parsers expect a json object.
      * If a derived parser expects other kind of objects,
@@ -33,12 +38,26 @@ public class Parser {
         super();
         this.context = context;
 
+        dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         // By default, expects a json object.
         expectedObjectClass = JSONObject.class;
     }
 
     public static String parseOID(JSONObject obj) throws JSONException {
-        return obj.getJSONObject("_id").getString("$oid");
+        if (obj.has("_id")) return obj.getJSONObject("_id").getString("$oid");
+        if (obj.has("$oid")) return obj.getString("$oid");
+        return null;
+    }
+
+    public static String safeStringFromJSONObject(JSONObject obj, String key) throws JSONException {
+        if (obj.has(key)) return obj.getString(key);
+        return null;
+    }
+
+    public static int safeIntFromJSONObject(JSONObject obj, String key) throws JSONException {
+        if (obj.has(key)) return obj.getInt(key);
+        return 0;
     }
 
     public void readResponseBuffer(BufferedReader rd) throws IOException, JSONException {
@@ -54,6 +73,14 @@ public class Parser {
             objectToParse = new JSONArray(sb.toString());
         } else {
             throw new JSONException("Unexpected object type returned from server.");
+        }
+    }
+
+    public Date parseDate(String sDate) {
+        try {
+            return dateFormatter.parse(sDate);
+        } catch (Exception ex) {
+            return null;
         }
     }
 

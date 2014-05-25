@@ -64,6 +64,9 @@ abstract public class Server {
     String TAG = "TAG_"+getClass().getName();
 
     public static String SR_SUCCESS = "success";
+    public static String SR_REQUEST_INFO = "request info";
+    public static String SR_PARSING_INFO = "parsing info";
+
 
 
     private boolean isProductionServer;
@@ -274,6 +277,8 @@ abstract public class Server {
             Log.v(TAG, String.format("Response result: %b", result));
             Intent intent = new Intent(intentName);
             intent.putExtra(SR_SUCCESS, result);
+            if (info != null) intent.putExtra(SR_REQUEST_INFO, info);
+            if (parser != null) intent.putExtra(SR_PARSING_INFO, parser.parseInfo);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         }
     }

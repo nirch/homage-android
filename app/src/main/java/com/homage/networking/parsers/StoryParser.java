@@ -87,14 +87,14 @@ public class StoryParser extends Parser {
 
         Story story = Story.findOrCreate(Parser.parseOID(storyInfo));
         story.remakesNum =      storyInfo.getInt("remakes_num");
-        story.thumbnail =       storyInfo.getString("thumbnail");
-        story.level =           storyInfo.getInt("level");
+//        story.thumbnail =       storyInfo.getString("thumbnail");
+//        story.level =           storyInfo.getInt("level");
         story.description =     storyInfo.getString("description");
         story.name =            storyInfo.getString("name");
         story.active =          storyInfo.getBoolean("active");
-        story.thumbnailRip =    storyInfo.getInt("thumbnail_rip");
-        story.orderId =         storyInfo.getInt("order_id");
-        story.video =           storyInfo.getString("video");
+//        story.thumbnailRip =    storyInfo.getInt("thumbnail_rip");
+//        story.orderId =         storyInfo.getInt("order_id");
+//        story.video =           storyInfo.getString("video");
         story.save();
     }
 }

@@ -8,22 +8,24 @@ import android.content.Context;
 import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
 
+import java.util.Date;
 import java.util.List;
 
 public class User extends SugarRecord<User> {
     String oid;
 
-    
+
     //region *** Fields ***
     public String email;
-    public Boolean isFirstUse;
-    public Boolean isLoggedIn;
-    public Boolean isPublic;
-    public Boolean prefersToSeeScriptWhileRecording;
-    public Boolean skipRecorderTutorial;
+    public boolean isFirstUse;
+    public boolean isLoggedIn;
+    public boolean isPublic;
+    public boolean prefersToSeeScriptWhileRecording;
+    public boolean skipRecorderTutorial;
     public String userId;
     public String fbId;
     public String firstName;
+    public Date createAt;
     //endregion
 
 
@@ -73,6 +75,20 @@ public class User extends SugarRecord<User> {
     public void login() {
         User.logoutAllUsers();
         isLoggedIn = true;
+    }
+
+    public Remake unfinishedRemakeForStory(Story story) {
+        // Query for an unfinished remake.
+        List<Remake> res = Remake.find(
+                Remake.class,
+                "user = ? and story = ? and (status = ? or status = ? or status = ?)",
+                getId().toString(),
+                story.getId().toString(),
+                Remake.Status.NEW.toString(),
+                Remake.Status.IN_PROGRESS.toString(),
+                Remake.Status.TIMEOUT.toString());
+        if (res.size()>0) return res.get(0);
+        return null;
     }
     //endregion
 }

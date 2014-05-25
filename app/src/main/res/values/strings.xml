@@ -13,7 +13,9 @@
     <!-- Titles -->
     <string name="title_great_job">GREAT JOB!</string>
 
-
+    <!-- Progress dialogues -->
+    <string name="pd_title_please_wait">Pleases wait.</string>
+    <string name="pd_msg_preparing_remake">Preparing to remake your story.</string>
 
     <!-- placeholders -->
     <string name="placeholder_text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet.</string>

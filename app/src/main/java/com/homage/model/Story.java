@@ -7,12 +7,12 @@ import android.content.Context;
 
 import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
 
 import java.util.List;
 
 public class Story extends SugarRecord<Story> {
     String oid;
-
 
     //region *** Fields ***
     public String description;
@@ -26,14 +26,13 @@ public class Story extends SugarRecord<Story> {
     public int level;
     //endregion
 
-
     //region *** Factories ***
-    public String getOID() {
-        return this.oid;
-    }
-
     public Story(Context context) {
         super(context);
+    }
+
+    public String getOID() {
+        return this.oid;
     }
 
     public Story(String oid){

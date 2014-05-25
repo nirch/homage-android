@@ -45,7 +45,8 @@ public class UserParser extends Parser {
         user.email = userInfo.getString("email");
         user.isFirstUse = userInfo.getBoolean("first_use");
         user.isPublic = userInfo.getBoolean("is_public");
+        user.createAt = parseDate(userInfo.getString("created_at"));
         user.login();
-        user.save()
+        user.save();
     }
 }

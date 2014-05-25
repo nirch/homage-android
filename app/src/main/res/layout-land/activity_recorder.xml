@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-    android:background="@color/test_bg"
+
     tools:context=".RecorderActivity">
 
     <ImageView

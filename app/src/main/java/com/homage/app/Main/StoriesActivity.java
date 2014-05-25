@@ -15,10 +15,12 @@
 package com.homage.app.main;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -36,6 +38,7 @@ import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.recorder.RecorderActivity;
 import com.homage.app.recorder.RecorderOverlayDlgActivity;
+import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
@@ -49,6 +52,7 @@ public class StoriesActivity extends Activity {
     List<Story> stories;
     ListView storiesListView;
     AQuery aq;
+    ProgressDialog pd;
 
     BaseAdapter adapter = new BaseAdapter() {
         @Override
@@ -134,11 +138,13 @@ public class StoriesActivity extends Activity {
     private void initObservers() {
         LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
         lbm.registerReceiver(onStoriesUpdated, new IntentFilter(HomageServer.INTENT_STORIES));
+        lbm.registerReceiver(onRemakeCreation, new IntentFilter(HomageServer.INTENT_REMAKE_CREATION));
     }
 
     private void removeObservers() {
         LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
         lbm.unregisterReceiver(onStoriesUpdated);
+        lbm.unregisterReceiver(onRemakeCreation);
     }
 
     // Observers handlers
@@ -151,10 +157,39 @@ public class StoriesActivity extends Activity {
         }
     };
 
+    private BroadcastReceiver onRemakeCreation = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            pd.dismiss();
+            boolean success = intent.getBooleanExtra(Server.SR_SUCCESS, false);
+            if (success) {
+                Intent myIntent = new Intent(StoriesActivity.this, RecorderActivity.class);
+                StoriesActivity.this.startActivity(myIntent);
+                overridePendingTransition(R.anim.animation_fadein_with_zoom, R.anim.animation_fadeout_with_zoom);
+            }
+        }
+    };
+
 
     // Remakes
     private void remakeStoryAtIndex(int index) {
+        Resources res = getResources();
         User user = User.getCurrent();
+        Story story = stories.get(index);
+        Remake unFinishedRemake = user.unfinishedRemakeForStory(story);
+        if (unFinishedRemake == null) {
+            // No unfinished remakes.
+            // Show a please wait dlg and tell server to create a new remake.
+            pd = new ProgressDialog(this);
+            pd.setTitle(res.getString(R.string.pd_title_please_wait));
+            pd.setMessage(res.getString(R.string.pd_msg_preparing_remake));
+            pd.setCancelable(true);
+            pd.show();
+
+            // Send the request to the server.
+            HomageServer.sh().createRemake(story.getOID(), user.getOID());
+            return;
+        }
 
         //Story story = stories.get(index);
         //HomageServer.sh().createRemake(story.getOID(), User.current().getOID());
@@ -169,10 +204,8 @@ public class StoriesActivity extends Activity {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             // Remake the story
             remakeStoryAtIndex(i);
-//            Intent myIntent = new Intent(StoriesActivity.this, RecorderActivity.class);
-//            StoriesActivity.this.startActivity(myIntent);
-//            overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
         }
     };
     //endregion
 }
+

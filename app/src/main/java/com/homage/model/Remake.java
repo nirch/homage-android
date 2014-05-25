@@ -7,6 +7,7 @@ import android.content.Context;
 
 import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
 
 import java.util.Date;
 import java.util.List;
@@ -14,20 +15,21 @@ import java.util.List;
 public class Remake extends SugarRecord<Remake> {
     String oid;
 
-
     //region *** Fields ***
-    Integer grade;
-    Date lastLocalUpdate;
-    String shareURL;
-    Integer status;
-    String thumbnailURL;
-    String videoURL;
-    Date createdAt;
-    Boolean stillPublic;
-    Story story;
-    User user;
+    public int grade;
+    public String lastLocalUpdate;
+    public String shareURL;
+    public int status;
+    public String thumbnailURL;
+    public String videoURL;
+    public Date createdAt;
+    public boolean stillPublic;
 
-    static private enum Status {
+    public Story story;
+    public User user;
+
+    @Ignore
+    static public enum Status {
         NEW,
         IN_PROGRESS,
         RENDERING,
@@ -62,6 +64,23 @@ public class Remake extends SugarRecord<Remake> {
         if (res.size() == 1) return res.get(0);
         return null;
     }
+
+    public Footage findFootageOrCreate(int sceneID) {
+        Footage footage = findFootage(sceneID);
+        if (footage != null) return footage;
+        return new Footage(this, sceneID);
+    }
+
+    public Footage findFootage(int sceneID) {
+        List<Footage> res = Footage.find(
+                Footage.class,
+                "remake = ? and scene_id = ?",
+                getId().toString(),
+                String.valueOf(sceneID));
+        if (res.size() > 0) return res.get(0);
+        return null;
+    }
+
     //endregion
 
 
