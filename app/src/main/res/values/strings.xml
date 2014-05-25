@@ -6,6 +6,9 @@
     <!-- Buttons -->
     <string name="button_retake_last_scene">RETAKE LAST SCENE</string>
     <string name="button_can_i_see_a_preview">CAN I SEE A PREVIEW?</string>
+    <string name="button_scene_direction">SCENE DIRECTION</string>
+    <string name="button_show_script">SHOW SCRIPT</string>
+    <string name="button_hide_script">HIDE SCRIPT</string>
 
     <!-- Titles -->
     <string name="title_great_job">GREAT JOB!</string>

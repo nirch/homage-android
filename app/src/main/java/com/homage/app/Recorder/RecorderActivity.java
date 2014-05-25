@@ -17,16 +17,18 @@
 package com.homage.app.recorder;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
-import android.view.DragEvent;
-import android.view.MotionEvent;
-import android.view.OrientationEventListener;
+import android.view.GestureDetector;
+
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+import android.widget.VideoView;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
@@ -44,11 +46,20 @@ import com.homage.views.ActivityHelper;
  * @since   0.1
  */
 public class RecorderActivity extends Activity {
+
     private String TAG = "TAG_"+getClass().getName();
     private AQuery aq;
+
     private View controlsDrawer;
+    private View recordButton;
+    private View recorderFullDetailsContainer;
+    private View recorderShortDetailsContainer;
+
+    private Animation fadeInAnimation, fadeOutAnimation;
+
     private int viewHeightForClosingControlsDrawer;
     private boolean viewsInitialized;
+
     static private enum RecorderState {
         JUST_STARTED,
         INTRO_MESSAGE,
@@ -62,7 +73,6 @@ public class RecorderActivity extends Activity {
     }
     private RecorderStateMachine stateMachine;
     private FrameLayout recPreviewContainer;
-
 
 
     //region *** Activity lifecycle ***
@@ -80,9 +90,14 @@ public class RecorderActivity extends Activity {
         // Make this activity, full screen with no title bar.
         ActivityHelper.goFullScreen(this);
 
-        // Set the content layout
+        // Set the content layout, load resources and store some references to views
         setContentView(R.layout.activity_recorder);
         controlsDrawer = aq.id(R.id.recorderControlsDrawer).getView();
+        recordButton = aq.id(R.id.recorderRecordButton).getView();
+        recorderFullDetailsContainer = aq.id(R.id.recorderFullDetailsContainer).getView();
+        recorderShortDetailsContainer = aq.id(R.id.recorderShortDetailsContainer).getView();
+        fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.animation_fadein);
+        fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.animation_fadeout);
         //endregion
 
         //region *** Camera video preview preparation ***
@@ -92,8 +107,8 @@ public class RecorderActivity extends Activity {
             recPreviewContainer = (FrameLayout)findViewById(R.id.preview_container);
 
             // Tell the camera manager to prepare in the background.
-            CameraManager cm = CameraManager.sh();
-            cm.startCameraPreviewInView(this, recPreviewContainer);
+            //CameraManager cm = CameraManager.sh();
+            //cm.startCameraPreviewInView(this, recPreviewContainer);
         }
         //endregion
 
@@ -148,9 +163,9 @@ public class RecorderActivity extends Activity {
         // panel at the bottom of the screen, so we will take them into account.
         viewHeightForClosingControlsDrawer -= aq.id(R.id.recorderShortDetailsContainer).getView().getHeight();
         viewHeightForClosingControlsDrawer -= aq.id(R.id.recorderRecordButton).getView().getHeight()/2;
+        recorderFullDetailsContainer.setAlpha(0);
 
         closeControlsDrawer(false);
-
     }
     //endregion
 
@@ -186,13 +201,11 @@ public class RecorderActivity extends Activity {
         return controlsDrawer.getTranslationY();
     }
 
-    public void setControlsDrawerPosition(float newPotision) {
-        float part = newPotision / viewHeightForClosingControlsDrawer;
-        part = part < 0 ? 0 : part;
-        part = part > 1 ? 1 : part;
-        controlsDrawer.setTranslationY(newPotision);
-
-        Log.d(TAG, String.format("%f", part));
+    public void setControlsDrawerPosition(float newPosition) {
+        //float part = newPosition / viewHeightForClosingControlsDrawer;
+        //part = part < 0 ? 0 : part;
+        //part = part > 1 ? 1 : part;
+        controlsDrawer.setTranslationY(newPosition);
     }
 
     private boolean isControlsDrawerOpen() {
@@ -218,6 +231,7 @@ public class RecorderActivity extends Activity {
                     animation.setDuration(1);
                     controlsDrawer.startAnimation(animation);
                     controlsDrawer.setTranslationY(viewHeightForClosingControlsDrawer);
+                    controlsDrawerClosed();
                 }
 
                 @Override
@@ -227,7 +241,9 @@ public class RecorderActivity extends Activity {
             controlsDrawer.startAnimation(anim);
         } else {
             controlsDrawer.setTranslationY(viewHeightForClosingControlsDrawer);
+            controlsDrawerClosed();
         }
+
     }
 
     public void openControlsDrawer(boolean animated) {
@@ -249,6 +265,7 @@ public class RecorderActivity extends Activity {
                     animation.setDuration(1);
                     controlsDrawer.startAnimation(animation);
                     controlsDrawer.setTranslationY(0);
+                    controlsDrawerOpened();
                 }
 
                 @Override
@@ -258,6 +275,7 @@ public class RecorderActivity extends Activity {
             controlsDrawer.startAnimation(anim);
         } else {
             controlsDrawer.setTranslationY(0);
+            controlsDrawerOpened();
         }
     }
 
@@ -268,6 +286,27 @@ public class RecorderActivity extends Activity {
             openControlsDrawer(animated);
         }
     }
+
+    private void controlsDrawerClosed() {
+        if (recordButton.isClickable()) return;
+        recordButton.startAnimation(fadeInAnimation);
+        recordButton.setClickable(true);
+        recorderFullDetailsContainer.startAnimation(fadeOutAnimation);
+        recorderShortDetailsContainer.startAnimation(fadeInAnimation);
+
+    }
+
+    private void controlsDrawerOpened() {
+        if (!recordButton.isClickable()) return;
+        recordButton.startAnimation(fadeOutAnimation);
+        recordButton.setVisibility(View.INVISIBLE);
+        recordButton.setClickable(false);
+        recorderFullDetailsContainer.setAlpha(1);
+        recorderFullDetailsContainer.startAnimation(fadeInAnimation);
+        recorderShortDetailsContainer.startAnimation(fadeOutAnimation);
+    }
+
+
     //endregion
 
 
@@ -333,6 +372,4 @@ public class RecorderActivity extends Activity {
         }
     };
     //endregion
-
-
 }

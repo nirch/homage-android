@@ -1,3 +1,6 @@
+/**
+ * Model Entity: Story
+ */
 package com.homage.model;
 
 import android.content.Context;
@@ -10,6 +13,8 @@ import java.util.List;
 public class Story extends SugarRecord<Story> {
     String oid;
 
+
+    //region *** Fields ***
     public String description;
     public String name;
     public boolean active;
@@ -19,17 +24,20 @@ public class Story extends SugarRecord<Story> {
     public int remakesNum;
     public String thumbnail;
     public int level;
+    //endregion
+
+
+    //region *** Factories ***
+    public String getOID() {
+        return this.oid;
+    }
 
     public Story(Context context) {
         super(context);
     }
 
-    public Story() {
-        this(HomageApplication.getContext());
-    }
-
     public Story(String oid){
-        this();
+        this(HomageApplication.getContext());
         this.oid = oid;
     }
 
@@ -44,4 +52,9 @@ public class Story extends SugarRecord<Story> {
         if (res.size()==1) return res.get(0);
         return null;
     }
+    //endregion
+
+
+    //region *** Logic ***
+    //endregion
 }

@@ -1,10 +1,14 @@
 package com.homage.app.recorder;
 
+import android.support.v4.view.MotionEventCompat;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 class OnDraggingControlsDrawerListener implements View.OnTouchListener
 {
+    private String TAG = "TAG_"+getClass().getName();
+
     float startPosTouch, deltaTouch, startPosView, newPosView;
     float heightForClosing;
     RecorderActivity recorderActivity;
@@ -17,8 +21,7 @@ class OnDraggingControlsDrawerListener implements View.OnTouchListener
     @Override
     public boolean onTouch(final View v,final MotionEvent event)
     {
-
-        switch(event.getAction())
+         switch(event.getAction())
         {
             case MotionEvent.ACTION_DOWN:
             {

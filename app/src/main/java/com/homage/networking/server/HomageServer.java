@@ -19,12 +19,17 @@
 package com.homage.networking.server;
 
 import android.content.Context;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
+import com.homage.device.Device;
 import com.homage.networking.parsers.StoriesParser;
+import com.homage.networking.parsers.UserParser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class HomageServer extends Server {
     String TAG = "TAG_"+getClass().getName();
@@ -78,6 +83,21 @@ public class HomageServer extends Server {
     }
     //endregion
 
+    public void loginUser(String email, String password) {
+        HashMap<String, String> parameters = new HashMap<String, String>();
+
+        // TODO: finish implementing this
+        parameters.put("email", email);
+        parameters.put("password",password);
+        parameters.put("is_public","1");
+        parameters.put("device[identifier_for_vendor]",
+                Settings.Secure.getString(HomageApplication.getContext().getContentResolver(),Settings.Secure.ANDROID_ID)
+        );
+        parameters.put("device[model]", Device.getDeviceModel());
+        parameters.put("device[name]","Android Phone");
+        parameters.put("device[push_token]","%3C0a7b7b15%203f0fb335%200e252182%2038675505%20e739547b%2047dd8ab2%20");
+        super.POST(R.string.url_new_user, parameters, INTENT_STORIES, null, new UserParser());
+    }
 
     /**
      * Refetches all stories (and their child objects) info from the server.
@@ -85,5 +105,14 @@ public class HomageServer extends Server {
     public void refetchStories() {
         Log.d(TAG, "Refetching stories");
         super.GET(R.string.url_stories, null, INTENT_STORIES, null, new StoriesParser());
+    }
+
+    /**
+     *
+     * @param remakeOID
+     * @param userOID
+     */
+    public void createRemake(String remakeOID, String userOID) {
+        Log.d(TAG, String.format("Create remake with OID: %s for user : %s", remakeOID, userOID));
     }
 }

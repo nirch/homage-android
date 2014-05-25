@@ -37,19 +37,25 @@ import com.homage.app.R;
 import com.homage.networking.parsers.Parser;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -136,6 +142,27 @@ abstract public class Server {
     }
 
     /**
+     * Do a POST async HTTP request to the server.
+     *
+     * @param urlID the ID of the url (as defined in server_cfg.xml) (required!)
+     * @param parameters a hashmap of parameters for the get request. (optional)
+     * @param intentName the intent name the will be broadcasted locally, when finished (optional)
+     * @param info some info that will be attached to the request/response (optional)
+     * @param parser the parser that will handle the response (optional)
+     */
+    public void POST(
+            int urlID,
+            HashMap<String,String> parameters,
+            String intentName,
+            HashMap<String,Object> info,
+            Parser parser) {
+
+        // Send the GET request in the background.
+        String url = url(urlID);
+        new BackgroundRequest().execute("POST", url, parameters, intentName, info, parser);
+    }
+
+    /**
      * Asynchronous task for preparing the {@link android.media.MediaRecorder} since it's a long blocking
      * operation.
      */
@@ -147,19 +174,47 @@ abstract public class Server {
         private HashMap<String,Object> info;
         private Parser parser;
 
-        protected HttpRequestBase requestForMethod(String method) throws ServerException {
+        private List<NameValuePair> paramsForPost(HashMap<String,String> parameters) {
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            for (String k : parameters.keySet()) {
+                nameValuePairs.add(new BasicNameValuePair(k, parameters.get(k)));
+            }
+            return nameValuePairs;
+        }
+
+        protected HttpRequestBase requestForMethod(String method, String url, HashMap<String,String> parameters)
+                throws ServerException, UnsupportedEncodingException, URISyntaxException {
+
             method = method.toUpperCase();
+            HttpRequestBase request;
             if (method.equals("GET")) {
-                return new HttpGet();
+
+                // GET requests.
+                request = new HttpGet();
+
             } else if (method.equals("POST")) {
-                return new HttpPost();
+
+                // POST requests.
+                request = new HttpPost();
+                if (parameters != null) {
+                    ((HttpPost)request).setEntity(new UrlEncodedFormEntity(paramsForPost(parameters)));
+                }
+
             } else if (method.equals("DELETE")) {
-                return new HttpDelete();
+
+                request = new HttpDelete();
+
             } else if (method.equals("PUT")) {
-                return new HttpPut();
+
+                request = new HttpPut();
+
             } else {
                 throw new ServerException(String.format("Used unsupported request method %s", method));
             }
+
+            URI uri = new URI(url);
+            request.setURI(uri);
+            return request;
         }
 
         @Override
@@ -174,10 +229,9 @@ abstract public class Server {
 
             try {
                 // Choose the request according to the method type.
-                HttpRequestBase request = requestForMethod(method);
+                HttpRequestBase request = requestForMethod(method, url, parameters);
 
                 // Set the URI
-                request.setURI(new URI(url));
                 HttpResponse response = client.execute(request);
                 StatusLine statusLine = response.getStatusLine();
                 int statusCode = statusLine.getStatusCode();

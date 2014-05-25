@@ -17,6 +17,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.homage.media.camera.CameraManager;
+import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
 import com.orm.SugarApp;
 
@@ -39,6 +40,10 @@ public class HomageApplication extends SugarApp {
         // are bound to the application process.
         initSingletons();
         Thread.setDefaultUncaughtExceptionHandler(new HomageUnhandledExceptionHandler());
+
+        // DEBUG user
+        User.logoutAllUsers();
+        HomageServer.sh().loginUser("android@test.com","123456");
     }
 
     protected void initSingletons() {

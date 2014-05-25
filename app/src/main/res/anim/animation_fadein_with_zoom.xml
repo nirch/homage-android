@@ -8,4 +8,23 @@
         android:toAlpha="1.0"
 
         />
+
+    <scale
+        android:fromXScale="1.323"
+        android:toXScale="1.0"
+
+        android:fromYScale="1.323"
+        android:toYScale="1.0"
+
+        android:duration="@android:integer/config_shortAnimTime"
+        android:startOffset="0"
+
+        android:fillAfter="true"
+
+        android:pivotX="50%"
+        android:pivotY="50%"
+
+
+        />
+
 </set>

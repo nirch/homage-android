@@ -18,8 +18,6 @@ public class StoriesParser extends Parser {
         expectedObjectClass = JSONArray.class;
     }
 
-
-
     @Override
     public void parse() throws JSONException {
         JSONArray stories = (JSONArray)objectToParse;

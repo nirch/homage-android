@@ -24,9 +24,17 @@ public class Parser {
     public Error error;
     public HashMap<String, Object> parseInfo;
 
+    /**
+     * By default, parsers expect a json object.
+     * If a derived parser expects other kind of objects,
+     * override the constructor and assign something else to expectedObjectClass.
+     */
     public Parser() {
         super();
         this.context = context;
+
+        // By default, expects a json object.
+        expectedObjectClass = JSONObject.class;
     }
 
     public static String parseOID(JSONObject obj) throws JSONException {

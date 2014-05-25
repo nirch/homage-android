@@ -37,7 +37,9 @@ import com.homage.app.R;
 import com.homage.app.recorder.RecorderActivity;
 import com.homage.app.recorder.RecorderOverlayDlgActivity;
 import com.homage.model.Story;
+import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
+import com.homage.networking.server.Server;
 
 import java.util.List;
 
@@ -82,6 +84,7 @@ public class StoriesActivity extends Activity {
         public boolean isEmpty() {
             return false;
         }
+
     };
 
     //region *** ACTIVITY LIFECYCLE ***
@@ -149,6 +152,14 @@ public class StoriesActivity extends Activity {
     };
 
 
+    // Remakes
+    private void remakeStoryAtIndex(int index) {
+        User user = User.getCurrent();
+
+        //Story story = stories.get(index);
+        //HomageServer.sh().createRemake(story.getOID(), User.current().getOID());
+    }
+
     //region *** UI event handlers ***
     // -------------------
     // UI handlers.
@@ -156,9 +167,11 @@ public class StoriesActivity extends Activity {
     private AdapterView.OnItemClickListener onItemClicked = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Intent myIntent = new Intent(StoriesActivity.this, RecorderActivity.class);
-            StoriesActivity.this.startActivity(myIntent);
-            overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
+            // Remake the story
+            remakeStoryAtIndex(i);
+//            Intent myIntent = new Intent(StoriesActivity.this, RecorderActivity.class);
+//            StoriesActivity.this.startActivity(myIntent);
+//            overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
         }
     };
     //endregion
