@@ -25,11 +25,7 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="HomageDarkOverlay">
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">fill_parent</item>
-        <item name="android:background">@color/homage_dark_overlay</item>
-    </style>
+
 
     <style name="HomageBigTitle">
         <item name="android:textSize">34dp</item>
@@ -37,6 +33,12 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/homage_text</item>
         <item name="android:typeface">monospace</item>
+    </style>
+
+    <style name="HomageDarkOverlay">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:background">@color/homage_dark_overlay</item>
     </style>
 
     <style name="HomageImpactButtonsContainer">

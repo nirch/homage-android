@@ -48,7 +48,9 @@ import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class StoriesActivity extends Activity {
     String TAG = "TAG_"+getClass().getName();
@@ -117,7 +119,7 @@ public class StoriesActivity extends Activity {
 
 
         // Set the list adapter for the stories list view.
-        stories = Story.listAll(Story.class);
+        stories = Story.allActiveStories();
         storiesListView = (ListView)findViewById(R.id.storiesListView);
         storiesListView.setAdapter(adapter);
 
@@ -167,7 +169,7 @@ public class StoriesActivity extends Activity {
     private BroadcastReceiver onStoriesUpdated = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        stories = Story.listAll(Story.class);
+        stories = Story.allActiveStories();
         aq.id(R.id.loadingStoriesProgress).getProgressBar().setVisibility(View.INVISIBLE);
         adapter.notifyDataSetChanged();
         }
@@ -178,14 +180,23 @@ public class StoriesActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             pd.dismiss();
             boolean success = intent.getBooleanExtra(Server.SR_SUCCESS, false);
+            HashMap<String, Object>responseInfo = (HashMap<String, Object>)intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
+
             if (success) {
+                assert(responseInfo != null);
+                String remakeOID = (String)responseInfo.get("remakeOID");
+                if (remakeOID == null) return;
+
+                // Open recorder for the remake.
                 Intent myIntent = new Intent(StoriesActivity.this, RecorderActivity.class);
+                Bundle b = new Bundle();
+                b.putString("remakeOID", remakeOID);
+                myIntent.putExtras(b);
                 StoriesActivity.this.startActivity(myIntent);
-                //overridePendingTransition(R.anim.animation_fadein_with_zoom, R.anim.animation_fadeout_with_zoom);
+                overridePendingTransition(0, 0);
             }
         }
     };
-
 
     // Remakes
     private void remakeStoryAtIndex(int index) {
@@ -218,6 +229,9 @@ public class StoriesActivity extends Activity {
     private AdapterView.OnItemClickListener onItemClicked = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            User user = User.getCurrent();
+            if (user == null) return;
+
             // Remake the story
             remakeStoryAtIndex(i);
         }

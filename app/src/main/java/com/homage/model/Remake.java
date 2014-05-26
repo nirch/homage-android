@@ -86,5 +86,14 @@ public class Remake extends SugarRecord<Remake> {
 
 
     //region *** Logic ***
+    public int nextReadyForFirstRetakeSceneID() {
+        // TODO: implement
+        return 1;
+    }
+
+    public int lastSceneID() {
+        // TODO: implement
+        return 1;
+    }
     //endregion
 }

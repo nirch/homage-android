@@ -65,7 +65,7 @@ abstract public class Server {
 
     public static String SR_SUCCESS = "success";
     public static String SR_REQUEST_INFO = "request info";
-    public static String SR_PARSING_INFO = "parsing info";
+    public static String SR_RESPONSE_INFO = "response info";
 
 
 
@@ -279,7 +279,7 @@ abstract public class Server {
             Intent intent = new Intent(intentName);
             intent.putExtra(SR_SUCCESS, result);
             if (info != null) intent.putExtra(SR_REQUEST_INFO, info);
-            if (parser != null) intent.putExtra(SR_PARSING_INFO, parser.parseInfo);
+            if (parser != null && parser.responseInfo != null) intent.putExtra(SR_RESPONSE_INFO, parser.responseInfo);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         }
     }

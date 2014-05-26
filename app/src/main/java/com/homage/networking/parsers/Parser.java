@@ -1,7 +1,6 @@
 package com.homage.networking.parsers;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -9,7 +8,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,7 +23,7 @@ public class Parser {
     public Object objectToParse;
     public HashMap<String, Error> errors;
     public Error error;
-    public HashMap<String, Object> parseInfo;
+    public HashMap<String, Object> responseInfo;
 
     private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -36,12 +34,13 @@ public class Parser {
      */
     public Parser() {
         super();
-        this.context = context;
-
         dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         // By default, expects a json object.
         expectedObjectClass = JSONObject.class;
+
+        //
+        responseInfo = new HashMap<String, Object>();
     }
 
     public static String parseOID(JSONObject obj) throws JSONException {
@@ -89,7 +88,7 @@ public class Parser {
     }
 
     protected boolean parseBool(String key, boolean defaultValue) throws JSONException {
-        return parseBool((JSONObject)objectToParse, key, defaultValue);
+        return parseBool((JSONObject) objectToParse, key, defaultValue);
     }
     protected boolean parseBool(JSONObject obj, String key, boolean defaultValue) throws JSONException {
         if (obj.has(key)) return obj.getBoolean(key);
@@ -97,7 +96,7 @@ public class Parser {
     }
 
     protected int parseInt(String key, int defaultValue) throws JSONException {
-        return parseInt((JSONObject)objectToParse, key, defaultValue);
+        return parseInt((JSONObject) objectToParse, key, defaultValue);
     }
     protected int parseInt(JSONObject obj, String key, int defaultValue) throws JSONException {
         if (obj.has(key)) return obj.getInt(key);
@@ -105,7 +104,7 @@ public class Parser {
     }
 
     protected double parseDouble(String key, double defaultValue) throws JSONException {
-        return parseDouble((JSONObject)objectToParse, key, defaultValue);
+        return parseDouble((JSONObject) objectToParse, key, defaultValue);
     }
     protected double parseDouble(JSONObject obj, String key, double defaultValue) throws JSONException {
         if (obj.has(key)) return obj.getDouble(key);
@@ -113,7 +112,7 @@ public class Parser {
     }
 
     protected Date parseDate(String key, Date defaultValue) throws JSONException {
-        return parseDate((JSONObject)objectToParse, key, defaultValue);
+        return parseDate((JSONObject) objectToParse, key, defaultValue);
     }
     protected Date parseDate(JSONObject obj, String key, Date defaultValue) throws JSONException {
         if (!obj.has(key)) return defaultValue;

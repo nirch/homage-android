@@ -6,11 +6,8 @@ import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Date;
 
 public class RemakeParser extends Parser {
     String TAG = "TAG_"+getClass().getName();
@@ -58,10 +55,12 @@ public class RemakeParser extends Parser {
         remake.videoURL =       parseString("video",null);
         remake.shareURL =       parseString("share_link",null);
         remake.grade =          parseInt("grade",0);
-        //remake.createdAt =      parseDate("created_at",null);
+        remake.createdAt =      parseDate("created_at",null);
         remake.stillPublic =    true;
 
         remake.save();
+
+        responseInfo.put("remakeOID", remake.getOID());
 
         // Parse the footages for this remake.
         FootagesParser footagesParser = new FootagesParser();

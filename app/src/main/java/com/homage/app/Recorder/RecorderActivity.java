@@ -18,19 +18,14 @@ package com.homage.app.recorder;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
-import android.view.GestureDetector;
 
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
-import android.widget.VideoView;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
@@ -38,8 +33,6 @@ import com.homage.media.camera.CameraManager;
 import com.homage.model.Remake;
 import com.homage.model.User;
 import com.homage.views.ActivityHelper;
-
-import java.util.logging.Handler;
 
 
 /*
@@ -59,7 +52,7 @@ public class RecorderActivity extends Activity {
 
     private AQuery aq;
 
-    private View recoderView;
+    private View recorderView;
     private View controlsDrawer;
     private View recordButton;
     private View recorderFullDetailsContainer;
@@ -77,7 +70,7 @@ public class RecorderActivity extends Activity {
     private RecorderStateMachine stateMachine;
     static private enum RecorderState {
         JUST_STARTED,
-        INTRO_MESSAGE,
+        TUTORIAL,
         SCENE_MESSAGE,
         MAKING_A_SCENE,
         FINISHED_A_SCENE_MESSAGE,
@@ -109,18 +102,29 @@ public class RecorderActivity extends Activity {
         super.onCreate(savedInstanceState);
         viewsInitialized = false;
 
+        // Remake
+        Intent intent = getIntent();
+
+        Bundle b = getIntent().getExtras();
+        String remakeOID = b.getString("remakeOID");
+        remake = Remake.findByOID(remakeOID);
+        if (remake == null) {
+            finish();
+            return;
+        }
+
         // Aquery
         aq = new AQuery(this);
 
         //region *** Layout initializations ***
-        Log.d(TAG, "Started the recorder full screen activity.");
+        Log.d(TAG, String.format("Started the recorder for remake:", remake.getOID()));
 
         // Make this activity, full screen with no title bar.
         ActivityHelper.goFullScreen(this);
 
         // Set the content layout, load resources and store some references to views
         setContentView(R.layout.activity_recorder);
-        recoderView = aq.id(R.id.recoderView).getView();
+        recorderView = aq.id(R.id.recoderView).getView();
         controlsDrawer = aq.id(R.id.recorderControlsDrawer).getView();
         recordButton = aq.id(R.id.recorderRecordButton).getView();
         recorderFullDetailsContainer = aq.id(R.id.recorderFullDetailsContainer).getView();
@@ -203,7 +207,7 @@ public class RecorderActivity extends Activity {
 
         // TODO: Initialize CameraManager using AsyncTask
         // TODO: remove the postDelayed hack. implement this correctly.
-        recoderView.postDelayed(new Runnable() {
+        recorderView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 CameraManager cm = CameraManager.sh();
@@ -375,6 +379,7 @@ public class RecorderActivity extends Activity {
         private void handleCurrentState() throws RecorderException {
             switch (currentState) {
                 case JUST_STARTED: justStarted(); break;
+                case SCENE_MESSAGE: sceneMessage(); break;
                 default:
                     throw new RecorderException(String.format("Unimplemented recorder state %s", currentState));
             }
@@ -383,29 +388,30 @@ public class RecorderActivity extends Activity {
         private void advanceState() throws RecorderException {
             switch (currentState) {
                 case JUST_STARTED:
-                    currentState = RecorderState.INTRO_MESSAGE;
+                    currentState = RecorderState.SCENE_MESSAGE;
                     break;
                 default:
-                    throw new RecorderException(String.format("Unimplemented recorder state %s", currentState));
+                    throw new RecorderException(String.format("Unimplemented when advancing state %s", currentState));
             }
         }
 
-        private void justStart() throws RecorderException {
+        private void justStarted() throws RecorderException {
             // TODO: choose latest scene here if a continued remake.
             //
             // Select the first scene requiring a first retake.
             // If none found (all footages already taken by the user),
             // will select the last scene for this remake instead.
             //
-            currentSceneID = remake.nextReadyForFirstRetakeSceneID();
-            _currentSceneID = [self.remake nextReadyForFirstRetakeSceneID];
-            if (!self.currentSceneID) _currentSceneID = [self.remake lastSceneID];
-            [self updateUIForSceneID:self.currentSceneID];
+            // TODO: finish implementation
+//            currentSceneID = remake.nextReadyForFirstRetakeSceneID();
+//            if (currentSceneID < 1) currentSceneID = remake.lastSceneID();
+//            updateUIForSceneID(currentSceneID);
+            currentSceneID = 1;
 
             // Just started. Show welcome message if user entered for the first time.
             // If not here for the first time, skip.
             User user = User.getCurrent();
-            if (user.isFirstUse || 1==1) {
+            if (user.isFirstUse) {
                 Intent myIntent = new Intent(RecorderActivity.this, RecorderWelcomeActivity.class);
                 RecorderActivity.this.startActivityForResult(myIntent, ACTION_ADVANCE_AND_HANDLE_STATE);
                 overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
@@ -413,6 +419,12 @@ public class RecorderActivity extends Activity {
                 advanceState();
                 handleCurrentState();
             }
+        }
+
+        private void sceneMessage()  {
+            Intent myIntent = new Intent(RecorderActivity.this, RecorderWelcomeActivity.class);
+            RecorderActivity.this.startActivityForResult(myIntent, ACTION_ADVANCE_AND_HANDLE_STATE);
+            overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
         }
 
     }
@@ -437,6 +449,13 @@ public class RecorderActivity extends Activity {
          */
         finish();
         overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
+    }
+    //endregion
+
+
+    //region *** UI updates ***
+    private void updateUIForSceneID(int sceneID) {
+
     }
     //endregion
 

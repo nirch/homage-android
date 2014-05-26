@@ -51,6 +51,12 @@ public class Story extends SugarRecord<Story> {
         return null;
     }
 
+    public static List<Story> allActiveStories() {
+        String[] args = {"true"};
+        List<Story> res = Story.find(Story.class, "active = ?", args, "order_id", "","");
+        return res;
+    }
+
     public Scene findSceneOrCreate(int sceneID) {
         Scene scene = findScene(sceneID);
         if (scene != null) return scene;
