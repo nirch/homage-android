@@ -25,6 +25,7 @@ public class User extends SugarRecord<User> {
     public String fbId;
     public String firstName;
     public Date createAt;
+    public Date lastTimeUpdatedStories;
     //endregion
 
 
@@ -89,5 +90,11 @@ public class User extends SugarRecord<User> {
         if (res.size()>0) return res.get(0);
         return null;
     }
+
+    public long timePassedSinceUpdatedStories() {
+        if (lastTimeUpdatedStories == null) return Integer.MAX_VALUE;
+        return new Date().getTime() - lastTimeUpdatedStories.getTime();
+    }
+
     //endregion
 }

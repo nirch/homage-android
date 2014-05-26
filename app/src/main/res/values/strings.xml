@@ -17,6 +17,15 @@
     <string name="pd_title_please_wait">Pleases wait.</string>
     <string name="pd_msg_preparing_remake">Preparing to remake your story.</string>
 
+    <!-- Welcome screen -->
+    <string name="welcome_1">1</string>
+    <string name="welcome_1_message">MAKE SURE THE ACTOR IS IN THE FIGURE BEFORE RECORDING</string>
+    <string name="welcome_2">2</string>
+    <string name="welcome_2_message">USE A SOLID COLOR WALL AS BACKGROUND</string>
+
+    <!-- Action buttons -->
+    <string name="action_button_lets_shot">LETS SHOOT!</string>
+
     <!-- placeholders -->
     <string name="placeholder_text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet.</string>
     <string name="placeholder_text_scene_1">SCENE 1</string>

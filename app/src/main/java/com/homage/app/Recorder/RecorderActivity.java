@@ -17,6 +17,7 @@
 package com.homage.app.recorder;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,6 +35,8 @@ import android.widget.VideoView;
 import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.media.camera.CameraManager;
+import com.homage.model.Remake;
+import com.homage.model.User;
 import com.homage.views.ActivityHelper;
 
 import java.util.logging.Handler;
@@ -51,6 +54,9 @@ import java.util.logging.Handler;
 public class RecorderActivity extends Activity {
 
     private String TAG = "TAG_"+getClass().getName();
+
+    final public static int RECORDER_CLOSED = 666;
+
     private AQuery aq;
 
     private View recoderView;
@@ -59,12 +65,16 @@ public class RecorderActivity extends Activity {
     private View recorderFullDetailsContainer;
     private View recorderShortDetailsContainer;
 
+    // Remake info
+    protected Remake remake;
+    protected int currentSceneID;
 
-    private Animation fadeInAnimation, fadeOutAnimation;
-
-    private int viewHeightForClosingControlsDrawer;
-    private boolean viewsInitialized;
-
+    // Actions & State
+    private final static int ACTION_DO_NOTHING = 1;
+    private final static int ACTION_HANDLE_STATE = 2;
+    private final static int ACTION_ADVANCE_STATE = 3;
+    private final static int ACTION_ADVANCE_AND_HANDLE_STATE = 4;
+    private RecorderStateMachine stateMachine;
     static private enum RecorderState {
         JUST_STARTED,
         INTRO_MESSAGE,
@@ -76,9 +86,16 @@ public class RecorderActivity extends Activity {
         USER_REQUEST_TO_CHECK_WHAT_NEXT,
         HELP_SCREENS
     }
-    private RecorderStateMachine stateMachine;
+
+
+    // Layouts and views
+    private Animation fadeInAnimation, fadeOutAnimation;
+    private int viewHeightForClosingControlsDrawer;
+    private boolean viewsInitialized;
     private FrameLayout recPreviewContainer;
 
+
+    // Error handling
     public class RecorderException extends Exception {
         public RecorderException(String message) {
             super(message);
@@ -119,8 +136,12 @@ public class RecorderActivity extends Activity {
         //endregion
 
         //region *** State initialization ***
-        stateMachine = new RecorderStateMachine();
-        stateMachine.handleCurrentState();
+        try {
+            stateMachine = new RecorderStateMachine();
+            stateMachine.handleCurrentState();
+        } catch (RecorderException ex) {
+            Log.e(TAG, "Recorder state machine error.", ex);
+        }
         //endregion
 
         //region *** Bind to UI event handlers ***
@@ -140,7 +161,7 @@ public class RecorderActivity extends Activity {
     }
 
     @Override
-    protected void onPause() {
+    protected void onDestroy() {
         super.onPause();
         CameraManager cm = CameraManager.sh();
         cm.releaseMediaRecorder();
@@ -173,11 +194,15 @@ public class RecorderActivity extends Activity {
     }
     //endregion
 
+
+    //region *** Camera ***
     private void initCameraPreview() {
         // We will show the video feed of the camera
         // on a preview texture in the background.
         recPreviewContainer = (FrameLayout)findViewById(R.id.preview_container);
 
+        // TODO: Initialize CameraManager using AsyncTask
+        // TODO: remove the postDelayed hack. implement this correctly.
         recoderView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -186,20 +211,12 @@ public class RecorderActivity extends Activity {
 
                 // After initialized, fade in the camera by fading out the "curtains" slowly
                 Animation removeCurtainsAnim = AnimationUtils.loadAnimation(RecorderActivity.this, R.anim.animation_fadeout);
-                removeCurtainsAnim.setDuration(1500);
+                removeCurtainsAnim.setDuration(2500);
                 aq.id(R.id.recorderCurtains).animate(removeCurtainsAnim);
-
             }
-        }, 800);
-
-        // Tell the camera manager to prepare in the background.
-//        new AsyncTask<Void, Void, Void>(){
-//            @Override
-//            protected Void doInBackground(Void... params) {
-//                return null;
-//            }
-//        }.execute();
+        }, 1000);
     }
+    //endregion
 
 
     //region *** Controls Drawer **
@@ -357,13 +374,47 @@ public class RecorderActivity extends Activity {
 
         private void handleCurrentState() throws RecorderException {
             switch (currentState) {
-                case JUST_STARTED:
-                    
-                    break;
+                case JUST_STARTED: justStarted(); break;
                 default:
-                    throw new RecorderException(String.format("Unimplemented recorder state %s", currentState);
+                    throw new RecorderException(String.format("Unimplemented recorder state %s", currentState));
             }
         }
+
+        private void advanceState() throws RecorderException {
+            switch (currentState) {
+                case JUST_STARTED:
+                    currentState = RecorderState.INTRO_MESSAGE;
+                    break;
+                default:
+                    throw new RecorderException(String.format("Unimplemented recorder state %s", currentState));
+            }
+        }
+
+        private void justStart() throws RecorderException {
+            // TODO: choose latest scene here if a continued remake.
+            //
+            // Select the first scene requiring a first retake.
+            // If none found (all footages already taken by the user),
+            // will select the last scene for this remake instead.
+            //
+            currentSceneID = remake.nextReadyForFirstRetakeSceneID();
+            _currentSceneID = [self.remake nextReadyForFirstRetakeSceneID];
+            if (!self.currentSceneID) _currentSceneID = [self.remake lastSceneID];
+            [self updateUIForSceneID:self.currentSceneID];
+
+            // Just started. Show welcome message if user entered for the first time.
+            // If not here for the first time, skip.
+            User user = User.getCurrent();
+            if (user.isFirstUse || 1==1) {
+                Intent myIntent = new Intent(RecorderActivity.this, RecorderWelcomeActivity.class);
+                RecorderActivity.this.startActivityForResult(myIntent, ACTION_ADVANCE_AND_HANDLE_STATE);
+                overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
+            } else {
+                advanceState();
+                handleCurrentState();
+            }
+        }
+
     }
     //endregion
 
@@ -409,5 +460,32 @@ public class RecorderActivity extends Activity {
             recorderDone();
         }
     };
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            switch (requestCode) {
+                case ACTION_DO_NOTHING:
+                    break;
+                case ACTION_ADVANCE_STATE:
+                    stateMachine.advanceState();
+                    break;
+                case ACTION_HANDLE_STATE:
+                    stateMachine.handleCurrentState();
+                    break;
+                case ACTION_ADVANCE_AND_HANDLE_STATE:
+                    stateMachine.advanceState();
+                    stateMachine.handleCurrentState();
+                    break;
+                default:
+                    throw new RecorderException("Unimplemented return request code for recorder");
+            }
+        }
+        catch (RecorderException ex) {
+            Log.e(TAG, "Critical error when returning to recorder activity.", ex);
+        }
+    }
+
     //endregion
 }

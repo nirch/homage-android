@@ -31,8 +31,8 @@
         <!-- Sugar ORM settings -->
         <!-- (A spoon full of Sugar, makes a database go down?) -->
         <meta-data android:name="DATABASE" android:value="Homage.db" />
-        <meta-data android:name="VERSION" android:value="202" />
-        <meta-data android:name="QUERY_LOG" android:value="true" />
+        <meta-data android:name="VERSION" android:value="203" />
+        <meta-data android:name="QUERY_LOG" android:value="false" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.homage.model" />
 
         <!--
@@ -87,8 +87,8 @@
         <!--
             ############################################
 
-                         Overlay dialogues
-                             Activity
+                         Overlay dialogue
+                            Activities
 
             ############################################
         -->
@@ -99,7 +99,13 @@
             >
         </activity>
 
+        <activity
+            android:name=".recorder.RecorderWelcomeActivity"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/Theme.Transparent"
+            >
+        </activity>
+
 
     </application>
-
 </manifest>

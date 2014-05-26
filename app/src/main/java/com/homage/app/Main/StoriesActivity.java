@@ -20,6 +20,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.os.Bundle;
@@ -56,6 +57,8 @@ public class StoriesActivity extends Activity {
     ListView storiesListView;
     AQuery aq;
     ProgressDialog pd;
+
+    static boolean createdOnce = false;
 
     BaseAdapter adapter = new BaseAdapter() {
         @Override
@@ -111,13 +114,23 @@ public class StoriesActivity extends Activity {
         setContentView(R.layout.activity_main_stories);
         //endregion
 
+
+
         // Set the list adapter for the stories list view.
         stories = Story.listAll(Story.class);
         storiesListView = (ListView)findViewById(R.id.storiesListView);
         storiesListView.setAdapter(adapter);
 
         // Refetch the stories in the background.
-        HomageServer.sh().refetchStories();
+//        long timePassedSinceUpdatedStories = User.getCurrent().timePassedSinceUpdatedStories();
+//        Log.v(TAG, String.format("Time passed since previous stories update: %d", timePassedSinceUpdatedStories));
+//        if (timePassedSinceUpdatedStories > 600)
+        // TODO: implement cache expiration per user
+        if (!createdOnce) {
+            HomageServer.sh().refetchStories();
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+        createdOnce = true;
 
         //region *** Bind to UI event handlers ***
         aq.id(R.id.storiesListView).itemClicked(onItemClicked);
@@ -168,7 +181,7 @@ public class StoriesActivity extends Activity {
             if (success) {
                 Intent myIntent = new Intent(StoriesActivity.this, RecorderActivity.class);
                 StoriesActivity.this.startActivity(myIntent);
-                overridePendingTransition(R.anim.animation_fadein_with_zoom, R.anim.animation_fadeout_with_zoom);
+                //overridePendingTransition(R.anim.animation_fadein_with_zoom, R.anim.animation_fadeout_with_zoom);
             }
         }
     };
@@ -209,6 +222,19 @@ public class StoriesActivity extends Activity {
             remakeStoryAtIndex(i);
         }
     };
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case (RecorderActivity.RECORDER_CLOSED) : {
+                if (resultCode == Activity.RESULT_OK) {
+                    //String newText = data.getStringExtra(PUBLIC_STATIC_STRING_IDENTIFIER);
+                }
+                break;
+            }
+        }
+    }
     //endregion
 }
 

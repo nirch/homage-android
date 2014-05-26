@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/overlayView"
+    style="@style/HomageDarkOverlay"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/imageView"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/tutorial_silhouette"
+        android:scaleType="fitXY" />
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/homage_dark_transparent_overlay"></FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="60dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="80dp"
+        android:weightSum="3">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:weightSum="1"
+            android:id="@+id/linearLayout">
+
+            <TextView
+                android:layout_width="10dp"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/welcome_1"
+                android:id="@+id/textView2"
+                android:layout_weight="0.20"
+                android:gravity="center"
+                android:textSize="60dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/welcome_1_message"
+                android:id="@+id/textView4"
+                android:layout_weight="0.8"
+                android:textAllCaps="true"
+                android:gravity="center_vertical"
+                android:shadowColor="@color/homage_dark_void_2"
+                android:shadowDx="2"
+                android:shadowDy="2" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="10dp"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/welcome_2"
+                android:id="@+id/textView"
+                android:layout_weight="0.20"
+                android:gravity="center"
+                android:textSize="60dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/welcome_2_message"
+                android:id="@+id/textView3"
+                android:layout_weight="0.8"
+                android:textAllCaps="true"
+                android:gravity="center_vertical" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:layout_width="240dp"
+                android:layout_height="match_parent"
+                android:text="@string/action_button_lets_shot"
+                android:id="@+id/dismissButton"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/selector_action_button_bg"
+                android:textColor="@color/homage_record_button"
+                android:textSize="23dp"
+                android:drawableLeft="@drawable/icon_got_it"
+                android:shadowColor="@color/homage_dark_void_2"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="2" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
