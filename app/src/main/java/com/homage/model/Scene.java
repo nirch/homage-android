@@ -7,6 +7,11 @@ import android.content.Context;
 
 import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
+
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 
 public class Scene extends SugarRecord<Scene> {
@@ -25,6 +30,15 @@ public class Scene extends SugarRecord<Scene> {
     Story story;
     //endregion
 
+    @Ignore
+    static NumberFormat nf;
+
+    static {
+        nf = new DecimalFormat();
+        nf.setMinimumFractionDigits(0);
+        nf.setMaximumFractionDigits(0);
+        nf.setRoundingMode(RoundingMode.HALF_UP);
+    }
 
     //region *** Factories ***
     public Scene(Context context) {
@@ -35,6 +49,15 @@ public class Scene extends SugarRecord<Scene> {
         this(HomageApplication.getContext());
         this.story = story;
         this.sceneID = sceneID;
+    }
+
+    public String getTitle() {
+        return String.format("SCENE %d", sceneID);
+    }
+
+    public String getTimeString() {
+        String secondsRounded = nf.format(duration/1000.0f);
+        return String.format("%s SEC", secondsRounded);
     }
     //endregion
 

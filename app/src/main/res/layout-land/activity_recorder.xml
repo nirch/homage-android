@@ -8,20 +8,20 @@
 
     tools:context=".RecorderActivity">
 
-    <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/silhouette"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        android:src="@drawable/placeholder_preview"
-        android:visibility="invisible" />
-
     <!-- The camera preview container -->
     <FrameLayout android:id="@+id/preview_container"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         />
+
+    <ImageView android:id="@+id/silhouette"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:adjustViewBounds="true"
+        android:alpha="0.85"
+        android:scaleType="fitXY"
+        />
+
     <!-- The "curtains" concealing the camera preview. Allows the camera to be faded in
          or faded out, by setting the alpha on the "curtains" view -->
     <FrameLayout android:id="@+id/recorderCurtains"
@@ -149,7 +149,7 @@
                     style="@style/weightedWidth"
                     android:layout_weight="0.45"
                     >
-                    <TextView
+                    <TextView android:id="@+id/sceneNumber"
                         style="@style/HCenteredText"
                         android:text="@string/placeholder_text_scene_1"
                         />
@@ -170,7 +170,7 @@
                     style="@style/weightedWidth"
                     android:layout_weight="0.45"
                     >
-                    <TextView
+                    <TextView android:id="@+id/sceneTime"
                         style="@style/HCenteredText"
                         android:text="@string/placeholder_text_7_sec"
                         />
@@ -189,6 +189,7 @@
                 >
                 <TextView
                     style="@style/HCenteredText"
+                    android:visibility="invisible"
                     android:text="Use Solid Color Background"
                     android:textColor="@color/homage_impact"
                     />

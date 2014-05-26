@@ -31,6 +31,8 @@ import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.media.camera.CameraManager;
 import com.homage.model.Remake;
+import com.homage.model.Scene;
+import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.views.ActivityHelper;
 
@@ -416,10 +418,9 @@ public class RecorderActivity extends Activity {
             // will select the last scene for this remake instead.
             //
             // TODO: finish implementation
-//            currentSceneID = remake.nextReadyForFirstRetakeSceneID();
-//            if (currentSceneID < 1) currentSceneID = remake.lastSceneID();
-//            updateUIForSceneID(currentSceneID);
-            currentSceneID = 1;
+            currentSceneID = remake.nextReadyForFirstRetakeSceneID();
+            if (currentSceneID < 1) currentSceneID = remake.lastSceneID();
+            updateUIForSceneID(currentSceneID);
 
             // Just started. Show welcome message if user entered for the first time.
             // If not here for the first time, skip.
@@ -437,7 +438,7 @@ public class RecorderActivity extends Activity {
 
         private void sceneMessage()  {
             Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlaySceneMessageDlgActivity.class);
-            myIntent.putExtra("remakeOID",remake.getOID());
+            myIntent.putExtra("remakeOID", remake.getOID());
             myIntent.putExtra("sceneID",currentSceneID);
             RecorderActivity.this.startActivityForResult(myIntent, ACTION_ADVANCE_AND_HANDLE_STATE);
             overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
@@ -471,6 +472,11 @@ public class RecorderActivity extends Activity {
 
     //region *** UI updates ***
     private void updateUIForSceneID(int sceneID) {
+        Story story = remake.getStory();
+        Scene scene = story.findScene(sceneID);
+        aq.id(R.id.silhouette).image(scene.silhouetteURL,false, true);
+        aq.id(R.id.sceneNumber).text(scene.getTitle());
+        aq.id(R.id.sceneTime).text(scene.getTimeString());
 
     }
     //endregion

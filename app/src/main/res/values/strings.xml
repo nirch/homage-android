@@ -12,6 +12,7 @@
 
     <string name="button_shoot_scene">Shoot Scene!</string>
     <string name="title_scene_number">Scene No. %d</string>
+    <string name="short_scene_number">Scene %d</string>
 
     <!-- Titles -->
     <string name="title_great_job">GREAT JOB!</string>
