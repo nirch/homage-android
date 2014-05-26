@@ -104,7 +104,6 @@ public class RecorderActivity extends Activity {
 
         // Remake
         Intent intent = getIntent();
-
         Bundle b = getIntent().getExtras();
         String remakeOID = b.getString("remakeOID");
         remake = Remake.findByOID(remakeOID);
@@ -161,6 +160,10 @@ public class RecorderActivity extends Activity {
 
         // Dismissing the recorder.
         aq.id(R.id.recorderDismissButton).clicked(onClickedRecorderDismissButton);
+
+        // Show scene description info.
+        aq.id(R.id.recorderSceneDescriptionButton).clicked(onClickedSceneDescriptionButton);
+
         //endregion
     }
 
@@ -380,6 +383,7 @@ public class RecorderActivity extends Activity {
             switch (currentState) {
                 case JUST_STARTED: justStarted(); break;
                 case SCENE_MESSAGE: sceneMessage(); break;
+                case MAKING_A_SCENE: break;
                 default:
                     throw new RecorderException(String.format("Unimplemented recorder state %s", currentState));
             }
@@ -388,7 +392,16 @@ public class RecorderActivity extends Activity {
         private void advanceState() throws RecorderException {
             switch (currentState) {
                 case JUST_STARTED:
+                    // User got the "just starting" message.
+                    // Now we can get to business.
+                    // NEXT, we will show a message about the next scene to shoot.
                     currentState = RecorderState.SCENE_MESSAGE;
+                    break;
+                case SCENE_MESSAGE:
+                    // User dismissed the scene message.
+                    // Enter the "making a scene" state.
+                    // (gives the user control of the recorder)
+                    currentState = RecorderState.MAKING_A_SCENE;
                     break;
                 default:
                     throw new RecorderException(String.format("Unimplemented when advancing state %s", currentState));
@@ -411,7 +424,8 @@ public class RecorderActivity extends Activity {
             // Just started. Show welcome message if user entered for the first time.
             // If not here for the first time, skip.
             User user = User.getCurrent();
-            if (user.isFirstUse) {
+            // TODO: remove tautology after demo presentation.
+            if (user.isFirstUse || "tautology".equals("tautology")) {
                 Intent myIntent = new Intent(RecorderActivity.this, RecorderWelcomeActivity.class);
                 RecorderActivity.this.startActivityForResult(myIntent, ACTION_ADVANCE_AND_HANDLE_STATE);
                 overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
@@ -422,7 +436,9 @@ public class RecorderActivity extends Activity {
         }
 
         private void sceneMessage()  {
-            Intent myIntent = new Intent(RecorderActivity.this, RecorderWelcomeActivity.class);
+            Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlaySceneMessageDlgActivity.class);
+            myIntent.putExtra("remakeOID",remake.getOID());
+            myIntent.putExtra("sceneID",currentSceneID);
             RecorderActivity.this.startActivityForResult(myIntent, ACTION_ADVANCE_AND_HANDLE_STATE);
             overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
         }
@@ -477,6 +493,17 @@ public class RecorderActivity extends Activity {
         @Override
         public void onClick(View view) {
             recorderDone();
+        }
+    };
+
+    View.OnClickListener onClickedSceneDescriptionButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlaySceneMessageDlgActivity.class);
+            myIntent.putExtra("remakeOID",remake.getOID());
+            myIntent.putExtra("sceneID",currentSceneID);
+            RecorderActivity.this.startActivityForResult(myIntent, ACTION_DO_NOTHING);
+            overridePendingTransition(R.anim.animation_fadein_with_zoom, R.anim.animation_fadeout_with_zoom);
         }
     };
 

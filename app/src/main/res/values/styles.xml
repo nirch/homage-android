@@ -101,5 +101,18 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="actionButton">
+        <item name="android:layout_width">240dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:background">@drawable/selector_action_button_bg</item>
+        <item name="android:textColor">@color/homage_record_button</item>
+        <item name="android:textSize">23dp</item>
+        <item name="android:shadowColor">@color/homage_dark_void_2</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+
 
 </resources>

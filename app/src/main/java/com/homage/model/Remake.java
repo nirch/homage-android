@@ -82,6 +82,10 @@ public class Remake extends SugarRecord<Remake> {
         if (res.size() > 0) return res.get(0);
         return null;
     }
+
+    public Story getStory() {
+        return Story.findById(Story.class, this.story.getId());
+    }
     //endregion
 
 

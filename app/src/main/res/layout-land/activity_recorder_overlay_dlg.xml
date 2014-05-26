@@ -14,13 +14,12 @@
 
     <!-- An icon at the top -->
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_above="@+id/descriptionContainer"
-        android:layout_width="140dp"
+        android:id="@+id/overlayIcon"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="35dp"
         android:src="@drawable/recorder_icon_trophy"
         android:contentDescription="icon" />
 
@@ -28,9 +27,10 @@
     <RelativeLayout
         android:id="@+id/descriptionContainer"
         android:layout_width="430dp"
-        android:layout_height="160dp"
+        android:layout_height="170dp"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/linearLayout">
+        >
 
         <!-- The title -->
         <TextView
@@ -48,17 +48,21 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+            android:textColor="@color/homage_text"
+            android:gravity="center"
             android:text="@string/placeholder_text"
             android:textAppearance="?android:attr/textAppearanceSmall"
             />
 
-        <Button
+        <Button android:id="@+id/actionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Button"
-            android:id="@+id/dismissButton"
+            android:text="@string/action_button_lets_shot"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            style="@style/actionButton"
+            android:drawableLeft="@drawable/icon_got_it"
+            android:drawablePadding="20dp" />
 
         <!-- main action button for this dialogue -->
 
@@ -66,8 +70,10 @@
     </RelativeLayout>
 
     <!-- More action buttons at the bottom of the screen -->
-    <LinearLayout style="@style/HomageImpactButtonsContainer" android:weightSum="2"
-        android:id="@+id/linearLayout">
+    <LinearLayout android:id="@+id/retakeAndPreviewButtonsContainer"
+        style="@style/HomageImpactButtonsContainer"
+        android:weightSum="2"
+        >
         <Button
             android:id="@+id/button1"
             style="@style/HomageImpactButton"

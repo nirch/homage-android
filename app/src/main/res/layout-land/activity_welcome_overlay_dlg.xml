@@ -101,19 +101,10 @@
             android:layout_weight="1">
 
             <Button
-                android:layout_width="240dp"
-                android:layout_height="match_parent"
                 android:text="@string/action_button_lets_shot"
                 android:id="@+id/dismissButton"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/selector_action_button_bg"
-                android:textColor="@color/homage_record_button"
-                android:textSize="23dp"
                 android:drawableLeft="@drawable/icon_got_it"
-                android:shadowColor="@color/homage_dark_void_2"
-                android:shadowDx="2"
-                android:shadowDy="2"
-                android:shadowRadius="2" />
+                style="@style/actionButton" />
         </LinearLayout>
 
     </LinearLayout>

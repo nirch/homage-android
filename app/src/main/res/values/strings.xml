@@ -3,12 +3,15 @@
     <string name="app_name">Homage</string>
     <string name="test">TEST!</string>
 
-    <!-- Buttons -->
+    <!-- Buttons and overlay messages -->
     <string name="button_retake_last_scene">RETAKE LAST SCENE</string>
     <string name="button_can_i_see_a_preview">CAN I SEE A PREVIEW?</string>
     <string name="button_scene_direction">SCENE DIRECTION</string>
     <string name="button_show_script">SHOW SCRIPT</string>
     <string name="button_hide_script">HIDE SCRIPT</string>
+
+    <string name="button_shoot_scene">Shoot Scene!</string>
+    <string name="title_scene_number">Scene No. %d</string>
 
     <!-- Titles -->
     <string name="title_great_job">GREAT JOB!</string>
@@ -23,6 +26,8 @@
     <string name="welcome_1_message">MAKE SURE THE ACTOR IS IN THE FIGURE BEFORE RECORDING</string>
     <string name="welcome_2">2</string>
     <string name="welcome_2_message">USE A SOLID COLOR WALL AS BACKGROUND</string>
+
+
 
     <!-- Action buttons -->
     <string name="action_button_lets_shot">LETS SHOOT!</string>
