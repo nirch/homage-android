@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/overlayView"
+<RelativeLayout android:id="@+id/welcomeScreenOverlay"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/HomageDarkOverlay"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:background="@android:color/transparent"
+    android:visibility="gone"
+    >
+    <!--
+        This layout is included in  activity_recorder.
+        To see the layout in Android Studio preview, change visibility above.
+        Don't forget to change it back to gone.
+    -->
 
     <ImageView
         android:layout_width="fill_parent"
@@ -12,12 +18,14 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:src="@drawable/tutorial_silhouette"
+        android:alpha="0.9"
         android:scaleType="fitXY" />
 
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/homage_dark_transparent_overlay"></FrameLayout>
+        android:background="@color/homage_dark_transparent_overlay"
+        android:alpha="0.9"></FrameLayout>
 
     <LinearLayout
         android:orientation="vertical"
@@ -102,7 +110,7 @@
 
             <Button
                 android:text="@string/action_button_lets_shot"
-                android:id="@+id/dismissButton"
+                android:id="@+id/welcomeScreenDismissButton"
                 android:drawableLeft="@drawable/icon_got_it"
                 style="@style/actionButton" />
         </LinearLayout>

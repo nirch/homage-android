@@ -10,7 +10,8 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:scaleType="fitXY"
-        android:src="@drawable/glass_dark_semi_transparent" />
+        android:src="@drawable/blurring_glass"
+        android:alpha="0.8" />
 
     <!-- An icon at the top -->
     <ImageView
@@ -75,13 +76,13 @@
         android:weightSum="2"
         >
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/overlayRetakeSceneButton"
             style="@style/HomageImpactButton"
             android:drawableStart="@drawable/icon_small_retake_scene_black"
             android:text="@string/button_retake_last_scene" />
         <View android:layout_width="1dp" android:layout_height="fill_parent" />
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/overlaySeePreviewButton"
             style="@style/HomageImpactButton"
             android:drawableStart="@drawable/icon_small_preview_black"
             android:text="@string/button_can_i_see_a_preview" />

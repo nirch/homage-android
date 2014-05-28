@@ -2,18 +2,18 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo">
-        <!-- Customize your theme here. -->
-        <!--
-        <item name="android:editTextColor">#295055</item>
-        <item name="android:textColorPrimary">#295055</item>
-        <item name="android:textColorSecondary">#295055</item>
-        <item name="android:textColorTertiary">#295055</item>
-        <item name="android:textColorPrimaryInverse">#295055</item>
-        <item name="android:textColorSecondaryInverse">#295055</item>
-        <item name="android:textColorTertiaryInverse">#295055</item>
-        <item name="android:windowBackground">@drawable/custom_background</item>
-        -->
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
     </style>
+
+    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="RobotoButtonStyle" parent="android:Widget.Holo.Button">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
 
     <style name="Theme.Transparent" parent="android:Theme">
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -25,6 +25,25 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="SceneText">
+        <item name="android:textSize">24dp</item>
+        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_gravity">fill</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="SceneTextImpact">
+        <item name="android:textSize">24dp</item>
+        <item name="android:textColor">@color/homage_impact</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_gravity">fill</item>
+        <item name="android:gravity">center</item>
+    </style>
 
 
     <style name="HomageBigTitle">
@@ -114,5 +133,11 @@
         <item name="android:shadowRadius">2</item>
     </style>
 
+    <style name="centeredImage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
 
 </resources>

@@ -51,6 +51,10 @@ public class Scene extends SugarRecord<Scene> {
         this.sceneID = sceneID;
     }
 
+    public int getSceneID() {
+        return sceneID;
+    }
+
     public String getTitle() {
         return String.format("SCENE %d", sceneID);
     }

@@ -52,8 +52,13 @@ public class Story extends SugarRecord<Story> {
     }
 
     public static List<Story> allActiveStories() {
-        String[] args = {"true"};
-        List<Story> res = Story.find(Story.class, "active = ?", args, "order_id", "","");
+        List<Story> res = Story.find(
+                Story.class,            // Entity class
+                "active = ?",           // where clause
+                new String[]{"true"},   // where args
+                "",                     // group by
+                "order_id",             // order by
+                "");                    // limit
         return res;
     }
 
@@ -71,6 +76,28 @@ public class Story extends SugarRecord<Story> {
                 String.valueOf(sceneID));
         if (res.size() > 0) return res.get(0);
         return null;
+    }
+
+    public List<Scene> getScenesOrdered() {
+        List<Scene> res = Scene.find(
+                Scene.class,
+                "story = ?",
+                new String[]{getId().toString()},
+                "",
+                "scene_id",
+                "");
+        return res;
+    }
+
+    public List<Scene> getScenesReversedOrder() {
+        List<Scene> res = Scene.find(
+                Scene.class,
+                "story = ?",
+                new String[]{getId().toString()},
+                "",
+                "scene_id DESC",
+                "");
+        return res;
     }
     //endregion
 

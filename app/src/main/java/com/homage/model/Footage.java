@@ -28,13 +28,27 @@ public class Footage extends SugarRecord<Remake> {
 
     public Remake remake;
 
+    @Ignore
     static public enum Status {
-        OPEN,
-        UPLOADING,
-        PROCESSING,
-        READY
+        OPEN(0),
+        UPLOADING(1),
+        PROCESSING(2),
+        READY(3);
+
+        private final int value;
+        private Status(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
     }
 
+    @Ignore
+    public final static int NOT_FOUND = -1;
+
+    @Ignore
     static public enum ReadyState {
         READY_FOR_FIRST_RETAKE,
         READY_FOR_SECOND_RETAKE,

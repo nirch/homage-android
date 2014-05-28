@@ -9,6 +9,8 @@ import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -91,13 +93,58 @@ public class Remake extends SugarRecord<Remake> {
 
     //region *** Logic ***
     public int nextReadyForFirstRetakeSceneID() {
-        // TODO: implement
-        return 1;
+        List<Footage.ReadyState> readyStates = footagesReadyStates();
+        for (int i=0;i<readyStates.size();i++) {
+            Footage.ReadyState state = readyStates.get(i);
+            if (state == Footage.ReadyState.READY_FOR_FIRST_RETAKE) {
+                Scene scene = getStory().getScenesOrdered().get(i);
+                return scene.sceneID;
+            }
+        }
+        return Footage.NOT_FOUND;
     }
 
     public int lastSceneID() {
         // TODO: implement
         return 1;
     }
-    //endregion
+
+    public List<Footage> getFootagesOrdered() {
+        List<Footage> res = Footage.find(
+                Footage.class,
+                "remake = ?",
+                new String[]{getId().toString()},
+                "",
+                "scene_id",
+                "");
+        return res;
+    }
+
+    public List<Footage.ReadyState> footagesReadyStates() {
+        List<Footage.ReadyState> states = new ArrayList<Footage.ReadyState>();
+        Footage.ReadyState readyState = Footage.ReadyState.READY_FOR_FIRST_RETAKE;
+        List<Footage> footages = getFootagesOrdered();
+        for (Footage footage : footages) {
+            if (footage.rawLocalFile == null && footage.status == Footage.Status.OPEN.getValue()) {
+                states.add(readyState);
+                readyState = Footage.ReadyState.STILL_LOCKED;
+            } else {
+                states.add(Footage.ReadyState.READY_FOR_SECOND_RETAKE);
+            }
+        }
+        return states;
+    }
+
+    public List<Footage.ReadyState> footagesReadyStatesReversedOrder() {
+        List<Footage.ReadyState> states = footagesReadyStates();
+        Collections.reverse(states);
+        return states;
+    }
+
+    public boolean allScenesTaken() {
+        int nextReadySceneID = nextReadyForFirstRetakeSceneID();
+        if (nextReadySceneID == Footage.NOT_FOUND) return true;
+        return false;
+    }
+     //endregion
 }

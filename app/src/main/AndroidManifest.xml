@@ -31,7 +31,7 @@
         <!-- Sugar ORM settings -->
         <!-- (A spoon full of Sugar, makes a database go down?) -->
         <meta-data android:name="DATABASE" android:value="Homage.db" />
-        <meta-data android:name="VERSION" android:value="203" />
+        <meta-data android:name="VERSION" android:value="204" />
         <meta-data android:name="QUERY_LOG" android:value="false" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.homage.model" />
 
@@ -100,17 +100,18 @@
         </activity>
 
         <activity
-            android:name=".recorder.RecorderWelcomeActivity"
+            android:name=".recorder.RecorderOverlaySceneMessageDlgActivity"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/Theme.Transparent"
             >
         </activity>
 
         <activity
-            android:name=".recorder.RecorderOverlaySceneMessageDlgActivity"
+            android:name=".recorder.RecorderOverlayFinishedSceneMessageDlgActivity"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/Theme.Transparent"
             >
+
         </activity>
 
     </application>

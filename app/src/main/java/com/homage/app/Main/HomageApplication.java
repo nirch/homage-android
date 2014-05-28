@@ -44,6 +44,9 @@ public class HomageApplication extends SugarApp {
         // DEBUG user
         User.logoutAllUsers();
         HomageServer.sh().loginUser("android@test.com","123456");
+
+
+
     }
 
     protected void initSingletons() {

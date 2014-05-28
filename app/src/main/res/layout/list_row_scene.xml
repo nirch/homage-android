@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:weightSum="1"
+        >
+
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/sceneIndicatorInList"
+            android:layout_weight="0.1"
+            android:src="@drawable/icon_row_indicator" />
+
+        <TextView android:id="@+id/sceneNumberInList"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:text="SCENE 1"
+
+            android:gravity="center"
+            android:layout_weight="0.3"
+            style="@style/SceneText" />
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.6"
+            >
+
+            <ImageView android:id="@+id/sceneIconLockedInList"
+                style="@style/centeredImage"
+                android:src="@drawable/icon_scene_locked"
+                android:visibility="invisible"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+
+            <ImageButton android:id="@+id/sceneRetakeButton"
+                style="@style/centeredImage"
+                android:background="@android:color/transparent"
+                android:src="@drawable/icon_scene_retake"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent" />
+
+            <TextView
+                style="@style/SceneText"
+                android:id="@+id/sceneTimeInList"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="5 SEC"
+                android:gravity="center"
+                />
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+</RelativeLayout>

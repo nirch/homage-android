@@ -14,20 +14,29 @@
         android:layout_height="fill_parent"
         />
 
-    <ImageView android:id="@+id/silhouette"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:adjustViewBounds="true"
-        android:alpha="0.85"
-        android:scaleType="fitXY"
-        />
-
     <!-- The "curtains" concealing the camera preview. Allows the camera to be faded in
-         or faded out, by setting the alpha on the "curtains" view -->
+     or faded out, by setting the alpha on the "curtains" view -->
     <FrameLayout android:id="@+id/recorderCurtains"
         android:background="@drawable/dark_void_gradient"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
+
+    <ImageView android:id="@+id/silhouette"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:adjustViewBounds="true"
+        android:background="@android:color/transparent"
+        android:alpha="0.85"
+        android:scaleType="fitXY"
+        />
+
+    <ProgressBar android:id="@+id/recordingProgressBar"
+        android:layout_width="fill_parent"
+        android:layout_height="20dp"
+        android:visibility="gone"
+        android:layout_alignParentTop="true"
+        style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"
+        android:background="@drawable/homage_progress_bar" />
 
 
     <!--
@@ -77,6 +86,14 @@
                 android:orientation="vertical"
                 android:layout_weight="1"
                 >
+
+                <ListView android:id="@+id/scenesListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:divider="@null"
+                    android:dividerHeight="3dp" />
+
             </LinearLayout>
 
             <View
@@ -150,7 +167,7 @@
                     android:layout_weight="0.45"
                     >
                     <TextView android:id="@+id/sceneNumber"
-                        style="@style/HCenteredText"
+                        style="@style/SceneText"
                         android:text="@string/placeholder_text_scene_1"
                         />
                 </LinearLayout>
@@ -171,7 +188,7 @@
                     android:layout_weight="0.45"
                     >
                     <TextView android:id="@+id/sceneTime"
-                        style="@style/HCenteredText"
+                        style="@style/SceneText"
                         android:text="@string/placeholder_text_7_sec"
                         />
                 </LinearLayout>
@@ -220,6 +237,19 @@
             android:layout_centerHorizontal="true"
             />
 
+        <!-- Label for counting down on the recording button -->
+        <TextView android:id="@+id/recorderCountDownText"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="3"
+            android:visibility="gone"
+            android:clickable="false"
+            android:textSize="45dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            />
+
     </RelativeLayout>
 
 
@@ -237,22 +267,36 @@
             *                     *
             ***********************
     -->
-    <ImageButton android:id="@+id/recorderDismissButton"
+    <ImageButton android:id="@+id/recorderOverlayDismissButton"
         style="@style/HomageRecorderOnTopButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:src="@drawable/icon_close" />
 
-    <ImageButton android:id="@+id/recorderSceneDescriptionButton"
+    <ImageButton android:id="@+id/recorderOverlaySceneDescriptionButton"
         style="@style/HomageRecorderOnTopButton"
-        android:layout_alignTop="@+id/recorderDismissButton"
+        android:layout_alignTop="@+id/recorderOverlayDismissButton"
         android:layout_marginTop="55dp"
         android:src="@drawable/icon_scene_description_bw" />
 
-    <ImageButton android:id="@+id/recorderFlipCameraButton"
+    <ImageButton android:id="@+id/recorderOverlayFlipCameraButton"
         style="@style/HomageRecorderOnTopButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:src="@drawable/icon_camera_flip" />
+
+
+
+
+    <!--
+        *****************************
+
+            Welcome screen overlay
+
+        *****************************
+    -->
+    <include android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        layout="@layout/included_welcome_overlay_dlg"/>
 
 </RelativeLayout>

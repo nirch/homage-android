@@ -19,4 +19,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/storiesListView" />
 
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/loadingStoriesProgress"
+        android:layout_alignRight="@+id/loadingStoriesProgress"
+        android:layout_alignEnd="@+id/loadingStoriesProgress"
+        android:layout_marginTop="55dp"></FrameLayout>
+
 </RelativeLayout>

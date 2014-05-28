@@ -89,6 +89,7 @@ public class StoriesActivity extends Activity {
             Story story = (Story)getItem(i);
             AQuery aq = new AQuery(rowView);
             aq.id(R.id.storyName).text(story.name);
+            aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
             return rowView;
         }
 

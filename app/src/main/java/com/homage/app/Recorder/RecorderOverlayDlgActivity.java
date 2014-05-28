@@ -14,6 +14,22 @@ public class RecorderOverlayDlgActivity extends Activity {
 
     protected AQuery aq;
 
+    static public enum ResultCode {
+        NOP(0),
+        NEXT_SCENE(1),
+        RETAKE_SCENE(2),
+        ERROR(666);
+
+        private final int value;
+        private ResultCode(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

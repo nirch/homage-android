@@ -131,6 +131,7 @@ public class CameraManager {
         recCamera = CameraHelper.getDefaultCameraInstance();
         CameraPreview cameraPreview = new CameraPreview(context, recCamera);
         previewContainer.addView(cameraPreview);
+
     }
 
     /** Camera preview class */
@@ -190,5 +191,9 @@ public class CameraManager {
                 Log.d(TAG, "Error starting camera preview: " + e.getMessage());
             }
         }
+    }
+
+    public void startRecording() {
+        // TODO: implement start recording to local file.
     }
 }
