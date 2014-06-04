@@ -14,6 +14,7 @@
 package com.homage.app.main;
 
 import android.content.Context;
+import android.graphics.Camera;
 import android.util.Log;
 
 import com.homage.media.camera.CameraManager;
@@ -92,8 +93,8 @@ public class HomageApplication extends SugarApp {
                 Log.e(TAG, String.format("App crashed. %s %s %d", ex.getMessage(), element.getClassName(), element.getLineNumber()));
             } catch(Exception uex) {}
 
-            // TODO: release camera here.
-
+            CameraManager.sh().releaseMediaRecorder();
+            CameraManager.sh().releaseCamera();
             mDefaultHandler.uncaughtException(thread, ex);
         }
 

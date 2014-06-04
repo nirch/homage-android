@@ -102,6 +102,7 @@ public class RecorderActivity extends Activity {
     protected List<Scene> scenes;
     protected List<Footage.ReadyState> footagesReadyStates;
     protected int currentSceneID;
+    protected String outputFile;
 
     // Actions & State
     private boolean isRecording;
@@ -293,9 +294,6 @@ public class RecorderActivity extends Activity {
 
                 // After initialized, fade in the camera by fading out the "curtains" slowly
                 hideCurtainsAnimated(true);
-//                Animation removeCurtainsAnim = AnimationUtils.loadAnimation(RecorderActivity.this, R.anim.animation_fadeout);
-//                removeCurtainsAnim.setDuration(2500);
-//                aq.id(R.id.recorderCurtains).animate(removeCurtainsAnim);
             }
         }, 500);
     }
@@ -536,6 +534,7 @@ public class RecorderActivity extends Activity {
 
     private void controlsDrawerClosed() {
         if (recordButton.isClickable()) return;
+
         recordButton.startAnimation(fadeInAnimation);
         recordButton.setClickable(true);
         recorderFullDetailsContainer.startAnimation(fadeOutAnimation);
@@ -551,6 +550,7 @@ public class RecorderActivity extends Activity {
 
     private void controlsDrawerOpened() {
         if (!recordButton.isClickable()) return;
+
         recordButton.startAnimation(fadeOutAnimation);
         recordButton.setVisibility(View.GONE);
         recordButton.setClickable(false);
@@ -797,6 +797,16 @@ public class RecorderActivity extends Activity {
         // Start recording
         isRecording = true;
 
+        outputFile = CameraManager.sh().startRecording();
+        if (outputFile == null) {
+            Toast.makeText(
+                    RecorderActivity.this,
+                    "Failed to start recording.",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.d(TAG, String.format("Started recording to local file: %s", outputFile));
 
         // Update UI
         hideControlsDrawer(false);
@@ -817,6 +827,7 @@ public class RecorderActivity extends Activity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
+                CameraManager.sh().stopRecording();
                 returnFromRecordingUI();
                 checkFinishedRecording();
             }
@@ -829,7 +840,6 @@ public class RecorderActivity extends Activity {
     }
 
     private void checkFinishedRecording() {
-        // Currently just assumes recording success.
         try {
             // TODO: implement listener that really checks that the recording saved successfully.
             isRecording = false;
@@ -876,7 +886,6 @@ public class RecorderActivity extends Activity {
         aq.id(R.id.silhouette).image(scene.silhouetteURL,false, true);
         aq.id(R.id.sceneNumber).text(scene.getTitle());
         aq.id(R.id.sceneTime).text(scene.getTimeString());
-
     }
 
     private void hideOverlayButtons(boolean animated) {

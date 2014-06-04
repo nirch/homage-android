@@ -28,6 +28,7 @@ package com.homage.media.camera;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.util.Log;
 import android.view.Surface;
@@ -36,19 +37,16 @@ import android.view.SurfaceView;
 import android.widget.FrameLayout;
 
 import java.io.IOException;
+import java.util.List;
 
 public class CameraManager {
     String TAG = "TAG_"+getClass().getName();
 
-    private int recordingWidth;
-    private int recordingHeight;
-    private int previewWidth;
-    private int previewHeight;
+    final int defaultWidth = 640;
+    final int defaultHeight = 480;
 
     public CameraPreview cameraPreview;
-
-    Camera.Size optimalSizeForPreview;
-    Camera.Size optimalSizeForRecording;
+    Camera.Size recSize;
 
     //region *** singleton pattern ***
     private boolean alreadyInitialized;
@@ -62,29 +60,27 @@ public class CameraManager {
     }
     //endregion
 
-    public static CameraManager initializeInstance(int width, int height) {
-        assert false;
-        return instance;
-    }
-
     public void releaseMediaRecorder(){
-        if (recMediaRecorder != null) {
+        if (mediaRecorder != null) {
             // clear recorder configuration
-            recMediaRecorder.reset();
+            mediaRecorder.reset();
             // release the recorder object
-            recMediaRecorder.release();
-            recMediaRecorder = null;
+            mediaRecorder.release();
+            mediaRecorder = null;
             // Lock camera for later use i.e taking it back from MediaRecorder.
             // MediaRecorder doesn't need it anymore and we will release it.
-            recCamera.lock();
+        }
+
+        if (camera != null) {
+            camera.lock();
         }
     }
 
     public void releaseCamera(){
-        if (recCamera != null){
+        if (camera != null){
             // release the camera for other applications
-            recCamera.release();
-            recCamera = null;
+            camera.release();
+            camera = null;
         }
     }
 
@@ -98,21 +94,18 @@ public class CameraManager {
         if (alreadyInitialized)
             throw new AssertionError("Tried to initialize CameraManager more than once.");
 
-        this.recordingWidth = recordingWidth;
-        this.recordingHeight = recordingHeight;
-        this.previewWidth = previewWidth;
-        this.previewHeight = previewHeight;
-
-        Log.d(TAG, String.format(
-                "Initialized camera manager. Requested size for preview: %d,%d",
-                previewWidth,
-                previewHeight));
+        camera = CameraHelper.getDefaultCameraInstance();
+        Camera.Parameters parameters = camera.getParameters();
+        List<Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
+        recSize = CameraHelper.getOptimalPreviewSize(
+                supportedPreviewSizes,
+                defaultWidth,
+                defaultHeight);
 
         Log.d(TAG, String.format(
                 "Initialized camera manager. Requested size for recording: %d,%d",
-                recordingWidth,
-                recordingHeight));
-
+                recSize.width,
+                recSize.height));
 
         alreadyInitialized = true;
     }
@@ -125,13 +118,13 @@ public class CameraManager {
 
     public CameraPreview preview;
 
-    private Camera recCamera;
-    private MediaRecorder recMediaRecorder;
+    private Camera camera;
+    private MediaRecorder mediaRecorder;
     private boolean isRecording = false;
 
     public void startCameraPreviewInView(Context context, FrameLayout previewContainer) {
-        recCamera = CameraHelper.getDefaultCameraInstance();
-        CameraPreview cameraPreview = new CameraPreview(context, recCamera);
+        if (camera == null) camera = CameraHelper.getDefaultCameraInstance();
+        CameraPreview cameraPreview = new CameraPreview(context, camera);
         cameraPreview.setZOrderOnTop(false);
         previewContainer.addView(cameraPreview);
         preview = cameraPreview;
@@ -204,7 +197,47 @@ public class CameraManager {
         }
     }
 
-    public void startRecording() {
-        // TODO: implement start recording to local file.
+    public String startRecording() {
+        CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+        profile.videoFrameWidth = recSize.width;
+        profile.videoFrameHeight = recSize.height;
+
+        camera.unlock();
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setCamera(camera);
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+        mediaRecorder.setVideoSource(MediaRecorder.AudioSource.DEFAULT);
+        mediaRecorder.setProfile(profile);
+
+        String outputFile = CameraHelper.getOutputMediaFile(CameraHelper.MEDIA_TYPE_VIDEO).toString();
+        mediaRecorder.setOutputFile(outputFile);
+
+        // Prepare configured MediaRecorder
+        try {
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+        } catch (IllegalStateException e) {
+            Log.d(TAG, "IllegalStateException preparing MediaRecorder: " + e.getMessage());
+            releaseMediaRecorder();
+            return null;
+        } catch (IOException e) {
+            Log.d(TAG, "IOException preparing MediaRecorder: " + e.getMessage());
+            releaseMediaRecorder();
+            return null;
+        }
+        return outputFile;
+    }
+
+    public void stopRecording() {
+        if (mediaRecorder != null) {
+            try {
+                mediaRecorder.stop();
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "IllegalStateException stopping MediaRecorder", e);
+            }
+            releaseMediaRecorder();
+            camera.lock();
+            isRecording = false;
+        }
     }
 }
