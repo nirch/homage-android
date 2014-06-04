@@ -14,7 +14,6 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
-
     <style name="Theme.Transparent" parent="android:Theme">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
@@ -45,13 +44,23 @@
         <item name="android:gravity">center</item>
     </style>
 
-
     <style name="HomageBigTitle">
         <item name="android:textSize">34dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/homage_text</item>
-        <item name="android:typeface">monospace</item>
+    </style>
+
+    <style name="HomageSmallVideoTitleImpact">
+        <item name="android:textSize">25dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/homage_impact</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowColor">@color/homage_dark_void_2</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">2</item>
     </style>
 
     <style name="HomageDarkOverlay">
@@ -109,6 +118,7 @@
         <item name="android:background">#DD111111</item>
         <item name="android:gravity">center</item>
     </style>
+
     <style name="GenericProgressIndicator" parent="@android:style/Widget.ProgressBar.Small">
         <item name="android:indeterminate">true</item>
     </style>

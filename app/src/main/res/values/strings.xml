@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Homage</string>
     <string name="test">TEST!</string>
+    <string name="placeholder_title">PLACE HOLDER!</string>
 
     <!-- Buttons and overlay messages -->
     <string name="button_retake_last_scene">RETAKE LAST SCENE</string>
@@ -16,7 +17,15 @@
     <string name="at_the_next_scene_text">At the next scene %s</string>
     <string name="title_great_job">GREAT JOB!</string>
 
-    <!-- Titles -->
+    <!-- Videos -->
+    <string name="video_title_scene">WATCH OUR SCENE</string>
+    <string name="video_title_story">WATCH OUR STORY</string>
+
+    <!-- Dialogues -->
+    <string name="recorder_dismiss_title">Leave recorder</string>
+    <string name="recorder_dismiss_message">This will close the recorder.\nAre you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <!-- Progress dialogues -->
     <string name="pd_title_please_wait">Pleases wait.</string>

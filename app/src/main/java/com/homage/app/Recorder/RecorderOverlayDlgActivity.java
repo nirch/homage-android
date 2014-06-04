@@ -18,6 +18,7 @@ public class RecorderOverlayDlgActivity extends Activity {
         NOP(0),
         NEXT_SCENE(1),
         RETAKE_SCENE(2),
+        MOVIE_MARKED_BY_USER_FOR_CREATION(10),
         ERROR(666);
 
         private final int value;

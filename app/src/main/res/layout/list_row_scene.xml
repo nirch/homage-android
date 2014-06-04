@@ -42,7 +42,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
 
-            <ImageButton android:id="@+id/sceneRetakeButton"
+            <ImageView android:id="@+id/sceneRetakeButton"
                 style="@style/centeredImage"
                 android:background="@android:color/transparent"
                 android:src="@drawable/icon_scene_retake"

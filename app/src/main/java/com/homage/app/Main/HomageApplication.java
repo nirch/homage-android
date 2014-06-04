@@ -21,8 +21,22 @@ import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
 import com.orm.SugarApp;
 
+import java.util.logging.Logger;
+
 
 public class HomageApplication extends SugarApp {
+    public class A {
+        public void whoAmI() {
+            Log.d("Example", getClass().toString());
+        }
+
+    }
+
+    public class B extends A {
+
+    }
+
+
     private static Context instance;
     String TAG = "TAG_" + getClass().getName();
 
@@ -44,9 +58,6 @@ public class HomageApplication extends SugarApp {
         // DEBUG user
         User.logoutAllUsers();
         HomageServer.sh().loginUser("android@test.com","123456");
-
-
-
     }
 
     protected void initSingletons() {

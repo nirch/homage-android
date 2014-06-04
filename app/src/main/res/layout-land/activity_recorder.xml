@@ -110,22 +110,22 @@
                 android:clickable="false"
                 >
 
-                <!--
-                <HorizontalScrollView android:id="@+id/videosScrollView"
+                <!-- A container of video players -->
+                <FrameLayout
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:layout_gravity="center_horizontal"
                     android:layout_marginBottom="60dp"
-                    android:clickable="false"
                     >
-                    <VideoView android:id="@+id/videoView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        />
-                </HorizontalScrollView>
-                -->
 
-                <!-- More action buttons at the bottom of the screen -->
+                    <android.support.v4.view.ViewPager
+                        android:id="@+id/videosPager"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        >
+                    </android.support.v4.view.ViewPager>
+                </FrameLayout>
+
+                <!-- More action buttons at the bottom of the screen, under the videos -->
                 <LinearLayout style="@style/HomageImpactButtonsContainer" android:weightSum="2"
                     android:id="@+id/linearLayout">
                     <Button
@@ -148,7 +148,7 @@
         </LinearLayout>
 
         <!-- Short details container.
-    Shown when the drawer is closed. -->
+             Shown when the drawer is closed. -->
         <LinearLayout android:id="@+id/recorderShortDetailsContainer"
             android:orientation="horizontal"
             android:layout_width="fill_parent"
@@ -238,20 +238,26 @@
             />
 
         <!-- Label for counting down on the recording button -->
+        <com.homage.views.Pacman android:id="@+id/pacman"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            />
+
         <TextView android:id="@+id/recorderCountDownText"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="3"
-            android:visibility="gone"
+            android:visibility="invisible"
             android:clickable="false"
             android:textSize="45dp"
             android:layout_centerHorizontal="true"
             android:gravity="center"
             />
 
-    </RelativeLayout>
 
+    </RelativeLayout>
 
     <!--
          Buttons overlaying the recorder.
@@ -286,8 +292,6 @@
         android:src="@drawable/icon_camera_flip" />
 
 
-
-
     <!--
         *****************************
 
@@ -298,5 +302,6 @@
     <include android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         layout="@layout/included_welcome_overlay_dlg"/>
+
 
 </RelativeLayout>

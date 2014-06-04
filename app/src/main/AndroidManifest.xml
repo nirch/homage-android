@@ -111,7 +111,13 @@
             android:screenOrientation="sensorLandscape"
             android:theme="@style/Theme.Transparent"
             >
+        </activity>
 
+        <activity
+            android:name=".recorder.RecorderOverlayFinishedAllSceneMessageDlgActivity"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/Theme.Transparent"
+            >
         </activity>
 
     </application>

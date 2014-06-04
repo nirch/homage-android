@@ -30,6 +30,7 @@ import android.content.Context;
 import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.util.Log;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.FrameLayout;
@@ -122,20 +123,22 @@ public class CameraManager {
     }
     //endregion
 
+    public CameraPreview preview;
+
     private Camera recCamera;
     private MediaRecorder recMediaRecorder;
     private boolean isRecording = false;
-    private CameraPreview recPreview;
 
     public void startCameraPreviewInView(Context context, FrameLayout previewContainer) {
         recCamera = CameraHelper.getDefaultCameraInstance();
         CameraPreview cameraPreview = new CameraPreview(context, recCamera);
+        cameraPreview.setZOrderOnTop(false);
         previewContainer.addView(cameraPreview);
-
+        preview = cameraPreview;
     }
 
     /** Camera preview class */
-    private class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
         private SurfaceHolder mHolder;
         private Camera mCamera;
 
@@ -157,6 +160,14 @@ public class CameraManager {
             } catch (IOException e) {
                 Log.d(TAG, "Error setting camera preview: " + e.getMessage());
             }
+        }
+
+        public void hide() {
+            this.setVisibility(CameraPreview.INVISIBLE);
+        }
+
+        public void show() {
+            this.setVisibility(CameraPreview.VISIBLE);
         }
 
         public void surfaceDestroyed(SurfaceHolder holder) {

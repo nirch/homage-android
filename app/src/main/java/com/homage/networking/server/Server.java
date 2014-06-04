@@ -30,6 +30,8 @@ package com.homage.networking.server;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -49,10 +51,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,8 +71,6 @@ abstract public class Server {
     public static String SR_SUCCESS = "success";
     public static String SR_REQUEST_INFO = "request info";
     public static String SR_RESPONSE_INFO = "response info";
-
-
 
     private boolean isProductionServer;
     private String host;
@@ -101,6 +104,29 @@ abstract public class Server {
         client = new DefaultHttpClient();
     }
     //endregion
+
+//    private boolean IsReachable(Context context) {
+//        // First, check we have any sort of connectivity
+//        final ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//        final NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
+//        boolean isReachable = false;
+//
+//        if (netInfo != null && netInfo.isConnected()) {
+//            // Some sort of connection is open, check if server is reachable
+//            try {
+//                URL url = new URL("http://www.google.com");
+//                HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
+//                urlc.setRequestProperty("User-Agent", "Android Application");
+//                urlc.setRequestProperty("Connection", "close");
+//                urlc.setConnectTimeout(30 * 1000);
+//                urlc.connect();
+//                isReachable = (urlc.getResponseCode() == 200);
+//            } catch (IOException e) {
+//                Log.e(TAG, e.getMessage());
+//            }
+//        }
+//        return isReachable;
+//    }
 
     public void initURLSCache(ArrayList<Integer> urlIDs) {
         Resources res = context.getResources();

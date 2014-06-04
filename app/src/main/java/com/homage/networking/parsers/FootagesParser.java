@@ -29,15 +29,11 @@ public class FootagesParser extends Parser {
     }
 
     public void parseFootage(JSONObject footageInfo) throws JSONException {
-        Log.d(TAG, String.format("FOOT >>> %s", footageInfo));
-
         int sceneId = footageInfo.getInt("scene_id");
         Footage footage = remake.findFootageOrCreate(sceneId);
-
         footage.processedVideoS3Key =       footageInfo.getString("processed_video_s3_key");
         footage.rawVideoS3Key =             footageInfo.getString("raw_video_s3_key");
         footage.status =                    footageInfo.getInt("status");
-
         footage.save();
     }
 }

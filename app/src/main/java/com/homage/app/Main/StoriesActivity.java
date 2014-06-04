@@ -100,7 +100,7 @@ public class StoriesActivity extends Activity {
 
     };
 
-    //region *** ACTIVITY LIFECYCLE ***
+    //region *** Activity lifecycle ***
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,9 +125,6 @@ public class StoriesActivity extends Activity {
         storiesListView.setAdapter(adapter);
 
         // Refetch the stories in the background.
-//        long timePassedSinceUpdatedStories = User.getCurrent().timePassedSinceUpdatedStories();
-//        Log.v(TAG, String.format("Time passed since previous stories update: %d", timePassedSinceUpdatedStories));
-//        if (timePassedSinceUpdatedStories > 600)
         // TODO: implement cache expiration per user
         if (!createdOnce) {
             HomageServer.sh().refetchStories();
@@ -153,7 +150,7 @@ public class StoriesActivity extends Activity {
     }
     //endregion
 
-
+    //region *** Observers ***
     private void initObservers() {
         LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
         lbm.registerReceiver(onStoriesUpdated, new IntentFilter(HomageServer.INTENT_STORIES));
@@ -194,12 +191,13 @@ public class StoriesActivity extends Activity {
                 b.putString("remakeOID", remakeOID);
                 myIntent.putExtras(b);
                 StoriesActivity.this.startActivity(myIntent);
-                overridePendingTransition(0, 0);
+                //overridePendingTransition(0, 0);
             }
         }
     };
+    //endregion
 
-    // Remakes
+    //region *** Remakes ***
     private void remakeStoryAtIndex(int index) {
         Resources res = getResources();
         User user = User.getCurrent();
@@ -218,10 +216,8 @@ public class StoriesActivity extends Activity {
             HomageServer.sh().createRemake(story.getOID(), user.getOID());
             return;
         }
-
-        //Story story = stories.get(index);
-        //HomageServer.sh().createRemake(story.getOID(), User.current().getOID());
     }
+    //endregion
 
     //region *** UI event handlers ***
     // -------------------
