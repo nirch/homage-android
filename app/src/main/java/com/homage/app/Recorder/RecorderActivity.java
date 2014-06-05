@@ -21,6 +21,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
@@ -94,6 +95,7 @@ public class RecorderActivity extends Activity {
     private View recorderFullDetailsContainer;
     private View recorderShortDetailsContainer;
     private ListView scenesListView;
+    private ViewPager videosPager;
     private RecorderVideosPagerAdapter videosAdapter;
 
     // Remake info
@@ -143,6 +145,8 @@ public class RecorderActivity extends Activity {
     private boolean viewsInitialized;
     private FrameLayout recPreviewContainer;
 
+    // Media
+    MediaPlayer mp;
 
     // Error handling
     public class RecorderException extends Exception {
@@ -167,6 +171,9 @@ public class RecorderActivity extends Activity {
         story = remake.getStory();
         isRecording = false;
 
+        // Prepare sound
+        mp = MediaPlayer.create(getApplicationContext() , R.raw.cinema_countdown);
+
         //region *** Layout initializations ***
         Log.d(TAG, String.format("Started the recorder for remake:", remake.getOID()));
 
@@ -185,6 +192,7 @@ public class RecorderActivity extends Activity {
         scenesListView = aq.id(R.id.scenesListView).getListView();
         fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.animation_fadein);
         fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.animation_fadeout);
+        videosPager = (ViewPager)aq.id(R.id.videosPager).getView();
         hideControlsDrawer(false);
         scenesListView.setVisibility(View.GONE);
         //endregion
@@ -541,6 +549,7 @@ public class RecorderActivity extends Activity {
         recorderShortDetailsContainer.startAnimation(fadeInAnimation);
         recorderFullDetailsContainer.setVisibility(View.GONE);
         scenesListView.setVisibility(View.GONE);
+        videosPager.setVisibility(View.GONE);
 
         CameraManager cm = CameraManager.sh();
         cm.preview.show();
@@ -559,6 +568,7 @@ public class RecorderActivity extends Activity {
         recorderShortDetailsContainer.startAnimation(fadeOutAnimation);
         recorderFullDetailsContainer.setVisibility(View.VISIBLE);
         scenesListView.setVisibility(View.VISIBLE);
+        videosPager.setVisibility(View.VISIBLE);
 
         CameraManager cm = CameraManager.sh();
         cm.preview.hide();
@@ -736,6 +746,9 @@ public class RecorderActivity extends Activity {
 
     private void startCountingDownToRecording() {
         if (isCountingDownToRecording()) return;
+
+
+        // Countdown
         hideOverlayButtons(false);
         canceledCountDown = false;
         countDown = countDownFrom;
@@ -766,8 +779,22 @@ public class RecorderActivity extends Activity {
         aq.id(R.id.recorderCountDownText).visibility(View.VISIBLE);
         aq.id(R.id.recorderCountDownText).text(String.format("%d", countDown));
         Pacman pacman = (Pacman)aq.id(R.id.pacman).getView();
-        pacman.setVisibility(View.VISIBLE);
-        pacman.startOneSecondAnimation();
+
+        switch (countDown) {
+            case 3:
+                pacman.setVisibility(View.VISIBLE);
+                pacman.mCurrAngle = 360;
+                pacman.invalidate();
+                break;
+
+            case 2:
+                mp.start();
+                pacman.startOneSecondAnimation();
+                break;
+
+            default:
+                pacman.startOneSecondAnimation();
+        }
     }
 
     public class ProgressBarAnimation extends Animation{
@@ -886,6 +913,10 @@ public class RecorderActivity extends Activity {
         aq.id(R.id.silhouette).image(scene.silhouetteURL,false, true);
         aq.id(R.id.sceneNumber).text(scene.getTitle());
         aq.id(R.id.sceneTime).text(scene.getTimeString());
+        if (videosAdapter != null) {
+            videosAdapter.sceneID = sceneID;
+            videosAdapter.notifyDataSetChanged();
+        }
     }
 
     private void hideOverlayButtons(boolean animated) {
@@ -921,7 +952,7 @@ public class RecorderActivity extends Activity {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             Footage.ReadyState readyState = footagesReadyStates.get(i);
             Scene scene = scenes.get(i);
-            if (readyState == Footage.ReadyState.STILL_LOCKED) {
+            if (readyState == Footage.ReadyState.STILL_LOCKED && 1==2) {
                 Toast.makeText(
                         RecorderActivity.this,
                         "Scene locked.\nFinish with previous scenes first.",

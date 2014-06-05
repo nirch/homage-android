@@ -17,7 +17,7 @@ import com.homage.app.R;
 public class Pacman extends View {
     private String TAG = "TAG_"+getClass().getName();
 
-    float mCurrAngle = 0;
+    public float mCurrAngle = 0;
     float mSweepAngle = 0;
 
     public Pacman(Context context, AttributeSet attrs, int defStyle)
@@ -25,7 +25,6 @@ public class Pacman extends View {
         super(context, attrs, defStyle);
         init();
     }
-
 
     public Pacman(Context context, AttributeSet attrs)
     {

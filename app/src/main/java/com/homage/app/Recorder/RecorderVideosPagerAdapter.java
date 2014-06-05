@@ -48,12 +48,18 @@ public class RecorderVideosPagerAdapter
 
     private void updateScene() {
         this.scene = story.findScene(sceneID);
+        if (videoSceneContainer != null) {
+            AQuery aq = new AQuery(videoSceneContainer);
+            VideoView videoView = (VideoView)aq.id(R.id.videoView).getView();
+            videoView.setVideoURI(Uri.parse(scene.videoURL));
+            aq.id(R.id.videoThumbnailImage).image(scene.thumbnailURL, true, true, 200, R.drawable.glass_dark);
+        }
     }
 
     @Override
     public void notifyDataSetChanged() {
-        super.notifyDataSetChanged();
         updateScene();
+        super.notifyDataSetChanged();
     }
 
     @Override
@@ -157,13 +163,13 @@ public class RecorderVideosPagerAdapter
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i2) {
-        Log.d(TAG, String.format("Video error: %s %d %d", mediaPlayer.getTrackInfo().toString(), i, i2));
-        Toast.makeText(context, "Error with video", Toast.LENGTH_SHORT).show();
-        return false;
+        Toast.makeText(context, String.format("Error with video %d %d", i, i2), Toast.LENGTH_SHORT).show();
+        return true;
     }
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
+        Toast.makeText(context, String.format("Video prepared %s", mediaPlayer.getTrackInfo().toString()), Toast.LENGTH_SHORT).show();
         Log.d(TAG, String.format("Video is prepared for playing: %s", mediaPlayer.getTrackInfo().toString()));
     }
     //endregion
