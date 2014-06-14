@@ -50,7 +50,7 @@ public class User extends SugarRecord<User> {
     }
 
     public static User findByOID(String oid) {
-        List<User> res = User.find(User.class, "oid = ?", "true");
+        List<User> res = User.find(User.class, "oid=?", oid);
         if (res.size()==1) return res.get(0);
         return null;
     }

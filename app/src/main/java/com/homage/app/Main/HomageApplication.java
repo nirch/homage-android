@@ -14,32 +14,23 @@
 package com.homage.app.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Camera;
 import android.util.Log;
 
 import com.homage.media.camera.CameraManager;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
+import com.homage.networking.uploader.UploaderService;
 import com.orm.SugarApp;
 
 import java.util.logging.Logger;
 
 
 public class HomageApplication extends SugarApp {
-    public class A {
-        public void whoAmI() {
-            Log.d("Example", getClass().toString());
-        }
-
-    }
-
-    public class B extends A {
-
-    }
-
+    String TAG = "TAG_" + getClass().getName();
 
     private static Context instance;
-    String TAG = "TAG_" + getClass().getName();
 
     public HomageApplication() {
         super();
@@ -59,6 +50,10 @@ public class HomageApplication extends SugarApp {
         // DEBUG user
         User.logoutAllUsers();
         HomageServer.sh().loginUser("android@test.com","123456");
+
+        // Start the background upload service
+        Intent intent = new Intent(this, UploaderService.class);
+        startService(intent);
     }
 
     protected void initSingletons() {
@@ -73,15 +68,16 @@ public class HomageApplication extends SugarApp {
         return instance;
     }
 
+
     //region *** Unhandled exceptions ***
 
-    /**
-     * Unhandled exceptions custom handler.
-     * This is used for debugging and for making sure the camera is released.
-     * The app will still crash with the default expected OS behaviour.
-     * IMPORTANT: Please don't add ANY error handling hacks here!
-     */
     private class HomageUnhandledExceptionHandler implements Thread.UncaughtExceptionHandler {
+        /*
+         * Unhandled exceptions custom handler.
+         * This is used for debugging and for making sure the camera is released.
+         * The app will still crash with the default expected OS behaviour.
+         * IMPORTANT: Please don't add ANY error handling hacks here!
+         */
         private Thread.UncaughtExceptionHandler mDefaultHandler =
                 Thread.getDefaultUncaughtExceptionHandler();
 
@@ -99,4 +95,6 @@ public class HomageApplication extends SugarApp {
         }
 
     }
+
+    //endregion
 }

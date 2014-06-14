@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/overlayView"
+    android:id="@+id/overlayRetakeAreYouSureDlg"
     style="@style/HomageDarkOverlay"
+    android:visibility="gone"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
@@ -20,8 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp"
-        android:src="@drawable/recorder_icon_trophy"
+        android:layout_marginTop="80dp"
+        android:src="@drawable/icon_retake_medium"
         android:contentDescription="icon" />
 
     <!-- Container that will hold the title, the description text and the main action button of this dlg -->
@@ -37,33 +38,12 @@
         <TextView
             android:id="@+id/bigImpactTitle"
             style="@style/HomageBigTitle"
-            android:layout_alignParentTop="true"
+            android:text="@string/title_retake_are_you_sure"
+            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:text="@string/title_great_job" />
+            android:gravity="center" />
 
         <!-- Some description text -->
-        <TextView
-            android:id="@+id/descriptionText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:textColor="@color/homage_text"
-            android:gravity="center"
-            android:text="@string/placeholder_text"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            />
-
-        <Button android:id="@+id/actionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/action_button_lets_shot"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            style="@style/actionButton"
-            android:drawableLeft="@drawable/icon_got_it"
-            android:drawablePadding="20dp" />
 
         <!-- main action button for this dialogue -->
 
@@ -73,25 +53,28 @@
     <!-- More action buttons at the bottom of the screen -->
     <LinearLayout android:id="@+id/retakeAndPreviewButtonsContainer"
         style="@style/HomageImpactButtonsContainer"
-        android:weightSum="2"
+        android:weightSum="3"
         >
         <Button
-            android:id="@+id/overlayRetakeSceneButton"
+            android:id="@+id/overlaySeeOopsNoRetakeButton"
+            style="@style/HomageImpactButton"
+            android:drawableStart="@drawable/icon_small_x_black"
+            android:text="@string/button_oops_nope"
+            />
+        <View android:layout_width="1dp" android:layout_height="fill_parent" android:layout_weight="0" />
+        <Button
+            android:id="@+id/overlayConfirmRetakeSceneButton"
             style="@style/HomageImpactButton"
             android:drawableStart="@drawable/icon_small_retake_scene_black"
-            android:text="@string/button_retake_last_scene" />
-        <View android:layout_width="1dp" android:layout_height="fill_parent" />
+            android:text="@string/button_yeah_start_rolling"
+            />
+        <View android:layout_width="1dp" android:layout_height="fill_parent" android:layout_weight="0" />
         <Button
-            android:id="@+id/overlaySeePreviewButton"
+            android:id="@+id/overlaySeePreview2Button"
             style="@style/HomageImpactButton"
             android:drawableStart="@drawable/icon_small_preview_black"
-            android:text="@string/button_can_i_see_a_preview" />
+            android:text="@string/button_can_i_see_a_preview"
+            />
     </LinearLayout>
 
-    <!-- Overlay with the "Are you sure you want to retake scene?" message -->
-    <include
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        layout="@layout/included_retake_overlay_dlg" />
-
-</RelativeLayout>
+ </RelativeLayout>

@@ -1,8 +1,10 @@
 package com.homage.app.recorder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.widget.VideoView;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.player.VideoPlayerActivity;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
@@ -50,10 +53,40 @@ public class RecorderVideosPagerAdapter
         this.scene = story.findScene(sceneID);
         if (videoSceneContainer != null) {
             AQuery aq = new AQuery(videoSceneContainer);
-            VideoView videoView = (VideoView)aq.id(R.id.videoView).getView();
-            videoView.setVideoURI(Uri.parse(scene.videoURL));
+            //VideoView videoView = (VideoView)aq.id(R.id.videoView).getView();
+            //videoView.setVideoURI(Uri.parse(scene.videoURL));
             aq.id(R.id.videoThumbnailImage).image(scene.thumbnailURL, true, true, 200, R.drawable.glass_dark);
         }
+    }
+
+    public void hideSurfaces() {
+        AQuery aq;
+        //VideoView videoView;
+
+        aq = new AQuery(this.videoSceneContainer);
+        aq.visibility(View.GONE);
+        //videoView = (VideoView)aq.id(R.id.videoView).getView();
+        //videoView.suspend();
+
+        aq = new AQuery(this.videoStoryContainer);
+        aq.visibility(View.GONE);
+        //videoView = (VideoView)aq.id(R.id.videoView).getView();
+        //videoView.suspend();
+    }
+
+    public void showSurfaces () {
+        AQuery aq;
+        //VideoView videoView;
+
+        aq = new AQuery(this.videoSceneContainer);
+        aq.visibility(View.VISIBLE);
+        //videoView = (VideoView)aq.id(R.id.videoView).getView();
+        //videoView.resume();
+
+        aq = new AQuery(this.videoStoryContainer);
+        aq.visibility(View.VISIBLE);
+        //videoView = (VideoView)aq.id(R.id.videoView).getView();
+        //videoView.resume();
     }
 
     @Override
@@ -85,20 +118,20 @@ public class RecorderVideosPagerAdapter
         // Set the video container UI
         aq.id(R.id.videoPlayButton).tag(pos);
         aq.id(R.id.videoPlayButton).clicked(onPressedBigPlayButton);
-        VideoView videoView = (VideoView)aq.id(R.id.videoView).getView();
-        videoView.setOnPreparedListener(this);
-        videoView.setOnErrorListener(this);
-        videoView.setOnCompletionListener(this);
+        //VideoView videoView = (VideoView)aq.id(R.id.videoView).getView();
+        //videoView.setOnPreparedListener(this);
+        //videoView.setOnErrorListener(this);
+        //videoView.setOnCompletionListener(this);
 
 
         if (position == 0) {
             aq.id(R.id.videoTitle).text(R.string.video_title_scene);
-            videoView.setVideoURI(Uri.parse(scene.videoURL));
+            //videoView.setVideoURI(Uri.parse(scene.videoURL));
             aq.id(R.id.videoThumbnailImage).image(scene.thumbnailURL, true, true, 200, R.drawable.glass_dark);
             videoSceneContainer = videoContainer;
         } else {
             aq.id(R.id.videoTitle).text(R.string.video_title_story);
-            videoView.setVideoURI(Uri.parse(story.video));
+            //videoView.setVideoURI(Uri.parse(story.video));
             aq.id(R.id.videoThumbnailImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
             videoStoryContainer = videoContainer;
         }
@@ -114,6 +147,7 @@ public class RecorderVideosPagerAdapter
     }
 
     private void startPlayingVideoInVideoContainer(View videoContainer) {
+        /*
         AQuery aq = new AQuery(videoContainer);
         aq.id(R.id.videoPlayButton).visibility(View.GONE);
         aq.id(R.id.videoThumbnailImage).visibility(View.GONE);
@@ -131,9 +165,11 @@ public class RecorderVideosPagerAdapter
 
             }
         }, 200);
+        */
     }
 
     private void doneWithPlayingVideoInVideoContainer(View videoContainer) {
+        /*
         AQuery aq = new AQuery(videoContainer);
         aq.id(R.id.videoPlayButton).visibility(View.VISIBLE);
         aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
@@ -143,12 +179,15 @@ public class RecorderVideosPagerAdapter
         videoView.setZOrderOnTop(false);
         videoView.seekTo(0);
         videoView.pause();
+        */
     }
 
     public void done() {
+        /*
         doneWithPlayingVideoInVideoContainer(videoSceneContainer);
         doneWithPlayingVideoInVideoContainer(videoStoryContainer);
         this.startedPlaying = false;
+        */
     }
 
     public void doneIfPlaying() {
@@ -184,6 +223,30 @@ public class RecorderVideosPagerAdapter
         @Override
         public void onClick(View view) {
             AQuery aq = new AQuery(view);
+
+            // Open video player.
+            Intent myIntent = new Intent(context, VideoPlayerActivity.class);
+            Bundle b = new Bundle();
+
+            Integer pos = (Integer)aq.getTag();
+            if (pos == 0) {
+                Log.d(TAG, "Clicked our scene video button");
+                b.putString("videoFileURL", scene.videoURL);
+            } else {
+                Log.d(TAG, "Clicked our story video button");
+                b.putString("videoFileURL", story.video);
+            }
+            myIntent.putExtras(b);
+            context.startActivity(myIntent);
+
+
+
+
+
+            // Deprecated. Will be implemented with a single video player instead of embedded ones.
+            /*
+            // TODO: Allow only to play prepared videos
+            AQuery aq = new AQuery(view);
             Integer pos = (Integer)aq.getTag();
             if (pos == 0) {
                 Log.d(TAG, "Clicked our scene video button");
@@ -192,8 +255,11 @@ public class RecorderVideosPagerAdapter
             }
             View videoContainer = aq.parent(R.id.videoContainer).getView();
             startPlayingVideoInVideoContainer(videoContainer);
+            */
+
+
+
         }
     };
-
     //endregion
 }

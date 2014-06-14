@@ -34,9 +34,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
@@ -47,6 +49,7 @@ import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
+import com.homage.networking.uploader.UploaderService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -117,8 +120,6 @@ public class StoriesActivity extends Activity {
         setContentView(R.layout.activity_main_stories);
         //endregion
 
-
-
         // Set the list adapter for the stories list view.
         stories = Story.allActiveStories();
         storiesListView = (ListView)findViewById(R.id.storiesListView);
@@ -134,8 +135,12 @@ public class StoriesActivity extends Activity {
 
         //region *** Bind to UI event handlers ***
         aq.id(R.id.storiesListView).itemClicked(onItemClicked);
+
+        Switch uploaderSwitch = (Switch)aq.id(R.id.uploaderSwitch).getView();
+        uploaderSwitch.setOnCheckedChangeListener(onUploaderSwitchValueChanged);
         //endregion
     }
+    //endregion
 
     @Override
     protected void onResume() {
@@ -202,6 +207,7 @@ public class StoriesActivity extends Activity {
         Resources res = getResources();
         User user = User.getCurrent();
         Story story = stories.get(index);
+        if (story == null) return;
         Remake unFinishedRemake = user.unfinishedRemakeForStory(story);
         if (unFinishedRemake == null) {
             // No unfinished remakes.
@@ -246,6 +252,19 @@ public class StoriesActivity extends Activity {
             }
         }
     }
+
+    private CompoundButton.OnCheckedChangeListener onUploaderSwitchValueChanged = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            if (b) {
+                // Start the service
+                startService(UploaderService.cmd(StoriesActivity.this, UploaderService.CMD_START));
+            } else {
+                // Stop the service
+                startService(UploaderService.cmd(StoriesActivity.this, UploaderService.CMD_STOP));
+            }
+        }
+    };
     //endregion
 }
 

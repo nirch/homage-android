@@ -1,4 +1,4 @@
-/*
+/**
     $$\   $$\  $$$$$$\  $$\      $$\  $$$$$$\   $$$$$$\  $$$$$$$$\
     $$ |  $$ |$$  __$$\ $$$\    $$$ |$$  __$$\ $$  __$$\ $$  _____|
     $$ |  $$ |$$ /  $$ |$$$$\  $$$$ |$$ /  $$ |$$ /  \__|$$ |
@@ -54,6 +54,8 @@ import com.homage.model.User;
 import com.homage.views.ActivityHelper;
 import com.homage.views.Pacman;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -164,7 +166,6 @@ public class RecorderActivity extends Activity {
         inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         // Get info about the remake
-        Intent intent = getIntent();
         Bundle b = getIntent().getExtras();
         String remakeOID = b.getString("remakeOID");
         remake = Remake.findByOID(remakeOID);
@@ -550,6 +551,7 @@ public class RecorderActivity extends Activity {
         recorderFullDetailsContainer.setVisibility(View.GONE);
         scenesListView.setVisibility(View.GONE);
         videosPager.setVisibility(View.GONE);
+        videosAdapter.hideSurfaces();
 
         CameraManager cm = CameraManager.sh();
         cm.preview.show();
@@ -569,6 +571,7 @@ public class RecorderActivity extends Activity {
         recorderFullDetailsContainer.setVisibility(View.VISIBLE);
         scenesListView.setVisibility(View.VISIBLE);
         videosPager.setVisibility(View.VISIBLE);
+        videosAdapter.showSurfaces();
 
         CameraManager cm = CameraManager.sh();
         cm.preview.hide();
@@ -832,7 +835,6 @@ public class RecorderActivity extends Activity {
                     Toast.LENGTH_SHORT).show();
             return;
         }
-
         Log.d(TAG, String.format("Started recording to local file: %s", outputFile));
 
         // Update UI
@@ -847,6 +849,7 @@ public class RecorderActivity extends Activity {
         anim.setDuration(scene.duration);
         progressBar.startAnimation(anim);
         anim.setAnimationListener(new Animation.AnimationListener() {
+
             @Override
             public void onAnimationStart(Animation animation) {
 
@@ -854,29 +857,41 @@ public class RecorderActivity extends Activity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
+
                 CameraManager.sh().stopRecording();
                 returnFromRecordingUI();
-                checkFinishedRecording();
+                checkFinishedRecording(outputFile);
+
             }
 
             @Override
             public void onAnimationRepeat(Animation animation) {
 
             }
+
         });
     }
 
-    private void checkFinishedRecording() {
+    private void checkFinishedRecording(String outputFile) {
         try {
-            // TODO: implement listener that really checks that the recording saved successfully.
             isRecording = false;
+
+            // Check the output file
+            File file = new File(outputFile);
+            if (file.exists()) {
+                Log.d(TAG, String.format("Output file exists: %s", outputFile));
+            } else {
+                throw new IOException(String.format("Failed saving output file: %s", outputFile));
+            }
+
+            // All is well, update the footage object
             Footage footage = remake.findFootage(currentSceneID);
-            footage.rawLocalFile = "XXX"; // TODO: actual local file name here
+            footage.rawLocalFile = outputFile;
             footage.save();
             updateScenesList();
-
             stateMachine.advanceState();
             stateMachine.handleCurrentState();
+
         } catch (Exception ex) {
             Log.e(TAG, "Checking recording finished failed.", ex);
         }
@@ -902,7 +917,6 @@ public class RecorderActivity extends Activity {
         builder.setNegativeButton(R.string.no, null);
         builder.create().show();
     }
-
     //endregion
 
 
@@ -952,7 +966,7 @@ public class RecorderActivity extends Activity {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             Footage.ReadyState readyState = footagesReadyStates.get(i);
             Scene scene = scenes.get(i);
-            if (readyState == Footage.ReadyState.STILL_LOCKED && 1==2) {
+            if (readyState == Footage.ReadyState.STILL_LOCKED) {
                 Toast.makeText(
                         RecorderActivity.this,
                         "Scene locked.\nFinish with previous scenes first.",

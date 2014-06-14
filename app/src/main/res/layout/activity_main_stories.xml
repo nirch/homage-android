@@ -17,14 +17,23 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/storiesListView" />
+        android:id="@+id/storiesListView"
+        android:layout_marginBottom="40dp"
+        />
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@+id/loadingStoriesProgress"
-        android:layout_alignRight="@+id/loadingStoriesProgress"
-        android:layout_alignEnd="@+id/loadingStoriesProgress"
-        android:layout_marginTop="55dp"></FrameLayout>
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        >
 
-</RelativeLayout>
+        <Switch android:id="@+id/uploaderSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Uploader"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:checked="false" />
+    </RelativeLayout>
+
+ </RelativeLayout>

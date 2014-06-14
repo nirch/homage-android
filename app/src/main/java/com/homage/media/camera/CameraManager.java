@@ -42,8 +42,8 @@ import java.util.List;
 public class CameraManager {
     String TAG = "TAG_"+getClass().getName();
 
-    final int defaultWidth = 640;
-    final int defaultHeight = 480;
+    final int defaultWidth = 1280;
+    final int defaultHeight = 720;
 
     public CameraPreview cameraPreview;
     Camera.Size recSize;
@@ -97,6 +97,10 @@ public class CameraManager {
         camera = CameraHelper.getDefaultCameraInstance();
         Camera.Parameters parameters = camera.getParameters();
         List<Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
+        for (Camera.Size supportedSize : supportedPreviewSizes) {
+            Log.v(TAG, String.format("Supported size: %d, %d", supportedSize.width, supportedSize.height));
+        }
+
         recSize = CameraHelper.getOptimalPreviewSize(
                 supportedPreviewSizes,
                 defaultWidth,

@@ -42,14 +42,11 @@ public class UserParser extends Parser {
         Log.v(TAG, String.format("Parsing a user with email:%s oid:%s", userInfo.getString("email"), oid));
 
         User user = User.findOrCreate(Parser.parseOID(userInfo));
-
         user.email =        parseString("email", null);
         user.isFirstUse =   parseBool("first_use", false);
         user.isPublic =     parseBool("is_public", false);
         user.createAt =     parseDate("created_at", null);
-
         user.login();
-
         user.save();
     }
 }

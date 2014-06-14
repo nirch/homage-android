@@ -24,15 +24,15 @@
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:text="SCENE 1"
-
+            android:singleLine="true"
             android:gravity="center"
-            android:layout_weight="0.3"
+            android:layout_weight="0.4"
             style="@style/SceneText" />
 
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="0.6"
+            android:layout_weight="0.5"
             >
 
             <ImageView android:id="@+id/sceneIconLockedInList"

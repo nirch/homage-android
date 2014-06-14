@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Homage</string>
+    <string name="app_main_title">Homage</string>
     <string name="test">TEST!</string>
     <string name="placeholder_title">PLACE HOLDER!</string>
 
@@ -12,9 +13,16 @@
     <string name="button_hide_script">HIDE SCRIPT</string>
 
     <string name="button_shoot_scene">Shoot Scene!</string>
-    <string name="title_scene_number">Scene No. %d</string>
-    <string name="short_scene_number">Scene %d</string>
+    <string name="title_scene_number">Scene&#xA0;No.&#xA0;%d</string>
+    <string name="short_scene_number">Scene&#xA0;%d</string>
     <string name="at_the_next_scene_text">At the next scene %s</string>
+
+    <string name="title_retake_are_you_sure">ARE YOU SURE YOU WANT TO RETAKE THIS SCENE?</string>
+    <string name="button_oops_nope">OOPS..NOPE</string>
+    <string name="button_yeah_start_rolling">YEAH, START ROLLING</string>
+
+
+
     <string name="title_great_job">GREAT JOB!</string>
 
     <!-- Videos -->
@@ -38,14 +46,22 @@
     <string name="welcome_2">2</string>
     <string name="welcome_2_message">USE A SOLID COLOR WALL AS BACKGROUND</string>
 
-
+    <!-- Navigation drawer -->
+    <string name="nav_item_1_stories">stories</string>
+    <string name="nav_item_2_me">me</string>
+    <string name="nav_item_3_settings">settings</string>
+    <string name="nav_item_4_howto">how to</string>
+    <string name="nav_title_hello_user">Hello Guest</string>
+    <string name="nav_join_button">join now</string>
 
     <!-- Action buttons -->
     <string name="action_button_lets_shot">LETS SHOOT!</string>
 
     <!-- placeholders -->
     <string name="placeholder_text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet.</string>
-    <string name="placeholder_text_scene_1">SCENE 1</string>
+    <string name="placeholder_text_scene_1">SCENE&#xA0;1</string>
     <string name="placeholder_text_7_sec">7 SEC</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
 </resources>

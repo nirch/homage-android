@@ -3,6 +3,8 @@
     <color name="homage_void">#000000</color>
     <color name="homage_dark_overlay">#aa000000</color>
     <color name="homage_dark_transparent_overlay">#33000000</color>
+    <color name="homage_darker_transparent_overlay">#88000000</color>
+    <color name="homage_darkest_transparent_overlay">#D00F0707</color>
     <color name="homage_text">#FFFFFF</color>
     <color name="homage_impact">#FF7D5F</color>
     <color name="homage_disabled">#ffa4a4a4</color>
@@ -20,6 +22,9 @@
     <color name="homage_dark_void_1">#ff000000</color>
     <color name="homage_dark_void_2">#ff341a1a</color>
 
+    <color name="homage_option_selected">#ffa35848</color>
+    <color name="homage_option_highlighted">#99a35848</color>
+    <color name="homage_option_sep">#444c4a4a</color>
 
 
     <color name="test_red">#FF0000</color>
