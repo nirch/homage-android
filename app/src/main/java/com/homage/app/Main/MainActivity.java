@@ -77,6 +77,9 @@ public class MainActivity extends ActionBarActivity
         /** Binding to UI event handlers **/
         /**********************************/
         aq.id(R.id.navButton).clicked(onClickedNavButton);
+
+
+
         //endregion
     }
 
@@ -184,11 +187,11 @@ public class MainActivity extends ActionBarActivity
     //endregion
 
     public void showStoryDetails(Story story) {
-        Log.d(TAG, String.format("Show story details: %s", story.name));
+        //Log.d(TAG, String.format("Show story details: %s", story.name));
         currentSection = SECTION_STORIES_DETAILS;
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, StoryDetailsFragment.newInstance(SECTION_STORIES_DETAILS))
+                .replace(R.id.container, StoryDetailsFragment.newInstance(SECTION_STORIES_DETAILS, story))
                 .commit();
     }
 
