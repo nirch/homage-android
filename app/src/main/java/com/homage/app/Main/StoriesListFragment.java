@@ -124,7 +124,9 @@ public class StoriesListFragment extends Fragment {
 
     private void showStoryDetails(Story story) {
         if (story == null) return;
-        Log.d(TAG, String.format("Will show story: %s", story.name));
+
+        MainActivity main = (MainActivity)this.getActivity();
+        main.showStoryDetails(story);
     }
 
     //region *** UI event handlers ***

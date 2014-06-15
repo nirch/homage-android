@@ -21,14 +21,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.story.StoryDetailsFragment;
+import com.homage.model.Story;
 
 
 public class MainActivity extends ActionBarActivity
@@ -45,6 +49,7 @@ public class MainActivity extends ActionBarActivity
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
+    private int currentSection;
 
     //region *** Lifecycle ***
     @Override
@@ -79,12 +84,10 @@ public class MainActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-
+        currentSection = position;
         switch (position) {
             case SECTION_STORIES:
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, StoriesListFragment.newInstance(position))
-                        .commit();
+                showStories();
                 break;
 
             default:
@@ -180,6 +183,23 @@ public class MainActivity extends ActionBarActivity
     }
     //endregion
 
+    public void showStoryDetails(Story story) {
+        Log.d(TAG, String.format("Show story details: %s", story.name));
+        currentSection = SECTION_STORIES_DETAILS;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, StoryDetailsFragment.newInstance(SECTION_STORIES_DETAILS))
+                .commit();
+    }
+
+    public void showStories() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        currentSection = SECTION_STORIES;
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, StoriesListFragment.newInstance(currentSection))
+                .commit();
+    }
+
     //region *** UI event handlers ***
     /**
      *  ==========================
@@ -196,5 +216,17 @@ public class MainActivity extends ActionBarActivity
             }
         }
     };
+
+    public void onBackPressed(){
+        Log.d(TAG, "Pressed back button");
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (currentSection == SECTION_STORIES_DETAILS) {
+            showStories();
+        } else {
+            super.onBackPressed();
+        }
+
+    }
     //endregion
 }
