@@ -63,5 +63,7 @@
     <string name="placeholder_text_7_sec">7 SEC</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="placeholder_hello_guest">Hello Guest</string>
+    <string name="placeholder_join_now">join now</string>
 
 </resources>

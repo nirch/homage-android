@@ -24,7 +24,7 @@
 
     <color name="homage_option_selected">#ffa35848</color>
     <color name="homage_option_highlighted">#99a35848</color>
-    <color name="homage_option_sep">#444c4a4a</color>
+    <color name="homage_option_sep">#FF4c4a4a</color>
 
 
     <color name="test_red">#FF0000</color>

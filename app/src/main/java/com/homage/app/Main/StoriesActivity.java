@@ -22,28 +22,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
-import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Switch;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.recorder.RecorderActivity;
-import com.homage.app.recorder.RecorderOverlayDlgActivity;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
@@ -53,7 +46,6 @@ import com.homage.networking.uploader.UploaderService;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class StoriesActivity extends Activity {
     String TAG = "TAG_"+getClass().getName();
@@ -117,7 +109,7 @@ public class StoriesActivity extends Activity {
         inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         // Set the content layout
-        setContentView(R.layout.activity_main_stories);
+        setContentView(R.layout.fragment_stories);
         //endregion
 
         // Set the list adapter for the stories list view.
@@ -136,8 +128,8 @@ public class StoriesActivity extends Activity {
         //region *** Bind to UI event handlers ***
         aq.id(R.id.storiesListView).itemClicked(onItemClicked);
 
-        Switch uploaderSwitch = (Switch)aq.id(R.id.uploaderSwitch).getView();
-        uploaderSwitch.setOnCheckedChangeListener(onUploaderSwitchValueChanged);
+//        Switch uploaderSwitch = (Switch)aq.id(R.id.uploaderSwitch).getView();
+//        uploaderSwitch.setOnCheckedChangeListener(onUploaderSwitchValueChanged);
         //endregion
     }
     //endregion
@@ -253,6 +245,7 @@ public class StoriesActivity extends Activity {
         }
     }
 
+    /*
     private CompoundButton.OnCheckedChangeListener onUploaderSwitchValueChanged = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -265,6 +258,7 @@ public class StoriesActivity extends Activity {
             }
         }
     };
+    */
     //endregion
 }
 

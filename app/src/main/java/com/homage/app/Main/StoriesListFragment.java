@@ -8,11 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.model.Story;
+import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
 
 import java.util.List;
@@ -68,10 +70,6 @@ public class StoriesListFragment extends Fragment {
 
     };
 
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
     public static StoriesListFragment newInstance(int sectionNumber) {
         StoriesListFragment fragment;
         fragment = new StoriesListFragment();
@@ -101,10 +99,10 @@ public class StoriesListFragment extends Fragment {
         createdOnce = true;
 
         //region *** Bind to UI event handlers ***
-        //aq.id(R.id.storiesListView).itemClicked(onItemClicked);
-
-        //Switch uploaderSwitch = (Switch)aq.id(R.id.uploaderSwitch).getView();
-        //uploaderSwitch.setOnCheckedChangeListener(onUploaderSwitchValueChanged);
+        /**********************************/
+        /** Binding to UI event handlers **/
+        /**********************************/
+        aq.id(R.id.storiesListView).itemClicked(onItemClicked);
         //endregion
     }
 
@@ -112,7 +110,7 @@ public class StoriesListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.inflater = inflater;
-        rootView = inflater.inflate(R.layout.activity_main_stories, container, false);
+        rootView = inflater.inflate(R.layout.fragment_stories, container, false);
         initialize();
         return rootView;
     }
@@ -123,4 +121,28 @@ public class StoriesListFragment extends Fragment {
         ((MainActivity) activity).onSectionAttached(
                 getArguments().getInt(ARG_SECTION_NUMBER));
     }
+
+    private void showStoryDetails(Story story) {
+        if (story == null) return;
+        Log.d(TAG, String.format("Will show story: %s", story.name));
+    }
+
+    //region *** UI event handlers ***
+    // -------------------
+    // UI handlers.
+    // -------------------
+    private AdapterView.OnItemClickListener onItemClicked = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            User user = User.getCurrent();
+            if (user == null) return;
+
+            Story story = stories.get(i);
+            if (story == null) return;
+
+            // Remake the story
+            showStoryDetails(story);
+        }
+    };
+    //endregion
 }

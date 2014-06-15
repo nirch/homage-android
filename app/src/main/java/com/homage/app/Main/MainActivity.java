@@ -10,7 +10,6 @@
  \__|  \__| \______/ \__|     \__|\__|  \__| \______/ \________|
 
                            Main Activity
-
  */
 
 package com.homage.app.main;
@@ -37,10 +36,13 @@ public class MainActivity extends ActionBarActivity
     String TAG = "TAG_"+getClass().getName();
 
     AQuery aq;
+    static final int SECTION_LOGIN      = 0;
     static final int SECTION_STORIES    = 1;
     static final int SECTION_ME         = 2;
     static final int SECTION_SETTINGS   = 3;
     static final int SECTION_HOWTO      = 4;
+    static final int SECTION_STORIES_DETAILS      = 101;
+
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
 
@@ -77,19 +79,18 @@ public class MainActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-        int index = position + 1;
 
-        switch (index) {
+        switch (position) {
             case SECTION_STORIES:
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, StoriesListFragment.newInstance(index))
+                        .replace(R.id.container, StoriesListFragment.newInstance(position))
                         .commit();
                 break;
 
             default:
                 // Not implemented yet. Just put a place holder fragment for now.
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, PlaceholderFragment.newInstance(index))
+                        .replace(R.id.container, PlaceholderFragment.newInstance(position))
                         .commit();
         }
     }
@@ -178,7 +179,6 @@ public class MainActivity extends ActionBarActivity
         }
     }
     //endregion
-
 
     //region *** UI event handlers ***
     /**

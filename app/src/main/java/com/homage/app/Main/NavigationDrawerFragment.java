@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -76,6 +77,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         Resources res = getResources();
         options = new String[]{
+                "",
                 res.getString(R.string.nav_item_1_stories),
                 res.getString(R.string.nav_item_2_me),
                 res.getString(R.string.nav_item_3_settings),
@@ -147,18 +149,40 @@ public class NavigationDrawerFragment extends Fragment {
 
         @Override
         public View getView(int i, View rowView, ViewGroup viewGroup) {
-            if (rowView == null) rowView = inflater.inflate(R.layout.list_row_option, mDrawerListView, false);
-            String option = (String)getItem(i);
-            AQuery aq = new AQuery(rowView);
-            aq.id(R.id.textView).text(option);
+            if (rowView == null) rowView = rowViewForIndex(i);
+            configureRowViewForIndex(rowView, i);
             return rowView;
+        }
+
+        private View rowViewForIndex(int i) {
+            View rowView;
+            switch (i) {
+                case 0:
+                    // Login
+                    rowView = inflater.inflate(R.layout.list_row_login, mDrawerListView, false);
+                    break;
+                default:
+                    rowView = inflater.inflate(R.layout.list_row_option, mDrawerListView, false);
+            }
+            return rowView;
+        }
+
+        private void configureRowViewForIndex(View rowView, int i) {
+            switch (i) {
+                case 0:
+                    break;
+
+                default:
+                    String option = (String)getItem(i);
+                    AQuery aq = new AQuery(rowView);
+                    aq.id(R.id.textView).text(option);
+            }
         }
 
         @Override
         public boolean isEmpty() {
             return false;
         }
-
     };
 
 
@@ -171,6 +195,10 @@ public class NavigationDrawerFragment extends Fragment {
     public void setUp(int fragmentId, DrawerLayout drawerLayout) {
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
+        Drawable background = mFragmentContainerView
+                .findViewById(R.id.optionsList)
+                .getBackground();
+        background.setAlpha(230);
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
@@ -195,7 +223,6 @@ public class NavigationDrawerFragment extends Fragment {
                 if (!isAdded()) {
                     return;
                 }
-
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
 
@@ -234,12 +261,14 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        selectItem(1);
     }
 
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
+
         }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);

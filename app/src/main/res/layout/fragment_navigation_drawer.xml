@@ -1,11 +1,12 @@
 <ListView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/optionsList"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:choiceMode="singleChoice"
     android:divider="@color/homage_option_sep"
     android:dividerHeight="1dp"
-    android:background="@color/homage_darkest_transparent_overlay"
+    android:background="@drawable/drawer_bg"
     tools:context="com.homage.app.main.NavigationDrawerFragment"
     >
 

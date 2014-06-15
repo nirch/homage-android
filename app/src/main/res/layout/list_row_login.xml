@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:orientation="vertical"
+    android:background="@drawable/selector_option_bg"
+    >
+
+    <TextView android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/textView"
+    android:textColor="@color/homage_impact"
+    android:textSize="24dp"
+    android:paddingLeft="10dp"
+    android:layout_margin="10dp"
+    android:text="@string/placeholder_hello_guest"
+    android:gravity="center_vertical"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentTop="true"
+    android:layout_marginTop="3dp"
+    />
+
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:textColor="@color/homage_text"
+        android:textSize="19dp"
+        android:paddingLeft="10dp"
+        android:layout_margin="10dp"
+        android:text="@string/placeholder_join_now"
+        android:gravity="center_vertical"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="3dp"
+        />
+
+    <ImageView
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/guest"
+        />
+
+
+</RelativeLayout>
