@@ -1,10 +1,9 @@
-package com.homage.app.main;
+package com.homage.app.story;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.main.MainActivity;
 import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
