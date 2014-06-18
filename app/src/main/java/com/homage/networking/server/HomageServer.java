@@ -25,7 +25,9 @@ import android.util.Log;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.device.Device;
+import com.homage.model.Story;
 import com.homage.networking.parsers.RemakeParser;
+import com.homage.networking.parsers.RemakesParser;
 import com.homage.networking.parsers.StoriesParser;
 import com.homage.networking.parsers.UserParser;
 
@@ -122,5 +124,11 @@ public class HomageServer extends Server {
         parameters.put("story_id", storyOID);
         parameters.put("user_id", userOID);
         super.POST(R.string.url_new_remake, parameters, INTENT_REMAKE_CREATION, null, new RemakeParser());
+    }
+
+
+    public void fetchRemakesForStory(String storyOID) {
+        Log.v(TAG, String.format("Refetching remakes for story OID: %s", storyOID));
+        super.GET(R.string.url_story_remakes, storyOID, null, INTENT_REMAKES_FOR_STORY, null, new RemakesParser());
     }
 }
