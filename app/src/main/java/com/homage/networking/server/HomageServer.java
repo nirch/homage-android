@@ -37,23 +37,21 @@ import java.util.HashMap;
 public class HomageServer extends Server {
     String TAG = "TAG_"+getClass().getName();
 
+    //region *** Intent names ***
     final static public String INTENT_USER_CREATION             = "intent user creation";
-
     final static public String INTENT_STORIES                   = "intent stories";
-
     final static public String INTENT_REMAKE_CREATION           = "intent remake creation";
     final static public String INTENT_REMAKE                    = "intent remake";
     final static public String INTENT_USER_REMAKES              = "intent user remakes";
     final static public String INTENT_REMAKE_DELETION           = "intent remake deletion";
     final static public String INTENT_REMAKES_FOR_STORY         = "intent remake for stories";
-
     final static public String INTENT_FOOTAGE_UPLOAD_SUCCESS    = "intent footage upload success";
     final static public String INTENT_FOOTAGE_UPLOAD_START      = "intent footage upload start";
     final static public String INTENT_TEXT                      = "intent text";
     final static public String INTENT_RENDER                    = "intent render";
-
     final static public String INTENT_USER_UPDATED              = "intent user updated";
     final static public String INTENT_USER_PREFERENCES_UPDATE   = "intent user preference update";
+    //endregion
 
     //region *** singleton pattern ***
     private static HomageServer instance = new HomageServer();
@@ -86,6 +84,65 @@ public class HomageServer extends Server {
     }
     //endregion
 
+    //region *** Remakes ***
+    /**
+     *
+     * @param storyOID the story oid the remake will be of
+     * @param userOID the user that will do the remake
+     * @param resolution 360, 720 etc.
+     */
+    public void createRemake(String storyOID, String userOID, String resolution) {
+        Log.v(TAG, String.format("Create remake for story OID: %s user OID: %s", storyOID, userOID));
+
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("story_id", storyOID);
+        parameters.put("user_id", userOID);
+        parameters.put("resolution", resolution);
+        super.POST(R.string.url_new_remake, parameters, INTENT_REMAKE_CREATION, null, new RemakeParser());
+    }
+
+    /**
+     * A simple GET request to the server
+     * Example URL: http://54.204.34.168:4567/remake/52d7a02edb25451630000002
+     * @param remakeOID the oid of the remake object.
+     */
+    public void refetchRemake(String remakeOID) {
+        Log.v(TAG, String.format("refetch remake with OID: %s", remakeOID));
+        super.GET(R.string.url_existing_remake, remakeOID, null, INTENT_REMAKE, null, new RemakeParser());
+    }
+
+    /**
+     * Refetch all remakes for a given story.
+     * @param storyOID
+     */
+    public void fetchRemakesForStory(String storyOID) {
+        Log.v(TAG, String.format("Refetching remakes for story OID: %s", storyOID));
+        super.GET(R.string.url_story_remakes, storyOID, null, INTENT_REMAKES_FOR_STORY, null, new RemakesParser());
+    }
+    //endregion
+
+    //region *** Stories ***
+    /**
+     * Refetches all stories (and their child objects) info from the server.
+     */
+    public void refetchStories() {
+        Log.v(TAG, "Refetching stories");
+        super.GET(R.string.url_stories, null, INTENT_STORIES, null, new StoriesParser());
+    }
+    //endregion
+
+    //region *** Footages ***
+    //endregion
+
+    //region *** Render ***
+    //endregion
+
+    //region *** Users ***
+    /**
+     * Login user with an email and password.
+     * @param email
+     * @param password
+     */
     public void loginUser(String email, String password) {
         Log.v(TAG, String.format("Login user with email: %s", email));
 
@@ -103,32 +160,5 @@ public class HomageServer extends Server {
         parameters.put("device[push_token]","%3C0a7b7b15%203f0fb335%200e252182%2038675505%20e739547b%2047dd8ab2%20");
         super.POST(R.string.url_new_user, parameters, INTENT_USER_CREATION, null, new UserParser());
     }
-
-    /**
-     * Refetches all stories (and their child objects) info from the server.
-     */
-    public void refetchStories() {
-        Log.v(TAG, "Refetching stories");
-        super.GET(R.string.url_stories, null, INTENT_STORIES, null, new StoriesParser());
-    }
-
-    /**
-     *
-     * @param storyOID the story oid the remake will be of
-     * @param userOID the user that will do the remake
-     */
-    public void createRemake(String storyOID, String userOID) {
-        Log.v(TAG, String.format("Create remake for story OID: %s user OID: %s", storyOID, userOID));
-
-        HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put("story_id", storyOID);
-        parameters.put("user_id", userOID);
-        super.POST(R.string.url_new_remake, parameters, INTENT_REMAKE_CREATION, null, new RemakeParser());
-    }
-
-
-    public void fetchRemakesForStory(String storyOID) {
-        Log.v(TAG, String.format("Refetching remakes for story OID: %s", storyOID));
-        super.GET(R.string.url_story_remakes, storyOID, null, INTENT_REMAKES_FOR_STORY, null, new RemakesParser());
-    }
+    //endregion
 }

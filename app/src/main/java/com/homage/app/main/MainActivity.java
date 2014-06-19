@@ -15,9 +15,16 @@
 package com.homage.app.main;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -30,9 +37,18 @@ import android.view.ViewGroup;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.recorder.RecorderActivity;
 import com.homage.app.story.StoriesListFragment;
 import com.homage.app.story.StoryDetailsFragment;
+import com.homage.app.user.LoginActivity;
+import com.homage.device.Device;
+import com.homage.model.Remake;
 import com.homage.model.Story;
+import com.homage.model.User;
+import com.homage.networking.server.HomageServer;
+import com.homage.networking.server.Server;
+
+import java.util.HashMap;
 
 
 public class MainActivity extends ActionBarActivity
@@ -45,11 +61,13 @@ public class MainActivity extends ActionBarActivity
     static final int SECTION_ME         = 2;
     static final int SECTION_SETTINGS   = 3;
     static final int SECTION_HOWTO      = 4;
-    static final int SECTION_STORIES_DETAILS      = 101;
+    static final int SECTION_STORY_DETAILS      = 101;
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
     private int currentSection;
+
+    ProgressDialog pd;
 
     //region *** Lifecycle ***
     @Override
@@ -72,6 +90,8 @@ public class MainActivity extends ActionBarActivity
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar_view);
 
+        HomageServer.sh().fetchRemakesForStory("5356dc94ebad7c3bf100015d");
+
         //region *** Bind to UI event handlers ***
         /**********************************/
         /** Binding to UI event handlers **/
@@ -82,13 +102,33 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        initObservers();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        removeObservers();
+    }
+
+    @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         currentSection = position;
         switch (position) {
+            case SECTION_LOGIN:
+                showLogin();
+                break;
+
             case SECTION_STORIES:
                 showStories();
+                break;
+
+            case SECTION_SETTINGS:
+                showSettings();
                 break;
 
             default:
@@ -98,6 +138,53 @@ public class MainActivity extends ActionBarActivity
                         .commit();
         }
     }
+    //endregion
+
+    //region *** Observers ***
+    private void initObservers() {
+        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
+        lbm.registerReceiver(onStoriesUpdated, new IntentFilter(HomageServer.INTENT_STORIES));
+        lbm.registerReceiver(onRemakeCreation, new IntentFilter(HomageServer.INTENT_REMAKE_CREATION));
+    }
+
+    private void removeObservers() {
+        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
+        lbm.unregisterReceiver(onStoriesUpdated);
+        lbm.unregisterReceiver(onRemakeCreation);
+    }
+
+    // Observers handlers
+    private BroadcastReceiver onStoriesUpdated = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (currentSection == SECTION_STORIES) {
+                showStories();
+            }
+        }
+    };
+
+    private BroadcastReceiver onRemakeCreation = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            pd.dismiss();
+            boolean success = intent.getBooleanExtra(Server.SR_SUCCESS, false);
+            HashMap<String, Object> responseInfo = (HashMap<String, Object>)intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
+
+            if (success) {
+                assert(responseInfo != null);
+                String remakeOID = (String)responseInfo.get("remakeOID");
+                if (remakeOID == null) return;
+
+                // Open recorder for the remake.
+                Intent myIntent = new Intent(MainActivity.this, RecorderActivity.class);
+                Bundle b = new Bundle();
+                b.putString("remakeOID", remakeOID);
+                myIntent.putExtras(b);
+                MainActivity.this.startActivity(myIntent);
+                //overridePendingTransition(0, 0);
+            }
+        }
+    };
     //endregion
 
     //region *** Options ***
@@ -184,12 +271,17 @@ public class MainActivity extends ActionBarActivity
     }
     //endregion
 
+    //region *** Show other fragments & activities ***
+    public void showLogin() {
+        Intent myIntent = new Intent(this, LoginActivity.class);
+        startActivity(myIntent);
+    }
+
     public void showStoryDetails(Story story) {
-        //Log.d(TAG, String.format("Show story details: %s", story.name));
-        currentSection = SECTION_STORIES_DETAILS;
+        currentSection = SECTION_STORY_DETAILS;
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, StoryDetailsFragment.newInstance(SECTION_STORIES_DETAILS, story))
+                .replace(R.id.container, StoryDetailsFragment.newInstance(SECTION_STORY_DETAILS, story))
                 .commit();
     }
 
@@ -200,6 +292,56 @@ public class MainActivity extends ActionBarActivity
                 .replace(R.id.container, StoriesListFragment.newInstance(currentSection))
                 .commit();
     }
+
+    public void showSettings() {
+        Intent myIntent = new Intent(this, SettingsActivity.class);
+        startActivity(myIntent);
+    }
+    //endregion
+
+    //region *** more actions ***
+    public void remakeStory(Story story) {
+        if (story == null) return;
+
+        User user = User.getCurrent();
+        if (user == null) return;
+
+        Remake unfinishedRemake = user.unfinishedRemakeForStory(story);
+        if (unfinishedRemake == null) {
+            // No info about an unfinished remake exists in local storage.
+            // Create a new remake.
+            sendRemakeStoryRequest(story);
+        } else {
+            // An unfinished remake exists. Ask user if she want to continue this remake
+            // or start a new one.
+            askUserIfWantToContinueRemake(unfinishedRemake);
+        }
+    }
+
+    private void sendRemakeStoryRequest(Story story) {
+        if (story == null) return;
+
+        User user = User.getCurrent();
+        if (user == null) return;
+
+        Resources res = getResources();
+        pd = new ProgressDialog(this);
+        pd.setTitle(res.getString(R.string.pd_title_please_wait));
+        pd.setMessage(res.getString(R.string.pd_msg_preparing_remake));
+        pd.setCancelable(true);
+        pd.show();
+
+        // Send the request to the server.
+        HomageServer.sh().createRemake(story.getOID(), user.getOID(), Device.defaultVideoResolution);
+    }
+
+    private void askUserIfWantToContinueRemake(Remake remake) {
+        if (remake == null) return;
+
+        HomageServer.sh().refetchRemake(remake.getOID());
+
+    }
+    //endregion
 
     //region *** UI event handlers ***
     /**
@@ -222,7 +364,7 @@ public class MainActivity extends ActionBarActivity
         Log.d(TAG, "Pressed back button");
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if (currentSection == SECTION_STORIES_DETAILS) {
+        if (currentSection == SECTION_STORY_DETAILS) {
             showStories();
         } else {
             super.onBackPressed();

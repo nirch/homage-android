@@ -83,6 +83,7 @@ public class NavigationDrawerFragment extends Fragment {
                 res.getString(R.string.nav_item_3_settings),
                 res.getString(R.string.nav_item_4_howto)
         };
+        mCurrentSelectedPosition = 1;
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.

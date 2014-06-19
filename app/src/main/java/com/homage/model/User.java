@@ -12,9 +12,9 @@ import java.util.Date;
 import java.util.List;
 
 public class User extends SugarRecord<User> {
-    String oid;
 
     //region *** Fields ***
+    String oid;
     public String email;
     public boolean isFirstUse;
     public boolean isLoggedIn;
@@ -24,8 +24,8 @@ public class User extends SugarRecord<User> {
     public String userId;
     public String fbId;
     public String firstName;
-    public Date createAt;
-    public Date lastTimeUpdatedStories;
+    public long createAt;
+    public long lastTimeUpdatedStories;
     //endregion
 
 
@@ -81,19 +81,28 @@ public class User extends SugarRecord<User> {
         // Query for an unfinished remake.
         List<Remake> res = Remake.find(
                 Remake.class,
-                "user = ? and story = ? and (status = ? or status = ? or status = ?)",
+                "user = ? and story = ?",
                 getId().toString(),
-                story.getId().toString(),
-                Remake.Status.NEW.toString(),
-                Remake.Status.IN_PROGRESS.toString(),
-                Remake.Status.TIMEOUT.toString());
+                story.getId().toString());
         if (res.size()>0) return res.get(0);
+
+        /*
+         and (status = ? or status = ? or status = ?)
+
+                         Remake.Status.NEW.toString(),
+                Remake.Status.IN_PROGRESS.toString(),
+                Remake.Status.TIMEOUT.toString()
+         */
+
         return null;
     }
 
     public long timePassedSinceUpdatedStories() {
+        return Integer.MAX_VALUE;
+        /*
         if (lastTimeUpdatedStories == null) return Integer.MAX_VALUE;
         return new Date().getTime() - lastTimeUpdatedStories.getTime();
+        */
     }
 
     //endregion

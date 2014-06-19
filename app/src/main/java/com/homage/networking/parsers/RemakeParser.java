@@ -55,7 +55,7 @@ public class RemakeParser extends Parser {
         remake.videoURL =       parseString("video",null);
         remake.shareURL =       parseString("share_link",null);
         remake.grade =          parseInt("grade",0);
-        remake.createdAt =      parseDate("created_at",null);
+        remake.createdAt =      parseDateAsTimestamp("created_at",-1);
         remake.stillPublic =    true;
 
         remake.save();

@@ -15,19 +15,24 @@ import java.util.Date;
 import java.util.List;
 
 public class Remake extends SugarRecord<Remake> {
-    String oid;
-    Story story;
-    User user;
 
     //region *** Fields ***
+    String oid;
     public int grade;
     public String lastLocalUpdate;
     public String shareURL;
     public int status;
     public String thumbnailURL;
     public String videoURL;
-    public Date createdAt;
+    public long createdAt;
     public boolean stillPublic;
+    //endregion
+
+    //region *** Relationships ***
+    Story story;
+    User user;
+    //endregion
+
 
     @Ignore
     static public enum Status {

@@ -51,7 +51,5 @@ public class StoryParser extends Parser {
         scenesParser.objectToParse = storyInfo.getJSONArray("scenes");
         scenesParser.story = story;
         scenesParser.parse();
-
-
     }
 }

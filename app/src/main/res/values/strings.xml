@@ -21,8 +21,6 @@
     <string name="button_oops_nope">OOPS..NOPE</string>
     <string name="button_yeah_start_rolling">YEAH, START ROLLING</string>
 
-
-
     <string name="title_great_job">GREAT JOB!</string>
 
     <!-- Videos -->
@@ -57,6 +55,36 @@
     <!-- Action buttons -->
     <string name="action_button_lets_shot">LETS SHOOT!</string>
 
+    <!-- Login screen -->
+    <string name="login_disclaimer_first_row">By signing in or entering as a Guest you agree to our</string>
+    <string name="login_disclaimer_second_row"><a>Terms of service</a> &amp; <a>Privacy Policy</a></string>
+    <string name="login_action_button">SIGN IN</string>
+    <string name="login_cancel_button">cancel</string>
+
+
+    <!-- Settings -->
+    <string name="settings_title">SETTINGS</string>
+
+    <string name="settings_category_developer">Developer</string>
+    <string name="settings_category_privacy">Privacy</string>
+    <string name="settings_category_support">Support</string>
+
+    <string name="settings_uploader_title">Uploader</string>
+    <string name="settings_uploader_summary">Turn off/on uploader.</string>
+
+    <string name="settings_skip_story_details_title">Skip Story Details</string>
+    <string name="settings_skip_story_details_summary">Skip the story details screen and immediately open the recorder when selecting a story.</string>
+
+    <string name="settings_export_db_title">Export model db.</string>
+
+    <string name="settings_remakes_are_public_title">Remakes are public</string>
+    <string name="settings_remakes_are_public_summary">Share your remakes with others.</string>
+
+    <string name="settings_feedback_title">Feedback us</string>
+    <string name="settings_terms_of_service_title">Terms of service</string>
+    <string name="settings_privacy_policy_title">Privacy policy</string>
+    <string name="settings_version_title">Version</string>
+
     <!-- placeholders -->
     <string name="placeholder_text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet.</string>
     <string name="placeholder_text_scene_1">SCENE&#xA0;1</string>
@@ -65,5 +93,16 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="placeholder_hello_guest">Hello Guest</string>
     <string name="placeholder_join_now">join now</string>
+
+    <!-- debug -->
+    <string name="debug_unimplemented_title">Unimplemented</string>
+    <string name="debug_unimplemented_description">This feature is still under construction. Try again in a later version.</string>
+    <string name="debug_ok">OK</string>
+
+    <string name="debug_exported_db_title">Exported db</string>
+    <string name="debug_exported_db_description">Copied the model database file to the documents shared folder on the device.</string>
+
+    <string name="debug_exported_db_failed_title">Failed exporting db</string>
+    <string name="debug_exported_db_failed_description">Failed exporting the db. Check logs for exception.</string>
 
 </resources>

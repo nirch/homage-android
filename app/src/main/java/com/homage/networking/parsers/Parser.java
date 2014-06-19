@@ -111,9 +111,29 @@ public class Parser {
         return defaultValue;
     }
 
+    protected long parseDateAsTimestamp(String key, long defaultValue) throws JSONException {
+        return parseDateAsTimestamp((JSONObject)objectToParse, key, defaultValue);
+    }
+
+    protected long parseDateAsTimestamp(JSONObject obj, String key, long defaultValue) throws JSONException {
+        if (!obj.has(key)) return defaultValue;
+        String sDate = obj.getString(key);
+        try {
+            Date dDate = dateFormatter.parse(sDate);
+            long lDate = dDate.getTime();
+            return lDate;
+        } catch (Exception ex) {
+            return defaultValue;
+        }
+    }
+
+    /*
+    Deprecated - Sugar ORM doesn't support Date object very well.
+                 Will store dates to the database as simple long timestamp instead.
     protected Date parseDate(String key, Date defaultValue) throws JSONException {
         return parseDate((JSONObject) objectToParse, key, defaultValue);
     }
+
     protected Date parseDate(JSONObject obj, String key, Date defaultValue) throws JSONException {
         if (!obj.has(key)) return defaultValue;
         String sDate = obj.getString(key);
@@ -123,7 +143,7 @@ public class Parser {
             return defaultValue;
         }
     }
-
+    */
 
     //endregion
 }

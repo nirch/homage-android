@@ -51,31 +51,6 @@
         </activity>
 
         <!--
-            ############################################
-
-                               Homage.
-                             ,         ,
-                             |\\\\ ////|
-                             | \\\V/// |
-                             |  |~~~|  |
-                             |  |===|  |
-                             |  |   |  |
-                             |  |   |  |
-                              \ |   | /
-                               \|===|/
-                                '==='
-                           Stories Activity
-
-            ############################################
-        -->
-        <activity
-            android:name=".main.StoriesActivity"
-            android:screenOrientation="portrait"
-            >
-        </activity>
-
-
-        <!--
             #############################################
 
                               Homage
@@ -146,6 +121,12 @@
             >
 
         </activity>
+
+        <!-- Settings activity -->
+        <activity android:name=".main.SettingsActivity"></activity>
+
+        <!-- Login activity -->
+        <activity android:name=".user.LoginActivity"></activity>
 
     </application>
 </manifest>

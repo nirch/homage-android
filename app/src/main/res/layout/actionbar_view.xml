@@ -5,8 +5,7 @@
     android:background="@drawable/actionbar_bg"
     android:orientation="vertical" >
 
-    <ImageButton
-        android:id="@+id/navButton"
+    <ImageButton android:id="@+id/navButton"
         android:layout_width="60dp"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
@@ -15,7 +14,7 @@
         android:src="@drawable/nav_button"
         />
 
-    <TextView
+    <TextView android:id="@+id/appTitle"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
@@ -23,10 +22,9 @@
         android:gravity="center"
         android:text="@string/app_main_title"
         android:textColor="#ffffff"
-        android:id="@+id/appTitle"
         android:textSize="23dp" />
 
-    <ImageView
+    <ImageView android:id="@+id/appTitleIcon"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_centerVertical="true"

@@ -13,8 +13,10 @@
  */
 package com.homage.app.main;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Camera;
 import android.util.Log;
 
@@ -29,6 +31,8 @@ import java.util.logging.Logger;
 
 public class HomageApplication extends SugarApp {
     String TAG = "TAG_" + getClass().getName();
+
+    public static String SETTINGS_NAME = "homage_settings";
 
     private static Context instance;
 
@@ -68,6 +72,10 @@ public class HomageApplication extends SugarApp {
         return instance;
     }
 
+
+    public static SharedPreferences getSettings(Activity activity) {
+        return activity.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE);
+    }
 
     //region *** Unhandled exceptions ***
 

@@ -45,7 +45,7 @@ public class UserParser extends Parser {
         user.email =        parseString("email", null);
         user.isFirstUse =   parseBool("first_use", false);
         user.isPublic =     parseBool("is_public", false);
-        user.createAt =     parseDate("created_at", null);
+        user.createAt =     parseDateAsTimestamp("created_at", -1);
         user.login();
         user.save();
     }

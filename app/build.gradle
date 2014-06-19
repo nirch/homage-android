@@ -25,4 +25,5 @@ dependencies {
     compile files('libs/android-query-full.0.26.7.jar')
     compile ("com.android.support:support-v4:18.0.+")
     compile ("com.android.support:appcompat-v7:18.0.+")
+    compile files('libs/facebook')
 }

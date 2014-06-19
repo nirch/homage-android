@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="facebook">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/app/libs/facebook" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,7 +1,23 @@
+/**
+       Homage.
+     ,         ,
+     |\\\\ ////|
+     | \\\V/// |
+     |  |~~~|  |
+     |  |===|  |
+     |  |   |  |
+     |  |   |  |
+      \ |   | /
+       \|===|/
+        '---'
+   Stories Fragment
+ */
 package com.homage.app.story;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,10 +28,13 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
+import com.homage.app.main.SettingsActivity;
 import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
+import com.homage.views.ActivityHelper;
 
 import java.util.List;
 
@@ -125,8 +144,20 @@ public class StoriesListFragment extends Fragment {
     private void showStoryDetails(Story story) {
         if (story == null) return;
 
+        SharedPreferences pref = HomageApplication.getSettings(getActivity());
+
+        boolean skipStoryDetails = pref.getBoolean("settings_skip_story_details", false);
         MainActivity main = (MainActivity)this.getActivity();
-        main.showStoryDetails(story);
+
+        if (skipStoryDetails) {
+            // Used for debugging. Skips the story details screen.
+            // And just opens the recorder for a remake of this story.
+            main.remakeStory(story);
+        } else {
+            // Will show the story details screen.
+            main.showStoryDetails(story);
+        }
+
     }
 
     //region *** UI event handlers ***

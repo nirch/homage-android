@@ -15,6 +15,7 @@ import java.text.NumberFormat;
 
 
 public class Scene extends SugarRecord<Scene> {
+
     //region *** Fields ***
     int sceneID;
     public String context;
@@ -26,7 +27,9 @@ public class Scene extends SugarRecord<Scene> {
     public String videoURL;
     public double focusPointX;
     public double focusPointY;
+    //endregion
 
+    //region *** Relationships ***
     Story story;
     //endregion
 

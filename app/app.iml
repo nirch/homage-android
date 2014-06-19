@@ -72,6 +72,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="support-v4-18.0.0" level="project" />
     <orderEntry type="library" exported="" name="sugar-1.2" level="project" />
+    <orderEntry type="library" exported="" name="facebook" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-18.0.0" level="project" />
     <orderEntry type="library" exported="" name="android-query-full.0.26.7" level="project" />
     <orderEntry type="library" exported="" name="aws-android-sdk-1.7.1.1-core" level="project" />

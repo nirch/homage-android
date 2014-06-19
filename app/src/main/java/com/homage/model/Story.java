@@ -11,9 +11,9 @@ import com.orm.SugarRecord;
 import java.util.List;
 
 public class Story extends SugarRecord<Story> {
-    String oid;
 
     //region *** Fields ***
+    String oid;
     public String description;
     public String name;
     public boolean active;

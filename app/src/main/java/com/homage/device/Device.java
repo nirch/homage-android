@@ -3,6 +3,9 @@ package com.homage.device;
 import android.os.Build;
 
 public class Device {
+
+    public final static String defaultVideoResolution = "720";
+
     public static String getDeviceModel() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;

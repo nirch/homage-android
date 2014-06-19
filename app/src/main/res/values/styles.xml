@@ -143,6 +143,15 @@
         <item name="android:shadowRadius">2</item>
     </style>
 
+    <style name="textButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:background">@drawable/selector_action_button_bg</item>
+        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:textSize">14dp</item>
+    </style>
+
     <style name="centeredImage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

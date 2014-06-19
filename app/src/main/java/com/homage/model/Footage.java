@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Footage extends SugarRecord<Remake> {
+
     //region *** Fields ***
     public String processedVideoS3Key;
     public String rawLocalFile;
@@ -33,9 +34,12 @@ public class Footage extends SugarRecord<Remake> {
     public String rawUploadedFile;
     public boolean currentlyUploaded;
     public int uploadsFailedCounter;
+    //endregion
 
+    //region *** Relationships ***
     public Remake remake;
     public User user;
+    //endregion
 
     @Ignore
     static public enum Status {
@@ -82,47 +86,8 @@ public class Footage extends SugarRecord<Remake> {
 
     public static List<Footage> findPendingFootagesForUser(User user) {
         List<Footage> footages = Footage.find(Footage.class, "user=? AND raw_local_file!=? AND status=?", user.getId().toString(), "null", "0");
-        /*
-        List<Footage> footages = Select.from(Footage.class).where(
-                                    Condition.prop("user").eq(user.getId().toString()),
-                                    Condition.prop("status").eq(0),
-                                    Condition.prop("raw_local_file").notEq("Null")
-                                    ).list();
-                                    */
-        /*
-        File Db = new File("/data/data/com.homage.app/databases/Homage2.db");
-        File file = new File(Environment.getExternalStoragePublicDirectory("Documents")+"/test.db");
-        file.setWritable(true);
-        try {
-            copy(Db, file);
-        } catch (Exception ex) {
-            Log.d("x", ":-(",ex);
-        }
-        */
-
-        /*
-        List<Footage> footages = Footage.findWithQuery(
-                Footage.class,
-                "select * from Footage where user=? AND status=? AND raw_local_file is not null",
-                user.getId().toString(),
-                "0");
-                */
-        return footages;
+          return footages;
     }
     //endregion
-
-    public static void copy(File src, File dst) throws IOException {
-        InputStream in = new FileInputStream(src);
-        OutputStream out = new FileOutputStream(dst);
-
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
-    }
 }
 

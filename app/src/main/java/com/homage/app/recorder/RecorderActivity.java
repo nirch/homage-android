@@ -663,8 +663,7 @@ public class RecorderActivity extends Activity {
             // Just started. Show welcome message if user entered for the first time.
             // If not here for the first time, skip.
             User user = User.getCurrent();
-            // TODO: remove tautology after demo presentation.
-            if (user.isFirstUse || "tautology".equals("tautology")) {
+            if (user.isFirstUse) {
                 aq.id(R.id.welcomeScreenOverlay).visibility(View.VISIBLE);
             } else {
                 advanceState();

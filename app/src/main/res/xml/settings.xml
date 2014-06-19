@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/settings_category_developer">
+        <CheckBoxPreference
+            android:key="settings_uploader_active"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:title="@string/settings_uploader_title"
+            android:summary="@string/settings_uploader_summary" />
+        <CheckBoxPreference
+            android:key="settings_skip_story_details"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:title="@string/settings_skip_story_details_title"
+            android:summary="@string/settings_skip_story_details_summary" />
+
+        <Preference android:key="settings_export_db"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:title="@string/settings_export_db_title" />
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="@string/settings_category_privacy">
+
+        <CheckBoxPreference
+            android:key="settings_remakes_are_public"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:title="@string/settings_remakes_are_public_title"
+            android:summary="@string/settings_remakes_are_public_summary" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/settings_category_support">
+
+        <Preference android:key="settings_feedback"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:title="@string/settings_feedback_title" />
+
+        <Preference android:key="settings_terms_of_service"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:title="@string/settings_terms_of_service_title" />
+
+        <Preference android:key="settings_privacy_policy"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:title="@string/settings_privacy_policy_title" />
+
+        <Preference android:key="settings_version_title"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:title="@string/settings_version_title"
+            android:summary="1.2.4"
+            />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
