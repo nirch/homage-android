@@ -31,6 +31,7 @@ public class Footage extends SugarRecord<Remake> {
     public String rawVideoS3Key;
     public int sceneID;
     public int status;
+    public String takeId;
     public String rawUploadedFile;
     public boolean currentlyUploaded;
     public int uploadsFailedCounter;

@@ -99,6 +99,15 @@ public class Story extends SugarRecord<Story> {
                 "");
         return res;
     }
+
+    public List<Remake> getRemakes() {
+        List<Remake> res = Remake.find(
+                Remake.class,
+                "story = ?",
+                this.getId().toString()
+        );
+        return res;
+    }
     //endregion
 
     //region *** Logic ***

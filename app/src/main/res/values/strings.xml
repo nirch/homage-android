@@ -93,6 +93,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="placeholder_hello_guest">Hello Guest</string>
     <string name="placeholder_join_now">join now</string>
+    <string name="placeholder_story_title">Story title</string>
+    <string name="placeholder_story_remakes_count">#666</string>
 
     <!-- debug -->
     <string name="debug_unimplemented_title">Unimplemented</string>

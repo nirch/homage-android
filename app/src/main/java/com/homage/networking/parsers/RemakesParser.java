@@ -27,8 +27,14 @@ public class RemakesParser extends Parser {
 
         for (int i=0; i<remakes.length();i++) {
             remakeInfo = remakes.getJSONObject(i);
+            String remakeOID = parseOID(remakeInfo);
             remakeParser.objectToParse = remakeInfo;
-            remakeParser.parse();
+
+            try {
+                remakeParser.parse();
+            } catch (Exception ex) {
+                Log.e(TAG, String.format("Failed parsing remake with OID:%s . skipped.", remakeOID) );
+            }
         }
     }
 }

@@ -103,31 +103,18 @@ abstract public class Server {
         // initialize a client
         client = new DefaultHttpClient();
     }
+
+    //region *** Request / Response info ***
+    public static HashMap<String, Object> requestInfoFromIntent(Intent intent) {
+        return (HashMap<String, Object>)intent.getSerializableExtra(SR_REQUEST_INFO);
+    }
+
+    public static HashMap<String, Object> responseInfoFromIntent(Intent intent) {
+        return (HashMap<String, Object>)intent.getSerializableExtra(SR_RESPONSE_INFO);
+    }
     //endregion
 
-//    private boolean IsReachable(Context context) {
-//        // First, check we have any sort of connectivity
-//        final ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-//        final NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
-//        boolean isReachable = false;
-//
-//        if (netInfo != null && netInfo.isConnected()) {
-//            // Some sort of connection is open, check if server is reachable
-//            try {
-//                URL url = new URL("http://www.google.com");
-//                HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
-//                urlc.setRequestProperty("User-Agent", "Android Application");
-//                urlc.setRequestProperty("Connection", "close");
-//                urlc.setConnectTimeout(30 * 1000);
-//                urlc.connect();
-//                isReachable = (urlc.getResponseCode() == 200);
-//            } catch (IOException e) {
-//                Log.e(TAG, e.getMessage());
-//            }
-//        }
-//        return isReachable;
-//    }
-
+    //region *** URLS ***
     public void initURLSCache(ArrayList<Integer> urlIDs) {
         Resources res = context.getResources();
         namedURLS = new HashMap<Integer, String>();
@@ -148,6 +135,7 @@ abstract public class Server {
         Log.v(TAG, String.format("Prepared url:%s", url));
         return url;
     }
+    //endregion
 
     /**
      * Do a GET async HTTP request to the server.

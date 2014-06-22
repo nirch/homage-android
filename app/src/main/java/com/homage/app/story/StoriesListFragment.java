@@ -78,13 +78,14 @@ public class StoriesListFragment extends Fragment {
             Story story = (Story)getItem(i);
             AQuery aq = new AQuery(rowView);
             aq.id(R.id.storyName).text(story.name);
+            aq.id(R.id.storyRemakesCount).text(String.format("#%d", story.remakesNum));
             aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
             return rowView;
         }
 
         @Override
         public boolean isEmpty() {
-            return false;
+            return stories.size() == 0;
         }
 
     };
@@ -116,6 +117,10 @@ public class StoriesListFragment extends Fragment {
             HomageServer.sh().refetchStories();
         }
         createdOnce = true;
+
+        if (stories.size() > 0) {
+            aq.id(R.id.loadingStoriesProgress).visibility(View.GONE);
+        }
 
         //region *** Bind to UI event handlers ***
         /**********************************/

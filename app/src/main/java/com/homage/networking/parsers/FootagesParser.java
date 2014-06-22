@@ -31,9 +31,10 @@ public class FootagesParser extends Parser {
     public void parseFootage(JSONObject footageInfo) throws JSONException {
         int sceneId = footageInfo.getInt("scene_id");
         Footage footage = remake.findFootageOrCreate(sceneId);
-        footage.processedVideoS3Key =       footageInfo.getString("processed_video_s3_key");
-        footage.rawVideoS3Key =             footageInfo.getString("raw_video_s3_key");
-        footage.status =                    footageInfo.getInt("status");
+        footage.processedVideoS3Key =       parseString(footageInfo, "processed_video_s3_key", null);
+        footage.rawVideoS3Key =             parseString(footageInfo, "raw_video_s3_key", null);
+        footage.status =                    parseInt(footageInfo, "status", 0);
+        footage.takeId =                    parseString(footageInfo, "take_id", null);
         footage.save();
     }
 }

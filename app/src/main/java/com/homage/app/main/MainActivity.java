@@ -90,8 +90,6 @@ public class MainActivity extends ActionBarActivity
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar_view);
 
-        HomageServer.sh().fetchRemakesForStory("5356dc94ebad7c3bf100015d");
-
         //region *** Bind to UI event handlers ***
         /**********************************/
         /** Binding to UI event handlers **/
@@ -332,13 +330,17 @@ public class MainActivity extends ActionBarActivity
         pd.show();
 
         // Send the request to the server.
-        HomageServer.sh().createRemake(story.getOID(), user.getOID(), Device.defaultVideoResolution);
+        HomageServer.sh().createRemake(
+                story.getOID(),
+                user.getOID(),
+                Device.defaultVideoResolution,
+                null);
     }
 
     private void askUserIfWantToContinueRemake(Remake remake) {
         if (remake == null) return;
 
-        HomageServer.sh().refetchRemake(remake.getOID());
+        HomageServer.sh().refetchRemake(remake.getOID(), null);
 
     }
     //endregion

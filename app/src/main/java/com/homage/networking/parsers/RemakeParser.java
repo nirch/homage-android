@@ -48,6 +48,11 @@ public class RemakeParser extends Parser {
         String storyOID = Parser.parseOID(remakeInfo.getJSONObject("story_id"));
         Story story = Story.findByOID(storyOID);
 
+        if (story == null) {
+            Log.e(TAG, String.format("Can't parse remakes for unknown story: %s. Skipped.", storyOID));
+            return;
+        }
+
         Remake remake = Remake.findOrCreate(oid,story,user);
 
         remake.status =         parseInt("status",-1);
