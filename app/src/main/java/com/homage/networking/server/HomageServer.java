@@ -225,17 +225,41 @@ public class HomageServer extends Server {
 
         HashMap<String, String> parameters = new HashMap<String, String>();
 
-        // TODO: finish implementing this
-        parameters.put("email", email);
-        parameters.put("password",password);
-        parameters.put("is_public","1");
+        boolean isPublic;
+
+        if (email!=null) {
+            // User
+            parameters.put("email", email);
+            parameters.put("password",password);
+
+            // TODO: get from settings.
+            isPublic = false;
+        } else {
+            // Guest user
+            isPublic = false;
+        }
+
+        if (isPublic) {
+            parameters.put("is_public","1");
+        } else {
+            parameters.put("is_public","0");
+        }
+
         parameters.put("device[identifier_for_vendor]",
-                Settings.Secure.getString(HomageApplication.getContext().getContentResolver(),Settings.Secure.ANDROID_ID)
+            Settings.Secure.getString(HomageApplication.getContext().getContentResolver(),Settings.Secure.ANDROID_ID)
         );
         parameters.put("device[model]", Device.getDeviceModel());
         parameters.put("device[name]","Android Phone");
+
+        // TODO: implement GCM
         parameters.put("device[push_token]","%3C0a7b7b15%203f0fb335%200e252182%2038675505%20e739547b%2047dd8ab2%20");
+
         super.POST(R.string.url_new_user, parameters, INTENT_USER_CREATION, null, new UserParser());
     }
+
+    public void loginGuest() {
+        loginUser(null, null);
+    }
+
     //endregion
 }

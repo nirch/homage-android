@@ -32,7 +32,10 @@ import java.util.logging.Logger;
 public class HomageApplication extends SugarApp {
     String TAG = "TAG_" + getClass().getName();
 
-    public static String SETTINGS_NAME = "homage_settings";
+    public static final String SETTINGS_NAME = "homage_settings";
+
+    public static final String SK_EMAIL = "email";
+    public static final String SK_PASSWORD = "password";
 
     private static Context instance;
 
@@ -51,9 +54,8 @@ public class HomageApplication extends SugarApp {
         initSingletons();
         Thread.setDefaultUncaughtExceptionHandler(new HomageUnhandledExceptionHandler());
 
-        // DEBUG user
+        // Logout all users
         User.logoutAllUsers();
-        HomageServer.sh().loginUser("android@test.com","123456");
 
         // Start the background upload service
         Intent intent = new Intent(this, UploaderService.class);
@@ -72,11 +74,9 @@ public class HomageApplication extends SugarApp {
         return instance;
     }
 
-
     public static SharedPreferences getSettings(Activity activity) {
         return activity.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE);
     }
-
     //region *** Unhandled exceptions ***
 
     private class HomageUnhandledExceptionHandler implements Thread.UncaughtExceptionHandler {

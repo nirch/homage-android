@@ -16,10 +16,14 @@ package com.homage.app.story;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,15 +35,18 @@ import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.main.SettingsActivity;
+import com.homage.app.recorder.RecorderActivity;
 import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
+import com.homage.networking.server.Server;
 import com.homage.views.ActivityHelper;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class StoriesListFragment extends Fragment {
-    String TAG = "TAG_"+getClass().getName();
+    String TAG = "TAG_StoriesListFragment";
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     View rootView;
@@ -112,14 +119,14 @@ public class StoriesListFragment extends Fragment {
         storiesListView = aq.id(R.id.storiesListView).getListView();
         storiesListView.setAdapter(adapter);
 
-        // Refetch the stories in the background.
-        if (!createdOnce) {
-            HomageServer.sh().refetchStories();
-        }
+//        // Refetch the stories in the background.
+//        if (!createdOnce) {
+//            HomageServer.sh().refetchStories();
+//        }
         createdOnce = true;
 
         if (stories.size() > 0) {
-            aq.id(R.id.loadingStoriesProgress).visibility(View.GONE);
+            //aq.id(R.id.loadingStoriesProgress).visibility(View.GONE);
         }
 
         //region *** Bind to UI event handlers ***
@@ -146,6 +153,16 @@ public class StoriesListFragment extends Fragment {
                 getArguments().getInt(ARG_SECTION_NUMBER));
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
     private void showStoryDetails(Story story) {
         if (story == null) return;
 
@@ -164,6 +181,7 @@ public class StoriesListFragment extends Fragment {
         }
 
     }
+
 
     //region *** UI event handlers ***
     // -------------------

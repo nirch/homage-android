@@ -37,7 +37,6 @@
     <string name="pd_title_please_wait">Pleases wait.</string>
     <string name="pd_msg_preparing_remake">Preparing to remake your story.</string>
 
-
     <!-- Welcome screen -->
     <string name="welcome_1">1</string>
     <string name="welcome_1_message">MAKE SURE THE ACTOR IS IN THE FIGURE BEFORE RECORDING</string>
@@ -57,9 +56,17 @@
 
     <!-- Login screen -->
     <string name="login_disclaimer_first_row">By signing in or entering as a Guest you agree to our</string>
-    <string name="login_disclaimer_second_row"><a>Terms of service</a> &amp; <a>Privacy Policy</a></string>
+    <string name="login_tos_button">Terms of service</string>
+    <string name="login_privacy_button">Privacy policy</string>
     <string name="login_action_button">SIGN IN</string>
     <string name="login_cancel_button">cancel</string>
+    <string name="login_guest_button">Guest</string>
+
+    <string name="login_error_email_format">incorrect email format</string>
+    <string name="login_error_password_format">password must be at least 6 characters long</string>
+
+    <string name="login_pd_title">Please wait.</string>
+    <string name="login_pd_signing_in">Signing in user...</string>
 
 
     <!-- Settings -->

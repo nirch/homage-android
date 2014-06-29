@@ -40,13 +40,25 @@
             android:exported="false" />
 
         <activity
+            android:name=".main.SplashScreenActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".main.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat"
             >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="com.homage.app" />
             </intent-filter>
         </activity>
 
@@ -127,6 +139,13 @@
 
         <!-- Login activity -->
         <activity android:name=".user.LoginActivity"></activity>
+
+        <!-- Full screen video player -->
+        <activity android:name=".player.FullScreenVideoPlayerActivity"
+            android:screenOrientation="sensor"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
+            >
+        </activity>
 
     </application>
 </manifest>

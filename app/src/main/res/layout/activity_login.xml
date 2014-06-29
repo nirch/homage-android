@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/drawer_bg"
     >
 
     <ImageView
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/uc"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/blurred_background"
+        android:scaleType="centerCrop"
+        android:alpha="0.2"
         />
 
     <LinearLayout
@@ -30,7 +31,9 @@
 
         <EditText android:id="@+id/loginMail"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            />
 
         <Space
             android:layout_width="match_parent"
@@ -44,7 +47,17 @@
 
         <EditText android:id="@+id/loginPassword"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            />
+
+        <TextView android:id="@+id/textErrorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/homage_text_error"
+            android:text=""
+            />
 
         <Space
             android:layout_width="match_parent"
@@ -88,14 +101,39 @@
             android:text="@string/login_disclaimer_first_row"
             android:gravity="center"
             />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="11dp"
-            android:text="@string/login_disclaimer_second_row"
-            android:gravity="center"
-            />
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            >
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:text="@string/login_tos_button"
+                android:background="@drawable/selector_action_button_bg"
+                android:textColor="@color/homage_impact"
+                android:alpha="0.5"
+                android:textSize="12dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="&amp;"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:text="@string/login_privacy_button"
+                android:background="@drawable/selector_action_button_bg"
+                android:textColor="@color/homage_impact"
+                android:alpha="0.5"
+                android:textSize="12dp"
+                />
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

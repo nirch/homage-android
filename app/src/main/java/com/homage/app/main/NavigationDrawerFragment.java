@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.model.Story;
+import com.homage.model.User;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -186,6 +187,15 @@ public class NavigationDrawerFragment extends Fragment {
         }
     };
 
+
+    public void updateLoginState() {
+        User currentUser = User.getCurrent();
+        if (currentUser==null) {
+
+        } else {
+
+        }
+    }
 
     /**
      * Users of this fragment must call this method to set up the navigation drawer interactions.

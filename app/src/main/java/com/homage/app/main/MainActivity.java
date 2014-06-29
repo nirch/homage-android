@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -34,9 +35,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.player.FullScreenVideoPlayerActivity;
+import com.homage.app.player.VideoPlayerFragment;
 import com.homage.app.recorder.RecorderActivity;
 import com.homage.app.story.StoriesListFragment;
 import com.homage.app.story.StoryDetailsFragment;
@@ -53,9 +57,11 @@ import java.util.HashMap;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-    String TAG = "TAG_"+getClass().getName();
+    String TAG = "TAG_MainActivity";
 
     AQuery aq;
+    AQuery actionAQ;
+
     static final int SECTION_LOGIN      = 0;
     static final int SECTION_STORIES    = 1;
     static final int SECTION_ME         = 2;
@@ -73,6 +79,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         aq = new AQuery(this);
@@ -89,6 +96,11 @@ public class MainActivity extends ActionBarActivity
         // Custom actionbar layout
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar_view);
+        actionAQ = new AQuery(getActionBar().getCustomView());
+
+        // Refresh stories
+        showRefreshProgress();
+        HomageServer.sh().refetchStories();
 
         //region *** Bind to UI event handlers ***
         /**********************************/
@@ -96,6 +108,7 @@ public class MainActivity extends ActionBarActivity
         /**********************************/
         aq.id(R.id.navButton).clicked(onClickedNavButton);
 
+        actionAQ.id(R.id.refreshButton).clicked(onClickedRefreshButton);
         //endregion
     }
 
@@ -103,6 +116,7 @@ public class MainActivity extends ActionBarActivity
     protected void onResume() {
         super.onResume();
         initObservers();
+        updateLoginState();
     }
 
     @Override
@@ -115,13 +129,13 @@ public class MainActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-        currentSection = position;
         switch (position) {
             case SECTION_LOGIN:
                 showLogin();
                 break;
 
             case SECTION_STORIES:
+                currentSection = position;
                 showStories();
                 break;
 
@@ -129,8 +143,13 @@ public class MainActivity extends ActionBarActivity
                 showSettings();
                 break;
 
+            case SECTION_HOWTO:
+                showHowTo();
+                break;
+
             default:
                 // Not implemented yet. Just put a place holder fragment for now.
+                currentSection = position;
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, PlaceholderFragment.newInstance(position))
                         .commit();
@@ -143,18 +162,23 @@ public class MainActivity extends ActionBarActivity
         LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
         lbm.registerReceiver(onStoriesUpdated, new IntentFilter(HomageServer.INTENT_STORIES));
         lbm.registerReceiver(onRemakeCreation, new IntentFilter(HomageServer.INTENT_REMAKE_CREATION));
+        lbm.registerReceiver(onUserLogin, new IntentFilter(HomageServer.INTENT_USER_CREATION));
     }
 
     private void removeObservers() {
         LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
         lbm.unregisterReceiver(onStoriesUpdated);
         lbm.unregisterReceiver(onRemakeCreation);
+        lbm.unregisterReceiver(onUserLogin);
     }
 
     // Observers handlers
     private BroadcastReceiver onStoriesUpdated = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Bundle b = intent.getExtras();
+            boolean success = b.getBoolean("success", false);
+            hideRefreshProgress();
             if (currentSection == SECTION_STORIES) {
                 showStories();
             }
@@ -183,6 +207,13 @@ public class MainActivity extends ActionBarActivity
             }
         }
     };
+
+    private BroadcastReceiver onUserLogin = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateLoginState();
+        }
+    };
     //endregion
 
     //region *** Options ***
@@ -208,6 +239,16 @@ public class MainActivity extends ActionBarActivity
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
+    }
+
+    public void updateLoginState() {
+        User user = User.getCurrent();
+        if (user==null) {
+            Log.d(TAG, "No logged in user.");
+        } else {
+            Log.d(TAG, String.format("Current user:%s", user.email));
+        }
+        mNavigationDrawerFragment.updateLoginState();
     }
 
     @Override
@@ -295,6 +336,27 @@ public class MainActivity extends ActionBarActivity
         Intent myIntent = new Intent(this, SettingsActivity.class);
         startActivity(myIntent);
     }
+
+    public void showHowTo() {
+        Intent myIntent = new Intent(this, FullScreenVideoPlayerActivity.class);
+        Uri videoURL = Uri.parse("android.resource://com.homage.app/raw/intro_video");
+        myIntent.putExtra(VideoPlayerFragment.K_FILE_URL, videoURL.toString());
+        myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
+        myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, true);
+        startActivity(myIntent);
+    }
+    //endregion
+
+    //region *** refresh ***
+    void showRefreshProgress() {
+        actionAQ.id(R.id.refreshProgress).visibility(View.VISIBLE);
+        actionAQ.id(R.id.refreshButton).visibility(View.GONE);
+    }
+
+    void hideRefreshProgress() {
+        actionAQ.id(R.id.refreshProgress).visibility(View.GONE);
+        actionAQ.id(R.id.refreshButton).visibility(View.VISIBLE);
+    }
     //endregion
 
     //region *** more actions ***
@@ -358,6 +420,16 @@ public class MainActivity extends ActionBarActivity
                 mNavigationDrawerFragment.close();
             } else {
                 mNavigationDrawerFragment.open();
+            }
+        }
+    };
+
+    private View.OnClickListener onClickedRefreshButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (currentSection == SECTION_STORIES) {
+                showRefreshProgress();
+                HomageServer.sh().refetchStories();
             }
         }
     };
