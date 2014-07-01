@@ -105,5 +105,17 @@ public class User extends SugarRecord<User> {
         */
     }
 
+    public String getTag() {
+        if (firstName != null) return firstName;
+        if (email != null) {
+            return email.split("@")[0];
+        }
+        return "Guest";
+    }
+
+    public boolean isGuest() {
+        if (email == null) return true;
+        return false;
+    }
     //endregion
 }

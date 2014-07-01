@@ -1,11 +1,20 @@
 package com.homage.networking.uploader;
 
+import android.util.Log;
+
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 public class AWS3Client {
+    String TAG = "TAG_AWS3Client";
+
     private static final String BUCKET_NAME = "homageapp";
     private static final String ACCESS_KEY_ID = "AKIAJTPGKC25LGKJUCTA";
     private static final String SECRET_KEY = "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";
@@ -32,14 +41,16 @@ public class AWS3Client {
     //endregion
 
     /**
-     *  Start an Upload operation for this worker and if it is implementing the AmazonServiceRequestDelegate protocol
-     *   will route all related delegate method call to it.
+     *  Start an Upload operation for this worker.
      *
      *
      * @param s3Worker The worker keeping track of this specific upload job and reports to the manager.
      * @return Returns the S3TransferOperation object for this upload operation.
      */
-    public Upload startUploadJobForWorker(UploadS3Worker s3Worker) {
-        return null;
+    public Upload startUploadJobForWorker(UploadS3Worker s3Worker, File sourceFile, String destination) {
+        Upload upload;
+        Log.v(TAG, String.format("Starting upload from %s to %s", sourceFile.getAbsoluteFile(), destination));
+        upload = tm.upload(BUCKET_NAME, destination, sourceFile);
+        return upload;
     }
 }

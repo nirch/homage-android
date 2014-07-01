@@ -15,9 +15,11 @@
 package com.homage.app.main;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
@@ -35,7 +37,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
@@ -53,7 +54,6 @@ import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 
 import java.util.HashMap;
-
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -203,7 +203,6 @@ public class MainActivity extends ActionBarActivity
                 b.putString("remakeOID", remakeOID);
                 myIntent.putExtras(b);
                 MainActivity.this.startActivity(myIntent);
-                //overridePendingTransition(0, 0);
             }
         }
     };
@@ -248,7 +247,7 @@ public class MainActivity extends ActionBarActivity
         } else {
             Log.d(TAG, String.format("Current user:%s", user.email));
         }
-        mNavigationDrawerFragment.updateLoginState();
+        mNavigationDrawerFragment.refresh();
     }
 
     @Override
@@ -402,8 +401,36 @@ public class MainActivity extends ActionBarActivity
     private void askUserIfWantToContinueRemake(Remake remake) {
         if (remake == null) return;
 
-        HomageServer.sh().refetchRemake(remake.getOID(), null);
+        final Remake theRemake = remake;
+        final Story theStory = remake.getStory();
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.continue_remake_message);
+        builder.setItems(
+                new CharSequence[] {"continue", "New", "Cancel"},
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                // Open recorder for the remake.
+                                String remakeOID = theRemake.getOID();
+                                Intent myIntent = new Intent(MainActivity.this, RecorderActivity.class);
+                                Bundle b = new Bundle();
+                                b.putString("remakeOID", remakeOID);
+                                myIntent.putExtras(b);
+                                MainActivity.this.startActivity(myIntent);
+                                break;
+                            case 1:
+                                sendRemakeStoryRequest(theStory);
+                                break;
+                            case 2:
+
+                                break;
+                        }
+                    }
+                }
+        );
+        builder.create().show();
     }
     //endregion
 

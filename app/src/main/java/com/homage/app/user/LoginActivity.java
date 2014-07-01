@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
+import com.homage.app.main.MainActivity;
 import com.homage.app.recorder.RecorderActivity;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
@@ -31,6 +32,7 @@ public class LoginActivity extends Activity {
     String TAG = "TAG_"+getClass().getName();
 
     public static final String SK_ALLOW_GUEST_LOGIN = "allowGuestLogin";
+    public static final String SK_START_MAIN_ACTIVITY_AFTER_LOGIN = "startMainActivityAfterLogin";
 
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
@@ -40,6 +42,7 @@ public class LoginActivity extends Activity {
     ProgressDialog pd;
 
     boolean allowGuestLogin = false;
+    boolean startMainActivityAfterLogin = false;
 
     //region *** Lifecycle ***
     @Override
@@ -62,6 +65,7 @@ public class LoginActivity extends Activity {
         Bundle b = getIntent().getExtras();
         if (b!=null) {
             allowGuestLogin = b.getBoolean(SK_ALLOW_GUEST_LOGIN, false);
+            startMainActivityAfterLogin = b.getBoolean(SK_START_MAIN_ACTIVITY_AFTER_LOGIN, false);
         }
 
         if (allowGuestLogin) {
@@ -105,15 +109,20 @@ public class LoginActivity extends Activity {
     private BroadcastReceiver onUserLogin = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            pd.dismiss();
-            Bundle b = intent.getExtras();
-            boolean success = b.getBoolean("success", false);
-            if (success) {
-                Toast.makeText(LoginActivity.this, "Logged in user.", Toast.LENGTH_LONG).show();
-                finish();
-            } else {
-                Toast.makeText(LoginActivity.this, "Login failed.", Toast.LENGTH_LONG).show();
+        pd.dismiss();
+        Bundle b = intent.getExtras();
+        boolean success = b.getBoolean("success", false);
+        if (success) {
+            Toast.makeText(LoginActivity.this, "Logged in user.", Toast.LENGTH_LONG).show();
+            if (startMainActivityAfterLogin) {
+                Intent startIntent = new Intent(LoginActivity.this, MainActivity.class);
+                LoginActivity.this.startActivity(startIntent);
+                LoginActivity.this.finish();
             }
+            finish();
+        } else {
+            Toast.makeText(LoginActivity.this, "Login failed.", Toast.LENGTH_LONG).show();
+        }
         }
     };
     //endregion

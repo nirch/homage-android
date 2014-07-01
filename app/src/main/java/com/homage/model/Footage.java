@@ -33,7 +33,7 @@ public class Footage extends SugarRecord<Remake> {
     public int status;
     public String takeId;
     public String rawUploadedFile;
-    public boolean currentlyUploaded;
+    public int currentlyUploaded;
     public int uploadsFailedCounter;
     //endregion
 
@@ -83,11 +83,26 @@ public class Footage extends SugarRecord<Remake> {
         this.remake = remake;
         this.sceneID = sceneID;
         this.user = remake.user;
+        this.currentlyUploaded = 0;
+    }
+
+    public static void unmarkFootagesMarkedAsUploading() {
+        List<Footage> footages = Footage.find(Footage.class, "currently_uploaded=?", "1" );
+        for (Footage footage : footages) {
+            footage.currentlyUploaded = 1;
+            footage.save();
+        }
+    }
+
+    public static Footage findFootageByRawLocalFile(String rawLocalFile) {
+        List<Footage> footages = Footage.find(Footage.class, "raw_local_file=?", rawLocalFile);
+        if (footages.size() == 0) return null;
+        return footages.get(0);
     }
 
     public static List<Footage> findPendingFootagesForUser(User user) {
-        List<Footage> footages = Footage.find(Footage.class, "user=? AND raw_local_file!=? AND status=?", user.getId().toString(), "null", "0");
-          return footages;
+        List<Footage> footages = Footage.find(Footage.class, "user=? AND currently_uploaded=? AND (raw_local_file<>raw_uploaded_file)", user.getId().toString(), "0");
+        return footages;
     }
     //endregion
 }

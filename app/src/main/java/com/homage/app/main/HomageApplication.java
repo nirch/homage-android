@@ -20,9 +20,11 @@ import android.content.SharedPreferences;
 import android.graphics.Camera;
 import android.util.Log;
 
+import com.amazonaws.services.s3.transfer.Upload;
 import com.homage.media.camera.CameraManager;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
+import com.homage.networking.uploader.UploadManager;
 import com.homage.networking.uploader.UploaderService;
 import com.orm.SugarApp;
 
@@ -39,9 +41,12 @@ public class HomageApplication extends SugarApp {
 
     private static Context instance;
 
+    private UploadManager uploadManager;
+
     public HomageApplication() {
         super();
         instance = this;
+        uploadManager = UploadManager.sh();
     }
 
     @Override
@@ -49,17 +54,16 @@ public class HomageApplication extends SugarApp {
         super.onCreate();
         Log.d(TAG, "Started Homage android application.");
 
+        // Get preferences
+        SharedPreferences p = getSettings(this);
+
         // Initialize the singletons so their instances
         // are bound to the application process.
         initSingletons();
         Thread.setDefaultUncaughtExceptionHandler(new HomageUnhandledExceptionHandler());
 
-        // Logout all users
-        User.logoutAllUsers();
-
-        // Start the background upload service
-        Intent intent = new Intent(this, UploaderService.class);
-        startService(intent);
+        // Upload service
+        UploadManager.sh().checkUploader();
     }
 
     protected void initSingletons() {
@@ -74,8 +78,8 @@ public class HomageApplication extends SugarApp {
         return instance;
     }
 
-    public static SharedPreferences getSettings(Activity activity) {
-        return activity.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE);
+    public static SharedPreferences getSettings(Context context) {
+        return context.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE);
     }
     //region *** Unhandled exceptions ***
 

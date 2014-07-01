@@ -8,6 +8,7 @@ import android.os.Handler;
 import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.user.LoginActivity;
+import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
 
 public class SplashScreenActivity extends Activity {
@@ -23,26 +24,21 @@ public class SplashScreenActivity extends Activity {
         setContentView(R.layout.activity_splash_screen);
         aq = new AQuery(this);
 
-        final boolean needsLoginScreen = false;
-        final boolean debugLogin = true;
-
+        final User user = User.getCurrent();
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
-                if (needsLoginScreen) {
-                    Intent intent = new Intent(SplashScreenActivity.this, LoginActivity.class);
-                    intent.putExtra(LoginActivity.SK_ALLOW_GUEST_LOGIN, true);
-                    SplashScreenActivity.this.startActivity(intent);
-                    SplashScreenActivity.this.finish();
-                } else {
-                    if (debugLogin) {
-                        HomageServer.sh().loginUser("testandroid@gmail.com","123456");
-                    }
-
-                    Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
-                    SplashScreenActivity.this.startActivity(intent);
-                    SplashScreenActivity.this.finish();
-                }
+            if (user == null) {
+                Intent intent = new Intent(SplashScreenActivity.this, LoginActivity.class);
+                intent.putExtra(LoginActivity.SK_ALLOW_GUEST_LOGIN, true);
+                intent.putExtra(LoginActivity.SK_START_MAIN_ACTIVITY_AFTER_LOGIN, true);
+                SplashScreenActivity.this.startActivity(intent);
+                SplashScreenActivity.this.finish();
+            } else {
+                Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+                SplashScreenActivity.this.startActivity(intent);
+                SplashScreenActivity.this.finish();
+            }
             }
         }, SPLASH_DISPLAY_LENGTH);
     }

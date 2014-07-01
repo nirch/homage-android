@@ -26,6 +26,8 @@ import java.io.OutputStream;
 public class SettingsActivity extends PreferenceActivity {
     String TAG = "TAG_"+getClass().getName();
 
+    public static final String UPLOADER_ACTIVE = "settings_uploader_active";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

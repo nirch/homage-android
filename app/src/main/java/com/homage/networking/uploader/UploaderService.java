@@ -5,20 +5,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.homage.model.Footage;
+import com.homage.model.User;
+
+import java.util.List;
+
 public class UploaderService extends IntentService {
     private String TAG = "TAG_"+getClass().getName();
 
     public static final String CMD = "cmd";
-    public static final int CMD_UNKNOWN                     = 0;
-    public static final int CMD_START                       = 10;
-    public static final int CMD_STOP                        = 11;
+    public static final int CMD_UNKNOWN                     = -1;
     public static final int CMD_CHECK_FOR_PENDING_UPLOADS   = 100;
+    public static final int CMD_STOP                        = 200;
 
     static Thread uploaderThread;
-    static boolean isActive;
+    static boolean isActive = true;
 
     public UploaderService() {
         super("UploadService");
+        Footage.unmarkFootagesMarkedAsUploading();
     }
 
     @Override
@@ -36,17 +41,16 @@ public class UploaderService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         int cmd = intent.getIntExtra(CMD, CMD_UNKNOWN);
         switch (cmd) {
-            case CMD_START:
-                start();
+            case CMD_CHECK_FOR_PENDING_UPLOADS:
+                checkForPendingUploads();
                 break;
 
             case CMD_STOP:
                 stop();
                 break;
 
-            case CMD_CHECK_FOR_PENDING_UPLOADS:
-                checkForPendingUploads();
-                break;
+            default:
+                Log.e(TAG, "Unknown command");
         }
     }
 

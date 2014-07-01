@@ -33,9 +33,13 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
+    <string name="continue_remake_title">Continue Remake</string>
+    <string name="continue_remake_message">Continue from the last saved point, or start from scratch?</string>
+
     <!-- Progress dialogues -->
     <string name="pd_title_please_wait">Pleases wait.</string>
     <string name="pd_msg_preparing_remake">Preparing to remake your story.</string>
+    <string name="pd_msg_render">Sending movie to be rendered.</string>
 
     <!-- Welcome screen -->
     <string name="welcome_1">1</string>

@@ -13,6 +13,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +37,8 @@ import com.homage.model.User;
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
+    String TAG = "TAG_NavigationDrawerFragment";
+
     LayoutInflater inflater;
 
     /**
@@ -162,6 +165,7 @@ public class NavigationDrawerFragment extends Fragment {
                 case 0:
                     // Login
                     rowView = inflater.inflate(R.layout.list_row_login, mDrawerListView, false);
+                    configureLoginRow(rowView);
                     break;
                 default:
                     rowView = inflater.inflate(R.layout.list_row_option, mDrawerListView, false);
@@ -187,14 +191,29 @@ public class NavigationDrawerFragment extends Fragment {
         }
     };
 
+    public void configureLoginRow(View rowView) {
+        User user = User.getCurrent();
 
-    public void updateLoginState() {
-        User currentUser = User.getCurrent();
-        if (currentUser==null) {
+        AQuery aq = new AQuery(rowView);
 
-        } else {
-
+        if (user == null) {
+            aq.id(R.id.loggedInUser).text("");
+            aq.id(R.id.signInOutButton).text("Join now");
+            return;
         }
+
+
+        if (user.isGuest()) {
+            aq.id(R.id.loggedInUser).text("Guest");
+            aq.id(R.id.signInOutButton).text("Join now");
+        } else {
+            aq.id(R.id.loggedInUser).text(user.getTag());
+            aq.id(R.id.signInOutButton).text("Logout");
+        }
+    }
+
+    public void refresh() {
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -235,6 +254,7 @@ public class NavigationDrawerFragment extends Fragment {
                     return;
                 }
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                refresh();
             }
 
             @Override

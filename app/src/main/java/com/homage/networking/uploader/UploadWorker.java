@@ -26,4 +26,22 @@ public interface UploadWorker {
      *  Tells a working worker to stop / cancel what it is currently doing.
      */
     public void stopWorking();
+
+    /**
+     * Gets the worker's set job id.
+     * @return String of the set job id (or null)
+     */
+    public String getJobID();
+
+    /**
+     * Gets the worker's set source file path.
+     *
+     * @return String of the set source file path (or null).
+     */
+    public String getSource();
+
+    /**
+     * resets worker to initial idle state.
+     */
+    public void reset();
 }

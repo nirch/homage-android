@@ -212,6 +212,20 @@ public class HomageServer extends Server {
     //endregion
 
     //region *** Render ***
+    public void renderRemake(String remakeOID) {
+        Log.v(TAG, String.format("Render remake with OID: %s", remakeOID));
+
+        // Request info
+        HashMap<String,Object> info = new HashMap<String, Object>();
+        info.put(IK_REMAKE_OID, remakeOID);
+
+        // Request parameters
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("remake_id", remakeOID);
+
+        // The POST request
+        super.POST(R.string.url_render, parameters, INTENT_RENDER, info, new RemakeParser());
+    }
     //endregion
 
     //region *** Users ***
@@ -233,7 +247,7 @@ public class HomageServer extends Server {
             parameters.put("password",password);
 
             // TODO: get from settings.
-            isPublic = false;
+            isPublic = true;
         } else {
             // Guest user
             isPublic = false;
@@ -254,7 +268,12 @@ public class HomageServer extends Server {
         // TODO: implement GCM
         parameters.put("device[push_token]","%3C0a7b7b15%203f0fb335%200e252182%2038675505%20e739547b%2047dd8ab2%20");
 
-        super.POST(R.string.url_new_user, parameters, INTENT_USER_CREATION, null, new UserParser());
+        // The user parser
+        UserParser userParser = new UserParser();
+        userParser.loginParsedUser = true;
+
+        // Post the request
+        super.POST(R.string.url_new_user, parameters, INTENT_USER_CREATION, null, userParser);
     }
 
     public void loginGuest() {

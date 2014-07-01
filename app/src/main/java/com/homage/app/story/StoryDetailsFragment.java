@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.main.MainActivity;
+import com.homage.app.player.VideoPlayerFragment;
 import com.homage.app.recorder.RecorderActivity;
 import com.homage.model.Remake;
 import com.homage.model.Story;
@@ -26,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class StoryDetailsFragment extends Fragment {
-    public String TAG = "TAG_"+getClass().getName();
+    public String TAG = "TAG_StoryDetailsFragment";
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -63,6 +64,16 @@ public class StoryDetailsFragment extends Fragment {
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_story_details, container, false);
         initialize();
+
+        // Example of embedded video player
+        View videoContainer = aq.id(R.id.videoFragmentContainer).getView();
+
+        VideoPlayerFragment videoPlayer = new VideoPlayerFragment();
+        getFragmentManager().beginTransaction().replace(
+                R.id.videoFragmentContainer,
+                new Fragment()
+        );
+
         return rootView;
     }
 

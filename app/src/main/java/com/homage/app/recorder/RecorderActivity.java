@@ -18,6 +18,7 @@ package com.homage.app.recorder;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -51,6 +52,7 @@ import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.uploader.UploadManager;
 import com.homage.views.ActivityHelper;
 import com.homage.views.Pacman;
 
@@ -888,6 +890,7 @@ public class RecorderActivity extends Activity {
             footage.rawLocalFile = outputFile;
             footage.save();
             updateScenesList();
+            UploadManager.sh().checkUploader();
             stateMachine.advanceState();
             stateMachine.handleCurrentState();
 

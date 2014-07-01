@@ -11,6 +11,8 @@ import org.json.JSONObject;
 public class UserParser extends Parser {
     String TAG = "TAG_"+getClass().getName();
 
+    public boolean loginParsedUser = false;
+
      /**
      *
      * Example For a user object.
@@ -40,13 +42,17 @@ public class UserParser extends Parser {
         JSONObject userInfo = (JSONObject)objectToParse;
         String oid = Parser.parseOID(userInfo);
         Log.v(TAG, String.format("Parsing a user with email:%s oid:%s", userInfo.getString("email"), oid));
-
         User user = User.findOrCreate(Parser.parseOID(userInfo));
         user.email =        parseString("email", null);
         user.isFirstUse =   parseBool("first_use", false);
         user.isPublic =     parseBool("is_public", false);
         user.createAt =     parseDateAsTimestamp("created_at", -1);
-        user.login();
+
+        // Login the user, if the parser was set to login the user after finished parsing.
+        // Will also mark all other users in local storage as logged out.
+        if (loginParsedUser) user.login();
+        responseInfo.put("userOID", oid);
+
         user.save();
     }
 }

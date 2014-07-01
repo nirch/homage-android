@@ -13,4 +13,11 @@
         android:src="@drawable/glass_dark"
         />
 
+    <FrameLayout android:id="@+id/videoFragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:background="@color/test_green"
+        >
+    </FrameLayout>
+
 </LinearLayout>
