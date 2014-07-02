@@ -137,6 +137,7 @@ public class StoriesListFragment extends Fragment {
         //endregion
     }
 
+    //region *** fragment life cycle related
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -162,6 +163,7 @@ public class StoriesListFragment extends Fragment {
     public void onPause() {
         super.onPause();
     }
+    //endregion
 
     private void showStoryDetails(Story story) {
         if (story == null) return;
