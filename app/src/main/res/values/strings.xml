@@ -16,6 +16,7 @@
     <string name="button_scene_direction">SCENE DIRECTION</string>
     <string name="button_show_script">SHOW SCRIPT</string>
     <string name="button_hide_script">HIDE SCRIPT</string>
+    <string name="make_your_own">MAKE YOUR OWN</string>
 
     <string name="button_shoot_scene">Shoot Scene!</string>
     <string name="title_scene_number">Scene&#xA0;No.&#xA0;%d</string>
@@ -37,6 +38,7 @@
     <string name="recorder_dismiss_message">This will close the recorder.\nAre you sure?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="report_abusive_remake_title">Report As Inappropriate</string>
 
     <string name="continue_remake_title">Continue Remake</string>
     <string name="continue_remake_message">Continue from the last saved point, or start from scratch?</string>
@@ -62,6 +64,7 @@
 
     <!-- Action buttons -->
     <string name="action_button_lets_shot">LETS SHOOT!</string>
+
 
     <!-- Login screen -->
     <string name="login_disclaimer_first_row">By signing in or entering as a Guest you agree to our</string>
@@ -114,6 +117,9 @@
     <string name="placeholder_join_now">join now</string>
     <string name="placeholder_story_title">Story title</string>
     <string name="placeholder_story_remakes_count">#666</string>
+
+
+
 
     <!-- debug -->
     <string name="debug_unimplemented_title">Unimplemented</string>

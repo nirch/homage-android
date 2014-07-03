@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="108dp"
+    android:orientation="vertical"
+    android:background="@drawable/selector_story_bg"
+    >
+
+    <ImageView android:id="@+id/remakeImage"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:scaleType="fitXY"
+        android:layout_alignParentStart="true" />
+
+    <ImageView android:id="@+id/remakeImageHighlight"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="false"
+        android:alpha="0.2"
+        android:background="@drawable/selector_story_fg"
+        />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:text=""
+        android:id="@+id/watchRemakeButton"
+        android:background="@android:color/transparent"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/reportButton"
+        android:src="@drawable/more3dots"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:adjustViewBounds="true"
+        android:layout_marginRight="5dp" />
+
+</RelativeLayout>

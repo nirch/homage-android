@@ -1,23 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:weightSum="1">
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:id="@+id/storyTestImageView"
+        android:layout_height="216dp"
+        android:id="@+id/storyImageView"
         android:layout_gravity="center_horizontal"
         android:scaleType="fitXY"
         android:src="@drawable/glass_dark"
         />
 
-    <FrameLayout android:id="@+id/videoFragmentContainer"
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/make_your_own"
+        android:drawableLeft="@drawable/icon_create_movie_small"
+        android:drawablePadding="10dp"
+        android:id="@+id/makeYourOwnButton"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/transparent"
+        style="@style/actionButton" />
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:background="@color/test_green"
-        >
-    </FrameLayout>
+        android:layout_height="50dp"
+        android:text="Story Description"
+        android:id="@+id/storyDescription"
+        android:layout_gravity="center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        />
+
+    <GridView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/remakesGridView"
+        tools:listitem="@android:layout/simple_list_item_2"
+        android:numColumns="2"
+        android:verticalSpacing="2dp"
+        android:horizontalSpacing="2dp"
+        android:clickable="true"
+        android:descendantFocusability="beforeDescendants"
+        />
 
 </LinearLayout>

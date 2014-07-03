@@ -343,6 +343,10 @@ abstract public class Server {
         @Override
         protected void onPostExecute(Boolean result) {
             Log.v(TAG, String.format("Response result: %b", result));
+            if (intentName == null)
+            {
+                return;
+            }
             Intent intent = new Intent(intentName);
             intent.putExtra(SR_SUCCESS, result);
             if (info != null) intent.putExtra(SR_REQUEST_INFO, info);

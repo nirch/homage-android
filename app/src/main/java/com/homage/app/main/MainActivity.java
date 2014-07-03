@@ -71,6 +71,7 @@ public class MainActivity extends ActionBarActivity
     static final int SECTION_STORY_DETAILS      = 101;
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private StoryDetailsFragment storyDetailsFragment;
     private CharSequence mTitle;
     private int currentSection;
 
@@ -178,6 +179,7 @@ public class MainActivity extends ActionBarActivity
         lbm.registerReceiver(onStoriesUpdated, new IntentFilter(HomageServer.INTENT_STORIES));
         lbm.registerReceiver(onRemakeCreation, new IntentFilter(HomageServer.INTENT_REMAKE_CREATION));
         lbm.registerReceiver(onUserLogin, new IntentFilter(HomageServer.INTENT_USER_CREATION));
+        lbm.registerReceiver(onRemakesForStoryUpdated, new IntentFilter(HomageServer.INTENT_REMAKES_FOR_STORY));
     }
 
     private void removeObservers() {
@@ -185,6 +187,7 @@ public class MainActivity extends ActionBarActivity
         lbm.unregisterReceiver(onStoriesUpdated);
         lbm.unregisterReceiver(onRemakeCreation);
         lbm.unregisterReceiver(onUserLogin);
+        lbm.unregisterReceiver(onRemakesForStoryUpdated);
     }
 
     // Observers handlers
@@ -221,6 +224,22 @@ public class MainActivity extends ActionBarActivity
             }
         }
     };
+
+    // Observers handlers
+    private BroadcastReceiver onRemakesForStoryUpdated = new BroadcastReceiver() {
+
+        //TODO: see with aviv if anything is need else
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            HashMap<String, Object> requestInfo = Server.requestInfoFromIntent(intent);
+            String storyOID = (String)requestInfo.get("storyOID");
+            if (storyDetailsFragment.story.getOID().equals(storyOID)) {
+                storyDetailsFragment.refreshData();
+            }
+        }
+    };
+    //endregion
 
     private BroadcastReceiver onUserLogin = new BroadcastReceiver() {
         @Override
@@ -332,6 +351,7 @@ public class MainActivity extends ActionBarActivity
     public void showStoryDetails(Story story) {
         currentSection = SECTION_STORY_DETAILS;
         FragmentManager fragmentManager = getSupportFragmentManager();
+        storyDetailsFragment = StoryDetailsFragment.newInstance(SECTION_STORY_DETAILS, story);
         fragmentManager.beginTransaction()
                 .replace(R.id.container, StoryDetailsFragment.newInstance(SECTION_STORY_DETAILS, story))
                 .commitAllowingStateLoss();
@@ -391,7 +411,7 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    private void sendRemakeStoryRequest(Story story) {
+    public void sendRemakeStoryRequest(Story story) {
         if (story == null) return;
 
         User user = User.getCurrent();
@@ -412,7 +432,7 @@ public class MainActivity extends ActionBarActivity
                 null);
     }
 
-    private void askUserIfWantToContinueRemake(Remake remake) {
+    public void askUserIfWantToContinueRemake(Remake remake) {
         if (remake == null) return;
 
         final Remake theRemake = remake;

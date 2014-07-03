@@ -34,6 +34,7 @@ import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.device.Device;
 import com.homage.model.Story;
+import com.homage.model.User;
 import com.homage.networking.parsers.RemakeParser;
 import com.homage.networking.parsers.RemakesParser;
 import com.homage.networking.parsers.StoriesParser;
@@ -314,6 +315,19 @@ public class HomageServer extends Server {
     public void loginGuest() {
         loginUser(null, null);
     }
+
+
+    public void reportRemakeAsInappropriate(String remakeID)
+    {
+        Log.v(TAG, String.format("reporting remake: %s" , remakeID));
+        HashMap<String, String> parameters = new HashMap<String, String>();
+
+        parameters.put("remake_id",remakeID);
+        String userId = User.getCurrent().getOID();
+        parameters.put("user_id",userId);
+        super.POST(R.string.url_report_inappropriate, parameters, null, null, null);
+    }
+
 
     //endregion
 }
