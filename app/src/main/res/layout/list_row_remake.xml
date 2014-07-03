@@ -24,4 +24,29 @@
         android:background="@drawable/selector_story_fg"
         />
 
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:text=""
+        android:id="@+id/watchRemakeButton"
+        android:background="@android:color/transparent"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/reportButton"
+        android:src="@drawable/more3dots"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:adjustViewBounds="true"
+        android:layout_marginRight="5dp" />
+
 </RelativeLayout>

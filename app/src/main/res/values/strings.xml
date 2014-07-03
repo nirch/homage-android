@@ -33,6 +33,7 @@
     <string name="recorder_dismiss_message">This will close the recorder.\nAre you sure?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="report_abusive_remake_title">Report As Inappropriate</string>
 
     <string name="continue_remake_title">Continue Remake</string>
     <string name="continue_remake_message">Continue from the last saved point, or start from scratch?</string>
@@ -108,6 +109,9 @@
     <string name="placeholder_join_now">join now</string>
     <string name="placeholder_story_title">Story title</string>
     <string name="placeholder_story_remakes_count">#666</string>
+
+
+
 
     <!-- debug -->
     <string name="debug_unimplemented_title">Unimplemented</string>

@@ -79,9 +79,25 @@ public class StoryDetailsFragment extends Fragment {
         public View getView(int i, View rowView, ViewGroup viewGroup) {
             if (rowView == null)
                 rowView = inflater.inflate(R.layout.list_row_remake, remakesGridView, false);
-            Remake remake = (Remake) getItem(i);
+            final Remake remake = (Remake) getItem(i);
             AQuery aq = new AQuery(rowView);
             aq.id(R.id.remakeImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark);
+            final int index = i;
+            aq.id(R.id.reportButton).clicked(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showReportDialogForRemake(remake.getOID().toString());
+                }
+            });
+
+            aq.id(R.id.watchRemakeButton).clicked(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, String.format("remakeOID: %s", remake.getOID()));
+                    playRemakeMovie(remake.getOID());
+                }
+            });
+
             return rowView;
         }
 
@@ -111,10 +127,6 @@ public class StoryDetailsFragment extends Fragment {
         aq.id(R.id.storyImageView).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
         aq.id(R.id.storyDescription).text(story.description);
 
-        final DisplayMetrics displayMetrics=getResources().getDisplayMetrics();
-        final float screenWidthInDp=displayMetrics.widthPixels/displayMetrics.density;
-        final float screenHeightInDp=displayMetrics.heightPixels/displayMetrics.density;
-
         remakes = story.getRemakes();
         remakesGridView = aq.id(R.id.remakesGridView).getGridView();
         remakesGridView.setAdapter(adapter);
@@ -124,7 +136,7 @@ public class StoryDetailsFragment extends Fragment {
         /**********************************/
         /** Binding to UI event handlers **/
         /**********************************/
-        aq.id(R.id.remakesGridView).itemClicked(onItemClicked);
+        //aq.id(R.id.remakesGridView).itemClicked(onItemClicked);
         aq.id(R.id.makeYourOwnButton).clicked(onClickedMakeYourOwnButton);
         //endregion
     }
@@ -232,6 +244,34 @@ public class StoryDetailsFragment extends Fragment {
             main.askUserIfWantToContinueRemake(unfinishedRemake);
         }
     }
+
+    private void showReportDialogForRemake(final String remakeID)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+        builder.setTitle(R.string.report_abusive_remake_title);
+        builder.setItems(
+                new CharSequence[] {"yes" , "no"},
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                reportAsInappropriate(remakeID);
+                                break;
+                            case 1:
+                                break;
+
+                        }
+                    }
+                });
+        builder.create().show();
+    }
+
+    private void reportAsInappropriate(String remakeID)
+    {
+        HomageServer.sh().reportRemakeAsInappropriate(remakeID);
+    }
+
+
 }
 //endregion
 
