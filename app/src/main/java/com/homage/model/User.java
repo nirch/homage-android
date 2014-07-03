@@ -79,22 +79,36 @@ public class User extends SugarRecord<User> {
 
     public Remake unfinishedRemakeForStory(Story story) {
         // Query for an unfinished remake.
-        List<Remake> res = Remake.find(
+        List<Remake> unfinishedRemakes = Remake.find(
                 Remake.class,
-                "user = ? and story = ?",
+                "user = ? AND story=? AND (status=? OR status=? OR status=?)",
                 getId().toString(),
-                story.getId().toString());
-        if (res.size()>0) return res.get(0);
+                story.getId().toString(),
+                String.valueOf(Remake.Status.NEW.getValue()),
+                String.valueOf(Remake.Status.IN_PROGRESS.getValue()),
+                String.valueOf(Remake.Status.TIMEOUT.getValue())
+                );
+        if (unfinishedRemakes.size()>0) return unfinishedRemakes.get(0);
+        return null;
+    }
 
-        /*
-         and (status = ? or status = ? or status = ?)
-
-                         Remake.Status.NEW.toString(),
+    public void deleteAllUnfinishedRemakesForStory(Story story) {
+        // Query for an unfinished remake.
+        List<Remake> unfinishedRemakes = Remake.find(
+                Remake.class,
+                "user = ? AND story=? AND (status=? or status=? or status=?)",
+                getId().toString(),
+                story.getId().toString(),
+                Remake.Status.NEW.toString(),
                 Remake.Status.IN_PROGRESS.toString(),
                 Remake.Status.TIMEOUT.toString()
-         */
+        );
+        if (unfinishedRemakes.size()==0) return;
 
-        return null;
+        for (Remake remake : unfinishedRemakes) {
+            remake.delete();
+            remake.save();
+        }
     }
 
     public long timePassedSinceUpdatedStories() {

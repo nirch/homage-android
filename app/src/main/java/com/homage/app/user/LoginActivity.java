@@ -1,11 +1,9 @@
 package com.homage.app.user;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -19,12 +17,9 @@ import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
-import com.homage.app.recorder.RecorderActivity;
 import com.homage.networking.server.HomageServer;
-import com.homage.networking.server.Server;
 import com.homage.views.ActivityHelper;
 
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,6 +73,8 @@ public class LoginActivity extends Activity {
         /**********************************/
         aq.id(R.id.loginButton).clicked(onClickedLoginButton);
         aq.id(R.id.loginCancelButton).clicked(onClickedCancelButton);
+        aq.id(R.id.termsOfServiceButton).clicked(onClickedTOSButton);
+        aq.id(R.id.privacyPolicyButton).clicked(onClickedPrivacyPolicyButton);
         //endregion
     }
 
@@ -194,5 +191,34 @@ public class LoginActivity extends Activity {
         }
     };
 
+    private View.OnClickListener onClickedTOSButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent startIntent = new Intent(LoginActivity.this, TextReaderActivity.class);
+
+            Bundle b = new Bundle();
+            b.putInt(TextReaderActivity.SK_TITLE_ID, R.string.text_title_tos);
+            b.putInt(TextReaderActivity.SK_RAW_TEXT_ID, R.raw.en_text_terms_of_service);
+            startIntent.putExtras(b);
+
+            LoginActivity.this.startActivity(startIntent);
+            overridePendingTransition(0, 0);
+        }
+    };
+
+    private View.OnClickListener onClickedPrivacyPolicyButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent startIntent = new Intent(LoginActivity.this, TextReaderActivity.class);
+
+            Bundle b = new Bundle();
+            b.putInt(TextReaderActivity.SK_TITLE_ID, R.string.text_title_privacy);
+            b.putInt(TextReaderActivity.SK_RAW_TEXT_ID, R.raw.en_text_privacy_policy);
+            startIntent.putExtras(b);
+
+            LoginActivity.this.startActivity(startIntent);
+            overridePendingTransition(0, 0);
+        }
+    };
     //endregion
 }

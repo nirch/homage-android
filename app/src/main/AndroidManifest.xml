@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.homage.app"
-    android:versionCode="300"
-    android:versionName="0.3.0"
     >
 
     <!--
@@ -153,6 +151,9 @@
 
         <!-- Login activity -->
         <activity android:name=".user.LoginActivity"></activity>
+
+        <!-- Text reader activity (used for terms of service and privacy policy -->
+        <activity android:name=".user.TextReaderActivity"></activity>
 
         <!-- Full screen video player -->
         <activity android:name=".player.FullScreenVideoPlayerActivity"

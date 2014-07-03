@@ -1,6 +1,7 @@
 package com.homage.app.recorder;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -30,6 +31,13 @@ public class RecorderOverlaySceneMessageDlgActivity extends RecorderOverlayDlgAc
         int sceneID = b.getInt("sceneID");
 
         remake = Remake.findByOID(remakeOID);
+
+        if (remake == null) {
+            Log.e(TAG, String.format("Remake not found %s", remakeOID));
+            return;
+        }
+
+
         story = remake.getStory();
         scene = story.findScene(sceneID);
 

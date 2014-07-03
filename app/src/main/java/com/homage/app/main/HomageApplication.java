@@ -49,6 +49,10 @@ public class HomageApplication extends SugarApp {
         uploadManager = UploadManager.sh();
     }
 
+    public static HomageApplication getInstance() {
+        return (HomageApplication)instance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -82,6 +86,16 @@ public class HomageApplication extends SugarApp {
         return context.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE);
     }
     //region *** Unhandled exceptions ***
+
+    public String getVersionName() {
+        String versionName;
+        try {
+            versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (Exception e) {
+            versionName = "?";
+        }
+        return versionName;
+    }
 
     private class HomageUnhandledExceptionHandler implements Thread.UncaughtExceptionHandler {
         /*

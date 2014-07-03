@@ -9,7 +9,9 @@ import com.amazonaws.services.s3.transfer.Upload;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.SettingsActivity;
 import com.homage.model.Footage;
+import com.homage.model.Remake;
 import com.homage.model.User;
+import com.homage.networking.server.HomageServer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -86,6 +88,7 @@ public class UploadManager {
             // Get an idle worker and footage to upload
             UploadWorker worker = idleWorkersPool.pop();
             Footage footage = pendingFootages.get(i);
+            Remake remake = footage.getRemake();
 
             // Put the worker to work.
             String newJobID = newJobID();
@@ -99,6 +102,12 @@ public class UploadManager {
             if (worker.startWorking()) {
                 footage.currentlyUploaded = 1;
                 footage.save();
+
+                HomageServer.sh().updateFootageUploadStart(
+                        remake.getOID(),
+                        footage.sceneID,
+                        footage.getTakeID(),
+                        null);
             }
         }
     }
@@ -115,6 +124,15 @@ public class UploadManager {
         footage.save();
 
         putWorkerToRest(worker);
+
+        // Tell server upload successful
+        Remake remake = footage.getRemake();
+        HomageServer.sh().updateFootageUploadSuccess(
+                remake.getOID(),
+                footage.sceneID,
+                footage.getTakeID(),
+                null
+        );
     }
 
     public void failedUpload(UploadWorker worker) {

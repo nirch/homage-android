@@ -19,6 +19,9 @@ public class FullScreenVideoPlayerActivity extends Activity
         // Make this activity, full screen with no title bar.
         ActivityHelper.goFullScreen(this);
 
+        // Hide the systems bars (soft navigation bar and status bar)
+        ActivityHelper.hideSystemBars(this);
+
         // Load the context
         setContentView(R.layout.activity_full_screen_homage_video);
         aq = new AQuery(this);

@@ -50,10 +50,12 @@ public class SettingsActivity extends PreferenceActivity {
         aq.id(R.id.navButton).visibility(View.GONE);
         aq.id(R.id.appTitle).text(R.string.settings_title);
         aq.id(R.id.appTitleIcon).image(R.drawable.settings_icon);
-        actionBar.setHomeButtonEnabled(true);
+        actionBar.setHomeButtonEnabled(false);
     }
 
-    public class SettingsFragment extends PreferenceFragment {
+    public static class SettingsFragment extends PreferenceFragment {
+        String TAG = "TAG_"+getClass().getName();
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);

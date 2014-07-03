@@ -108,7 +108,7 @@
             android:orientation="horizontal"
             android:layout_gravity="center"
             >
-            <Button
+            <Button android:id="@+id/termsOfServiceButton"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:text="@string/login_tos_button"
@@ -117,6 +117,7 @@
                 android:alpha="0.5"
                 android:textSize="12dp"
                 />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -124,7 +125,8 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 />
-            <Button
+
+            <Button android:id="@+id/privacyPolicyButton"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:text="@string/login_privacy_button"
@@ -133,6 +135,7 @@
                 android:alpha="0.5"
                 android:textSize="12dp"
                 />
+
         </LinearLayout>
     </LinearLayout>
 

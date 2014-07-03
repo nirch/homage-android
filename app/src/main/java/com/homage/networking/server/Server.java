@@ -72,6 +72,8 @@ abstract public class Server {
     public static String SR_REQUEST_INFO = "request info";
     public static String SR_RESPONSE_INFO = "response info";
 
+    protected String userAgent;
+
     private boolean isProductionServer;
     private String host;
     private int port;
@@ -99,6 +101,8 @@ abstract public class Server {
             port = res.getInteger(R.integer.server_dev_port);
             protocol = res.getString(R.string.server_dev_protocol);
         }
+
+        userAgent = System.getProperty("http.agent");
 
         // initialize a client
         client = new DefaultHttpClient();
@@ -204,6 +208,27 @@ abstract public class Server {
     }
 
     /**
+     * Do a PUT async HTTP request to the server.
+     *
+     * @param urlID the ID of the url (as defined in server_cfg.xml) (required!)
+     * @param parameters a hashmap of parameters for the get request. (optional)
+     * @param intentName the intent name the will be broadcasted locally, when finished (optional)
+     * @param info some info that will be attached to the request/response (optional)
+     * @param parser the parser that will handle the response (optional)
+     */
+    public void PUT(
+            int urlID,
+            HashMap<String,String> parameters,
+            String intentName,
+            HashMap<String,Object> info,
+            Parser parser) {
+
+        // Send the GET request in the background.
+        String url = url(urlID);
+        new BackgroundRequest().execute("PUT", url, parameters, intentName, info, parser);
+    }
+
+    /**
      * Asynchronous task for preparing the {@link android.media.MediaRecorder} since it's a long blocking
      * operation.
      */
@@ -248,6 +273,9 @@ abstract public class Server {
             } else if (method.equals("PUT")) {
 
                 request = new HttpPut();
+                if (parameters != null) {
+                    ((HttpPut)request).setEntity(new UrlEncodedFormEntity(paramsForPost(parameters)));
+                }
 
             } else {
                 throw new ServerException(String.format("Used unsupported request method %s", method));
@@ -255,6 +283,7 @@ abstract public class Server {
 
             URI uri = new URI(url);
             request.setURI(uri);
+            request.setHeader("User-Agent", Server.this.userAgent);;
             return request;
         }
 

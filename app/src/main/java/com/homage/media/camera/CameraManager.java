@@ -128,6 +128,11 @@ public class CameraManager {
 
     public void startCameraPreviewInView(Context context, FrameLayout previewContainer) {
         if (camera == null) camera = CameraHelper.getDefaultCameraInstance();
+
+        //Camera.Parameters cameraParams = camera.getParameters();
+        //cameraParams.setPreviewFpsRange(29000, 29000);
+        //camera.setParameters(cameraParams);
+
         CameraPreview cameraPreview = new CameraPreview(context, camera);
         cameraPreview.setZOrderOnTop(false);
         previewContainer.addView(cameraPreview);
@@ -200,6 +205,7 @@ public class CameraManager {
             }
         }
     }
+
 
     public String startRecording() {
         CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);

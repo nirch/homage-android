@@ -86,6 +86,17 @@ public class Footage extends SugarRecord<Remake> {
         this.currentlyUploaded = 0;
     }
 
+    public String getTakeID() {
+        if (rawLocalFile==null) return null;
+        String s = rawLocalFile.substring(rawLocalFile.lastIndexOf('/') + 1);
+        s = s.substring(0, s.lastIndexOf('.'));
+        return s;
+    }
+
+    public Remake getRemake() {
+        return Remake.findById(Remake.class, this.remake.getId());
+    }
+
     public static void unmarkFootagesMarkedAsUploading() {
         List<Footage> footages = Footage.find(Footage.class, "currently_uploaded=?", "1" );
         for (Footage footage : footages) {

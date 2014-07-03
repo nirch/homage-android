@@ -95,6 +95,12 @@ public class HomageServer extends Server {
         urlIDs.add(R.string.url_user_remakes);
         super.initURLSCache(urlIDs);
 
+        // Set the user agent.
+        userAgent = String.format(
+                "%s:::Homage Android App:::V%s",
+                userAgent,
+                HomageApplication.getInstance().getVersionName()
+        );
     }
     //endregion
 
@@ -209,6 +215,35 @@ public class HomageServer extends Server {
     //endregion
 
     //region *** Footages ***
+    public void updateFootageUploadStart(String remakeID, int sceneID, String takeID, HashMap<String,Object> userInfo) {
+        Log.v(TAG, String.format("Update server about upload start, take id:%s", takeID));
+
+        // Request parameters
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("remake_id", remakeID);
+        parameters.put("scene_id", String.valueOf(sceneID));
+        parameters.put("take_id", takeID);
+
+        super.PUT(R.string.url_footage, parameters,
+                INTENT_FOOTAGE_UPLOAD_START, userInfo, new RemakeParser()
+                );
+    }
+
+    public void updateFootageUploadSuccess(String remakeID, int sceneID, String takeID, HashMap<String,Object> userInfo) {
+        Log.v(TAG, String.format("Update server about upload success, take id:%s", takeID));
+
+        // Request parameters
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("remake_id", remakeID);
+        parameters.put("scene_id", String.valueOf(sceneID));
+        parameters.put("take_id", takeID);
+        parameters.put("resolution_width", "1280");
+        parameters.put("resolution_height", "720");
+
+        super.POST(R.string.url_footage, parameters,
+                INTENT_FOOTAGE_UPLOAD_SUCCESS, userInfo, new RemakeParser()
+        );
+    }
     //endregion
 
     //region *** Render ***

@@ -92,7 +92,7 @@ public class UploadS3Worker implements ProgressListener, UploadWorker {
                 Log.v(TAG, String.format("started upload %d %.02f %s", progressEvent.getEventCode(), progress, source));
                 break;
             case ProgressEvent.COMPLETED_EVENT_CODE:
-                Log.v(TAG, String.format("Completed upload %d %.02f %s", progressEvent.getEventCode(), progress, source));
+                Log.v(TAG, String.format("Completed upload %d %.02f %s %s", progressEvent.getEventCode(), progress, source, destination));
                 UploadManager.sh().finishedUpload(this);
                 break;
             case ProgressEvent.FAILED_EVENT_CODE:

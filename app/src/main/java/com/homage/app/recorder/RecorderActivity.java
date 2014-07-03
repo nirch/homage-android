@@ -196,7 +196,8 @@ public class RecorderActivity extends Activity {
         fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.animation_fadein);
         fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.animation_fadeout);
         videosPager = (ViewPager)aq.id(R.id.videosPager).getView();
-        hideControlsDrawer(false);
+        //hideControlsDrawer(false);
+        closeControlsDrawer(false);
         scenesListView.setVisibility(View.GONE);
         //endregion
 
@@ -279,7 +280,7 @@ public class RecorderActivity extends Activity {
         viewHeightForClosingControlsDrawer -= aq.id(R.id.recorderRecordButton).getView().getHeight()/2;
         recorderFullDetailsContainer.setAlpha(0);
         closeControlsDrawer(false);
-        hideControlsDrawer(false);
+        //hideControlsDrawer(false);
 
         videosAdapter = new RecorderVideosPagerAdapter(this, this.remake);
         ViewPager videosPager = (ViewPager)aq.id(R.id.videosPager).getView();
@@ -287,7 +288,6 @@ public class RecorderActivity extends Activity {
         videosPager.setOnPageChangeListener(onVideosPagerChangeListener);
     }
     //endregion
-
 
     //region *** Camera ***
     private void initCameraPreview() {
@@ -305,6 +305,8 @@ public class RecorderActivity extends Activity {
 
                 // After initialized, fade in the camera by fading out the "curtains" slowly
                 hideCurtainsAnimated(true);
+
+
             }
         }, 500);
     }
@@ -458,18 +460,28 @@ public class RecorderActivity extends Activity {
     }
 
     public void hideControlsDrawer(boolean animated) {
+        // Problem on
         if (animated) {
             // TODO: implement
         } else {
-            controlsDrawer.setAlpha(0);
+            controlsDrawer.setVisibility(View.GONE);
+            //controlsDrawer.setAlpha(0);
+
+            //controlsDrawer.setScaleX(0.5f);
         }
     }
 
     public void showControlsDrawer(boolean animated) {
+        controlsDrawer.setTranslationY(0);
         if (animated) {
             // TODO: implement
         } else {
+            //controlsDrawer.setAlpha(1);
+            controlsDrawer.setVisibility(View.VISIBLE);
             controlsDrawer.setAlpha(1);
+            closeControlsDrawer(false);
+
+            //controlsDrawer.setScaleX(1.0f);
         }
     }
 
@@ -682,6 +694,7 @@ public class RecorderActivity extends Activity {
         }
 
         private void makingAScene() {
+            showControlsDrawer(false);
             updateScenesList();
             updateUIForSceneID(currentSceneID);
         }
@@ -834,6 +847,7 @@ public class RecorderActivity extends Activity {
                     RecorderActivity.this,
                     "Failed to start recording.",
                     Toast.LENGTH_SHORT).show();
+            returnFromRecordingUI();
             return;
         }
         Log.d(TAG, String.format("Started recording to local file: %s", outputFile));
@@ -881,6 +895,8 @@ public class RecorderActivity extends Activity {
             File file = new File(outputFile);
             if (file.exists()) {
                 Log.d(TAG, String.format("Output file exists: %s", outputFile));
+
+
             } else {
                 throw new IOException(String.format("Failed saving output file: %s", outputFile));
             }

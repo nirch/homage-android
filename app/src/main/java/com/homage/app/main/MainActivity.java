@@ -9,7 +9,8 @@
  $$ |  $$ | $$$$$$  |$$ | \_/ $$ |$$ |  $$ |\$$$$$$  |$$$$$$$$\
  \__|  \__| \______/ \__|     \__|\__|  \__| \______/ \________|
 
-                           Main Activity
+                        Main Activity
+
  */
 
 package com.homage.app.main;
@@ -25,6 +26,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -46,7 +48,6 @@ import com.homage.app.recorder.RecorderActivity;
 import com.homage.app.story.StoriesListFragment;
 import com.homage.app.story.StoryDetailsFragment;
 import com.homage.app.user.LoginActivity;
-import com.homage.device.Device;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
@@ -82,6 +83,10 @@ public class MainActivity extends ActionBarActivity
 
         setContentView(R.layout.activity_main);
 
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+        decorView.setSystemUiVisibility(uiOptions);
+
         aq = new AQuery(this);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -94,8 +99,9 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout)findViewById(R.id.drawer_layout));
 
         // Custom actionbar layout
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.actionbar_view);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.actionbar_view);
         actionAQ = new AQuery(getActionBar().getCustomView());
 
         // Refresh stories
@@ -126,7 +132,17 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void onNavigationDrawerItemSelected(final int position) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                handleDrawerSectionSelection(position);
+            }
+        }, 200);
+    }
+    //endregion
+
+    public void handleDrawerSectionSelection(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
@@ -152,10 +168,9 @@ public class MainActivity extends ActionBarActivity
                 currentSection = position;
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, PlaceholderFragment.newInstance(position))
-                        .commit();
+                        .commitAllowingStateLoss();
         }
     }
-    //endregion
 
     //region *** Observers ***
     private void initObservers() {
@@ -236,8 +251,7 @@ public class MainActivity extends ActionBarActivity
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
+        actionBar.setDisplayShowTitleEnabled(false);
     }
 
     public void updateLoginState() {
@@ -320,7 +334,7 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, StoryDetailsFragment.newInstance(SECTION_STORY_DETAILS, story))
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     public void showStories() {
@@ -328,7 +342,7 @@ public class MainActivity extends ActionBarActivity
         currentSection = SECTION_STORIES;
         fragmentManager.beginTransaction()
                 .replace(R.id.container, StoriesListFragment.newInstance(currentSection))
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     public void showSettings() {
@@ -394,7 +408,7 @@ public class MainActivity extends ActionBarActivity
         HomageServer.sh().createRemake(
                 story.getOID(),
                 user.getOID(),
-                Device.defaultVideoResolution,
+                Remake.DEFAULT_RENDER_OUTPUT_HEIGHT,
                 null);
     }
 
@@ -403,6 +417,7 @@ public class MainActivity extends ActionBarActivity
 
         final Remake theRemake = remake;
         final Story theStory = remake.getStory();
+        final User user = User.getCurrent();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.continue_remake_message);
@@ -421,10 +436,10 @@ public class MainActivity extends ActionBarActivity
                                 MainActivity.this.startActivity(myIntent);
                                 break;
                             case 1:
+                                user.deleteAllUnfinishedRemakesForStory(theStory);
                                 sendRemakeStoryRequest(theStory);
                                 break;
                             case 2:
-
                                 break;
                         }
                     }

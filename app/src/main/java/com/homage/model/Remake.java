@@ -35,16 +35,28 @@ public class Remake extends SugarRecord<Remake> {
 
 
     @Ignore
+    static public final String DEFAULT_RENDER_OUTPUT_HEIGHT = "360";
+
+    @Ignore
     static public enum Status {
-        NEW,
-        IN_PROGRESS,
-        RENDERING,
-        DONE,
-        TIMEOUT,
-        DELETED
+        NEW(0),
+        IN_PROGRESS(1),
+        RENDERING(2),
+        DONE(3),
+        TIMEOUT(4),
+        DELETED(5);
+
+        private final int value;
+
+        private Status(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
     }
     //endregion
-
 
     //region *** Factories ***
     public String getOID() {
