@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -40,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class StoryDetailsFragment extends Fragment {
-    public String TAG = "TAG_" + getClass().getName();
+    public String TAG = "TAG_StoryDetailsFragment";
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -82,7 +83,7 @@ public class StoryDetailsFragment extends Fragment {
             final Remake remake = (Remake) getItem(i);
             AQuery aq = new AQuery(rowView);
             aq.id(R.id.remakeImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark);
-            final int index = i;
+
             aq.id(R.id.reportButton).clicked(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -116,9 +117,6 @@ public class StoryDetailsFragment extends Fragment {
         fragment.story = story;
         Log.d(fragment.TAG, String.format("Showing story details: %s", story.name));
 
-        // Refetch remakes for this story.
-        HomageServer.sh().refetchRemakesForStory(story.getOID(), null);
-
         return fragment;
     }
 
@@ -130,7 +128,6 @@ public class StoryDetailsFragment extends Fragment {
         remakes = story.getRemakes();
         remakesGridView = aq.id(R.id.remakesGridView).getGridView();
         remakesGridView.setAdapter(adapter);
-        HomageServer.sh().refetchRemakesForStory(story.getOID(), null);
 
         //region *** Bind to UI event handlers ***
         /**********************************/
@@ -156,6 +153,15 @@ public class StoryDetailsFragment extends Fragment {
         super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(
                 getArguments().getInt(ARG_SECTION_NUMBER));
+
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity main = (MainActivity)getActivity();
+                main.refetchRemakesForStory(story);
+            }
+        }, 50);
     }
 
     @Override
@@ -173,7 +179,6 @@ public class StoryDetailsFragment extends Fragment {
     public void refreshData() {
         // Just an example of refreshing the data from local storage,
         // after it was fetched from server and parsed.
-        // TODO: finish implementation of this screen.
         List<Remake> remakes = story.getRemakes();
         adapter.notifyDataSetChanged();
         Log.d(TAG, String.format("%d remakes for this story", remakes.size()));

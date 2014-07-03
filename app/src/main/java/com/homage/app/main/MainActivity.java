@@ -227,14 +227,12 @@ public class MainActivity extends ActionBarActivity
 
     // Observers handlers
     private BroadcastReceiver onRemakesForStoryUpdated = new BroadcastReceiver() {
-
-        //TODO: see with aviv if anything is need else
-
         @Override
         public void onReceive(Context context, Intent intent) {
             HashMap<String, Object> requestInfo = Server.requestInfoFromIntent(intent);
             String storyOID = (String)requestInfo.get("storyOID");
             if (storyDetailsFragment.story.getOID().equals(storyOID)) {
+                hideRefreshProgress();
                 storyDetailsFragment.refreshData();
             }
         }
@@ -380,13 +378,18 @@ public class MainActivity extends ActionBarActivity
     }
     //endregion
 
+    public void refetchRemakesForStory(Story story) {
+        HomageServer.sh().refetchRemakesForStory(story.getOID(), null);
+        showRefreshProgress();
+    }
+
     //region *** refresh ***
-    void showRefreshProgress() {
+    public void showRefreshProgress() {
         actionAQ.id(R.id.refreshProgress).visibility(View.VISIBLE);
         actionAQ.id(R.id.refreshButton).visibility(View.GONE);
     }
 
-    void hideRefreshProgress() {
+    public void hideRefreshProgress() {
         actionAQ.id(R.id.refreshProgress).visibility(View.GONE);
         actionAQ.id(R.id.refreshButton).visibility(View.VISIBLE);
     }
