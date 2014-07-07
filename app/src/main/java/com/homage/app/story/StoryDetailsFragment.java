@@ -2,24 +2,16 @@ package com.homage.app.story;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.GridView;
 import android.widget.BaseAdapter;
 import android.widget.AdapterView;
@@ -28,16 +20,12 @@ import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.main.MainActivity;
 import com.homage.app.player.VideoPlayerFragment;
-import com.homage.app.recorder.RecorderActivity;
-import com.homage.device.Device;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
-import com.homage.networking.server.Server;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class StoryDetailsFragment extends Fragment {
@@ -48,13 +36,38 @@ public class StoryDetailsFragment extends Fragment {
     View rootView;
     LayoutInflater inflater;
     AQuery aq;
-    List<Remake> remakes;
     GridView remakesGridView;
 
     static boolean createdOnce = false;
     public Story story;
 
-    BaseAdapter adapter = new BaseAdapter() {
+    RemakesAdapter adapter;
+
+    class RemakesAdapter extends BaseAdapter {
+        private Activity mContext;
+        private List<Remake> remakes;
+
+        public RemakesAdapter(Activity context, List<Remake> remakes) {
+            this.mContext = context;
+            this.remakes = remakes;
+        }
+
+        void refreshRemakesFromLocalStorage() {
+            if (remakes==null) {
+                remakes = story.getRemakes();
+            } else {
+                remakes.clear();
+                remakes.addAll(story.getRemakes());
+            }
+            Log.d(TAG, String.format("%d remakes for this story", remakes.size()));
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            refreshRemakesFromLocalStorage();
+            super.notifyDataSetChanged();
+        }
+
         @Override
         public int getCount() {
             return remakes.size();
@@ -125,7 +138,7 @@ public class StoryDetailsFragment extends Fragment {
         aq.id(R.id.storyImageView).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
         aq.id(R.id.storyDescription).text(story.description);
 
-        remakes = story.getRemakes();
+        adapter = new RemakesAdapter(getActivity(), story.getRemakes());
         remakesGridView = aq.id(R.id.remakesGridView).getGridView();
         remakesGridView.setAdapter(adapter);
 
@@ -142,6 +155,8 @@ public class StoryDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_story_details, container, false);
         initialize();
@@ -161,27 +176,23 @@ public class StoryDetailsFragment extends Fragment {
                 MainActivity main = (MainActivity)getActivity();
                 main.refetchRemakesForStory(story);
             }
-        }, 50);
+        }, 500);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        //initObservers();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        //removeObservers();
     }
 
     public void refreshData() {
         // Just an example of refreshing the data from local storage,
         // after it was fetched from server and parsed.
-        List<Remake> remakes = story.getRemakes();
         adapter.notifyDataSetChanged();
-        Log.d(TAG, String.format("%d remakes for this story", remakes.size()));
     }
     //endregion
 
@@ -192,14 +203,12 @@ public class StoryDetailsFragment extends Fragment {
     private AdapterView.OnItemClickListener onItemClicked = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Remake remake = remakes.get(i);
-            if (remake == null) return;
-            Log.d(TAG, String.format("remakeOID: %s", remake.getOID()));
-            playRemakeMovie(remake.getOID());
+            //Remake remake = remakes.get(i);
+            //if (remake == null) return;
+            //Log.d(TAG, String.format("remakeOID: %s", remake.getOID()));
+            //playRemakeMovie(remake.getOID());
         }
     };
-
-
     //endregion
 
 
@@ -221,6 +230,10 @@ public class StoryDetailsFragment extends Fragment {
         myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
         myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, true);
         startActivity(myIntent);
+    }
+
+    public void updateRenderProgressState() {
+
     }
 
     //

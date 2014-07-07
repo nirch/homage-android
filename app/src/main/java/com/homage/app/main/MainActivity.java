@@ -48,6 +48,7 @@ import com.homage.app.recorder.RecorderActivity;
 import com.homage.app.story.StoriesListFragment;
 import com.homage.app.story.StoryDetailsFragment;
 import com.homage.app.user.LoginActivity;
+import com.homage.app.user.MyStoriesFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
@@ -70,10 +71,19 @@ public class MainActivity extends ActionBarActivity
     static final int SECTION_HOWTO      = 4;
     static final int SECTION_STORY_DETAILS      = 101;
 
+
+    static final String FRAGMENT_TAG_ME = "fragment me";
+    static final String FRAGMENT_TAG_STORIES = "fragment stories";
+    static final String FRAGMENT_TAG_MY_STORIES = "fragment my stories";
+
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private StoryDetailsFragment storyDetailsFragment;
     private CharSequence mTitle;
+
+    private Remake lastRemakeSentToRender;
+
     private int currentSection;
+    private Story currentStory;
 
     ProgressDialog pd;
 
@@ -93,6 +103,7 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
+        lastRemakeSentToRender = null;
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -124,12 +135,18 @@ public class MainActivity extends ActionBarActivity
         super.onResume();
         initObservers();
         updateLoginState();
+        updateRenderProgressState();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         removeObservers();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        Log.d(TAG, "XXX");
     }
 
     @Override
@@ -156,6 +173,11 @@ public class MainActivity extends ActionBarActivity
                 showStories();
                 break;
 
+            case SECTION_ME:
+                currentSection = position;
+                showMyStories();
+                break;
+
             case SECTION_SETTINGS:
                 showSettings();
                 break;
@@ -168,6 +190,7 @@ public class MainActivity extends ActionBarActivity
                 // Not implemented yet. Just put a place holder fragment for now.
                 currentSection = position;
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.animation_fadein_with_zoom, R.anim.animation_fadeout_with_zoom)
                         .replace(R.id.container, PlaceholderFragment.newInstance(position))
                         .commitAllowingStateLoss();
         }
@@ -180,6 +203,8 @@ public class MainActivity extends ActionBarActivity
         lbm.registerReceiver(onRemakeCreation, new IntentFilter(HomageServer.INTENT_REMAKE_CREATION));
         lbm.registerReceiver(onUserLogin, new IntentFilter(HomageServer.INTENT_USER_CREATION));
         lbm.registerReceiver(onRemakesForStoryUpdated, new IntentFilter(HomageServer.INTENT_REMAKES_FOR_STORY));
+        lbm.registerReceiver(onRemakesForUserUpdated, new IntentFilter(HomageServer.INTENT_USER_REMAKES));
+        lbm.registerReceiver(onRemakeDeletion, new IntentFilter((HomageServer.INTENT_REMAKE_DELETION)));
     }
 
     private void removeObservers() {
@@ -188,6 +213,17 @@ public class MainActivity extends ActionBarActivity
         lbm.unregisterReceiver(onRemakeCreation);
         lbm.unregisterReceiver(onUserLogin);
         lbm.unregisterReceiver(onRemakesForStoryUpdated);
+        lbm.unregisterReceiver(onRemakesForUserUpdated);
+        lbm.unregisterReceiver(onRemakeDeletion);
+    }
+
+    private void refreshMyStoriesIfCurrentSection() {
+        hideRefreshProgress();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+        if (f!=null) {
+            ((MyStoriesFragment)f).refresh();
+        }
     }
 
     // Observers handlers
@@ -237,7 +273,26 @@ public class MainActivity extends ActionBarActivity
             }
         }
     };
-    //endregion
+
+    private BroadcastReceiver onRemakesForUserUpdated = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            refreshMyStoriesIfCurrentSection();
+        }
+    };
+
+    private BroadcastReceiver onRemakeDeletion = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (pd != null) pd.dismiss();
+            boolean success = intent.getBooleanExtra(Server.SR_SUCCESS, false);
+            HashMap<String, Object> responseInfo = (HashMap<String, Object>) intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
+
+            if (success && currentSection == SECTION_ME) {
+                refreshMyStoriesIfCurrentSection();
+            }
+        }
+    };
 
     private BroadcastReceiver onUserLogin = new BroadcastReceiver() {
         @Override
@@ -279,6 +334,30 @@ public class MainActivity extends ActionBarActivity
             Log.d(TAG, String.format("Current user:%s", user.email));
         }
         mNavigationDrawerFragment.refresh();
+    }
+
+    public void updateRenderProgressState() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment f = null;
+
+        switch (currentSection) {
+            case SECTION_STORIES:
+                f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+                if (f==null) break;
+                ((StoriesListFragment)f).updateRenderProgressState();
+                break;
+            case SECTION_ME:
+                f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+                if (f==null) break;
+                ((MyStoriesFragment)f).updateRenderProgressState();
+                break;
+            case SECTION_STORY_DETAILS:
+                f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+                if (f==null) break;
+                ((StoryDetailsFragment)f).updateRenderProgressState();
+                break;
+        }
+
     }
 
     @Override
@@ -348,18 +427,34 @@ public class MainActivity extends ActionBarActivity
 
     public void showStoryDetails(Story story) {
         currentSection = SECTION_STORY_DETAILS;
+        currentStory = story;
         FragmentManager fragmentManager = getSupportFragmentManager();
         storyDetailsFragment = StoryDetailsFragment.newInstance(SECTION_STORY_DETAILS, story);
         fragmentManager.beginTransaction()
-                .replace(R.id.container, StoryDetailsFragment.newInstance(SECTION_STORY_DETAILS, story))
+                .setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout)
+                .replace(R.id.container, storyDetailsFragment)
                 .commitAllowingStateLoss();
     }
 
     public void showStories() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         currentSection = SECTION_STORIES;
+        currentStory = null;
         fragmentManager.beginTransaction()
-                .replace(R.id.container, StoriesListFragment.newInstance(currentSection))
+                .replace(R.id.container, StoriesListFragment.newInstance(currentSection), FRAGMENT_TAG_STORIES)
+                .commitAllowingStateLoss();
+    }
+
+    public void showMyStories() {
+        User user = User.getCurrent();
+        if (user==null) return;
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        currentSection = SECTION_ME;
+        currentStory = null;
+        fragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout)
+                .replace(R.id.container, MyStoriesFragment.newInstance(currentSection, user), FRAGMENT_TAG_ME)
                 .commitAllowingStateLoss();
     }
 
@@ -380,6 +475,13 @@ public class MainActivity extends ActionBarActivity
 
     public void refetchRemakesForStory(Story story) {
         HomageServer.sh().refetchRemakesForStory(story.getOID(), null);
+        showRefreshProgress();
+    }
+
+    public void refetchRemakesForCurrentUser() {
+        User user = User.getCurrent();
+        if (user==null) return;
+        HomageServer.sh().refetchRemakesForUser(user.getOID(), null);
         showRefreshProgress();
     }
 
@@ -432,6 +534,44 @@ public class MainActivity extends ActionBarActivity
                 story.getOID(),
                 user.getOID(),
                 Remake.DEFAULT_RENDER_OUTPUT_HEIGHT,
+                null);
+    }
+
+    public void askUserIfWantToDeleteRemake(final Remake remake) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.pd_title_delete_remake_question);
+
+        // set dialog message
+        builder
+            .setMessage(R.string.pd_msg_delete_remake_question)
+            .setCancelable(false)
+            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Log.d(TAG, String.format("Chosen to delete remake %s", remake.getOID()));
+                    deleteRemake(remake);
+                }
+            })
+            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Log.d(TAG, String.format("Cancel delete remake %s", remake.getOID()));
+                }
+            });
+        builder.create().show();
+    }
+
+    public void deleteRemake(Remake remake) {
+        if (remake == null) return;
+
+        Resources res = getResources();
+        pd = new ProgressDialog(this);
+        pd.setTitle(res.getString(R.string.pd_title_please_wait));
+        pd.setMessage(res.getString(R.string.pd_msg_deleting_remake));
+        pd.setCancelable(true);
+        pd.show();
+
+        // Send the request to the server.
+        HomageServer.sh().deleteRemake(
+                remake.getOID(),
                 null);
     }
 
@@ -492,9 +632,22 @@ public class MainActivity extends ActionBarActivity
     private View.OnClickListener onClickedRefreshButton = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (currentSection == SECTION_STORIES) {
-                showRefreshProgress();
-                HomageServer.sh().refetchStories();
+
+
+            switch (currentSection) {
+                case SECTION_STORIES:
+                    showRefreshProgress();
+                    HomageServer.sh().refetchStories();
+                    break;
+
+                case SECTION_STORY_DETAILS:
+                    if (currentStory==null) break;
+                    refetchRemakesForStory(MainActivity.this.currentStory);
+                    break;
+
+                case SECTION_ME:
+                    refetchRemakesForCurrentUser();
+                    break;
             }
         }
     };

@@ -43,7 +43,7 @@ public class UploadManager {
 
     public void checkUploader() {
         SharedPreferences p = HomageApplication.getSettings(HomageApplication.getContext());
-        boolean uploaderActive = p.getBoolean(SettingsActivity.UPLOADER_ACTIVE, false);
+        boolean uploaderActive = p.getBoolean(SettingsActivity.UPLOADER_ACTIVE, true);
         if (uploaderActive) {
             Intent intent = UploaderService.cmd(HomageApplication.getContext(), UploaderService.CMD_CHECK_FOR_PENDING_UPLOADS);
             HomageApplication.getContext().startService(intent);

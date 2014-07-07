@@ -40,7 +40,7 @@ public class StoryParser extends Parser {
         story.level =           parseInt("level",0);
         story.description =     parseString("description",null);
         story.name =            parseString("name",null);
-        story.active =          parseBool("active",false);
+        story.active =          parseBoolAsInt("active", 0);
         story.thumbnailRip =    parseInt("thumbnail_rip",0);
         story.orderId =         parseInt("order_id",0);
         story.video =           parseString("video",null);

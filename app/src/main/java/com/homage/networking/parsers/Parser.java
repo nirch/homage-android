@@ -127,6 +127,20 @@ public class Parser {
         }
     }
 
+    protected int parseBoolAsInt(String key, int defaultValue) throws JSONException {
+        return parseBoolAsInt((JSONObject) objectToParse, key, defaultValue);
+    }
+    protected int parseBoolAsInt(JSONObject obj, String key, int defaultValue) throws JSONException {
+        if (obj.has(key)) {
+            Boolean b = obj.getBoolean(key);
+            if (b) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+        return defaultValue;
+    }
     /*
     Deprecated - Sugar ORM doesn't support Date object very well.
                  Will store dates to the database as simple long timestamp instead.

@@ -158,8 +158,11 @@ public class VideoPlayerFragment
         Log.d(TAG, String.format("Video is prepared for playing: %s", filePath));
         aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
         aq.id(R.id.videoCurtain).visibility(View.GONE);
+        aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
         if (autoStartPlaying) start();
     }
+
+
     //endregion
 
     //region *** Controls ***

@@ -28,30 +28,52 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/homage_text"
-        android:background="@color/homage_dark_transparent_overlay"
-        android:textSize="30dp"
+        android:background="@color/homage_darker_transparent_overlay"
+        android:textSize="18dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:layout_margin="10dp"
         android:text="@string/placeholder_story_title"
-        android:visibility="gone"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <TextView android:id="@+id/storyRemakesCount"
+    <ImageButton android:id="@+id/myDeleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/homage_text"
-        android:background="@color/homage_dark_transparent_overlay"
-        android:textSize="15dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:layout_margin="10dp"
-        android:text="@string/placeholder_story_remakes_count"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:src="@drawable/selector_my_delete_button"
+        android:background="@color/homage_dark_transparent_overlay"
+        android:padding="10dp"
+        />
 
+    <ImageButton android:id="@+id/myResetButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/selector_my_reset_button"
+        android:background="@color/homage_dark_transparent_overlay"
+        android:padding="10dp"
+        />
+
+    <ImageButton android:id="@+id/myShareButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/selector_my_share_button"
+        android:background="@color/homage_dark_transparent_overlay"
+        android:padding="10dp"
+        />
+
+    <ImageButton android:id="@+id/myPlayButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/selector_my_play"
+        android:background="@color/homage_dark_transparent_overlay"
+        android:layout_centerInParent="true"
+        />
 
 </RelativeLayout>

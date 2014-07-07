@@ -27,6 +27,7 @@ public class SettingsActivity extends PreferenceActivity {
     String TAG = "TAG_"+getClass().getName();
 
     public static final String UPLOADER_ACTIVE = "settings_uploader_active";
+    public static final String SKIP_STORY_DETAILS = "settings_skip_story_details";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

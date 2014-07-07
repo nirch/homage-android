@@ -53,6 +53,14 @@ public class RemakeParser extends Parser {
             return;
         }
 
+        int status = parseInt("status",-1);
+
+        if (status == Remake.Status.DELETED.getValue()) {
+            Remake remake = Remake.findByOID(oid);
+            if (remake != null) remake.delete();
+            return;
+        }
+
         Remake remake = Remake.findOrCreate(oid,story,user);
 
         remake.status =         parseInt("status",-1);

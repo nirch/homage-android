@@ -16,14 +16,10 @@ package com.homage.app.story;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,15 +30,8 @@ import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
-import com.homage.app.main.SettingsActivity;
-import com.homage.app.recorder.RecorderActivity;
 import com.homage.model.Story;
 import com.homage.model.User;
-import com.homage.networking.server.HomageServer;
-import com.homage.networking.server.Server;
-import com.homage.views.ActivityHelper;
-
-import java.util.HashMap;
 import java.util.List;
 
 public class StoriesListFragment extends Fragment {
@@ -106,6 +95,10 @@ public class StoriesListFragment extends Fragment {
         return fragment;
     }
 
+    public void updateRenderProgressState() {
+
+    }
+
     public StoriesListFragment() {
         super();
     }
@@ -119,10 +112,6 @@ public class StoriesListFragment extends Fragment {
         storiesListView = aq.id(R.id.storiesListView).getListView();
         storiesListView.setAdapter(adapter);
 
-//        // Refetch the stories in the background.
-//        if (!createdOnce) {
-//            HomageServer.sh().refetchStories();
-//        }
         createdOnce = true;
 
         if (stories.size() > 0) {

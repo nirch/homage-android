@@ -137,11 +137,8 @@ public class RecorderActivity extends Activity {
     }
 
     // Reasons for the dismissal of the recorder
-    static private enum RecorderDismissReason {
-        DISMISS_REASON_USER_ABORTED_PRESSING_X,
-        DISMISS_REASON_FINISHED_REMAKE
-    }
-
+    public static int DISMISS_REASON_USER_ABORTED_PRESSING_X = 500;
+    public static int DISMISS_REASON_FINISHED_REMAKE = 600;
 
     // Layouts and views
     private Animation fadeInAnimation, fadeOutAnimation;
@@ -725,7 +722,7 @@ public class RecorderActivity extends Activity {
      *   ======================
      */
 
-    private void recorderDoneWithReason(RecorderDismissReason dismissReason) {
+    private void recorderDoneWithReason(int dismissReason) {
         /**
          This is the end, beautiful friend
          This is the end, my only friend, the end
@@ -734,6 +731,9 @@ public class RecorderActivity extends Activity {
          No safety or surprise, the end
          I'll never look into your eyes, again
          */
+        Intent result = new Intent();
+        result.putExtra("remakeOID", remake.getOID());
+        setResult(dismissReason, result);
         finish();
         overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
     }
@@ -929,7 +929,7 @@ public class RecorderActivity extends Activity {
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                recorderDoneWithReason(RecorderDismissReason.DISMISS_REASON_USER_ABORTED_PRESSING_X);
+                recorderDoneWithReason(DISMISS_REASON_USER_ABORTED_PRESSING_X);
             }
         });
         builder.setNegativeButton(R.string.no, null);
@@ -1107,7 +1107,7 @@ public class RecorderActivity extends Activity {
                         stateMachine.handleCurrentState();
                     } else if (resultCode == RecorderOverlayDlgActivity.ResultCode.MOVIE_MARKED_BY_USER_FOR_CREATION.getValue()) {
                         // User marked this movie for creation. Bye bye.
-                        recorderDoneWithReason(RecorderDismissReason.DISMISS_REASON_FINISHED_REMAKE);
+                        recorderDoneWithReason(DISMISS_REASON_FINISHED_REMAKE);
                     } else {
                         throw new RecorderException(String.format("Unimplemented result code for recorder %d", resultCode));
                     }

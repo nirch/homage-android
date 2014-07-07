@@ -46,6 +46,11 @@
     <!-- Progress dialogues -->
     <string name="pd_title_please_wait">Pleases wait.</string>
     <string name="pd_msg_preparing_remake">Preparing to remake your story.</string>
+
+    <string name="pd_title_delete_remake_question">Delete remake.</string>
+    <string name="pd_msg_delete_remake_question">Would you like to delete this remake?</string>
+    <string name="pd_msg_deleting_remake">Deleting remake...</string>
+
     <string name="pd_msg_render">Sending movie to be rendered.</string>
 
     <!-- Welcome screen -->
@@ -65,6 +70,9 @@
     <!-- Action buttons -->
     <string name="action_button_lets_shot">LETS SHOOT!</string>
 
+    <!-- Rendering -->
+    <string name="rendering_progress_preparing">Preparing your movie: %s</string>
+    <string name="rendering_progress_ready">Your movie is ready.</string>
 
     <!-- Login screen -->
     <string name="login_disclaimer_first_row">By signing in or entering as a Guest you agree to our</string>
@@ -106,6 +114,7 @@
     <string name="settings_terms_of_service_title">Terms of service</string>
     <string name="settings_privacy_policy_title">Privacy policy</string>
     <string name="settings_version_title">Version</string>
+
 
     <!-- placeholders -->
     <string name="placeholder_text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet.</string>

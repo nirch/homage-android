@@ -111,6 +111,19 @@ public class User extends SugarRecord<User> {
         }
     }
 
+    public List<Remake> allAvailableRemakes() {
+        // Query for ready made remakes
+        List<Remake> remakes = Remake.find(
+                Remake.class,
+                "user=? AND (status=? OR status=? OR status=?)",
+                getId().toString(),
+                String.valueOf(Remake.Status.IN_PROGRESS.getValue()),
+                String.valueOf(Remake.Status.DONE.getValue()),
+                String.valueOf(Remake.Status.TIMEOUT.getValue())
+        );
+        return remakes;
+    }
+
     public long timePassedSinceUpdatedStories() {
         return Integer.MAX_VALUE;
         /*

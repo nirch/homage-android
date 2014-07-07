@@ -229,6 +229,30 @@ abstract public class Server {
     }
 
     /**
+     * Do a DELETE async HTTP request to the server.
+     *
+     * @param urlID the ID of the url (as defined in server_cfg.xml) (required!)
+     * @param urlSuffix a suffix to be added to the url of the GET request.
+     * @param parameters a hashmap of parameters for the get request. (optional)
+     * @param intentName the intent name the will be broadcasted locally, when finished (optional)
+     * @param info some info that will be attached to the request/response (optional)
+     * @param parser the parser that will handle the response (optional)
+     */
+    public void DELETE(
+            int urlID,
+            String urlSuffix,
+            HashMap<String,String> parameters,
+            String intentName,
+            HashMap<String,Object> info,
+            Parser parser) {
+
+        // Send the GET request in the background.
+        String url = url(urlID);
+        url = url + "/" + urlSuffix;
+        new BackgroundRequest().execute("DELETE", url, parameters, intentName, info, parser);
+    }
+
+    /**
      * Asynchronous task for preparing the {@link android.media.MediaRecorder} since it's a long blocking
      * operation.
      */

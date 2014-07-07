@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Camera;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.amazonaws.services.s3.transfer.Upload;
@@ -58,12 +59,13 @@ public class HomageApplication extends SugarApp {
         super.onCreate();
         Log.d(TAG, "Started Homage android application.");
 
-        // Get preferences
-        SharedPreferences p = getSettings(this);
+        // Initialize settings.
+        initSettings();
 
         // Initialize the singletons so their instances
         // are bound to the application process.
         initSingletons();
+
         Thread.setDefaultUncaughtExceptionHandler(new HomageUnhandledExceptionHandler());
 
         // Upload service
@@ -76,6 +78,16 @@ public class HomageApplication extends SugarApp {
 
         // Homage Server
         HomageServer.sh().init(this);
+    }
+
+    protected void initSettings() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Unchanged development settings
+        SharedPreferences.Editor e = sp.edit();
+        e.putBoolean(SettingsActivity.SKIP_STORY_DETAILS, false);
+        e.putBoolean(SettingsActivity.UPLOADER_ACTIVE, true);
+        e.commit();
     }
 
     public static Context getContext() {

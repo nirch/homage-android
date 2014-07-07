@@ -213,6 +213,19 @@ public class HomageServer extends Server {
                 INTENT_USER_REMAKES, info, new RemakesParser()
         );
     }
+
+    public void deleteRemake(String remakeOID, HashMap<String,Object> userInfo) {
+        Log.v(TAG, String.format("Deleting remake from server: %s", remakeOID));
+        super.DELETE(
+                R.string.url_delete_remake,
+                remakeOID,
+                null,
+                INTENT_REMAKE_DELETION,
+                userInfo,
+                new RemakeParser()
+        );
+    }
+
     //endregion
 
     //region *** Footages ***

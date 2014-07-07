@@ -16,7 +16,7 @@ public class Story extends SugarRecord<Story> {
     String oid;
     public String description;
     public String name;
-    public boolean active;
+    public int active;
     public int thumbnailRip;
     public int orderId;
     public String video;
@@ -41,12 +41,12 @@ public class Story extends SugarRecord<Story> {
 
     public static Story findOrCreate(String oid) {
         Story story = Story.findByOID(oid);
-        if (story != null) return story;
+        if (story!=null) return story;
         return new Story(oid);
     }
 
     public static Story findByOID(String oid) {
-        List<Story> res = Story.find(Story.class, "oid = ?", oid);
+        List<Story> res = Story.find(Story.class, "oid=?", oid);
         if (res.size()==1) return res.get(0);
         return null;
     }
@@ -54,8 +54,8 @@ public class Story extends SugarRecord<Story> {
     public static List<Story> allActiveStories() {
         List<Story> res = Story.find(
                 Story.class,            // Entity class
-                "active = ?",           // where clause
-                new String[]{"true"},   // where args
+                "active=?",             // where clause
+                new String[]{"1"},      // where args
                 "",                     // group by
                 "order_id",             // order by
                 "");                    // limit

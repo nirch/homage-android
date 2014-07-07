@@ -2,6 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/settings_category_developer">
+        <!--
         <CheckBoxPreference
             android:key="settings_uploader_active"
             android:layout="?android:attr/preferenceLayoutChild"
@@ -12,6 +13,7 @@
             android:layout="?android:attr/preferenceLayoutChild"
             android:title="@string/settings_skip_story_details_title"
             android:summary="@string/settings_skip_story_details_summary" />
+            -->
 
         <Preference android:key="settings_export_db"
             android:layout="?android:attr/preferenceLayoutChild"
