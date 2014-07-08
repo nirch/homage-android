@@ -8,6 +8,7 @@ import android.widget.Button;
 
 import com.androidquery.util.Constants;
 import com.homage.app.R;
+import com.homage.app.player.FullScreenVideoPlayerActivity;
 import com.homage.app.player.VideoPlayerActivity;
 import com.homage.model.Footage;
 import com.homage.model.Remake;
@@ -124,11 +125,11 @@ public class RecorderOverlayFinishedSceneMessageDlgActivity extends RecorderOver
             Log.d(TAG, String.format("User want to see preview video: %s", footage.rawLocalFile));
 
             // Open video player.
-            Intent myIntent = new Intent(RecorderOverlayFinishedSceneMessageDlgActivity.this, VideoPlayerActivity.class);
-            Bundle b = new Bundle();
-            b.putString("videoFilePath", footage.rawLocalFile);
-            myIntent.putExtras(b);
-            RecorderOverlayFinishedSceneMessageDlgActivity.this.startActivity(myIntent);
+            FullScreenVideoPlayerActivity.openFullScreenVideoForFile(
+                    RecorderOverlayFinishedSceneMessageDlgActivity.this,
+                    footage.rawLocalFile,
+                    true
+            );
         }
     };
 

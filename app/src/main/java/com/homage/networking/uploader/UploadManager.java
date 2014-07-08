@@ -68,6 +68,8 @@ public class UploadManager {
     }
 
     public void checkForPendingUploads() {
+//        Log.d(TAG, "Skip uploads");
+//        return;
         User user = User.getCurrent();
         if (user == null) return;
 

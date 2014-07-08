@@ -15,7 +15,7 @@ public class StoriesParser extends Parser {
     String TAG = "TAG_"+getClass().getName();
 
     static private int lastParseTime = 0;
-    final static private int threshold = 30000;
+    final static private int threshold = 15000;
 
     public StoriesParser() {
         super();
@@ -28,7 +28,7 @@ public class StoriesParser extends Parser {
             int now = (int)(System.currentTimeMillis());
             int delta = now - lastParseTime;
             if (delta < threshold) {
-                Log.d(TAG, "Stories parsed very recently. ignored.");
+                Log.d(TAG, String.format("Stories parsed very recently (%d < %d). ignored.", delta, threshold));
                 return;
             }
             lastParseTime = now;

@@ -42,10 +42,13 @@ import java.util.List;
 public class CameraManager {
     String TAG = "TAG_"+getClass().getName();
 
-    final int defaultWidth = 1280;
-    final int defaultHeight = 720;
+    final int defaultBackWidth = 1280;
+    final int defaultBackHeight = 720;
 
-    public CameraPreview cameraPreview;
+    final int defaultFrontWidth = 640;
+    final int defaultFrontHeight = 480;
+
+    //public CameraPreview cameraPreview;
     Camera.Size recSize;
 
     //region *** singleton pattern ***
@@ -59,6 +62,12 @@ public class CameraManager {
         return CameraManager.sharedInstance();
     }
     //endregion
+
+    private int currentCameraId;
+
+    private boolean selfie = false;
+
+    Context context;
 
     public void releaseMediaRecorder(){
         if (mediaRecorder != null) {
@@ -91,10 +100,35 @@ public class CameraManager {
      */
     public void init(Context context){
         // Can be initialized only once!
-        if (alreadyInitialized)
-            throw new AssertionError("Tried to initialize CameraManager more than once.");
+        this.context = context;
+        newCamera();
+    }
 
-        camera = CameraHelper.getDefaultCameraInstance();
+    public void newCamera() {
+        try {
+            camera.release();
+        } catch (Exception e) {
+        }
+
+        int defaultWidth, defaultHeight;
+
+        try {
+            if (selfie) {
+                camera = CameraHelper.getDefaultFrontFacingCameraInstance();
+                defaultWidth = defaultFrontWidth;
+                defaultHeight = defaultFrontHeight;
+            } else {
+                camera = CameraHelper.getDefaultBackFacingCameraInstance();
+                defaultWidth = defaultBackWidth;
+                defaultHeight = defaultBackHeight;
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Hmmm...", e);
+            camera = CameraHelper.getDefaultBackFacingCameraInstance();
+            defaultWidth = defaultBackWidth;
+            defaultHeight = defaultBackHeight;
+        }
+
         Camera.Parameters parameters = camera.getParameters();
         List<Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
         for (Camera.Size supportedSize : supportedPreviewSizes) {
@@ -110,8 +144,6 @@ public class CameraManager {
                 "Initialized camera manager. Requested size for recording: %d,%d",
                 recSize.width,
                 recSize.height));
-
-        alreadyInitialized = true;
     }
 
     // Initializations.
@@ -125,9 +157,14 @@ public class CameraManager {
     private Camera camera;
     private MediaRecorder mediaRecorder;
     private boolean isRecording = false;
+    FrameLayout previewContainer;
 
     public void startCameraPreviewInView(Context context, FrameLayout previewContainer) {
-        if (camera == null) camera = CameraHelper.getDefaultCameraInstance();
+        if (camera == null) {
+            newCamera();
+        }
+
+        this.previewContainer = previewContainer;
 
         //Camera.Parameters cameraParams = camera.getParameters();
         //cameraParams.setPreviewFpsRange(29000, 29000);
@@ -180,6 +217,15 @@ public class CameraManager {
             // If your preview can change or rotate, take care of those events here.
             // Make sure to stop the preview before resizing or reformatting it.
 
+            // set preview size and make any resize, rotate or
+            // reformatting changes here
+
+            // start preview with new settings
+            Log.d(TAG, "changed device orientation. Will need to flip the preview view.");
+            restartPreview();
+        }
+
+        public void stop() {
             if (mHolder.getSurface() == null){
                 // preview surface does not exist
                 return;
@@ -191,21 +237,47 @@ public class CameraManager {
             } catch (Exception e){
                 // ignore: tried to stop a non-existent preview
             }
+        }
 
-            // set preview size and make any resize, rotate or
-            // reformatting changes here
+        public void restartPreview() {
+            if (mHolder.getSurface() == null){
+                // preview surface does not exist
+                return;
+            }
 
-            // start preview with new settings
+            stop();
+
             try {
-                Log.d(TAG, "changed device orientation. Will need to flip the preview view.");
                 mCamera.setPreviewDisplay(mHolder);
                 mCamera.startPreview();
             } catch (Exception e){
                 Log.d(TAG, "Error starting camera preview: " + e.getMessage());
             }
         }
+
     }
 
+
+    public void resetToPreferBackCamera() {
+        selfie = false;
+    }
+
+    public void flipCamera() {
+        // Stop
+        preview.stop();
+        previewContainer.removeAllViews();
+        camera.release();
+
+        // Toggle back / front
+        selfie = !selfie;
+
+        // Restart
+        newCamera();
+        CameraPreview cameraPreview = new CameraPreview(context, camera);
+        cameraPreview.setZOrderOnTop(false);
+        previewContainer.addView(cameraPreview);
+        preview = cameraPreview;
+    }
 
     public String startRecording() {
         CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
@@ -216,7 +288,7 @@ public class CameraManager {
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setCamera(camera);
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
-        mediaRecorder.setVideoSource(MediaRecorder.AudioSource.DEFAULT);
+        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
         mediaRecorder.setProfile(profile);
 
         String outputFile = CameraHelper.getOutputMediaFile(CameraHelper.MEDIA_TYPE_VIDEO).toString();

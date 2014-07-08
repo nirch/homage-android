@@ -80,8 +80,9 @@ public class SettingsActivity extends PreferenceActivity {
         private Preference.OnPreferenceClickListener onClickedExportDatabase = new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                File Db = new File("/data/data/com.homage.app/databases/Homage2.db");
-                File file = new File(Environment.getExternalStoragePublicDirectory("Documents")+"/exported.db");
+                String storageFileName = "HomageLocalStorage.db";
+                File Db = new File("/data/data/com.homage.app/databases/"+storageFileName);
+                File file = new File(Environment.getExternalStoragePublicDirectory("Documents")+"/"+storageFileName);
                 file.setWritable(true);
                 try {
                     copy(Db, file);

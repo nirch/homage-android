@@ -74,12 +74,12 @@ public class Footage extends SugarRecord<Remake> {
 
 
     //region *** Factories ***
-    public Footage(Context context) {
-        super(context);
+    public Footage() {
+        super();
     }
 
     public Footage(Remake remake, int sceneID) {
-        this(HomageApplication.getContext());
+        this();
         this.remake = remake;
         this.sceneID = sceneID;
         this.user = remake.user;

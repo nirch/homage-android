@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="26dp"
+    android:background="@color/homage_impact"
+    android:layout_alignParentBottom="true"
+    >
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/icon_small_x_black"
+        android:background="@null"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:layout_centerVertical="true"
+        />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:progressDrawable="@drawable/dark_progress"
+        />
+
+    <Button android:id="@+id/progressIndicatorButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/rendering_progress_preparing"
+        android:textSize="14dp"
+        android:background="@null"
+        android:textColor="@color/homage_black"
+        android:textStyle="bold"
+        android:gravity="left|center"
+        android:paddingLeft="5dp"
+        />
+
+</RelativeLayout>

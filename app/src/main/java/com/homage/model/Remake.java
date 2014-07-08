@@ -4,6 +4,7 @@
 package com.homage.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
@@ -63,12 +64,12 @@ public class Remake extends SugarRecord<Remake> {
         return this.oid;
     }
 
-    public Remake(Context context) {
-        super(context);
+    public Remake() {
+        super();
     }
 
     public Remake(String oid, Story story, User user) {
-        this(HomageApplication.getContext());
+        this();
         this.oid = oid;
         this.story = story;
         this.user = user;
@@ -134,6 +135,7 @@ public class Remake extends SugarRecord<Remake> {
                 "",
                 "scene_id",
                 "");
+        Log.d("TAG_test", String.format(">>> %d", res.size()));
         return res;
     }
 

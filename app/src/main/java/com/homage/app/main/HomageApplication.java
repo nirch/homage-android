@@ -22,6 +22,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.amazonaws.services.s3.transfer.Upload;
+import com.androidquery.callback.BitmapAjaxCallback;
 import com.homage.media.camera.CameraManager;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
@@ -58,6 +59,9 @@ public class HomageApplication extends SugarApp {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "Started Homage android application.");
+
+        // Limit memory cache
+        BitmapAjaxCallback.setCacheLimit(12);
 
         // Initialize settings.
         initSettings();
@@ -132,6 +136,13 @@ public class HomageApplication extends SugarApp {
             mDefaultHandler.uncaughtException(thread, ex);
         }
 
+    }
+
+    @Override
+    public void onLowMemory(){
+        //clear all memory cached images when system is in low memory
+        //note that you can configure the max image cache count, see CONFIGURATION
+        BitmapAjaxCallback.clearCache();
     }
 
     //endregion

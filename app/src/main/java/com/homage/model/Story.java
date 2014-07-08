@@ -8,6 +8,8 @@ import android.content.Context;
 import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Story extends SugarRecord<Story> {
@@ -26,8 +28,8 @@ public class Story extends SugarRecord<Story> {
     //endregion
 
     //region *** Factories ***
-    public Story(Context context) {
-        super(context);
+    public Story() {
+        super();
     }
 
     public String getOID() {
@@ -35,7 +37,7 @@ public class Story extends SugarRecord<Story> {
     }
 
     public Story(String oid){
-        this(HomageApplication.getContext());
+        this();
         this.oid = oid;
     }
 
@@ -86,6 +88,7 @@ public class Story extends SugarRecord<Story> {
                 "",
                 "scene_id",
                 "");
+        res = validatedScenesList(res);
         return res;
     }
 
@@ -97,6 +100,7 @@ public class Story extends SugarRecord<Story> {
                 "",
                 "scene_id DESC",
                 "");
+        res = validatedScenesList(res);
         return res;
     }
 
@@ -111,5 +115,19 @@ public class Story extends SugarRecord<Story> {
     //endregion
 
     //region *** Logic ***
+    private List<Scene> validatedScenesList(List<Scene> scenes) {
+        ArrayList<Scene> validatedScenes = new ArrayList<Scene>();
+        HashMap<Integer, Boolean>m = new HashMap<Integer, Boolean>();
+
+        // Ensure no duplicate scenes in list
+        for (Scene scene : scenes) {
+            if (!m.containsKey(scene.sceneID)) {
+                m.put(scene.sceneID, true);
+                validatedScenes.add(scene);
+            }
+        }
+        return validatedScenes;
+    }
+
     //endregion
 }

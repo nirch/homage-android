@@ -75,7 +75,13 @@ public class StoriesListFragment extends Fragment {
             AQuery aq = new AQuery(rowView);
             aq.id(R.id.storyName).text(story.name);
             aq.id(R.id.storyRemakesCount).text(String.format("#%d", story.remakesNum));
-            aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
+
+            if (i>3) {
+                aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
+            } else {
+                aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
+            }
+
             return rowView;
         }
 

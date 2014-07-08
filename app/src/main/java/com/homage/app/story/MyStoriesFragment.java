@@ -1,9 +1,8 @@
-package com.homage.app.user;
+package com.homage.app.story;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
@@ -38,9 +38,6 @@ public class MyStoriesFragment extends Fragment {
     List<Remake> remakes;
     ListView myStoriesListView;
     AQuery aq;
-    ProgressDialog pd;
-
-    static boolean createdOnce = false;
 
     private User user;
 
@@ -59,21 +56,18 @@ public class MyStoriesFragment extends Fragment {
         aq = new AQuery(rootView);
 
         // Set the list adapter for the stories list view.
-        remakes = user.allAvailableRemakes();
+        remakes = user.allAvailableRemakesLatestOnTop();
         myStoriesListView = aq.id(R.id.myStoriesListView).getListView();
         myStoriesListView.setAdapter(adapter);
-
-        //region *** Bind to UI event handlers ***
-        /**********************************/
-        /** Binding to UI event handlers **/
-        /**********************************/
-        //aq.id(R.id.remakesGridView).itemClicked(onItemClicked);
-        //aq.id(R.id.makeYourOwnButton).clicked(onClickedMakeYourOwnButton);
-        //endregion
     }
 
     public void refresh() {
-        remakes = user.allAvailableRemakes();
+        remakes = user.allAvailableRemakesLatestOnTop();
+        if (remakes.size() == 0) {
+            aq.id(R.id.noRemakesMessage).visibility(View.VISIBLE);
+        } else {
+            aq.id(R.id.noRemakesMessage).visibility(View.GONE);
+        }
         adapter.notifyDataSetChanged();
     }
 
@@ -122,9 +116,23 @@ public class MyStoriesFragment extends Fragment {
             if (rowView == null) rowView = inflater.inflate(R.layout.list_row_my_story, myStoriesListView, false);
             final Remake remake = (Remake)getItem(i);
             final Story story = remake.getStory();
+
             AQuery aq = new AQuery(rowView);
             aq.id(R.id.storyName).text(story.name);
-            aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark);
+
+            if (i>3) {
+                aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
+            } else {
+                aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark);
+            }
+
+            if (remake.status == Remake.Status.DONE.getValue()) {
+                aq.id(R.id.myPlayButton).visibility(View.VISIBLE);
+                aq.id(R.id.myShareButton).visibility(View.VISIBLE);
+            } else {
+                aq.id(R.id.myPlayButton).visibility(View.INVISIBLE);
+                aq.id(R.id.myShareButton).visibility(View.INVISIBLE);
+            }
 
             // Delete
             aq.id(R.id.myDeleteButton).clicked(new View.OnClickListener() {
@@ -143,19 +151,18 @@ public class MyStoriesFragment extends Fragment {
                     Log.d(TAG, String.format("my story, clicked share: %s", remake.getOID()));
 
                     Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-                    sharingIntent.setType("text/html");
+                    sharingIntent.setType("text/plain");
                     sharingIntent.putExtra(
-                            android.content.Intent.EXTRA_TEXT,
-                            Html.fromHtml(String.format(
-                                    "<br />\n" +
-                                    "Check out this video I created with #HomageApp<br />\n" +
-                                    "<br />\n" +
-                                    "#%s,<br />\n" +
-                                    "#%sHomageApp<br /><br />\n" +
-                                    "\n" +
-                                    "http://play.homage.it/%s",
-
-                                    story.name, story.name, remake.getOID()))
+                            Intent.EXTRA_TEXT,
+                            String.format(
+                                    "Check out this video I created with #HomageApp\n" +
+                                            "\n" +
+                                            "#%s\n" +
+                                            "#%sHomageApp\n" +
+                                            "\n" +
+                                            "http://play.homage.it/%s",
+                                    story.name, story.name, remake.getOID()
+                            )
                     );
                     startActivity(Intent.createChooser(sharingIntent,"Share using"));
                 }
@@ -166,16 +173,17 @@ public class MyStoriesFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, String.format("my story, clicked remake: %s", remake.getOID()));
+                    MainActivity mainActivity = (MainActivity)getActivity();
 
                     switch (remake.status) {
                         case 1: // IN PROGRESS
                             // Open recorder with this remake.
-                            openRecorderForExistingRemake(remake);
+                            mainActivity.askUserIfWantToContinueRemake(remake);
                             break;
 
                         case 4: // TIMEOUT
                             // Open recorder with this remake.
-                            openRecorderForExistingRemake(remake);
+                            mainActivity.askUserIfWantToContinueRemake(remake);
                             break;
 
                         case 3: // DONE
@@ -194,12 +202,7 @@ public class MyStoriesFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, String.format("my story, clicked play: %s", remake.getOID()));
-                    Intent myIntent = new Intent(getActivity(), FullScreenVideoPlayerActivity.class);
-                    Uri videoURL = Uri.parse(remake.videoURL);
-                    myIntent.putExtra(VideoPlayerFragment.K_FILE_URL, videoURL.toString());
-                    myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
-                    myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, true);
-                    startActivity(myIntent);
+                    FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, true);
                 }
             });
 

@@ -171,6 +171,10 @@ public class RecorderActivity extends Activity {
         story = remake.getStory();
         isRecording = false;
 
+        // Use backface camera by default.
+        // User will need to switch manually to selfie if interested.
+        CameraManager.sh().resetToPreferBackCamera();
+
         // Prepare sound
         mp = MediaPlayer.create(getApplicationContext() , R.raw.cinema_countdown);
 
@@ -196,6 +200,13 @@ public class RecorderActivity extends Activity {
         //hideControlsDrawer(false);
         closeControlsDrawer(false);
         scenesListView.setVisibility(View.GONE);
+
+        // Preload and cache silhouettes in the background
+        List<Scene> scenes = story.getScenesOrdered();
+        for (Scene scene : scenes) {
+            Log.d(TAG, String.format("Preloading %s", scene.silhouetteURL));
+            aq.image(scene.silhouetteURL, false, true, 0, 0);
+        }
         //endregion
 
         //region *** State initialization ***
@@ -226,15 +237,24 @@ public class RecorderActivity extends Activity {
 
         // Show scene description info.
         aq.id(R.id.recorderOverlaySceneDescriptionButton).clicked(onClickedSceneDescriptionButton);
+        aq.id(R.id.recorderSceneDirectionButton).clicked(onClickedSceneDescriptionButton);
 
         // Clicked the dismiss button on the "Welcome screen" overlay.
         aq.id(R.id.welcomeScreenDismissButton).clicked(onClickedWelcomeScreenDismissButton);
+
+        // Clicked the change cameras button
+        aq.id(R.id.recorderOverlayFlipCameraButton).clicked(onClickedFlipCameraButton);
 
         // Clicked on a scene nunber in the list of scenes.
         // User tries to select a scene in the list.
         aq.id(R.id.scenesListView).itemClicked(onClickedSceneItem);
 
         //endregion
+    }
+
+    @Override
+    public void onBackPressed() {
+        askUserIfWantToCloseRecorder();
     }
 
     @Override
@@ -563,6 +583,7 @@ public class RecorderActivity extends Activity {
         scenesListView.setVisibility(View.GONE);
         videosPager.setVisibility(View.GONE);
         videosAdapter.hideSurfaces();
+        showOverlayButtons(false);
 
         CameraManager cm = CameraManager.sh();
         cm.preview.show();
@@ -583,6 +604,7 @@ public class RecorderActivity extends Activity {
         scenesListView.setVisibility(View.VISIBLE);
         videosPager.setVisibility(View.VISIBLE);
         videosAdapter.showSurfaces();
+        hideOverlayButtons(false);
 
         CameraManager cm = CameraManager.sh();
         cm.preview.hide();
@@ -707,6 +729,7 @@ public class RecorderActivity extends Activity {
         private void finishedAllScenesMessage() {
             Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlayFinishedAllSceneMessageDlgActivity.class);
             myIntent.putExtra("remakeOID", remake.getOID());
+            myIntent.putExtra("sceneID",currentSceneID);
             RecorderActivity.this.startActivityForResult(myIntent, ACTION_BY_RESULT_CODE);
             overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
         }
@@ -749,6 +772,9 @@ public class RecorderActivity extends Activity {
         canceledCountDown = true;
         counterDown = null;
         aq.id(R.id.recorderCountDownText).visibility(View.INVISIBLE);
+
+        mp.pause();
+        mp.reset();
 
         showOverlayButtons(false);
         Pacman pacman = (Pacman)aq.id(R.id.pacman).getView();
@@ -805,6 +831,7 @@ public class RecorderActivity extends Activity {
                 break;
 
             case 2:
+                mp = MediaPlayer.create(getApplicationContext() , R.raw.cinema_countdown);
                 mp.start();
                 pacman.startOneSecondAnimation();
                 break;
@@ -855,6 +882,9 @@ public class RecorderActivity extends Activity {
         // Update UI
         hideControlsDrawer(false);
         hideOverlayButtons(false);
+        hideSilhouette(false);
+
+        //
 
         Scene scene = story.findScene(currentSceneID);
         ProgressBar progressBar = aq.id(R.id.recordingProgressBar).getProgressBar();
@@ -875,7 +905,12 @@ public class RecorderActivity extends Activity {
 
                 CameraManager.sh().stopRecording();
                 returnFromRecordingUI();
-                checkFinishedRecording(outputFile);
+
+                if (outputFile != null) {
+                    checkFinishedRecording(outputFile);
+                } else {
+                    Log.e(TAG, "Why missing outputFile path is missing when finishing recording?");
+                }
 
             }
 
@@ -903,6 +938,9 @@ public class RecorderActivity extends Activity {
 
             // All is well, update the footage object
             Footage footage = remake.findFootage(currentSceneID);
+            if (footage == null) {
+                Log.e(TAG, "Error. why footage not found after finishing recording?");
+            }
             footage.rawLocalFile = outputFile;
             footage.save();
             updateScenesList();
@@ -942,7 +980,9 @@ public class RecorderActivity extends Activity {
     private void updateUIForSceneID(int sceneID) {
         Story story = remake.getStory();
         Scene scene = story.findScene(sceneID);
-        aq.id(R.id.silhouette).image(scene.silhouetteURL,false, true);
+        //aq.id(R.id.silhouette).image(scene.silhouetteURL,false, true);
+        //aq.id(R.id.silhouette).image(scene.silhouetteURL, false, true, 500, R.drawable.glass_dark);
+        aq.id(R.id.silhouette).image(scene.silhouetteURL, false, true, 0, 0, null, AQuery.FADE_IN);
         aq.id(R.id.sceneNumber).text(scene.getTitle());
         aq.id(R.id.sceneTime).text(scene.getTimeString());
         if (videosAdapter != null) {
@@ -968,6 +1008,14 @@ public class RecorderActivity extends Activity {
             aq.id(R.id.recorderOverlayDismissButton).visibility(View.VISIBLE);
             aq.id(R.id.recorderOverlayFlipCameraButton).visibility(View.VISIBLE);
             aq.id(R.id.recorderOverlaySceneDescriptionButton).visibility(View.VISIBLE);
+        }
+    }
+
+    private void hideSilhouette(boolean animated) {
+        if (animated) {
+            // TODO: implement
+        } else {
+            aq.id(R.id.silhouette).visibility(View.INVISIBLE);
         }
     }
     //endregion
@@ -1076,6 +1124,13 @@ public class RecorderActivity extends Activity {
                     stateMachine.handleCurrentState();
                 } catch (Exception ex) {}
             }
+        }
+    };
+
+    private View.OnClickListener onClickedFlipCameraButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            CameraManager.sh().flipCamera();
         }
     };
 

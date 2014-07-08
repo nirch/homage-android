@@ -26,7 +26,7 @@ public class RecorderVideosPagerAdapter
         implements
             MediaPlayer.OnErrorListener,
             MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
-    private String TAG = "TAG_"+getClass().getName();
+    private String TAG = "TAG_RecorderVideosPagerAdapter";
 
     private Context context;
     private Remake remake;

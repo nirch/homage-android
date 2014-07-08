@@ -10,6 +10,9 @@
     <string name="test">TEST!</string>
     <string name="placeholder_title">PLACE HOLDER!</string>
 
+    <!-- List messages -->
+    <string name="no_remakes">( No remakes )</string>
+
     <!-- Buttons and overlay messages -->
     <string name="button_retake_last_scene">RETAKE LAST SCENE</string>
     <string name="button_can_i_see_a_preview">CAN I SEE A PREVIEW?</string>
@@ -44,7 +47,7 @@
     <string name="continue_remake_message">Continue from the last saved point, or start from scratch?</string>
 
     <!-- Progress dialogues -->
-    <string name="pd_title_please_wait">Pleases wait.</string>
+    <string name="pd_title_please_wait">Please wait.</string>
     <string name="pd_msg_preparing_remake">Preparing to remake your story.</string>
 
     <string name="pd_title_delete_remake_question">Delete remake.</string>

@@ -11,11 +11,4 @@
         android:id="@+id/storiesListView"
         />
 
-    <include android:id="@+id/renderProgress"
-        android:layout_width="fill_parent"
-        android:layout_height="26dp"
-        layout="@layout/included_render_progress"
-        android:layout_alignParentBottom="true"
-        />
-
 </RelativeLayout>

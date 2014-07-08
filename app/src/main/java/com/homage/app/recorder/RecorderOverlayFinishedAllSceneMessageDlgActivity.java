@@ -9,12 +9,15 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.androidquery.util.Constants;
 import com.homage.app.R;
+import com.homage.app.player.FullScreenVideoPlayerActivity;
+import com.homage.model.Footage;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
@@ -28,6 +31,7 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
 
     private Remake remake;
     private Story story;
+    private Scene scene;
 
     protected ProgressDialog pd;
 
@@ -38,9 +42,11 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
         // hide impact buttons
         Bundle b = getIntent().getExtras();
         String remakeOID = b.getString("remakeOID");
+        int sceneID = b.getInt("sceneID");
 
         remake = Remake.findByOID(remakeOID);
         story = remake.getStory();
+        scene = story.findScene(sceneID);
 
         aq.id(R.id.overlayIcon).image(R.drawable.recorder_icon_trophy);
         aq.id(R.id.bigImpactTitle).text(getResources().getString(R.string.title_great_job));
@@ -56,7 +62,25 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
         // Retake button.
         aq.id(R.id.overlayRetakeSceneButton).clicked(onClickedRetakeButton);
 
+        // Oops, no button.
+        aq.id(R.id.overlaySeeOopsNoRetakeButton).clicked(onClickedOopsNoButton);
+
+        // Confirm retake scene button.
+        aq.id(R.id.overlayConfirmRetakeSceneButton).clicked(onClickedConfirmRetakeSceneButton);
+
+        // See preview button
+        aq.id(R.id.overlaySeePreviewButton).clicked(onClickedSeePreviewButton);
+        aq.id(R.id.overlaySeePreview2Button).clicked(onClickedSeePreviewButton);
+
         //endregion
+    }
+
+    public void showAreYouSureYouWantToRetakeSceneDlg() {
+        aq.id(R.id.overlayRetakeAreYouSureDlg).visibility(View.VISIBLE);
+    }
+
+    public void hideAreYouSureYouWantToRetakeSceneDlg() {
+        aq.id(R.id.overlayRetakeAreYouSureDlg).visibility(View.GONE);
     }
 
     @Override
@@ -119,21 +143,21 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
     // UI handlers.
     // -------------------
 
-    //
-    // Pressed the retake scene button
-    final View.OnClickListener onClickedRetakeButton = new View.OnClickListener() {
-        @Override
-        public void onClick(View button) {
-            setResult(ResultCode.RETAKE_SCENE.getValue());
-            finish();
-            RecorderOverlayFinishedAllSceneMessageDlgActivity.this.overridePendingTransition(
-                    R.anim.animation_fadeout_with_zoom,
-                    R.anim.animation_fadeout_with_zoom);
-        }
-    };
+//    //
+//    // Pressed the retake scene button
+//    final View.OnClickListener onClickedRetakeButton = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View button) {
+//            setResult(ResultCode.RETAKE_SCENE.getValue());
+//            finish();
+//            RecorderOverlayFinishedAllSceneMessageDlgActivity.this.overridePendingTransition(
+//                    R.anim.animation_fadeout_with_zoom,
+//                    R.anim.animation_fadeout_with_zoom);
+//        }
+//    };
 
     //
-    // Pressed the test button (used for debugging)
+    // Pressed the CREATE MOVIE button.
     final View.OnClickListener onClickedActionButton = new View.OnClickListener() {
         @Override
         public void onClick(View button) {
@@ -148,6 +172,58 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
             RecorderOverlayFinishedAllSceneMessageDlgActivity.this.pd = pd;
         }
     };
+
+
+    //
+    // Pressed the retake scene button
+    final View.OnClickListener onClickedRetakeButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View button) {
+            showAreYouSureYouWantToRetakeSceneDlg();
+        }
+    };
+
+    //
+    // User regretted and pressed the "Oops, no" and doesn't want to retake the scene.
+    final View.OnClickListener onClickedOopsNoButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View button) {
+            hideAreYouSureYouWantToRetakeSceneDlg();
+        }
+    };
+
+
+    //
+    // User confirmed she want to retake the scene.
+    final View.OnClickListener onClickedConfirmRetakeSceneButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View button) {
+            setResult(ResultCode.RETAKE_SCENE.getValue());
+            finish();
+            RecorderOverlayFinishedAllSceneMessageDlgActivity.this.overridePendingTransition(
+                    R.anim.animation_fadeout_with_zoom,
+                    R.anim.animation_fadeout_with_zoom);
+        }
+    };
+
+    //
+    // pressed the see preview button
+    final View.OnClickListener onClickedSeePreviewButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Footage footage = remake.findFootage(scene.getSceneID());
+            if (footage == null) return;
+            Log.d(TAG, String.format("User want to see preview video: %s", footage.rawLocalFile));
+
+            // Open video player.
+            FullScreenVideoPlayerActivity.openFullScreenVideoForFile(
+                    RecorderOverlayFinishedAllSceneMessageDlgActivity.this,
+                    footage.rawLocalFile,
+                    true
+            );
+        }
+    };
+
     //endregion
 }
 

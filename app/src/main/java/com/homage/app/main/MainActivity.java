@@ -48,7 +48,7 @@ import com.homage.app.recorder.RecorderActivity;
 import com.homage.app.story.StoriesListFragment;
 import com.homage.app.story.StoryDetailsFragment;
 import com.homage.app.user.LoginActivity;
-import com.homage.app.user.MyStoriesFragment;
+import com.homage.app.story.MyStoriesFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
@@ -56,6 +56,7 @@ import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -86,6 +87,7 @@ public class MainActivity extends ActionBarActivity
     private Story currentStory;
 
     ProgressDialog pd;
+    MovieProgressFragment movieProgressFragment;
 
     //region *** Lifecycle ***
     @Override
@@ -233,6 +235,17 @@ public class MainActivity extends ActionBarActivity
             Bundle b = intent.getExtras();
             boolean success = b.getBoolean("success", false);
             hideRefreshProgress();
+
+            /*
+            if (success) {
+                // Preload all stories images to cache
+                List<Story> stories = Story.allActiveStories();
+                for (Story story : stories) {
+                    aq.id(R.id.imagesPreloader).image(story.thumbnail, true, true, 200, 0);
+                }
+            }
+            */
+
             if (currentSection == SECTION_STORIES) {
                 showStories();
             }

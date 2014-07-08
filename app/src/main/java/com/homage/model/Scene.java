@@ -44,12 +44,12 @@ public class Scene extends SugarRecord<Scene> {
     }
 
     //region *** Factories ***
-    public Scene(Context context) {
-        super(context);
+    public Scene() {
+        super();
     }
 
     public Scene(Story story, int sceneID) {
-        this(HomageApplication.getContext());
+        this();
         this.story = story;
         this.sceneID = sceneID;
     }

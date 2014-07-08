@@ -15,7 +15,6 @@
     <uses-permission android:name="android.permission.RECORD_VIDEO" />
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-feature android:name="android.hardware.camera" />
 
     <!-- Networking -->
@@ -35,8 +34,8 @@
 
         <!-- Sugar ORM settings -->
         <!-- (A spoon full of Sugar, makes a database go down?) -->
-        <meta-data android:name="DATABASE" android:value="Homage2.db" />
-        <meta-data android:name="VERSION" android:value="204" />
+        <meta-data android:name="DATABASE" android:value="HomageLocalStorage.db" />
+        <meta-data android:name="VERSION" android:value="666" />
         <meta-data android:name="QUERY_LOG" android:value="true" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.homage.model" />
 

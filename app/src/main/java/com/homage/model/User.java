@@ -34,12 +34,12 @@ public class User extends SugarRecord<User> {
         return this.oid;
     }
 
-    public User(Context context) {
-        super(context);
+    public User() {
+        super();
     }
 
     public User(String oid) {
-        this(HomageApplication.getContext());
+        this();
         this.oid = oid;
     }
 
@@ -59,7 +59,7 @@ public class User extends SugarRecord<User> {
 
     //region *** Logic ***
     public static void logoutAllUsers() {
-        List<User> res = User.find(User.class, "is_logged_in = ?", "true");
+        List<User> res = User.find(User.class, "is_logged_in = ?", "1");
         for (User user : res) {
             user.isLoggedIn = false;
             user.save();
@@ -67,7 +67,7 @@ public class User extends SugarRecord<User> {
     }
 
     public static User getCurrent() {
-        List<User> res = User.find(User.class, "is_logged_in = ?", "true");
+        List<User> res = User.find(User.class, "is_logged_in = ?", "1");
         if (res.size()>0) return res.get(0);
         return null;
     }
@@ -124,12 +124,21 @@ public class User extends SugarRecord<User> {
         return remakes;
     }
 
-    public long timePassedSinceUpdatedStories() {
-        return Integer.MAX_VALUE;
-        /*
-        if (lastTimeUpdatedStories == null) return Integer.MAX_VALUE;
-        return new Date().getTime() - lastTimeUpdatedStories.getTime();
-        */
+    public List<Remake> allAvailableRemakesLatestOnTop() {
+        // Query for ready made remakes
+        List<Remake> remakes = Remake.find(
+                Remake.class,            // Entity class
+                "user=? AND (status=? OR status=? OR status=?)",               // where clause
+                new String[]{
+                    getId().toString(),
+                    String.valueOf(Remake.Status.IN_PROGRESS.getValue()),
+                    String.valueOf(Remake.Status.DONE.getValue()),
+                    String.valueOf(Remake.Status.TIMEOUT.getValue())
+                },                                                             // where args
+                "",                                                            // group by
+                "created_at DESC,status DESC",                                 // order by
+                "");                                                           // limit
+        return remakes;
     }
 
     public String getTag() {

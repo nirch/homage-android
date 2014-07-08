@@ -201,17 +201,26 @@
                 >
             </LinearLayout>
 
-            <LinearLayout android:id="@+id/recorderShortDetailsRightContainer"
+            <RelativeLayout android:id="@+id/recorderShortDetailsRightContainer"
                 style="@style/weightedWidth"
                 android:layout_weight="1"
                 >
                 <TextView
                     style="@style/HCenteredText"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     android:text="Use Solid Color Background"
                     android:textColor="@color/homage_impact"
                     />
-            </LinearLayout>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_up_arrow_small"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="10dp"
+                    />
+            </RelativeLayout>
         </LinearLayout>
 
         <!-- Close drawer button.
