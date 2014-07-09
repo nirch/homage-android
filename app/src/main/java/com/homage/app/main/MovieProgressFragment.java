@@ -16,12 +16,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.amazonaws.services.s3.transfer.Upload;
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.model.Footage;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
+import com.homage.networking.uploader.UploadManager;
+import com.homage.networking.uploader.UploaderService;
 
 import java.util.HashMap;
 
@@ -233,6 +237,15 @@ public class MovieProgressFragment extends Fragment {
                 remake.status == Remake.Status.RENDERING.getValue()) {
                 // Movie render still in progress.
                 // Do nothing when the user touches the progress bar.
+
+//                Footage footage = remake.getFootagesOrdered().get(0);
+//                String rawLocalFile = footage.rawLocalFile;
+//
+//                Intent cmdIntent = new Intent(getActivity(), UploaderService.class);
+//                cmdIntent.putExtra(UploaderService.CMD, UploaderService.CMD_CANCEL_UPLOAD_OF_RAW_FILE);
+//                cmdIntent.putExtra("rawLocalFile", rawLocalFile);
+//                getActivity().startService(cmdIntent);
+
                 return;
             }
 

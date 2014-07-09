@@ -49,6 +49,7 @@ import com.homage.app.story.StoriesListFragment;
 import com.homage.app.story.StoryDetailsFragment;
 import com.homage.app.user.LoginActivity;
 import com.homage.app.story.MyStoriesFragment;
+import com.homage.media.camera.CameraManager;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;

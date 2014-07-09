@@ -40,8 +40,15 @@ public interface UploadWorker {
      */
     public String getSource();
 
+    public String getNewSource();
+
     /**
      * resets worker to initial idle state.
      */
     public void reset();
+
+    /**
+     * Reports that the source file changed during the upload.
+     */
+    public void reportSourceFileChangedDuringUpload(String newSource);
 }

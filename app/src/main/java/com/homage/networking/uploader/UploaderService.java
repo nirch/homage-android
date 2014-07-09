@@ -16,7 +16,8 @@ public class UploaderService extends IntentService {
     public static final String CMD = "cmd";
     public static final int CMD_UNKNOWN                     = -1;
     public static final int CMD_CHECK_FOR_PENDING_UPLOADS   = 100;
-    public static final int CMD_STOP                        = 200;
+    //public static final int CMD_CANCEL_UPLOAD_OF_RAW_FILE   = 200;
+    public static final int CMD_STOP                        = 300;
 
     static Thread uploaderThread;
     static boolean isActive = true;
@@ -45,6 +46,12 @@ public class UploaderService extends IntentService {
                 checkForPendingUploads();
                 break;
 
+//            case CMD_CANCEL_UPLOAD_OF_RAW_FILE:
+//                String rawLocalFile = intent.getStringExtra("rawLocalFile");
+//                if (rawLocalFile == null) break;
+//                cancelUploadOfRawLocalFile(rawLocalFile);
+//                break;
+
             case CMD_STOP:
                 stop();
                 break;
@@ -58,33 +65,6 @@ public class UploaderService extends IntentService {
         Log.d(TAG, "Started homage uploader background service.");
         isActive = true;
         checkForPendingUploads();
-
-        /*
-        if (UploaderService.uploaderThread != null) {
-            Log.d(TAG, "Will not start a new uploader thread. Thread already running.");
-            return;
-        }
-        UploaderService.uploaderThread = new Thread() {
-            @Override
-            public void run() {
-                UploaderService.isActive = true;
-                try {
-                    while (isActive) {
-                        Log.d(TAG, "Uploader running.");
-                        checkForPendingUploads();
-                        Thread.sleep(60000);
-                    }
-                } catch (Exception ex) {
-                    Log.d(TAG, "Uploader thread unhandled exception.", ex);
-                } finally {
-                    Log.d(TAG, "Uploader shutting down...");
-                }
-                isActive = false;
-                uploaderThread = null;
-            }
-        };
-        uploaderThread.start();
-        */
     }
 
     private void stop() {
@@ -96,4 +76,8 @@ public class UploaderService extends IntentService {
         if (!isActive) return;
         UploadManager.sh().checkForPendingUploads();
     }
+
+//    private void cancelUploadOfRawLocalFile(String rawLocalFile) {
+//        UploadManager.sh().cancelUploadOfRawLocalFile(rawLocalFile);
+//    }
 }

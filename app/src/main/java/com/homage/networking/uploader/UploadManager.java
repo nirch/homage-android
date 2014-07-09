@@ -68,8 +68,6 @@ public class UploadManager {
     }
 
     public void checkForPendingUploads() {
-//        Log.d(TAG, "Skip uploads");
-//        return;
         User user = User.getCurrent();
         if (user == null) return;
 
@@ -114,6 +112,13 @@ public class UploadManager {
         }
     }
 
+    public void reportSourceFileChange(String oldSource, String newSource) {
+        // Find if a worker is currently uploading the old source file
+        if (!busyWorkersByRawLocalFile.containsKey(oldSource)) return;
+        UploadWorker worker = busyWorkersByRawLocalFile.get(oldSource);
+        worker.reportSourceFileChangedDuringUpload(newSource);
+    }
+
     public void finishedUpload(UploadWorker worker) {
         String jobID = worker.getJobID();
         String source = worker.getSource();
@@ -137,19 +142,50 @@ public class UploadManager {
         );
     }
 
+    public void finishedWithIrrelevantUpload(UploadWorker worker) {
+        String jobID = worker.getJobID();
+        String newSource = worker.getNewSource();
+        if (newSource == null) return;
+
+        Footage footage = Footage.findFootageByRawLocalFile(newSource);
+        if (footage==null) return;
+        footage.rawUploadedFile = null;
+        footage.currentlyUploaded = 0;
+        footage.save();
+        putWorkerToRest(worker);
+
+        checkForPendingUploads();
+    }
+
+
+
     public void failedUpload(UploadWorker worker) {
         String jobID = worker.getJobID();
         String source = worker.getSource();
 
         Footage footage = Footage.findFootageByRawLocalFile(source);
         if (footage==null) return;
-
         footage.rawUploadedFile = null;
         footage.currentlyUploaded = 0;
         footage.save();
-
         putWorkerToRest(worker);
+
+        checkForPendingUploads();
     }
+
+//    public void cancelUploadOfRawLocalFile(String rawLocalFile) {
+//        // Find a worker currently busy with uploading this file
+//        if (!busyWorkersByRawLocalFile.containsKey(rawLocalFile)) return;
+//
+//        // Take the worker
+//        UploadWorker worker = busyWorkersByRawLocalFile.get(rawLocalFile);
+//
+//        // Cancel the upload
+//        worker.stopWorking();
+//
+//        //// put the worker to rest.
+//        //putWorkerToRest(worker);
+//    }
 
     private void putWorkerToRest(UploadWorker worker) {
         String jobID = worker.getJobID();

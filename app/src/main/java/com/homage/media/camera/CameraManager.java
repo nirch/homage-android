@@ -69,6 +69,18 @@ public class CameraManager {
 
     Context context;
 
+    public void reconnect() throws IOException {
+        if (camera != null) {
+            camera.reconnect();
+        }
+    }
+
+    public void unlock() throws IOException {
+        if (camera != null) {
+            camera.unlock();
+        }
+    }
+
     public void releaseMediaRecorder(){
         if (mediaRecorder != null) {
             // clear recorder configuration
@@ -286,7 +298,7 @@ public class CameraManager {
         profile.videoFrameWidth = recSize.width;
         profile.videoFrameHeight = recSize.height;
 
-        camera.unlock();
+        //camera.unlock();
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setCamera(camera);
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);

@@ -270,8 +270,13 @@ public class RecorderActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -994,7 +999,17 @@ public class RecorderActivity extends Activity {
             if (footage == null) {
                 Log.e(TAG, "Error. why footage not found after finishing recording?");
             }
-            footage.rawLocalFile = outputFile;
+            if (footage.rawLocalFile==null) {
+                footage.rawLocalFile = outputFile;
+            } else {
+                // Ensure that the flow of successful upload doesn't happen
+                // When the previous rawLocalFile is still uploaded to s3
+                // Reporting about the new source file, will tell the manager
+                // To ignore successful upload of the older source file.
+                UploadManager.sh().reportSourceFileChange(footage.rawLocalFile, outputFile);
+                footage.rawLocalFile = outputFile;
+            }
+
             footage.save();
             updateScenesList();
             UploadManager.sh().checkUploader();

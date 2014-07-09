@@ -7,7 +7,6 @@ import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.transfer.Upload;
 
 import java.io.File;
-import java.util.Dictionary;
 import java.util.HashMap;
 
 public class UploadS3Worker implements ProgressListener, UploadWorker {
@@ -21,6 +20,10 @@ public class UploadS3Worker implements ProgressListener, UploadWorker {
     private long fileSize;
     private HashMap<String, Object> userInfo;
     private AWS3Client client;
+    private Upload uploadTransferOperation;
+
+    private boolean sourceFileChangedDuringUpload;
+    private String newSource;
 
     public UploadS3Worker() {
         client = AWS3Client.sh();
@@ -37,11 +40,16 @@ public class UploadS3Worker implements ProgressListener, UploadWorker {
     }
 
     @Override
+    public String getNewSource() { return newSource; }
+
+    @Override
     public void newJob(String jobID, String source, String destination) {
         reset();
         this.jobID = jobID;
         this.source = source;
         this.destination = destination;
+        this.sourceFileChangedDuringUpload = false;
+        this.newSource = null;
     }
 
     @Override
@@ -55,7 +63,7 @@ public class UploadS3Worker implements ProgressListener, UploadWorker {
             return false;
         }
 
-        Upload uploadTransferOperation = this.client.startUploadJobForWorker(this, sourceFile, destination);
+        uploadTransferOperation = this.client.startUploadJobForWorker(this, sourceFile, destination);
 
         if (uploadTransferOperation==null) {
             Log.d(TAG, String.format("Couldn't start upload job (transferOperation is null) %s", this.jobID));
@@ -68,7 +76,6 @@ public class UploadS3Worker implements ProgressListener, UploadWorker {
 
     @Override
     public void stopWorking() {
-
     }
 
     @Override
@@ -80,6 +87,15 @@ public class UploadS3Worker implements ProgressListener, UploadWorker {
         this.totalBytesUploaded = 0;
         this.userInfo = new HashMap<String, Object>();
         this.fileSize = 0;
+        this.uploadTransferOperation = null;
+        this.sourceFileChangedDuringUpload = false;
+        this.newSource = null;
+    }
+
+
+    public void reportSourceFileChangedDuringUpload(String newSource) {
+        this.sourceFileChangedDuringUpload = true;
+        this.newSource = newSource;
     }
 
     @Override
@@ -93,6 +109,10 @@ public class UploadS3Worker implements ProgressListener, UploadWorker {
                 break;
             case ProgressEvent.COMPLETED_EVENT_CODE:
                 Log.v(TAG, String.format("Completed upload %d %.02f %s %s", progressEvent.getEventCode(), progress, source, destination));
+                if (sourceFileChangedDuringUpload) {
+                    UploadManager.sh().finishedWithIrrelevantUpload(this);
+                    break;
+                }
                 UploadManager.sh().finishedUpload(this);
                 break;
             case ProgressEvent.FAILED_EVENT_CODE:
@@ -116,4 +136,6 @@ public class UploadS3Worker implements ProgressListener, UploadWorker {
                 Log.v(TAG, String.format("Progress upload %d %.02f %s", progressEvent.getEventCode(), progress, source));
         }
     }
+
+
 }

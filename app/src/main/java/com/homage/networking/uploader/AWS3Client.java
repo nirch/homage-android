@@ -15,7 +15,7 @@ import java.io.FileNotFoundException;
 public class AWS3Client {
     String TAG = "TAG_AWS3Client";
 
-    private static final String BUCKET_NAME = "homageapp";
+    public static final String BUCKET_NAME = "homageapp";
     private static final String ACCESS_KEY_ID = "AKIAJTPGKC25LGKJUCTA";
     private static final String SECRET_KEY = "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";
 
@@ -48,9 +48,10 @@ public class AWS3Client {
      * @return Returns the S3TransferOperation object for this upload operation.
      */
     public Upload startUploadJobForWorker(UploadS3Worker s3Worker, File sourceFile, String destination) {
+        PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET_NAME, destination, sourceFile);
         Upload upload;
         Log.v(TAG, String.format("Starting upload from %s to %s", sourceFile.getAbsoluteFile(), destination));
-        upload = tm.upload(BUCKET_NAME, destination, sourceFile);
+        upload = tm.upload(putObjectRequest);
         return upload;
     }
 }
