@@ -49,7 +49,7 @@
         <Preference android:key="settings_version_title"
             android:layout="?android:attr/preferenceLayoutChild"
             android:title="@string/settings_version_title"
-            android:summary="0.4.8"
+            android:summary="0.4.9"
             />
 
     </PreferenceCategory>

@@ -139,8 +139,8 @@ public class RecorderActivity extends Activity {
     private boolean shouldShowScriptBar = false;
 
     // Reasons for the dismissal of the recorder
-    public static int DISMISS_REASON_USER_ABORTED_PRESSING_X = 500;
-    public static int DISMISS_REASON_FINISHED_REMAKE = 600;
+    public final static int DISMISS_REASON_USER_ABORTED_PRESSING_X = 500;
+    public final static int DISMISS_REASON_FINISHED_REMAKE = 600;
 
     // Layouts and views
     private Animation fadeInAnimation, fadeOutAnimation;

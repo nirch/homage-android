@@ -7,26 +7,27 @@
     android:layout_alignParentBottom="true"
     >
 
-    <ImageButton
+    <ImageButton android:id="@+id/movieProgressDismissButton"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         android:src="@drawable/icon_small_x_black"
         android:background="@null"
-        android:paddingRight="5dp"
-        android:paddingLeft="5dp"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
         android:layout_centerVertical="true"
         />
 
-    <ProgressBar
+    <ProgressBar android:id="@+id/movieProgress"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
         android:progressDrawable="@drawable/dark_progress"
+        android:clickable="false"
         />
 
-    <Button android:id="@+id/progressIndicatorButton"
+    <Button android:id="@+id/movieProgressTouchButton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="@string/rendering_progress_preparing"
@@ -35,6 +36,7 @@
         android:textColor="@color/homage_black"
         android:textStyle="bold"
         android:gravity="left|center"
+        android:layout_marginRight="50dp"
         android:paddingLeft="5dp"
         />
 

@@ -73,6 +73,9 @@ public class MainActivity extends ActionBarActivity
     static final int SECTION_STORY_DETAILS      = 101;
 
 
+    static final int REQUEST_CODE_RECORDER = 10001;
+
+
     static final String FRAGMENT_TAG_ME = "fragment me";
     static final String FRAGMENT_TAG_STORIES = "fragment stories";
     static final String FRAGMENT_TAG_MY_STORIES = "fragment my stories";
@@ -118,6 +121,10 @@ public class MainActivity extends ActionBarActivity
         actionBar.setCustomView(R.layout.actionbar_view);
         actionAQ = new AQuery(getActionBar().getCustomView());
 
+        // Movie creation progress bar fragment
+        movieProgressFragment = (MovieProgressFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.movieProgressBar);
+
         // Refresh stories
         showRefreshProgress();
         HomageServer.sh().refetchStories();
@@ -148,7 +155,32 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-        Log.d(TAG, "XXX");
+        if (requestCode != REQUEST_CODE_RECORDER) return;
+
+        Log.d(TAG, String.format("Returned from recorder with result code: %d", resultCode));
+
+        switch (resultCode) {
+            case RecorderActivity.DISMISS_REASON_FINISHED_REMAKE:
+                // User sent a remake to rendering. Show the create movie progress bar
+                // To keep track of the rendering.
+                String remakeOID = resultData.getStringExtra("remakeOID");
+                if (remakeOID==null) return;
+                Remake renderedRemake = Remake.findByOID(remakeOID);
+                if (renderedRemake==null) {
+                    Log.e(TAG, "Critical error. Recorder sent remake to rendering, but not found in local storage.");
+                    break;
+                }
+                Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
+                movieProgressFragment.showProgressForRemake(renderedRemake);
+                break;
+
+            case RecorderActivity.DISMISS_REASON_USER_ABORTED_PRESSING_X:
+                // No need to do anything
+                break;
+
+            default:
+                // Do nothing
+        }
     }
 
     @Override
@@ -269,7 +301,7 @@ public class MainActivity extends ActionBarActivity
                 Bundle b = new Bundle();
                 b.putString("remakeOID", remakeOID);
                 myIntent.putExtras(b);
-                MainActivity.this.startActivity(myIntent);
+                MainActivity.this.startActivityForResult(myIntent, REQUEST_CODE_RECORDER);
             }
         }
     };
@@ -609,7 +641,7 @@ public class MainActivity extends ActionBarActivity
                                 Bundle b = new Bundle();
                                 b.putString("remakeOID", remakeOID);
                                 myIntent.putExtras(b);
-                                MainActivity.this.startActivity(myIntent);
+                                MainActivity.this.startActivityForResult(myIntent, REQUEST_CODE_RECORDER);
                                 break;
                             case 1:
                                 user.deleteAllUnfinishedRemakesForStory(theStory);

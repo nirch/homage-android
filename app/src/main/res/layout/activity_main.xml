@@ -22,7 +22,7 @@
             >
         </RelativeLayout>
 
-        <fragment android:id="@+id/movie_progress_bar"
+        <fragment android:id="@+id/movieProgressBar"
             android:layout_width="match_parent"
             android:layout_height="26dp"
             android:name="com.homage.app.main.MovieProgressFragment"

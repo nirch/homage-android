@@ -75,7 +75,9 @@
 
     <!-- Rendering -->
     <string name="rendering_progress_preparing">Preparing your movie: %s</string>
-    <string name="rendering_progress_ready">Your movie is ready.</string>
+    <string name="rendering_progress_ready">Your movie is ready! Click to watch</string>
+    <string name="rendering_progress_failed">Your movie creation Failed. Click to dismiss.</string>
+
 
     <!-- Login screen -->
     <string name="login_disclaimer_first_row">By signing in or entering as a Guest you agree to our</string>
