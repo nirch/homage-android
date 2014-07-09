@@ -136,13 +136,15 @@ public class RecorderActivity extends Activity {
         HELP_SCREENS
     }
 
+    private boolean shouldShowScriptBar = false;
+
     // Reasons for the dismissal of the recorder
     public static int DISMISS_REASON_USER_ABORTED_PRESSING_X = 500;
     public static int DISMISS_REASON_FINISHED_REMAKE = 600;
 
     // Layouts and views
     private Animation fadeInAnimation, fadeOutAnimation;
-    private int viewHeightForClosingControlsDrawer;
+    public int viewHeightForClosingControlsDrawer;
     private boolean viewsInitialized;
     private FrameLayout recPreviewContainer;
 
@@ -199,6 +201,7 @@ public class RecorderActivity extends Activity {
         videosPager = (ViewPager)aq.id(R.id.videosPager).getView();
         //hideControlsDrawer(false);
         closeControlsDrawer(false);
+        updateScriptBar();
         scenesListView.setVisibility(View.GONE);
 
         // Preload and cache silhouettes in the background
@@ -239,15 +242,22 @@ public class RecorderActivity extends Activity {
         aq.id(R.id.recorderOverlaySceneDescriptionButton).clicked(onClickedSceneDescriptionButton);
         aq.id(R.id.recorderSceneDirectionButton).clicked(onClickedSceneDescriptionButton);
 
+        // Toggle showing script
+        aq.id(R.id.recorderSceneScriptButton).clicked(onClickedToggleScriptButton);
+
         // Clicked the dismiss button on the "Welcome screen" overlay.
         aq.id(R.id.welcomeScreenDismissButton).clicked(onClickedWelcomeScreenDismissButton);
 
         // Clicked the change cameras button
         aq.id(R.id.recorderOverlayFlipCameraButton).clicked(onClickedFlipCameraButton);
 
+        // Clicked the create movie button (the button above the scenes list)
+        aq.id(R.id.createMovieButton).clicked(onClickedCreateMovieButton);
+
+        // Deprecated - now handled with buttons inside each row of the list (see adapter)
         // Clicked on a scene nunber in the list of scenes.
         // User tries to select a scene in the list.
-        aq.id(R.id.scenesListView).itemClicked(onClickedSceneItem);
+        // aq.id(R.id.scenesListView).itemClicked(onClickedSceneItem);
 
         //endregion
     }
@@ -258,8 +268,14 @@ public class RecorderActivity extends Activity {
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
         super.onPause();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         CameraManager cm = CameraManager.sh();
         cm.releaseMediaRecorder();
         cm.releaseCamera();
@@ -391,6 +407,7 @@ public class RecorderActivity extends Activity {
         public View getView(int i, View rowView, ViewGroup viewGroup) {
             if (rowView == null) rowView = inflater.inflate(R.layout.list_row_scene, scenesListView, false);
 
+            final int index = i;
             Scene scene = (Scene)getItem(i);
             Footage.ReadyState readyState = footagesReadyStates.get(i);
 
@@ -423,6 +440,22 @@ public class RecorderActivity extends Activity {
                 raq.id(R.id.sceneRetakeButton).visibility(View.GONE);
                 raq.id(R.id.sceneNumberInList).textColorId(R.color.homage_disabled);
             }
+
+            raq.id(R.id.sceneNumberInList).clicked(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickedSceneAtItem(index);
+                }
+            });
+
+            raq.id(R.id.sceneRetakeButton).clicked(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickedRetakeAtItem(index);
+                }
+            });
+
+
             return rowView;
         }
 
@@ -589,6 +622,8 @@ public class RecorderActivity extends Activity {
         cm.preview.show();
         hideCurtainsAnimated(true);
         videosAdapter.done();
+        updateScriptBar();
+        aq.id(R.id.createMovieButton).visibility(View.GONE);
     }
 
     private void controlsDrawerOpened() {
@@ -609,6 +644,15 @@ public class RecorderActivity extends Activity {
         CameraManager cm = CameraManager.sh();
         cm.preview.hide();
         showCurtainsAnimated(false);
+        updateScriptBar();
+
+        // Check if need to show the create movie button or not
+        // Will be shown only if already taken all footages (at least once)
+        if (remake.allScenesTaken()) {
+            aq.id(R.id.createMovieButton).visibility(View.VISIBLE);
+        } else {
+            aq.id(R.id.createMovieButton).visibility(View.GONE);
+        }
     }
 
 
@@ -682,22 +726,28 @@ public class RecorderActivity extends Activity {
         }
 
         private void justStarted() throws RecorderException {
-            // TODO: choose latest scene here if a continued remake.
+            User user = User.getCurrent();
+
             //
             // Select the first scene requiring a first retake.
             // If none found (all footages already taken by the user),
             // will select the last scene for this remake instead.
             //
-            // TODO: finish implementation
             currentSceneID = remake.nextReadyForFirstRetakeSceneID();
-            if (currentSceneID < 1) currentSceneID = remake.lastSceneID();
-            updateUIForSceneID(currentSceneID);
+            if (currentSceneID == Footage.NOT_FOUND) {
+                currentSceneID = remake.lastSceneID();
+                updateUIForSceneID(currentSceneID);
+                setState(RecorderState.FINISHED_ALL_SCENES_MESSAGE);
+                handleCurrentState();
+                return;
+            }
 
             // Just started. Show welcome message if user entered for the first time.
             // If not here for the first time, skip.
-            User user = User.getCurrent();
             if (user.isFirstUse) {
                 aq.id(R.id.welcomeScreenOverlay).visibility(View.VISIBLE);
+                user.isFirstUse = false;
+                user.save();
             } else {
                 advanceState();
                 handleCurrentState();
@@ -867,6 +917,7 @@ public class RecorderActivity extends Activity {
 
         // Start recording
         isRecording = true;
+        updateScriptBar();
 
         outputFile = CameraManager.sh().startRecording();
         if (outputFile == null) {
@@ -874,6 +925,7 @@ public class RecorderActivity extends Activity {
                     RecorderActivity.this,
                     "Failed to start recording.",
                     Toast.LENGTH_SHORT).show();
+            isRecording = false;
             returnFromRecordingUI();
             return;
         }
@@ -904,6 +956,7 @@ public class RecorderActivity extends Activity {
             public void onAnimationEnd(Animation animation) {
 
                 CameraManager.sh().stopRecording();
+                isRecording = false;
                 returnFromRecordingUI();
 
                 if (outputFile != null) {
@@ -957,6 +1010,8 @@ public class RecorderActivity extends Activity {
         showOverlayButtons(false);
         showControlsDrawer(false);
         aq.id(R.id.recordingProgressBar).visibility(View.GONE);
+        isRecording = false;
+        updateScriptBar();
     }
 
     private void askUserIfWantToCloseRecorder()
@@ -975,6 +1030,21 @@ public class RecorderActivity extends Activity {
     }
     //endregion
 
+    private void updateScriptBar() {
+        aq.id(R.id.topScript).visibility(View.GONE);
+        aq.id(R.id.bottomScript).visibility(View.GONE);
+        if (!shouldShowScriptBar) return;
+
+        if (isRecording) {
+            aq.id(R.id.bottomScript).visibility(View.VISIBLE);
+            return;
+        }
+
+        if (isControlsDrawerOpen()) {
+            aq.id(R.id.topScript).visibility(View.VISIBLE);
+        }
+    }
+
 
     //region *** UI updates ***
     private void updateUIForSceneID(int sceneID) {
@@ -985,6 +1055,8 @@ public class RecorderActivity extends Activity {
         aq.id(R.id.silhouette).image(scene.silhouetteURL, false, true, 0, 0, null, AQuery.FADE_IN);
         aq.id(R.id.sceneNumber).text(scene.getTitle());
         aq.id(R.id.sceneTime).text(scene.getTimeString());
+        aq.id(R.id.topScriptText).text(scene.script);
+        aq.id(R.id.bottomScriptText).text(scene.script);
         if (videosAdapter != null) {
             videosAdapter.sceneID = sceneID;
             videosAdapter.notifyDataSetChanged();
@@ -1021,12 +1093,46 @@ public class RecorderActivity extends Activity {
     //endregion
 
 
+    private void clickedSceneAtItem(int i) {
+        Footage.ReadyState readyState = footagesReadyStates.get(i);
+        Scene scene = scenes.get(i);
+        if (readyState == Footage.ReadyState.STILL_LOCKED) {
+            Toast.makeText(
+                    RecorderActivity.this,
+                    "Scene locked.\nFinish with previous scenes first.",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            currentSceneID = scene.getSceneID();
+            updateUIForSceneID(currentSceneID);
+            updateScenesList();
+            Toast.makeText(
+                    RecorderActivity.this,
+                    String.format("Shooting Scene %d", currentSceneID),
+                    Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
+    private void clickedRetakeAtItem(int i) {
+        Footage.ReadyState readyState = footagesReadyStates.get(i);
+        Scene scene = scenes.get(i);
+        if (readyState != Footage.ReadyState.READY_FOR_SECOND_RETAKE) return;
+
+        Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlayRetakeSceneQuestionDlgActivity.class);
+        myIntent.putExtra("remakeOID",remake.getOID());
+        myIntent.putExtra("sceneID",scene.getSceneID());
+        RecorderActivity.this.startActivityForResult(myIntent, ACTION_BY_RESULT_CODE);
+        overridePendingTransition(R.anim.animation_fadein_with_zoom, R.anim.animation_fadeout_with_zoom);
+    }
+
     //region *** UI event handlers ***
     /**
      *  ==========================
      *      UI event handlers.
      *  ==========================
      */
+
+    /*
     private AdapterView.OnItemClickListener onClickedSceneItem = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -1049,6 +1155,7 @@ public class RecorderActivity extends Activity {
             }
         }
     };
+    */
 
     private ViewPager.SimpleOnPageChangeListener onVideosPagerChangeListener = new ViewPager.SimpleOnPageChangeListener() {
         @Override
@@ -1096,6 +1203,16 @@ public class RecorderActivity extends Activity {
         }
     };
 
+    private View.OnClickListener onClickedToggleScriptButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            shouldShowScriptBar = !shouldShowScriptBar;
+            updateScriptBar();
+        }
+    };
+
+
+
     private View.OnClickListener onClickedWelcomeScreenDismissButton = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -1134,6 +1251,21 @@ public class RecorderActivity extends Activity {
         }
     };
 
+    private View.OnClickListener onClickedCreateMovieButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (!remake.allScenesTaken()) return;
+            //stateMachine.setState(RecorderState.FINISHED_ALL_SCENES_MESSAGE);
+            try {
+                stateMachine.advanceState();
+                stateMachine.handleCurrentState();
+            } catch (RecorderException e) {
+            }
+        }
+    };
+
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -1158,11 +1290,20 @@ public class RecorderActivity extends Activity {
                         stateMachine.handleCurrentState();
                     } else if (resultCode == RecorderOverlayDlgActivity.ResultCode.RETAKE_SCENE.getValue()) {
                         // User wanted to retake current scene.
+                        if (data!=null) {
+                            int sceneID = data.getIntExtra("sceneID", -1);
+                            if (sceneID > 0) {
+                                currentSceneID = sceneID;
+                                updateUIForSceneID(sceneID);
+                            }
+                        }
                         stateMachine.setState(RecorderState.MAKING_A_SCENE);
                         stateMachine.handleCurrentState();
                     } else if (resultCode == RecorderOverlayDlgActivity.ResultCode.MOVIE_MARKED_BY_USER_FOR_CREATION.getValue()) {
                         // User marked this movie for creation. Bye bye.
                         recorderDoneWithReason(DISMISS_REASON_FINISHED_REMAKE);
+                    } else if (resultCode == RecorderOverlayDlgActivity.ResultCode.NOP.getValue()) {
+                        return;
                     } else {
                         throw new RecorderException(String.format("Unimplemented result code for recorder %d", resultCode));
                     }

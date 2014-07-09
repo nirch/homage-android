@@ -148,6 +148,7 @@ public class StoryDetailsFragment extends Fragment {
         /**********************************/
         //aq.id(R.id.remakesGridView).itemClicked(onItemClicked);
         aq.id(R.id.makeYourOwnButton).clicked(onClickedMakeYourOwnButton);
+        aq.id(R.id.storyDetailsPlayButton).clicked(onClickedPlayStoryVideo);
         //endregion
     }
 
@@ -243,6 +244,16 @@ public class StoryDetailsFragment extends Fragment {
            createNewRemake();
         }
     };
+
+    final View.OnClickListener onClickedPlayStoryVideo = new View.OnClickListener() {
+        @Override
+        public void onClick(View button) {
+            FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), story.video, true);
+        }
+    };
+
+
+
 
     private void createNewRemake() {
         if (story == null) return;

@@ -7,7 +7,7 @@ import android.view.View;
 
 class OnDraggingControlsDrawerListener implements View.OnTouchListener
 {
-    private String TAG = "TAG_"+getClass().getName();
+    private String TAG = "TAG_OnDraggingControlsDrawerListener";
 
     float startPosTouch, deltaTouch, startPosView, newPosView;
     float heightForClosing;
@@ -34,6 +34,8 @@ class OnDraggingControlsDrawerListener implements View.OnTouchListener
                 deltaTouch = startPosTouch - event.getRawY();
                 newPosView = startPosView - deltaTouch;
                 if (newPosView < 0) newPosView = 0;
+                if (newPosView > recorderActivity.viewHeightForClosingControlsDrawer)
+                    newPosView = recorderActivity.viewHeightForClosingControlsDrawer;
                 recorderActivity.setControlsDrawerPosition(newPosView);
             }
             case MotionEvent.ACTION_UP:

@@ -78,7 +78,7 @@
 
     <style name="HomageImpactButton">
         <item name="android:textSize">11dp</item>
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@drawable/selector_impact_button</item>
         <item name="android:textColor">@color/homage_button_text</item>

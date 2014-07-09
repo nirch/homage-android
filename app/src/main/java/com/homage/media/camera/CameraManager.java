@@ -105,9 +105,11 @@ public class CameraManager {
     }
 
     public void newCamera() {
-        try {
-            camera.release();
-        } catch (Exception e) {
+        if (camera!=null) {
+            try {
+                camera.release();
+            } catch (Exception e) {
+            }
         }
 
         int defaultWidth, defaultHeight;

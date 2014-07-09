@@ -123,8 +123,9 @@ public class Remake extends SugarRecord<Remake> {
     }
 
     public int lastSceneID() {
-        // TODO: implement
-        return 1;
+        List<Scene> scenes = getStory().getScenesOrdered();
+        Scene scene = scenes.get(scenes.size()-1);
+        return scene.sceneID;
     }
 
     public List<Footage> getFootagesOrdered() {

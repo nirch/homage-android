@@ -26,8 +26,10 @@
  */
 package com.homage.networking.server;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.provider.Settings;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.homage.app.R;
@@ -251,11 +253,23 @@ public class HomageServer extends Server {
         parameters.put("remake_id", remakeID);
         parameters.put("scene_id", String.valueOf(sceneID));
         parameters.put("take_id", takeID);
+
+        // TODO: get this from actual video size / camera settings
         parameters.put("resolution_width", "1280");
         parameters.put("resolution_height", "720");
 
+        // User info
+        if (userInfo==null) {
+            userInfo = new HashMap<String,Object>();
+        }
+
+        userInfo.put("remakeID", remakeID);
+        userInfo.put("sceneID", sceneID);
+        userInfo.put("takeID", takeID);
+        if (!userInfo.containsKey("attemptCount")) userInfo.put("attemptCount",1);
+
         super.POST(R.string.url_footage, parameters,
-                INTENT_FOOTAGE_UPLOAD_SUCCESS, userInfo, new RemakeParser()
+            INTENT_FOOTAGE_UPLOAD_SUCCESS, userInfo, new RemakeParser()
         );
     }
     //endregion

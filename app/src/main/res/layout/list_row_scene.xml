@@ -20,13 +20,14 @@
             android:layout_weight="0.1"
             android:src="@drawable/icon_row_indicator" />
 
-        <TextView android:id="@+id/sceneNumberInList"
+        <Button android:id="@+id/sceneNumberInList"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:text="SCENE 1"
             android:singleLine="true"
             android:gravity="center"
             android:layout_weight="0.4"
+            android:background="@null"
             style="@style/SceneText" />
 
         <RelativeLayout
@@ -42,7 +43,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
 
-            <ImageView android:id="@+id/sceneRetakeButton"
+            <ImageButton android:id="@+id/sceneRetakeButton"
                 style="@style/centeredImage"
                 android:background="@android:color/transparent"
                 android:src="@drawable/icon_scene_retake"

@@ -128,6 +128,14 @@
             >
         </activity>
 
+        <activity
+            android:name=".recorder.RecorderOverlayRetakeSceneQuestionDlgActivity"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/Theme.Transparent"
+            >
+        </activity>
+
+
 
         <!--
             ############################################

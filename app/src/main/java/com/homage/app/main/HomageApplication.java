@@ -14,11 +14,16 @@
 package com.homage.app.main;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Camera;
+import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.amazonaws.services.s3.transfer.Upload;
@@ -26,10 +31,13 @@ import com.androidquery.callback.BitmapAjaxCallback;
 import com.homage.media.camera.CameraManager;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
+import com.homage.networking.server.Server;
 import com.homage.networking.uploader.UploadManager;
 import com.homage.networking.uploader.UploaderService;
 import com.orm.SugarApp;
 
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 
@@ -74,7 +82,52 @@ public class HomageApplication extends SugarApp {
 
         // Upload service
         UploadManager.sh().checkUploader();
+
+        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
+        lbm.registerReceiver(onFootageUploadSuccess, new IntentFilter(HomageServer.INTENT_FOOTAGE_UPLOAD_SUCCESS));
+
     }
+
+    private BroadcastReceiver onFootageUploadSuccess = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle b = intent.getExtras();
+            boolean success = b.getBoolean("success", false);
+            HashMap<String, Object> requestInfo = (HashMap<String, Object>)
+                    intent.getSerializableExtra(Server.SR_REQUEST_INFO);
+
+            if (!success) {
+                // Successful upload to s3, but failed to report about it to server.
+                // Will attempt (max three times) to inform server again.
+                // Will wait a few seconds between each re post
+
+                Integer attemptCount = (Integer)requestInfo.get("attemptCount");
+                if (attemptCount >= 3) return;
+
+                final String takeID = (String)requestInfo.get("takeID");
+                final String remakeID = (String)requestInfo.get("remakeID");
+                final Integer sceneID = (Integer)requestInfo.get("sceneID");
+
+                attemptCount++;
+
+                Log.d(TAG, String.format(
+                        "Will re post about upload success for the %d time (in 15 seconds)",
+                        attemptCount
+                ));
+
+                final HashMap<String, Object> userInfo = new HashMap<String, Object>();
+                userInfo.put("attemptCount", attemptCount);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        HomageServer.sh().updateFootageUploadSuccess(remakeID, sceneID, takeID, userInfo);
+                    }
+                }, 15000);
+
+            }
+        }
+    };
 
     protected void initSingletons() {
         // Camera manger

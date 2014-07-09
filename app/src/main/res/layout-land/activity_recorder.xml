@@ -30,6 +30,56 @@
         android:scaleType="fitXY"
         />
 
+    <RelativeLayout android:id="@+id/topScript"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/homage_recorder_script_background"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/scene_script_light"
+            />
+        <TextView android:id="@+id/topScriptText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/placeholder_story_remakes_count"
+            android:layout_centerInParent="true"
+            android:textColor="@color/homage_text"
+            android:textStyle="bold"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout android:id="@+id/bottomScript"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/homage_recorder_script_background"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/scene_script_light"
+            />
+
+        <TextView android:id="@+id/bottomScriptText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/placeholder_story_remakes_count"
+            android:layout_centerInParent="true"
+            android:textColor="@color/homage_text"
+            android:textStyle="bold"
+            />
+    </RelativeLayout>
+
+
     <ProgressBar android:id="@+id/recordingProgressBar"
         android:layout_width="fill_parent"
         android:layout_height="20dp"
@@ -86,12 +136,20 @@
                 android:orientation="vertical"
                 android:layout_weight="1"
                 >
-
+                <ImageButton android:id="@+id/createMovieButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/selector_create_movie_button"
+                    android:visibility="gone"
+                    android:background="@null"
+                    />
                 <ListView android:id="@+id/scenesListView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:divider="@null"
+                    android:clickable="true"
+                    android:descendantFocusability="beforeDescendants"
                     android:dividerHeight="3dp" />
 
             </LinearLayout>
@@ -218,7 +276,7 @@
                     android:src="@drawable/icon_up_arrow_small"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginRight="15dp"
                     />
             </RelativeLayout>
         </LinearLayout>
