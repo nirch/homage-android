@@ -52,6 +52,7 @@ import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.server.HomageServer;
 import com.homage.networking.uploader.UploadManager;
 import com.homage.views.ActivityHelper;
 import com.homage.views.Pacman;
@@ -1008,6 +1009,17 @@ public class RecorderActivity extends Activity {
                 // To ignore successful upload of the older source file.
                 UploadManager.sh().reportSourceFileChange(footage.rawLocalFile, outputFile);
                 footage.rawLocalFile = outputFile;
+
+                // Update server that the footage changed.
+                String remakeID = remake.getOID();
+                int sceneID = footage.sceneID;
+                String takeID = footage.getTakeID();
+                HomageServer.sh().updateFootageUploadStart(
+                        remakeID,
+                        sceneID,
+                        takeID,
+                        null
+                );
             }
 
             footage.save();

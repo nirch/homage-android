@@ -298,7 +298,7 @@ public class CameraManager {
         profile.videoFrameWidth = recSize.width;
         profile.videoFrameHeight = recSize.height;
 
-        //camera.unlock();
+        camera.unlock();
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setCamera(camera);
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
