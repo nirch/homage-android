@@ -75,6 +75,8 @@ public class RemakeParser extends Parser {
 
         responseInfo.put("remakeOID", remake.getOID());
 
+        Log.d(TAG, String.format("Remake:%s status:%d", remake.getOID(), remake.status));
+
         // Parse the footages for this remake.
         FootagesParser footagesParser = new FootagesParser();
         footagesParser.objectToParse = remakeInfo.getJSONArray("footages");

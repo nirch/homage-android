@@ -44,6 +44,7 @@ import com.homage.networking.parsers.UserParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class HomageServer extends Server {
     String TAG = "TAG_"+getClass().getName();
@@ -165,9 +166,14 @@ public class HomageServer extends Server {
         // User Info
         if (userInfo != null) info.putAll(userInfo);
 
+        // Suffix hack (prevent caching)
+        Long tsLong = System.currentTimeMillis();
+        int ts = tsLong.intValue();
+        String suffix = String.format("%s?ts=%d",remakeOID, ts);
+
         // The request
         super.GET(
-                R.string.url_existing_remake, remakeOID, null,
+                R.string.url_existing_remake, suffix, null,
                 INTENT_REMAKE, null, new RemakeParser()
         );
     }
