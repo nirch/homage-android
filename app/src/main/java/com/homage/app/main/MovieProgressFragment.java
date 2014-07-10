@@ -39,6 +39,7 @@ public class MovieProgressFragment extends Fragment {
     String followingRemakeOID;
     String preparingText;
     boolean finished;
+    boolean needToContinueOnResume;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,6 +47,7 @@ public class MovieProgressFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_make_movie_progress, container, false);
         rootView.setVisibility(View.GONE);
         aq = new AQuery(rootView);
+        needToContinueOnResume = false;
 
         //region *** Bind to UI event handlers ***
         /**********************************/
@@ -68,12 +70,18 @@ public class MovieProgressFragment extends Fragment {
         super.onResume();
         initObservers();
         updateUI();
+        if (followingRemakeOID != null && needToContinueOnResume) {
+            if (followingRemakeOID.equals(remake.getOID())) {
+                followRemakeWithOID(followingRemakeOID);
+            }
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         removeObservers();
+        needToContinueOnResume = true;
     }
 
     //region *** Observers ***
