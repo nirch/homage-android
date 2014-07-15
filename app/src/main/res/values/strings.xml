@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="version_name">0.3.1</string>
-    <string name="version_code">301</string>
-
     <string name="app_name">Homage</string>
     <string name="app_main_title">Homage</string>
 
 
     <string name="test">TEST!</string>
     <string name="placeholder_title">PLACE HOLDER!</string>
+
+    <!-- Facebook -->
+    <string name="app_id">270260873181954</string>
+
 
     <!-- List messages -->
     <string name="no_remakes">( No remakes )</string>
@@ -72,6 +73,7 @@
 
     <!-- Action buttons -->
     <string name="action_button_lets_shot">LETS SHOOT!</string>
+    <string name="action_button_lets_create">LETS CREATE</string>
 
     <!-- Rendering -->
     <string name="rendering_progress_preparing">Preparing your movie: %s</string>
@@ -92,6 +94,7 @@
 
     <string name="login_pd_title">Please wait.</string>
     <string name="login_pd_signing_in">Signing in user...</string>
+    <string name="login_pd_signing_in_guest">Signing in as guest...</string>
 
     <!-- Text reader -->
     <string name="text_title_privacy">Privacy policy</string>

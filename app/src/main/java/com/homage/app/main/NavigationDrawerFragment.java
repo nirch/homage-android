@@ -204,7 +204,7 @@ public class NavigationDrawerFragment extends Fragment {
 
 
         if (user.isGuest()) {
-            aq.id(R.id.loggedInUser).text("Guest");
+            aq.id(R.id.loggedInUser).text("Hello Guest");
             aq.id(R.id.signInOutButton).text("Join now");
         } else {
             aq.id(R.id.loggedInUser).text(user.getTag());

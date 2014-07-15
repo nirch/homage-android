@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -17,6 +18,8 @@ import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
+import com.homage.app.main.WelcomeScreenActivity;
+import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
 import com.homage.views.ActivityHelper;
 
@@ -56,10 +59,17 @@ public class LoginActivity extends Activity {
         String email = p.getString(HomageApplication.SK_EMAIL, "").trim();
         aq.id(R.id.loginMail).text(email);
 
+        //
         // More settings
+        //
         Bundle b = getIntent().getExtras();
         if (b!=null) {
+            // Flag that indicates if this screen allows to login as a guest user
+            // (if not, button will be cancel button)
             allowGuestLogin = b.getBoolean(SK_ALLOW_GUEST_LOGIN, false);
+
+            // Flash that indicates if after login, the main activity (or welcome screen)
+            // should be opened.
             startMainActivityAfterLogin = b.getBoolean(SK_START_MAIN_ACTIVITY_AFTER_LOGIN, false);
         }
 
@@ -72,7 +82,7 @@ public class LoginActivity extends Activity {
         /** Binding to UI event handlers **/
         /**********************************/
         aq.id(R.id.loginButton).clicked(onClickedLoginButton);
-        aq.id(R.id.loginCancelButton).clicked(onClickedCancelButton);
+        aq.id(R.id.loginCancelButton).clicked(onClickedCanceOrGuestButton);
         aq.id(R.id.termsOfServiceButton).clicked(onClickedTOSButton);
         aq.id(R.id.privacyPolicyButton).clicked(onClickedPrivacyPolicyButton);
         //endregion
@@ -102,24 +112,49 @@ public class LoginActivity extends Activity {
         lbm.unregisterReceiver(onUserLogin);
     }
 
+    private void loginAsGuest() {
+        Log.d(TAG, "Will login as guest");
+        Resources res = getResources();
+        pd = new ProgressDialog(this);
+        pd.setTitle(res.getString(R.string.login_pd_title));
+        pd.setMessage(res.getString(R.string.login_pd_signing_in_guest));
+        pd.setCancelable(true);
+        pd.show();
+        HomageServer.sh().loginGuest();
+    }
+
     // Observers handlers
     private BroadcastReceiver onUserLogin = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        pd.dismiss();
-        Bundle b = intent.getExtras();
-        boolean success = b.getBoolean("success", false);
-        if (success) {
-            Toast.makeText(LoginActivity.this, "Logged in user.", Toast.LENGTH_LONG).show();
-            if (startMainActivityAfterLogin) {
-                Intent startIntent = new Intent(LoginActivity.this, MainActivity.class);
-                LoginActivity.this.startActivity(startIntent);
-                LoginActivity.this.finish();
+            pd.dismiss();
+            Bundle b = intent.getExtras();
+            boolean success = b.getBoolean("success", false);
+            if (success) {
+                User user = User.getCurrent();
+                if (user == null) return;
+
+                if (startMainActivityAfterLogin) {
+
+                    Intent startIntent;
+                    if (user.isGuest()) {
+                        // If a guest user just logged in, show the welcome screen.
+                        startIntent = new Intent(LoginActivity.this, WelcomeScreenActivity.class);
+                        Toast.makeText(LoginActivity.this, "Logged in Guest.", Toast.LENGTH_LONG).show();
+                    } else {
+                        // Go to the Main activity screen.
+                        startIntent = new Intent(LoginActivity.this, MainActivity.class);
+                        Toast.makeText(LoginActivity.this, String.format("Hello %s", user.getTag()), Toast.LENGTH_LONG).show();
+                    }
+                    LoginActivity.this.startActivity(startIntent);
+                    overridePendingTransition(0, 0);
+                    LoginActivity.this.finish();
+                }
+
+                //finish();
+            } else {
+                Toast.makeText(LoginActivity.this, "Login failed.", Toast.LENGTH_LONG).show();
             }
-            finish();
-        } else {
-            Toast.makeText(LoginActivity.this, "Login failed.", Toast.LENGTH_LONG).show();
-        }
         }
     };
     //endregion
@@ -184,10 +219,14 @@ public class LoginActivity extends Activity {
         }
     };
 
-    private View.OnClickListener onClickedCancelButton = new View.OnClickListener() {
+    private View.OnClickListener onClickedCanceOrGuestButton = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            LoginActivity.this.finish();
+            //LoginActivity.this.finish();
+            if (allowGuestLogin) {
+                // Pressed guest login.
+                loginAsGuest();
+            }
         }
     };
 

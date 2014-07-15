@@ -23,8 +23,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -41,6 +43,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.androidquery.AQuery;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.homage.app.R;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 import com.homage.app.player.VideoPlayerFragment;
@@ -90,8 +95,16 @@ public class MainActivity extends ActionBarActivity
     private int currentSection;
     private Story currentStory;
 
+    public static final String EXTRA_MESSAGE = "message";
+    public static final String PROPERTY_REG_ID = "registration_id";
+    private static final String PROPERTY_APP_VERSION = "appVersion";
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
     ProgressDialog pd;
     MovieProgressFragment movieProgressFragment;
+
+    GoogleCloudMessaging gcm;
+    String regid;
 
     //region *** Lifecycle ***
     @Override
@@ -126,6 +139,7 @@ public class MainActivity extends ActionBarActivity
         movieProgressFragment = (MovieProgressFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.movieProgressBar);
 
+
         // Refresh stories
         showRefreshProgress();
         HomageServer.sh().refetchStories();
@@ -146,6 +160,7 @@ public class MainActivity extends ActionBarActivity
         initObservers();
         updateLoginState();
         updateRenderProgressState();
+        hideRefreshProgress();
     }
 
     @Override
@@ -229,6 +244,37 @@ public class MainActivity extends ActionBarActivity
                         .replace(R.id.container, PlaceholderFragment.newInstance(position))
                         .commitAllowingStateLoss();
         }
+    }
+
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @return Application's {@code SharedPreferences}.
+     */
+    private SharedPreferences getGCMPreferences(Context context) {
+        // This sample app persists the registration ID in shared preferences, but
+        // how you store the regID in your app is up to you.
+        return getSharedPreferences(MainActivity.class.getSimpleName(),
+                Context.MODE_PRIVATE);
     }
 
     //region *** Observers ***
@@ -377,7 +423,7 @@ public class MainActivity extends ActionBarActivity
         if (user==null) {
             Log.d(TAG, "No logged in user.");
         } else {
-            Log.d(TAG, String.format("Current user:%s", user.email));
+            Log.d(TAG, String.format("Current user:%s", user.getTag()));
         }
         mNavigationDrawerFragment.refresh();
     }

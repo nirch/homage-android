@@ -41,9 +41,18 @@ public class UserParser extends Parser {
     public void parse() throws JSONException {
         JSONObject userInfo = (JSONObject)objectToParse;
         String oid = Parser.parseOID(userInfo);
-        Log.v(TAG, String.format("Parsing a user with email:%s oid:%s", userInfo.getString("email"), oid));
+
+        String email = parseString("email", null);
+
+        if (email != null) {
+            Log.v(TAG, String.format("Parsing a user with email:%s oid:%s", userInfo.getString("email"), oid));
+        } else {
+            Log.v(TAG, String.format("Parsing guest user oid:%s", oid));
+        }
+
+
         User user = User.findOrCreate(Parser.parseOID(userInfo));
-        user.email =        parseString("email", null);
+        user.email =        email;
         user.isFirstUse =   parseBool("first_use", false);
         user.isPublic =     parseBool("is_public", false);
         user.createAt =     parseDateAsTimestamp("created_at", -1);

@@ -19,30 +19,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.amazonaws.services.s3.transfer.Upload;
 import com.androidquery.callback.BitmapAjaxCallback;
 import com.homage.media.camera.CameraManager;
-import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import com.homage.networking.uploader.UploadManager;
-import com.homage.networking.uploader.UploaderService;
 import com.orm.SugarApp;
 
 import java.util.HashMap;
-import java.util.Objects;
-import java.util.logging.Logger;
 
 
 public class HomageApplication extends SugarApp {
     String TAG = "TAG_" + getClass().getName();
+
+    public static final String GCM_PROJECT_NUMBER = "407919209902";
 
     public static final String SETTINGS_NAME = "homage_settings";
 

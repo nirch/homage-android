@@ -18,6 +18,15 @@
             android:scaleType="fitXY"
             android:src="@drawable/glass_dark"
             />
+
+        <!--
+        <fragment android:name="com.homage.app.player.VideoPlayerFragment"
+            android:id="@+id/videoPlayerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_homage_video_view" />
+            -->
+
         <ImageButton android:id="@+id/storyDetailsPlayButton"
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -25,22 +34,9 @@
             android:background="@null"
             android:layout_centerInParent="true"
             />
+
     </RelativeLayout>
 
-
-    <!--
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="216dp"
-        android:layout_gravity="center_horizontal"
-        >
-        <fragment android:name="com.homage.app.player.VideoPlayerFragment"
-            android:id="@+id/video_player_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout="@layout/fragment_homage_video_view" />
-    </FrameLayout>
-    -->
 
     <Button
         android:layout_width="wrap_content"
@@ -65,16 +61,50 @@
         android:layout_centerVertical="true"
         />
 
-    <GridView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/remakesGridView"
-        tools:listitem="@android:layout/simple_list_item_2"
-        android:numColumns="2"
-        android:verticalSpacing="2dp"
-        android:horizontalSpacing="2dp"
-        android:clickable="true"
-        android:descendantFocusability="beforeDescendants"
-        />
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_centerVertical="true"
+            android:orientation="vertical"
+            >
+            <TextView android:id="@+id/noRemakesMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/homage_button_bg2"
+                android:text="@string/no_remakes"
+                android:textSize="14dp"
+                android:gravity="center"
+                android:visibility="visible"
+                />
+
+            <ProgressBar android:id="@+id/loadingRemakesProgress"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="visible"
+                android:layout_gravity="center"
+                />
+
+        </LinearLayout>
+
+        <GridView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/remakesGridView"
+            tools:listitem="@android:layout/simple_list_item_2"
+            android:numColumns="2"
+            android:verticalSpacing="2dp"
+            android:horizontalSpacing="2dp"
+            android:clickable="true"
+            android:visibility="visible"
+            android:descendantFocusability="beforeDescendants"
+            />
+    </RelativeLayout>
+
+
 
 </LinearLayout>

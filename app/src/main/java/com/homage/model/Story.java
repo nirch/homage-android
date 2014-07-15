@@ -112,6 +112,17 @@ public class Story extends SugarRecord<Story> {
         );
         return res;
     }
+
+    public List<Remake> getRemakes(User excludedUser) {
+        List<Remake> res = Remake.find(
+                Remake.class,                                                               // Entity class
+                "story=? AND user<>? AND grade<>?",                                         // where clause
+                new String[]{getId().toString(), excludedUser.getId().toString(), "-1"},    // where args
+                "",                                                                         // group by
+                "grade DESC",                                                               // order by
+                "");
+        return res;
+    }
     //endregion
 
     //region *** Logic ***

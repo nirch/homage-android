@@ -53,11 +53,12 @@ public class StoryDetailsFragment extends Fragment {
         }
 
         void refreshRemakesFromLocalStorage() {
+            User excludedUser = User.getCurrent();
             if (remakes==null) {
-                remakes = story.getRemakes();
+                remakes = story.getRemakes(excludedUser);
             } else {
                 remakes.clear();
-                remakes.addAll(story.getRemakes());
+                remakes.addAll(story.getRemakes(excludedUser));
             }
             Log.d(TAG, String.format("%d remakes for this story", remakes.size()));
         }
@@ -70,6 +71,13 @@ public class StoryDetailsFragment extends Fragment {
 
         @Override
         public int getCount() {
+            int count = remakes.size();
+            if (count > 0) {
+                aq.id(R.id.noRemakesMessage).visibility(View.INVISIBLE);
+                aq.id(R.id.loadingRemakesProgress).visibility(View.INVISIBLE);
+            } else {
+                aq.id(R.id.noRemakesMessage).visibility(View.VISIBLE);
+            }
             return remakes.size();
         }
 
@@ -138,7 +146,9 @@ public class StoryDetailsFragment extends Fragment {
         aq.id(R.id.storyImageView).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
         aq.id(R.id.storyDescription).text(story.description);
 
-        adapter = new RemakesAdapter(getActivity(), story.getRemakes());
+        User excludedUser = User.getCurrent();
+
+        adapter = new RemakesAdapter(getActivity(), story.getRemakes(excludedUser));
         remakesGridView = aq.id(R.id.remakesGridView).getGridView();
         remakesGridView.setAdapter(adapter);
 
@@ -194,6 +204,7 @@ public class StoryDetailsFragment extends Fragment {
         // Just an example of refreshing the data from local storage,
         // after it was fetched from server and parsed.
         adapter.notifyDataSetChanged();
+        aq.id(R.id.loadingRemakesProgress).visibility(View.INVISIBLE);
     }
     //endregion
 

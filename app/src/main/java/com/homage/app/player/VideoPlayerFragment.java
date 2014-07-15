@@ -2,7 +2,6 @@ package com.homage.app.player;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.androidquery.AQuery;
@@ -59,42 +57,20 @@ public class VideoPlayerFragment
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_homage_video_view, container, false);
         aq = new AQuery(rootView);
+        videoView = (VideoView)aq.id(R.id.videoView).getView();
 
         // Get the the file path / url of the video.
         Bundle b = getActivity().getIntent().getExtras();
-        if (b == null) {
-            missingPathOrURL();
-            return rootView;
-        }
-
-        filePath = b.getString(K_FILE_PATH);
-        if (filePath == null) {
-            fileURL = b.getString(K_FILE_URL);
-            if (fileURL == null) {
-                missingPathOrURL();
-                return rootView;
-            }
-        }
-
-        // More settings
-        allowToggleFullscreen = b.getBoolean(K_ALLOW_TOGGLE_FULLSCREEN, true);
-        finishOnCompletion = b.getBoolean(K_FINISH_ON_COMPLETION, false);
-        autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, true);
-
-        // Init UI state
-        initializeUIState();
-
-        // Initialize playing the video
-        videoView = (VideoView)aq.id(R.id.videoView).getView();
-        pause();
-        initializeVideoPlayer();
-
-        // Bind to UI events
-        aq.id(R.id.touchVideoButton).clicked(onClickedToggleControlsButton);
-        aq.id(R.id.videoStopButton).clicked(onClickedStopButton);
-        aq.id(R.id.videoPlayPauseButton).clicked(onClickedPlayPauseButton);
-        aq.id(R.id.videoFullScreenButton).clicked(onClickedFullScreenButton);
+        if (b == null) return rootView;
+        initializeWithArguments(b);
         return rootView;
+    }
+
+    public void initializeWithArguments(Bundle b) {
+        initializePlayerSettings(b);
+        initializeUIState();
+        initializePlayingVideo();
+        bindUIHandlers();
     }
 
     @Override
@@ -104,18 +80,25 @@ public class VideoPlayerFragment
     //endregion
 
     //region *** initializations ***
-    private void missingPathOrURL() {
-        Log.e(TAG, "Missing url or file path to video error.");
-        Toast.makeText(getActivity(), "Error playing video. Missing path/url.", Toast.LENGTH_SHORT).show();
-    }
-
     private void initializeUIState() {
         if (!allowToggleFullscreen) {
             disableButton(R.id.videoFullScreenButton);
         }
 
+        if (autoStartPlaying) {
+            aq.id(R.id.videoThumbnailImage).visibility(View.GONE);
+            aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+        }
+
         showControls();
     }
+
+    private void initializePlayingVideo() {
+        // Initialize playing the video
+        pause();
+        initializeVideoPlayer();
+    }
+
 
     private void disableButton(int buttonId) {
         ImageButton ib = (ImageButton)aq.id(buttonId).getView();
@@ -137,6 +120,31 @@ public class VideoPlayerFragment
     //endregion
 
     //region *** Media player ***
+    private void initializePlayerSettings(Bundle b) {
+        filePath = b.getString(K_FILE_PATH);
+        if (filePath == null) {
+            fileURL = b.getString(K_FILE_URL);
+            if (fileURL == null) {
+                return;
+            }
+        }
+
+        // More settings
+        allowToggleFullscreen = b.getBoolean(K_ALLOW_TOGGLE_FULLSCREEN, true);
+        finishOnCompletion = b.getBoolean(K_FINISH_ON_COMPLETION, false);
+        autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, true);
+    }
+
+    // Bind to UI events
+    private void bindUIHandlers() {
+        aq.id(R.id.touchVideoButton).clicked(onClickedToggleControlsButton);
+        aq.id(R.id.videoStopButton).clicked(onClickedStopButton);
+        aq.id(R.id.videoPlayPauseButton).clicked(onClickedPlayPauseButton);
+        aq.id(R.id.videoFullScreenButton).clicked(onClickedFullScreenButton);
+        aq.id(R.id.videoBigPlayButton).clicked(onClickedBigPlayButton);
+
+    }
+
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         Log.d(TAG, String.format("Finished playing video: %s", filePath));
@@ -144,7 +152,7 @@ public class VideoPlayerFragment
         if (finishOnCompletion) {
             getActivity().finish();
         } else {
-            videoView.seekTo(0);
+            showThumbState();
         }
     }
 
@@ -203,13 +211,25 @@ public class VideoPlayerFragment
     void pause() {
         ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
         ib.setImageResource(R.drawable.selector_video_button_play);
-        videoView.pause();
+        if (videoView != null) videoView.pause();
     }
 
     void start() {
         ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
         ib.setImageResource(R.drawable.selector_video_button_pause);
-        videoView.start();
+        if (videoView != null) videoView.start();
+    }
+
+    void showThumbState() {
+        if (videoView != null) videoView.seekTo(0);
+        pause();
+        aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
+        aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
+    }
+
+    void hideThumb() {
+        aq.id(R.id.videoThumbnailImage).visibility(View.GONE);
+        aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
     }
     //endregion
 
@@ -230,10 +250,15 @@ public class VideoPlayerFragment
     View.OnClickListener onClickedStopButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            videoView.stopPlayback();
+            videoView.seekTo(0);
+            videoView.pause();
             if (finishOnCompletion) {
                 VideoPlayerFragment.this.getActivity().finish();
+                return;
             }
+
+            // Pressed the stop button.
+            showThumbState();
         }
     };
 
@@ -243,6 +268,17 @@ public class VideoPlayerFragment
             togglePlayPause();
         }
     };
+
+    View.OnClickListener onClickedBigPlayButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            hideThumb();
+            videoView.seekTo(0);
+            start();
+        }
+    };
+
+
 
     View.OnClickListener onClickedFullScreenButton = new View.OnClickListener() {
         @Override

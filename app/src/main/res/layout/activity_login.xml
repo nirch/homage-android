@@ -14,6 +14,14 @@
         android:alpha="0.2"
         />
 
+    <com.facebook.widget.LoginButton
+        android:id="@+id/authButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -81,8 +89,9 @@
             android:text="@string/login_cancel_button"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
             android:drawablePadding="20dp" />
+
+
 
     </LinearLayout>
 
