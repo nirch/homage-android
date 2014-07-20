@@ -16,6 +16,7 @@
 */
 package com.homage.app.recorder;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -178,11 +179,8 @@ public class RecorderActivity extends Activity {
         // User will need to switch manually to selfie if interested.
         CameraManager.sh().resetToPreferBackCamera();
 
-        // Prepare sound
-        mp = MediaPlayer.create(getApplicationContext() , R.raw.cinema_countdown);
-
         //region *** Layout initializations ***
-        Log.d(TAG, String.format("Started the recorder for remake:", remake.getOID()));
+        Log.d(TAG, String.format("Started recorder for remake: %s", remake.getOID()));
 
         // Make this activity, full screen with no title bar.
         ActivityHelper.goFullScreen(this);
@@ -205,13 +203,13 @@ public class RecorderActivity extends Activity {
         updateScriptBar();
         scenesListView.setVisibility(View.GONE);
 
-        // Preload and cache silhouettes in the background
-        List<Scene> scenes = story.getScenesOrdered();
-        for (Scene scene : scenes) {
-            Log.d(TAG, String.format("Preloading %s", scene.silhouetteURL));
-            aq.image(scene.silhouetteURL, false, true, 0, 0);
-        }
-        //endregion
+//        // Preload and cache silhouettes in the background
+//        List<Scene> scenes = story.getScenesOrdered();
+//        for (Scene scene : scenes) {
+//            Log.d(TAG, String.format("Preloading %s", scene.silhouetteURL));
+//            aq.image(scene.silhouetteURL, false, true, 0, 0);
+//        }
+//        //endregion
 
         //region *** State initialization ***
         try {
@@ -333,21 +331,12 @@ public class RecorderActivity extends Activity {
         // We will show the video feed of the camera
         // on a preview texture in the background.
         recPreviewContainer = (FrameLayout)findViewById(R.id.preview_container);
+        CameraManager cm = CameraManager.sh();
 
-        // TODO: Initialize CameraManager using AsyncTask
-        // TODO: remove the postDelayed hack. implement this correctly.
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                CameraManager cm = CameraManager.sh();
-                cm.startCameraPreviewInView(RecorderActivity.this, recPreviewContainer);
+        cm.startCameraPreviewInView(RecorderActivity.this, recPreviewContainer);
 
-                // After initialized, fade in the camera by fading out the "curtains" slowly
-                hideCurtainsAnimated(true);
-
-
-            }
-        }, 500);
+        // After initialized, fade in the camera by fading out the "curtains" slowly
+        hideCurtainsAnimated(true);
     }
     //endregion
 
@@ -364,7 +353,7 @@ public class RecorderActivity extends Activity {
     private void hideCurtainsAnimated(boolean animated) {
         if (animated) {
             Animation hideCurtainsAnim = AnimationUtils.loadAnimation(RecorderActivity.this, R.anim.animation_fadeout);
-            hideCurtainsAnim.setDuration(300);
+            hideCurtainsAnim.setDuration(1000);
             aq.id(R.id.recorderCurtains).animate(hideCurtainsAnim);
             return;
         }
@@ -829,8 +818,10 @@ public class RecorderActivity extends Activity {
         counterDown = null;
         aq.id(R.id.recorderCountDownText).visibility(View.INVISIBLE);
 
-        mp.pause();
-        mp.reset();
+        if (mp != null) {
+            mp.pause();
+            mp.reset();
+        }
 
         showOverlayButtons(false);
         Pacman pacman = (Pacman)aq.id(R.id.pacman).getView();
@@ -1080,6 +1071,7 @@ public class RecorderActivity extends Activity {
         //aq.id(R.id.silhouette).image(scene.silhouetteURL,false, true);
         //aq.id(R.id.silhouette).image(scene.silhouetteURL, false, true, 500, R.drawable.glass_dark);
         aq.id(R.id.silhouette).image(scene.silhouetteURL, false, true, 0, 0, null, AQuery.FADE_IN);
+        //aq.id(R.id.silhouette).visibility(View.GONE);
         aq.id(R.id.sceneNumber).text(scene.getTitle());
         aq.id(R.id.sceneTime).text(scene.getTimeString());
         aq.id(R.id.topScriptText).text(scene.script);

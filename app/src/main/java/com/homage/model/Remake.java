@@ -136,7 +136,6 @@ public class Remake extends SugarRecord<Remake> {
                 "",
                 "scene_id",
                 "");
-        Log.d("TAG_test", String.format(">>> %d", res.size()));
         return res;
     }
 

@@ -1,6 +1,7 @@
 package com.homage.networking.parsers;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -8,6 +9,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +22,8 @@ public class Parser {
 
     protected String parserName;
     protected Class expectedObjectClass;
+    protected long startParseTime;
+
     public Object objectToParse;
     public HashMap<String, Error> errors;
     public Error error;
@@ -77,6 +81,14 @@ public class Parser {
         throw new UnsupportedOperationException("parse not implemented for derived parser.");
     }
 
+    protected void startBenchMark() {
+        startParseTime = System.currentTimeMillis();
+    }
+
+    protected void endBenchMark() {
+        long delta = System.currentTimeMillis() - startParseTime;
+        Log.v(TAG, String.format("Parse benchmark: %d", delta));
+    }
 
     //region *** Helpers for parsing JSON objects ***
     protected String parseString(String key, String defaultValue) throws JSONException {

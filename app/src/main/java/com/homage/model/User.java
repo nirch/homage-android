@@ -22,8 +22,13 @@ public class User extends SugarRecord<User> {
     public boolean prefersToSeeScriptWhileRecording;
     public boolean skipRecorderTutorial;
     public String userId;
-    public String fbId;
+
     public String firstName;
+    public String lastName;
+    public String birthDay;
+    public String link;
+    public String fbId;
+
     public long createAt;
     public long lastTimeUpdatedStories;
     //endregion
@@ -51,6 +56,13 @@ public class User extends SugarRecord<User> {
 
     public static User findByOID(String oid) {
         List<User> res = User.find(User.class, "oid=?", oid);
+        if (res.size()==1) return res.get(0);
+        return null;
+    }
+
+    public static User findByEmail(String email) {
+        if (email==null) return null;
+        List<User> res = User.find(User.class, "email=?", email);
         if (res.size()==1) return res.get(0);
         return null;
     }

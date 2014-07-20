@@ -27,9 +27,11 @@
 package com.homage.media.camera;
 
 import android.content.Context;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -47,6 +49,8 @@ public class CameraManager {
 
     final int defaultFrontWidth = 640;
     final int defaultFrontHeight = 480;
+
+    int[] fpsRange;
 
     //public CameraPreview cameraPreview;
     Camera.Size recSize;
@@ -158,6 +162,7 @@ public class CameraManager {
                 "Initialized camera manager. Requested size for recording: %d,%d",
                 recSize.width,
                 recSize.height));
+
     }
 
     // Initializations.
@@ -179,10 +184,6 @@ public class CameraManager {
         }
 
         this.previewContainer = previewContainer;
-
-        //Camera.Parameters cameraParams = camera.getParameters();
-        //cameraParams.setPreviewFpsRange(29000, 29000);
-        //camera.setParameters(cameraParams);
 
         CameraPreview cameraPreview = new CameraPreview(context, camera);
         cameraPreview.setZOrderOnTop(false);
@@ -209,6 +210,14 @@ public class CameraManager {
             // The Surface has been created, now tell the camera where to draw the preview.
             try {
                 mCamera.setPreviewDisplay(holder);
+
+                // Set some default parameters for the preview
+                Camera.Parameters parameters = mCamera.getParameters();
+                fpsRange = CameraHelper.getPrefferedFPSRangeFromParameters(parameters);
+                parameters.setPreviewFpsRange(fpsRange[0], fpsRange[1]);
+                mCamera.setParameters(parameters);
+
+
                 mCamera.startPreview();
             } catch (IOException e) {
                 Log.d(TAG, "Error setting camera preview: " + e.getMessage());
@@ -235,9 +244,66 @@ public class CameraManager {
             // reformatting changes here
 
             // start preview with new settings
-            Log.d(TAG, "changed device orientation. Will need to flip the preview view.");
+            Log.d(TAG, String.format("Surface of the cam preview changed. %d %d", w, h));
+            fixPreviewAspectRatio(w, h);
             restartPreview();
         }
+
+        private void fixPreviewAspectRatio(int containerWidth, int containerHeight) {
+            // Crop the video to get the correct aspect ratio + cropping effect
+            // (Homage calls it the 16/9 wysiwyg feature)
+            Camera.Parameters parameters = camera.getParameters();
+
+
+            Camera.Size previewSize = parameters.getPreviewSize();
+            int videoWidth = previewSize.width;
+            int videoHeight = previewSize.height;
+
+            //float videoAspectRatio = (float)videoWidth/(float)videoHeight;
+            //float containerAspectRatio = (float)containerWidth/(float)containerHeight;
+            float dx = (float)containerWidth / (float)videoWidth;
+            float dy = (float)containerHeight / (float)videoHeight;
+
+            int fixX = (int)((containerHeight/dx)*dy);
+            int fixY = (int)((containerWidth/dy)*dx);
+
+            int paddingX = -(containerWidth - fixY) / 2;
+            int paddingY = -(containerHeight - fixX) / 2;
+
+            Log.d(TAG, String.format("Padding X Y: %d %d", paddingX, paddingY));
+
+            if (paddingX<0) {
+                previewContainer.setPadding(paddingX,0,paddingX,0);
+            } else if (paddingY<0) {
+                previewContainer.setPadding(0,paddingY,0,paddingY);
+            } else {
+                previewContainer.setPadding(0,0,0,0);
+            }
+
+        }
+
+        /*
+// Get the dimensions of the video
+//            int videoWidth = 640;
+//            int videoHeight = 480;
+//            float videoProportion = (float) videoWidth / (float) videoHeight;
+//
+//            // Get the size of the screen
+//            int screenWidth = 1920;
+//            int screenHeight = 1080;
+//            float screenProportion = (float) screenWidth / (float) screenHeight;
+//
+//            // Get the SurfaceView layout parameters
+//            android.view.ViewGroup.LayoutParams lp = previewContainer.getLayoutParams();
+//            if (videoProportion > screenProportion) {
+//                lp.width = screenWidth;
+//                lp.height = (int) ((float) screenWidth / videoProportion);
+//            } else {
+//                lp.width = (int) (videoProportion * (float) screenHeight);
+//                lp.height = screenHeight;
+//            }
+
+         */
 
         public void stop() {
             if (mHolder.getSurface() == null){
@@ -301,8 +367,16 @@ public class CameraManager {
         camera.unlock();
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setCamera(camera);
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
-        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
+
+        if (Build.VERSION.SDK_INT > 16) {
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+            mediaRecorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
+        }
+        else {
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+        }
+
         mediaRecorder.setProfile(profile);
 
         String outputFile = CameraHelper.getOutputMediaFile(CameraHelper.MEDIA_TYPE_VIDEO).toString();

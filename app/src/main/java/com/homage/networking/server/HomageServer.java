@@ -108,7 +108,6 @@ public class HomageServer extends Server {
     }
     //endregion
 
-
     //region *** Stories ***
     /**
      * Refetch all stories (and their child objects) info from the server.
@@ -298,13 +297,25 @@ public class HomageServer extends Server {
     //endregion
 
     //region *** Users ***
+    private void addFaceBookInfoToParameters(HashMap<String, String> parameters, HashMap<String, String>fbInfo) {
+        if (fbInfo != null) {
+            parameters.put("facebook[birthday]", fbInfo.get("birthday"));
+            parameters.put("facebook[first_name]", fbInfo.get("first_name"));
+            parameters.put("facebook[id]", fbInfo.get("id"));
+            parameters.put("facebook[last_name]", fbInfo.get("last_name"));
+            parameters.put("facebook[link]", fbInfo.get("link"));
+            parameters.put("facebook[name]", fbInfo.get("name"));
+            parameters.put("facebook[email]", fbInfo.get("email"));
+        }
+    }
+
     /**
-     * Login user with an email and password.
+     * Create user with an email and password.
      * @param email
      * @param password
      */
-    public void loginUser(String email, String password) {
-        Log.v(TAG, String.format("Login user with email: %s", email));
+    public void createUser(String email, String password, HashMap<String, String>fbInfo) {
+        Log.v(TAG, String.format("Create user with email: %s", email));
 
         HashMap<String, String> parameters = new HashMap<String, String>();
 
@@ -313,29 +324,30 @@ public class HomageServer extends Server {
         if (email!=null) {
             // User
             parameters.put("email", email);
-            parameters.put("password",password);
-
             // TODO: get from settings.
             isPublic = true;
         } else {
             // Guest user
             isPublic = false;
         }
+        if (password != null) parameters.put("password",password);
 
         if (isPublic) {
-            parameters.put("is_public","1");
+            parameters.put("is_public","true");
         } else {
-            parameters.put("is_public","0");
+            parameters.put("is_public","true");
         }
-
         parameters.put("device[identifier_for_vendor]",
             Settings.Secure.getString(HomageApplication.getContext().getContentResolver(),Settings.Secure.ANDROID_ID)
         );
         parameters.put("device[model]", Device.getDeviceModel());
         parameters.put("device[name]","Android Phone");
 
-        // TODO: implement GCM
-        parameters.put("device[push_token]","%3C0a7b7b15%203f0fb335%200e252182%2038675505%20e739547b%2047dd8ab2%20");
+        // TODO: implement GCM push identifier
+        parameters.put("device[push_token]","xxx");
+
+        // Facebook
+        if (fbInfo != null) addFaceBookInfoToParameters(parameters, fbInfo);
 
         // The user parser
         UserParser userParser = new UserParser();
@@ -345,8 +357,38 @@ public class HomageServer extends Server {
         super.POST(R.string.url_new_user, parameters, INTENT_USER_CREATION, null, userParser);
     }
 
-    public void loginGuest() {
-        loginUser(null, null);
+
+
+
+    public void createGuest() {
+        createUser(null, null, null);
+    }
+
+    public void updateUserUponJoin(User user, String email, String password, HashMap<String, String>fbInfo) {
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("user_id", user.getOID());
+        parameters.put("email", email);
+        if (password != null) parameters.put("password",password);
+        parameters.put("is_public", "1");
+        parameters.put("device[identifier_for_vendor]",
+            Settings.Secure.getString(HomageApplication.getContext().getContentResolver(),Settings.Secure.ANDROID_ID)
+        );
+        parameters.put("device[model]", Device.getDeviceModel());
+        parameters.put("device[name]","Android Phone");
+
+        // Facebook
+        if (fbInfo != null) addFaceBookInfoToParameters(parameters, fbInfo);
+
+        // The user parser
+        UserParser userParser = new UserParser();
+        userParser.loginParsedUser = true;
+
+        // Post the request
+        super.PUT(R.string.url_update_user, parameters, INTENT_USER_UPDATED, null, userParser);
+    }
+
+    public void updateUserPreferences() {
+
     }
 
 

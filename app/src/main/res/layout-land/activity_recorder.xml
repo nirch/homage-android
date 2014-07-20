@@ -82,11 +82,12 @@
 
     <ProgressBar android:id="@+id/recordingProgressBar"
         android:layout_width="fill_parent"
-        android:layout_height="20dp"
+        android:layout_height="10dp"
         android:visibility="gone"
         android:layout_alignParentTop="true"
         style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"
-        android:background="@drawable/homage_progress_bar" />
+        android:progressDrawable="@drawable/recording_progress"
+        />
 
 
     <!--

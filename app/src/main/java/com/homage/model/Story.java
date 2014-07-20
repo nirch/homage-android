@@ -7,9 +7,11 @@ import android.content.Context;
 
 import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class Story extends SugarRecord<Story> {
@@ -26,6 +28,9 @@ public class Story extends SugarRecord<Story> {
     public String thumbnail;
     public int level;
     //endregion
+
+    @Ignore
+    static HashMap<String, Story> memoryCache;
 
     //region *** Factories ***
     public Story() {
@@ -47,10 +52,35 @@ public class Story extends SugarRecord<Story> {
         return new Story(oid);
     }
 
+    public static Story findOrCreate(String oid, boolean useMemCache) {
+        // If not using memory cache, just use the regular findOrCreate method.
+        if (!useMemCache) return findOrCreate(oid);
+
+        // If using the memory cache, check if the object is in the cache first.
+        Story story = memoryCache.get(oid);
+        if (story != null) return story;
+        return findOrCreate(oid);
+    }
+
     public static Story findByOID(String oid) {
         List<Story> res = Story.find(Story.class, "oid=?", oid);
         if (res.size()==1) return res.get(0);
         return null;
+    }
+
+    public static void refreshMemoryCache() {
+        if (memoryCache == null) memoryCache = new HashMap<String, Story>();
+        Iterator<Story> stories = Story.findAll(Story.class);
+        while (stories.hasNext()) {
+            Story story = stories.next();
+            memoryCache.put(story.getOID(), story);
+        }
+    }
+
+    public static void persistMemoryCache() {
+        if (memoryCache == null) return;
+        // Bulk save of all stories in a single transaction.
+        saveInTx(memoryCache.values());
     }
 
     public static List<Story> allActiveStories() {

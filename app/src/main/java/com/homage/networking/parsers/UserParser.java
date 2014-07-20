@@ -8,6 +8,9 @@ import com.homage.model.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class UserParser extends Parser {
     String TAG = "TAG_"+getClass().getName();
 
@@ -41,17 +44,28 @@ public class UserParser extends Parser {
     public void parse() throws JSONException {
         JSONObject userInfo = (JSONObject)objectToParse;
         String oid = Parser.parseOID(userInfo);
+        User user = User.findOrCreate(Parser.parseOID(userInfo));
 
         String email = parseString("email", null);
 
+        // If a facebook user, will try to take the email from the facebook user info
+        if (userInfo.has("facebook")) {
+            JSONObject fbInfo = (JSONObject)userInfo.get("facebook");
+            user.firstName = parseString(fbInfo, "first_name", "");
+            user.lastName = parseString(fbInfo, "last_name", "");
+            user.birthDay = parseString(fbInfo, "birth_day", "");
+            user.link = parseString(fbInfo, "link", "");
+            user.fbId = parseString(fbInfo, "id", "");
+            if (email == null) email = parseString(fbInfo, "email", "");
+        }
+
         if (email != null) {
-            Log.v(TAG, String.format("Parsing a user with email:%s oid:%s", userInfo.getString("email"), oid));
+            Log.v(TAG, String.format("Parsing a user with email:%s oid:%s", email, oid));
         } else {
             Log.v(TAG, String.format("Parsing guest user oid:%s", oid));
         }
 
 
-        User user = User.findOrCreate(Parser.parseOID(userInfo));
         user.email =        email;
         user.isFirstUse =   parseBool("first_use", false);
         user.isPublic =     parseBool("is_public", false);

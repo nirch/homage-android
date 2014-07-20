@@ -188,6 +188,7 @@ public class MainActivity extends ActionBarActivity
                 }
                 Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
                 movieProgressFragment.showProgressForRemake(renderedRemake);
+                showStories();
                 break;
 
             case RecorderActivity.DISMISS_REASON_USER_ABORTED_PRESSING_X:
@@ -215,7 +216,14 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
             case SECTION_LOGIN:
-                showLogin();
+                User user = User.getCurrent();
+                if (user.isGuest()) {
+                    // User is guest. Will show the join login screen.
+                    showLogin();
+                } else {
+                    // User is logged in. Will logout user and go back to the first login screen.
+                    logout();
+                }
                 break;
 
             case SECTION_STORIES:
@@ -517,6 +525,15 @@ public class MainActivity extends ActionBarActivity
         startActivity(myIntent);
     }
 
+    public void logout() {
+        User.logoutAllUsers();
+        Intent myIntent = new Intent(this, LoginActivity.class);
+        myIntent.putExtra(LoginActivity.SK_ALLOW_GUEST_LOGIN, true);
+        myIntent.putExtra(LoginActivity.SK_START_MAIN_ACTIVITY_AFTER_LOGIN, true);
+        startActivity(myIntent);
+        finish();
+    }
+
     public void showStoryDetails(Story story) {
         currentSection = SECTION_STORY_DETAILS;
         currentStory = story;
@@ -617,7 +634,7 @@ public class MainActivity extends ActionBarActivity
         Resources res = getResources();
         pd = new ProgressDialog(this);
         pd.setTitle(res.getString(R.string.pd_title_please_wait));
-        pd.setMessage(res.getString(R.string.pd_msg_preparing_remake));
+        pd.setMessage(res.getString(R.string.pd_msg_creating_movie));
         pd.setCancelable(true);
         pd.show();
 

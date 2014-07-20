@@ -163,6 +163,8 @@ public class MovieProgressFragment extends Fragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                if (followingRemakeOID == null) return;
+                if (remakeOID == null) return;
                 if (!followingRemakeOID.equals(remakeOID)) return;
                 HomageServer.sh().refetchRemake(remakeOID, null);
             }

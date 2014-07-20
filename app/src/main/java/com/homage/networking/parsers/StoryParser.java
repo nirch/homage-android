@@ -34,7 +34,7 @@ public class StoryParser extends Parser {
         JSONObject storyInfo = (JSONObject)objectToParse;
         Log.v(TAG, String.format("Parsing a story: %s", storyInfo.getString("name")));
 
-        Story story = Story.findOrCreate(Parser.parseOID(storyInfo));
+        Story story = Story.findOrCreate(Parser.parseOID(storyInfo), false);
         story.remakesNum =      parseInt("remakes_num",0);
         story.thumbnail =       parseString("thumbnail",null);
         story.level =           parseInt("level",0);

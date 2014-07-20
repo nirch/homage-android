@@ -27,6 +27,7 @@
 
 package com.homage.networking.server;
 
+import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -36,8 +37,10 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 import com.homage.networking.parsers.Parser;
 
+import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
@@ -117,6 +120,20 @@ abstract public class Server {
         return (HashMap<String, Object>)intent.getSerializableExtra(SR_RESPONSE_INFO);
     }
     //endregion
+
+    //region *** Server context ***
+    private HashMap<String, String>appInfo;
+
+    public void updateAppInfo(String userOID) {
+        HashMap<String, String> ai = new HashMap<String, String>();
+        String version = HomageApplication.getInstance().getVersionName();
+        ai.put("app_info[build]", version);
+        ai.put("app_info[user_id]", userOID);
+        ai.put("app_info[version]", version);
+        this.appInfo = ai;
+    }
+    //endregion
+
 
     //region *** URLS ***
     public void initURLSCache(ArrayList<Integer> urlIDs) {
@@ -269,6 +286,11 @@ abstract public class Server {
             for (String k : parameters.keySet()) {
                 nameValuePairs.add(new BasicNameValuePair(k, parameters.get(k)));
             }
+            if (appInfo != null) {
+                for (String k : appInfo.keySet()) {
+                    nameValuePairs.add(new BasicNameValuePair(k, appInfo.get(k)));
+                }
+            }
             return nameValuePairs;
         }
 
@@ -330,6 +352,9 @@ abstract public class Server {
                 StatusLine statusLine = response.getStatusLine();
                 int statusCode = statusLine.getStatusCode();
 
+                if (parser != null)
+                    parser.responseInfo.put("status_code", statusCode);
+
                 if (statusCode == 200) {
 
                     //
@@ -350,12 +375,23 @@ abstract public class Server {
                     return false;
 
                 }
+            } catch (IOException e) {
+                //
+                // IO exception!
+                //
+                if (parser != null)
+                    parser.responseInfo.put("status_code", -1);
 
+                Log.e(TAG, String.format("Netowrk error: %s %s", e.getClass().toString(), e.getMessage()));
+                Log.v(TAG, "Full stack trace", e);
+                return false;
             } catch (Exception e) {
+                //
+                // Other exception in response or while parsing response.
+                //
+                if (parser != null)
+                    parser.responseInfo.put("status_code", -2);
 
-                //
-                // Exception in response or while parsing response.
-                //
                 Log.e(TAG, String.format("Request/Response error: %s %s", e.getClass().toString(), e.getMessage()));
                 Log.v(TAG, "Full stack trace", e);
                 return false;

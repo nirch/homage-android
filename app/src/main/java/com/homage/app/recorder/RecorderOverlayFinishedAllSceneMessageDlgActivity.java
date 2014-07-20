@@ -143,19 +143,6 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
     // UI handlers.
     // -------------------
 
-//    //
-//    // Pressed the retake scene button
-//    final View.OnClickListener onClickedRetakeButton = new View.OnClickListener() {
-//        @Override
-//        public void onClick(View button) {
-//            setResult(ResultCode.RETAKE_SCENE.getValue());
-//            finish();
-//            RecorderOverlayFinishedAllSceneMessageDlgActivity.this.overridePendingTransition(
-//                    R.anim.animation_fadeout_with_zoom,
-//                    R.anim.animation_fadeout_with_zoom);
-//        }
-//    };
-
     //
     // Pressed the CREATE MOVIE button.
     final View.OnClickListener onClickedActionButton = new View.OnClickListener() {
@@ -165,7 +152,7 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
             ProgressDialog pd;
             pd = new ProgressDialog(RecorderOverlayFinishedAllSceneMessageDlgActivity.this);
             pd.setTitle(res.getString(R.string.pd_title_please_wait));
-            pd.setMessage(res.getString(R.string.pd_msg_preparing_remake));
+            pd.setMessage(res.getString(R.string.pd_msg_creating_movie));
             pd.setCancelable(false);
             pd.show();
             HomageServer.sh().renderRemake(remake.getOID());

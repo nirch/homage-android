@@ -35,6 +35,8 @@ public class CameraHelper {
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
+    public static int[] preferredFPSRange = {7000,30000};
+
     /**
      * Iterate over supported camera preview sizes to see which one best fits the
      * dimensions of the given view while maintaining the aspect ratio. If none can,
@@ -87,6 +89,25 @@ public class CameraHelper {
         return optimalSize;
     }
 
+    public static int[] getPrefferedFPSRangeFromParameters(Camera.Parameters parameters) {
+        List<int[]> supportedFPSRanges = parameters.getSupportedPreviewFpsRange();
+
+
+
+        int[] bestRange = null;
+        int minDistance = Integer.MAX_VALUE;
+
+        // Choose the one closest to the one set as the default.
+        for (int[] range : supportedFPSRanges) {
+            int distance = Math.abs(range[0] - preferredFPSRange[0]) + Math.abs(range[1] - preferredFPSRange[1]);
+            if (distance < minDistance) {
+                bestRange = range;
+                minDistance = distance;
+            }
+        }
+        return bestRange;
+    }
+
     /**
      * @return the default camera on the device. Return null if there is no camera on the device.
      */
@@ -128,7 +149,6 @@ public class CameraHelper {
             Camera.getCameraInfo(i, cameraInfo);
             if (cameraInfo.facing == position) {
                 return Camera.open(i);
-
             }
         }
 

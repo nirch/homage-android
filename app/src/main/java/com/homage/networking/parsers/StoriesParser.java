@@ -24,6 +24,11 @@ public class StoriesParser extends Parser {
 
     @Override
     public void parse() throws JSONException {
+        startBenchMark();
+
+        // TODO: finish memory cache optimisation
+        //Story.refreshMemoryCache();
+
         if (lastParseTime > 0) {
             int now = (int)(System.currentTimeMillis());
             int delta = now - lastParseTime;
@@ -45,6 +50,11 @@ public class StoriesParser extends Parser {
             storyParser.objectToParse = story;
             storyParser.parse();
         }
+
+        // TODO: finish memory cache optimisation
+        //Story.persistMemoryCache();
+
+        endBenchMark();
     }
 }
 

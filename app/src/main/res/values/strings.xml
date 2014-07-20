@@ -49,7 +49,7 @@
 
     <!-- Progress dialogues -->
     <string name="pd_title_please_wait">Please wait.</string>
-    <string name="pd_msg_preparing_remake">Preparing to remake your story.</string>
+    <string name="pd_msg_creating_movie">Creating movie...</string>
 
     <string name="pd_title_delete_remake_question">Delete remake.</string>
     <string name="pd_msg_delete_remake_question">Would you like to delete this remake?</string>
@@ -95,6 +95,14 @@
     <string name="login_pd_title">Please wait.</string>
     <string name="login_pd_signing_in">Signing in user...</string>
     <string name="login_pd_signing_in_guest">Signing in as guest...</string>
+
+    <!-- Login error messages -->
+    <string name="login_error_authorization_failed">Authorization failed.</string>
+    <string name="login_error_incorrect_password">Incorrect password.</string>
+    <string name="login_error_existing_fb_user">FB user already exists.</string>
+    <string name="login_error_unknown">Login failed.</string>
+    <string name="login_error_server_unreachable">Network error: Server unreachable.</string>
+
 
     <!-- Text reader -->
     <string name="text_title_privacy">Privacy policy</string>
