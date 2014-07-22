@@ -27,6 +27,7 @@ import android.util.Log;
 
 import com.androidquery.callback.BitmapAjaxCallback;
 import com.homage.media.camera.CameraManager;
+import com.homage.networking.mixpanel.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import com.homage.networking.uploader.UploadManager;
@@ -126,11 +127,11 @@ public class HomageApplication extends SugarApp {
     };
 
     protected void initSingletons() {
-        // Camera manger
-        CameraManager.sh().init(this);
-
         // Homage Server
         HomageServer.sh().init(this);
+
+        // Mixpanel
+        HMixPanel.sh().init(this);
     }
 
     protected void initSettings() {
@@ -161,6 +162,7 @@ public class HomageApplication extends SugarApp {
         }
         return versionName;
     }
+
 
     private class HomageUnhandledExceptionHandler implements Thread.UncaughtExceptionHandler {
         /*
