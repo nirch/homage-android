@@ -46,12 +46,6 @@ public class UploaderService extends IntentService {
                 checkForPendingUploads();
                 break;
 
-//            case CMD_CANCEL_UPLOAD_OF_RAW_FILE:
-//                String rawLocalFile = intent.getStringExtra("rawLocalFile");
-//                if (rawLocalFile == null) break;
-//                cancelUploadOfRawLocalFile(rawLocalFile);
-//                break;
-
             case CMD_STOP:
                 stop();
                 break;

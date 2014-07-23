@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +34,7 @@ public class StoryDetailsFragment extends Fragment {
     public String TAG = "TAG_StoryDetailsFragment";
 
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final String VIDEO_FRAGMENT_TAG = "videoPlayerFragment";
 
     View rootView;
     LayoutInflater inflater;
@@ -143,7 +146,7 @@ public class StoryDetailsFragment extends Fragment {
 
     private void initialize() {
         aq = new AQuery(rootView);
-        aq.id(R.id.storyImageView).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
+        //aq.id(R.id.storyImageView).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
         aq.id(R.id.storyDescription).text(story.description);
 
         User excludedUser = User.getCurrent();
@@ -158,7 +161,7 @@ public class StoryDetailsFragment extends Fragment {
         /**********************************/
         //aq.id(R.id.remakesGridView).itemClicked(onItemClicked);
         aq.id(R.id.makeYourOwnButton).clicked(onClickedMakeYourOwnButton);
-        aq.id(R.id.storyDetailsPlayButton).clicked(onClickedPlayStoryVideo);
+        //aq.id(R.id.storyDetailsPlayButton).clicked(onClickedPlayStoryVideo);
         //endregion
     }
 
@@ -171,6 +174,30 @@ public class StoryDetailsFragment extends Fragment {
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_story_details, container, false);
         initialize();
+
+        // Add embedded video player fragment.
+        boolean shouldCreateChild = getArguments().getBoolean("shouldCreateStoryDetailsVideoFragment");
+
+        // Ensure fragment created only once!
+        FragmentManager childFM = getChildFragmentManager();
+        VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment)childFM.findFragmentByTag(VIDEO_FRAGMENT_TAG);
+        if (videoPlayerFragment == null) {
+            FragmentManager fm = getFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            fm.beginTransaction();
+            videoPlayerFragment = new VideoPlayerFragment();
+            ft.add(R.id.storyDetailsVideoContainer, videoPlayerFragment, VIDEO_FRAGMENT_TAG);
+            ft.commit();
+        }
+
+        // Initialize the video of the story we need to show in the fragment.
+        Bundle b = new Bundle();
+        b.putString(VideoPlayerFragment.K_FILE_URL, story.video);
+        b.putBoolean(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
+        b.putBoolean(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
+        b.putBoolean(VideoPlayerFragment.K_IS_EMBEDDED, true);
+        b.putString(VideoPlayerFragment.K_THUMB_URL, story.thumbnail);
+        videoPlayerFragment.setArguments(b);
         return rootView;
     }
 
@@ -198,6 +225,7 @@ public class StoryDetailsFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+
     }
 
     public void refreshData() {

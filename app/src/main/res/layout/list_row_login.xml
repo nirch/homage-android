@@ -34,7 +34,7 @@
         android:layout_marginBottom="3dp"
         />
 
-    <ImageView
+    <ImageView android:id="@+id/profilePicture"
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_centerVertical="true"

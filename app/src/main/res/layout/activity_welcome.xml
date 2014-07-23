@@ -30,8 +30,8 @@
                 android:id="@+id/videoPlayerFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                class="com.homage.app.player.VideoPlayerFragment"
                 tools:layout="@layout/fragment_homage_video_view" />
-
             </FrameLayout>
 
 

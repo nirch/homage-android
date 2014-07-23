@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 
 import com.androidquery.AQuery;
@@ -12,7 +13,7 @@ import com.homage.app.R;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.views.ActivityHelper;
 
-public class WelcomeScreenActivity extends Activity {
+public class WelcomeScreenActivity extends FragmentActivity {
 
     AQuery aq;
 
@@ -30,7 +31,9 @@ public class WelcomeScreenActivity extends Activity {
         b.putBoolean(VideoPlayerFragment.K_AUTO_START_PLAYING, true);
         b.putBoolean(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
         b.putString(VideoPlayerFragment.K_FILE_URL, videoURL.toString());
-        VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment)getFragmentManager().findFragmentById(R.id.videoPlayerFragment);
+
+        FragmentManager fm = getSupportFragmentManager();
+        VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment)fm.findFragmentById(R.id.videoPlayerFragment);
         videoPlayerFragment.initializeWithArguments(b);
 
         //region *** Bind to UI event handlers ***

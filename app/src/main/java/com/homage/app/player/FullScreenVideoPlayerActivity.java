@@ -1,17 +1,17 @@
 package com.homage.app.player;
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.views.ActivityHelper;
 
-public class FullScreenVideoPlayerActivity extends Activity
+public class FullScreenVideoPlayerActivity extends FragmentActivity
 {
     String TAG = "TAG_FullScreenVideoPlayerActivity";
     AQuery aq;

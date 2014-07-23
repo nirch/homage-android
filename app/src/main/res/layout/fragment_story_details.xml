@@ -6,35 +6,10 @@
     android:layout_height="match_parent"
     android:weightSum="1">
 
-    <RelativeLayout
+    <RelativeLayout android:id="@+id/storyDetailsVideoContainer"
         android:layout_width="match_parent"
-        android:layout_height="216dp">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/storyImageView"
-            android:layout_gravity="center_horizontal"
-            android:scaleType="fitXY"
-            android:src="@drawable/glass_dark"
-            />
-
-        <!--
-        <fragment android:name="com.homage.app.player.VideoPlayerFragment"
-            android:id="@+id/videoPlayerFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout="@layout/fragment_homage_video_view" />
-            -->
-
-        <ImageButton android:id="@+id/storyDetailsPlayButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/selector_my_play"
-            android:background="@null"
-            android:layout_centerInParent="true"
-            />
-
+        android:layout_height="216dp"
+        >
     </RelativeLayout>
 
 

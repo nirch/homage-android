@@ -210,6 +210,18 @@ public class NavigationDrawerFragment extends Fragment {
             aq.id(R.id.loggedInUser).text(user.getTag());
             aq.id(R.id.signInOutButton).text("Logout");
         }
+
+        if (user.isFacebookUser()) {
+            // Facebook profile picture
+            aq.id(R.id.profilePicture).image(
+                    user.getFacebookProfilePictureURL(),
+                    true,
+                    false,
+                    100,
+                    R.drawable.com_facebook_profile_picture_blank_portrait);
+        } else {
+            aq.id(R.id.profilePicture).image(R.drawable.guest);
+        }
     }
 
     public void refresh() {

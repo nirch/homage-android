@@ -76,6 +76,8 @@ public class CameraManager {
     public void reconnect() throws IOException {
         if (camera != null) {
             camera.reconnect();
+        } else {
+            newCamera();
         }
     }
 
@@ -104,9 +106,18 @@ public class CameraManager {
     public void releaseCamera(){
         if (camera != null){
             // release the camera for other applications
-            camera.release();
-            camera = null;
+            try {
+                camera.release();
+                camera = null;
+                preview.getHolder().removeCallback(preview);
+            } catch (Exception e) {
+            }
         }
+    }
+
+    public boolean isCameraAvailable() {
+        if (camera == null) return false;
+        return true;
     }
 
     /**
@@ -118,6 +129,11 @@ public class CameraManager {
         // Can be initialized only once!
         this.context = context;
         newCamera();
+    }
+
+    public boolean isInitialized() {
+        if (this.context == null) return false;
+        return true;
     }
 
     public void newCamera() {
@@ -211,10 +227,22 @@ public class CameraManager {
             try {
                 mCamera.setPreviewDisplay(holder);
 
+                //
                 // Set some default parameters for the preview
+                //
                 Camera.Parameters parameters = mCamera.getParameters();
+
+                // FPS
                 fpsRange = CameraHelper.getPrefferedFPSRangeFromParameters(parameters);
                 parameters.setPreviewFpsRange(fpsRange[0], fpsRange[1]);
+
+                // Auto video focus mode (but only if available)
+                if (parameters.getSupportedFocusModes()
+                        .contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                    parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+                }
+
+                // Update the params
                 mCamera.setParameters(parameters);
 
 
@@ -282,29 +310,6 @@ public class CameraManager {
 
         }
 
-        /*
-// Get the dimensions of the video
-//            int videoWidth = 640;
-//            int videoHeight = 480;
-//            float videoProportion = (float) videoWidth / (float) videoHeight;
-//
-//            // Get the size of the screen
-//            int screenWidth = 1920;
-//            int screenHeight = 1080;
-//            float screenProportion = (float) screenWidth / (float) screenHeight;
-//
-//            // Get the SurfaceView layout parameters
-//            android.view.ViewGroup.LayoutParams lp = previewContainer.getLayoutParams();
-//            if (videoProportion > screenProportion) {
-//                lp.width = screenWidth;
-//                lp.height = (int) ((float) screenWidth / videoProportion);
-//            } else {
-//                lp.width = (int) (videoProportion * (float) screenHeight);
-//                lp.height = screenHeight;
-//            }
-
-         */
-
         public void stop() {
             if (mHolder.getSurface() == null){
                 // preview surface does not exist
@@ -346,7 +351,10 @@ public class CameraManager {
         // Stop
         preview.stop();
         previewContainer.removeAllViews();
-        camera.release();
+        try {
+            camera.release();
+        } catch (Exception e) {
+        }
 
         // Toggle back / front
         selfie = !selfie;
@@ -359,28 +367,82 @@ public class CameraManager {
         preview = cameraPreview;
     }
 
-    public String startRecording() {
-        CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+    public void restartCamera() {
+        // Stop
+        preview.stop();
+        previewContainer.removeAllViews();
+        try {
+            camera.release();
+        } catch (Exception e) {
+        }
+
+        // Restart
+        newCamera();
+        CameraPreview cameraPreview = new CameraPreview(context, camera);
+        cameraPreview.setZOrderOnTop(false);
+        previewContainer.addView(cameraPreview);
+        preview = cameraPreview;
+    }
+
+    public String startRecording(int videoDuration, MediaRecorder.OnInfoListener onRecordingInfoListener) {
+        //
+        // Get high quality camera for the used camera.
+        //
+        CamcorderProfile profile;
+        if (selfie) {
+            profile = CamcorderProfile.get(Camera.CameraInfo.CAMERA_FACING_FRONT, CamcorderProfile.QUALITY_HIGH);
+        } else {
+            profile = CamcorderProfile.get(Camera.CameraInfo.CAMERA_FACING_BACK, CamcorderProfile.QUALITY_HIGH);
+        }
         profile.videoFrameWidth = recSize.width;
         profile.videoFrameHeight = recSize.height;
 
+        //
+        // Unlock the camera so it can be used by the media recorder.
+        //
         camera.unlock();
+
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setCamera(camera);
-
         if (Build.VERSION.SDK_INT > 16) {
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
             mediaRecorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
         }
         else {
+            // Added because of problem on Galaxy S2 with android 4.1.2
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
         }
 
+        //
+        // Set the profile
+        //
         mediaRecorder.setProfile(profile);
 
+        //
+        // Set the output file.
+        //
         String outputFile = CameraHelper.getOutputMediaFile(CameraHelper.MEDIA_TYPE_VIDEO).toString();
         mediaRecorder.setOutputFile(outputFile);
+        mediaRecorder.setPreviewDisplay(preview.mHolder.getSurface());
+
+        //
+        // Set the duration of the captured video
+        // And set the end recording listener
+        //
+        mediaRecorder.setMaxDuration(videoDuration);
+        mediaRecorder.setOnInfoListener(onRecordingInfoListener);
+
+        //
+        // Default frame rate (the camera may choose something else in very low lighting)
+        //
+        mediaRecorder.setVideoFrameRate(24);
+
+        // TODO: Set orientation hint here
+        //
+        // Support capturing video on both landscape orientations.
+        //
+
 
         // Prepare configured MediaRecorder
         try {

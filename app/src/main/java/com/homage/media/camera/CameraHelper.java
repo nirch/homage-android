@@ -35,7 +35,7 @@ public class CameraHelper {
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    public static int[] preferredFPSRange = {7000,30000};
+    public static int[] preferredFPSRange = {25000,25000};
 
     /**
      * Iterate over supported camera preview sizes to see which one best fits the

@@ -165,5 +165,13 @@ public class User extends SugarRecord<User> {
         if (email == null) return true;
         return false;
     }
+
+    public boolean isFacebookUser() {
+        return (fbId != null && fbId.length()>0);
+    }
+
+    public String getFacebookProfilePictureURL() {
+        return String.format("http://graph.facebook.com/%s/picture", fbId);
+    }
     //endregion
 }

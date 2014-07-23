@@ -16,7 +16,9 @@ import android.widget.VideoView;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.player.FullScreenVideoPlayerActivity;
 import com.homage.app.player.VideoPlayerActivity;
+import com.homage.app.player.VideoPlayerFragment;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
@@ -225,17 +227,23 @@ public class RecorderVideosPagerAdapter
             AQuery aq = new AQuery(view);
 
             // Open video player.
-            Intent myIntent = new Intent(context, VideoPlayerActivity.class);
+
+
+            Intent myIntent = new Intent(context, FullScreenVideoPlayerActivity.class);
             Bundle b = new Bundle();
 
             Integer pos = (Integer)aq.getTag();
             if (pos == 0) {
                 Log.d(TAG, "Clicked our scene video button");
-                b.putString("videoFileURL", scene.videoURL);
+                b.putString(VideoPlayerFragment.K_FILE_URL, scene.videoURL);
+                b.putString(VideoPlayerFragment.K_THUMB_URL, scene.thumbnailURL);
             } else {
                 Log.d(TAG, "Clicked our story video button");
-                b.putString("videoFileURL", story.video);
+                b.putString(VideoPlayerFragment.K_FILE_URL, story.video);
+                b.putString(VideoPlayerFragment.K_THUMB_URL, story.thumbnail);
             }
+            myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
+            myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, true);
             myIntent.putExtras(b);
             context.startActivity(myIntent);
 

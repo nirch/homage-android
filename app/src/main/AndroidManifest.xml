@@ -100,7 +100,7 @@
         <activity
             android:name=".recorder.RecorderActivity"
             android:screenOrientation="landscape"
-            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             >
         </activity>
 
@@ -114,35 +114,35 @@
         -->
         <activity
             android:name=".recorder.RecorderOverlayDlgActivity"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.Transparent"
             >
         </activity>
 
         <activity
             android:name=".recorder.RecorderOverlaySceneMessageDlgActivity"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.Transparent"
             >
         </activity>
 
         <activity
             android:name=".recorder.RecorderOverlayFinishedSceneMessageDlgActivity"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.Transparent"
             >
         </activity>
 
         <activity
             android:name=".recorder.RecorderOverlayFinishedAllSceneMessageDlgActivity"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.Transparent"
             >
         </activity>
 
         <activity
             android:name=".recorder.RecorderOverlayRetakeSceneQuestionDlgActivity"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.Transparent"
             >
         </activity>

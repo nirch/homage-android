@@ -44,18 +44,18 @@
 
     </LinearLayout>
 
-    <ProgressBar android:id="@+id/videoFragmentLoading"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_centerInParent="true"
-        />
-
     <ImageView android:id="@+id/videoThumbnailImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:src="@drawable/intro_video_thumb"
         android:visibility="gone"
+        />
+
+    <ProgressBar android:id="@+id/videoFragmentLoading"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerInParent="true"
         />
 
     <ImageButton android:id="@+id/videoBigPlayButton"
@@ -67,5 +67,7 @@
         android:padding="10dp"
         android:visibility="gone"
         />
+
+
 
 </RelativeLayout>

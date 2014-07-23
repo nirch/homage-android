@@ -1,7 +1,8 @@
 package com.homage.app.player;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.os.Build;
+import android.support.v4.app.Fragment;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,10 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+
+import java.lang.reflect.Field;
 
 public class VideoPlayerFragment
         extends
@@ -22,9 +26,10 @@ public class VideoPlayerFragment
         implements
             MediaPlayer.OnErrorListener,
             MediaPlayer.OnPreparedListener,
-            MediaPlayer.OnCompletionListener
+            MediaPlayer.OnCompletionListener,
+            MediaPlayer.OnInfoListener
 {
-    String TAG = "TAG_VideoPlayerFragment";
+    static final String TAG = "TAG_VideoPlayerFragment";
 
     // Settings
     public static final String K_FILE_PATH = "videoFilePath";
@@ -32,23 +37,29 @@ public class VideoPlayerFragment
     public static final String K_ALLOW_TOGGLE_FULLSCREEN = "allowToggleFullscreen";
     public static final String K_FINISH_ON_COMPLETION = "finishOnCompletion";
     public static final String K_AUTO_START_PLAYING = "autoStartPlaying";
+    public static final String K_IS_EMBEDDED = "isEmbedded";
+    public static final String K_THUMB_URL = "thumbURL";
 
 
     // Video file path / url
     String filePath;
     String fileURL;
+    String thumbURL;
 
     // More settings
     boolean allowToggleFullscreen = false;
     boolean finishOnCompletion = false;
     boolean autoHideControls = true;
     boolean autoStartPlaying = true;
+    boolean isEmbedded = false;
 
     // Views & Layout
     AQuery aq;
     View rootView;
     VideoView videoView;
     LayoutInflater inflater;
+    boolean alreadyGotSettings = false;
+
 
     //region *** lifecycle ***
     @Override
@@ -59,11 +70,25 @@ public class VideoPlayerFragment
         aq = new AQuery(rootView);
         videoView = (VideoView)aq.id(R.id.videoView).getView();
 
+
         // Get the the file path / url of the video.
+        if (alreadyGotSettings) {
+            // Settings already set. Initalize.
+            initialize();
+            return rootView;
+        }
+
+        // Try to get settings arguments from activity intent extras.
         Bundle b = getActivity().getIntent().getExtras();
         if (b == null) return rootView;
+
+        // We have the arguments. Initialize.
         initializeWithArguments(b);
         return rootView;
+    }
+
+    public void setArguments(Bundle b) {
+        initializePlayerSettings(b);
     }
 
     public void initializeWithArguments(Bundle b) {
@@ -71,6 +96,18 @@ public class VideoPlayerFragment
         initializeUIState();
         initializePlayingVideo();
         bindUIHandlers();
+    }
+
+    public void initialize() {
+        initializeUIState();
+        initializePlayingVideo();
+        bindUIHandlers();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        fullStop();
     }
 
     @Override
@@ -90,6 +127,17 @@ public class VideoPlayerFragment
             aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
         }
 
+        if (thumbURL != null) {
+            aq.id(R.id.videoThumbnailImage).image(
+                    thumbURL,
+                    true,
+                    true,
+                    200,
+                    R.drawable.glass_dark,
+                    null, AQuery.FADE_IN);
+        }
+
+        showThumbWhileLoading();
         showControls();
     }
 
@@ -111,11 +159,16 @@ public class VideoPlayerFragment
             videoView.setVideoPath(filePath);
         } else if (fileURL != null) {
             videoView.setVideoURI(Uri.parse(fileURL));
+            if (videoView != null) videoView.start();
         }
 
         videoView.setOnPreparedListener(this);
         videoView.setOnErrorListener(this);
         videoView.setOnCompletionListener(this);
+        if (Build.VERSION.SDK_INT > 16) {
+            // Only available in API 17 and up.
+            videoView.setOnInfoListener(this);
+        }
     }
     //endregion
 
@@ -133,6 +186,10 @@ public class VideoPlayerFragment
         allowToggleFullscreen = b.getBoolean(K_ALLOW_TOGGLE_FULLSCREEN, true);
         finishOnCompletion = b.getBoolean(K_FINISH_ON_COMPLETION, false);
         autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, true);
+        isEmbedded = b.getBoolean(K_IS_EMBEDDED, false);
+        thumbURL = b.getString(K_THUMB_URL, null);
+
+        alreadyGotSettings = true;
     }
 
     // Bind to UI events
@@ -149,6 +206,7 @@ public class VideoPlayerFragment
     public void onCompletion(MediaPlayer mediaPlayer) {
         Log.d(TAG, String.format("Finished playing video: %s", filePath));
         videoView.pause();
+
         if (finishOnCompletion) {
             getActivity().finish();
         } else {
@@ -158,7 +216,13 @@ public class VideoPlayerFragment
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i2) {
-        Log.d(TAG, String.format("Error playing video: %s", filePath));
+        Log.d(TAG, String.format("Error playing video: %d %d %s %s", i, i2, filePath, fileURL));
+
+        Toast.makeText(
+                getActivity(),
+                String.format("Video playing error %d %d", i, i2),
+                Toast.LENGTH_SHORT).show();
+
         return true;
     }
 
@@ -168,6 +232,7 @@ public class VideoPlayerFragment
         aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
         aq.id(R.id.videoCurtain).visibility(View.GONE);
         aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
+        aq.id(R.id.videoThumbnailImage).animate(R.anim.animation_fadeout);
         if (autoStartPlaying) start();
     }
 
@@ -217,19 +282,39 @@ public class VideoPlayerFragment
     void start() {
         ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
         ib.setImageResource(R.drawable.selector_video_button_pause);
+        aq.id(R.id.videoView).visibility(View.VISIBLE);
         if (videoView != null) videoView.start();
     }
 
     void showThumbState() {
         if (videoView != null) videoView.seekTo(0);
         pause();
+        aq.id(R.id.videoThumbnailImage).animate(R.anim.animation_fadein);
         aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
         aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
+        aq.id(R.id.videoView).visibility(View.INVISIBLE);
+        aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
+    }
+
+    void showThumbWhileLoading() {
+        aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
     }
 
     void hideThumb() {
-        aq.id(R.id.videoThumbnailImage).visibility(View.GONE);
+        aq.id(R.id.videoThumbnailImage).animate(R.anim.animation_fadeout);
         aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+    }
+    //endregion
+
+    //region *** video commands ***
+    void fullStop() {
+        videoView.seekTo(0);
+        videoView.pause();
+        if (finishOnCompletion) {
+            VideoPlayerFragment.this.getActivity().finish();
+            return;
+        }
+        showThumbState();
     }
     //endregion
 
@@ -250,15 +335,7 @@ public class VideoPlayerFragment
     View.OnClickListener onClickedStopButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            videoView.seekTo(0);
-            videoView.pause();
-            if (finishOnCompletion) {
-                VideoPlayerFragment.this.getActivity().finish();
-                return;
-            }
-
-            // Pressed the stop button.
-            showThumbState();
+            fullStop();
         }
     };
 
@@ -273,6 +350,7 @@ public class VideoPlayerFragment
         @Override
         public void onClick(View v) {
             hideThumb();
+            aq.id(R.id.loadingVideoPprogress).visibility(View.VISIBLE);
             videoView.seekTo(0);
             start();
         }
@@ -285,5 +363,49 @@ public class VideoPlayerFragment
         public void onClick(View v) {
         }
     };
+
+    @Override
+    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        switch (what) {
+            case MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING:
+                Log.v(TAG, "media track lagging");
+                break;
+
+            case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
+                Log.v(TAG, "media rendering start");
+                break;
+
+            case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                Log.v(TAG, "media buffering start");
+                aq.id(R.id.videoFragmentLoading).visibility(View.VISIBLE);
+                break;
+
+            case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                Log.v(TAG, "media buffering end");
+                aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
+                break;
+
+            case MediaPlayer.MEDIA_INFO_BAD_INTERLEAVING:
+                Log.v(TAG, "media bad interleaving");
+                break;
+
+            case MediaPlayer.MEDIA_INFO_NOT_SEEKABLE:
+                Log.v(TAG, "media not seekable");
+                break;
+
+            case MediaPlayer.MEDIA_INFO_METADATA_UPDATE:
+                Log.v(TAG, "media meta data update");
+                break;
+
+            case MediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE:
+                Log.v(TAG, "media unsupported subtitle");
+                break;
+
+            case MediaPlayer.MEDIA_INFO_SUBTITLE_TIMED_OUT:
+                Log.v(TAG, "media subtitle timed out");
+                break;
+        }
+        return true;
+    }
     //endregion
 }

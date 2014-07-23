@@ -20,10 +20,20 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Camera;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
@@ -31,6 +41,7 @@ import android.util.Log;
 
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -47,6 +58,7 @@ import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 import com.homage.media.camera.CameraManager;
 import com.homage.model.Footage;
 import com.homage.model.Remake;
@@ -168,6 +180,12 @@ public class RecorderActivity extends Activity {
         viewsInitialized = false;
         inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+        // Initialize camera manger, if not initialized yet.
+        if (!CameraManager.sh().isInitialized()) {
+            CameraManager.sh().init(HomageApplication.getContext());
+        }
+
+
         // Get info about the remake
         Bundle b = getIntent().getExtras();
         String remakeOID = b.getString("remakeOID");
@@ -175,7 +193,7 @@ public class RecorderActivity extends Activity {
         story = remake.getStory();
         isRecording = false;
 
-        // Use backface camera by default.
+        // Use back face camera by default.
         // User will need to switch manually to selfie if interested.
         CameraManager.sh().resetToPreferBackCamera();
 
@@ -198,7 +216,6 @@ public class RecorderActivity extends Activity {
         fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.animation_fadein);
         fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.animation_fadeout);
         videosPager = (ViewPager)aq.id(R.id.videosPager).getView();
-        //hideControlsDrawer(false);
         closeControlsDrawer(false);
         updateScriptBar();
         scenesListView.setVisibility(View.GONE);
@@ -267,13 +284,26 @@ public class RecorderActivity extends Activity {
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause(){
         super.onPause();
+        showCurtainsAnimated(false);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        closeControlsDrawer(true);
+
+        // Reconnect to the camera if needed.
+        if (!CameraManager.sh().isCameraAvailable()) {
+            CameraManager.sh().restartCamera();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onResume();
+        CameraManager.sh().releaseCamera();
     }
 
 
@@ -291,6 +321,8 @@ public class RecorderActivity extends Activity {
     //region *** Views Initializations ***
     @Override
     public void onWindowFocusChanged (boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
         if (!viewsInitialized) initViews();
         if (recPreviewContainer==null) initCameraPreview();
         if (scenesListView.getAdapter()==null) {
@@ -790,6 +822,7 @@ public class RecorderActivity extends Activity {
      *   ======================
      */
 
+
     private void recorderDoneWithReason(int dismissReason) {
         /**
          This is the end, beautiful friend
@@ -912,64 +945,68 @@ public class RecorderActivity extends Activity {
     private void startRecording() {
         if (isRecording) return;
 
-        // Start recording
+        final Scene scene = story.findScene(currentSceneID);
         isRecording = true;
         updateScriptBar();
 
-        outputFile = CameraManager.sh().startRecording();
-        if (outputFile == null) {
-            Toast.makeText(
-                    RecorderActivity.this,
-                    "Failed to start recording.",
-                    Toast.LENGTH_SHORT).show();
-            isRecording = false;
-            returnFromRecordingUI();
-            return;
-        }
-        Log.d(TAG, String.format("Started recording to local file: %s", outputFile));
+        //
+        // Async listener that is notified while recording (and end of recording).
+        //
+        final MediaRecorder.OnInfoListener onRecordingInfoListener = new MediaRecorder.OnInfoListener() {
+            @Override
+            public void onInfo(MediaRecorder mr, int what, int extra) {
+                if (what != MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) return;
+                Log.d(TAG, String.format("finished (%d %d) recording duration %d", what, extra, scene.duration));
+                CameraManager.sh().stopRecording();
+                isRecording = false;
+                returnFromRecordingUI();
+                if (outputFile != null) {
+                    checkFinishedRecording(outputFile);
+                } else {
+                    Log.e(TAG, "Why missing outputFile path is missing when finishing recording?");
+                }
+            }
+        };
+
+        //
+        // Start recording
+        //
+        new AsyncTask<Void, Integer, Void>(){
+            @Override
+            protected Void doInBackground(Void... arg0) {
+                outputFile = CameraManager.sh().startRecording(scene.duration, onRecordingInfoListener);
+                if (outputFile == null) {
+                    Toast.makeText(
+                            RecorderActivity.this,
+                            "Failed to start recording.",
+                            Toast.LENGTH_SHORT).show();
+                    isRecording = false;
+                    returnFromRecordingUI();
+                    return null;
+                }
+                Log.d(TAG, String.format("Started recording to local file: %s", outputFile));
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Void result) {
+            }
+        }.execute((Void)null);
+
+
+
 
         // Update UI
         hideControlsDrawer(false);
         hideOverlayButtons(false);
         hideSilhouette(false);
 
-        //
-
-        Scene scene = story.findScene(currentSceneID);
+        // Progress bar animation
         ProgressBar progressBar = aq.id(R.id.recordingProgressBar).getProgressBar();
         progressBar.setVisibility(View.VISIBLE);
         progressBar.setAlpha(0.3f);
         ProgressBarAnimation anim = new ProgressBarAnimation(progressBar, 0, 100);
         anim.setDuration(scene.duration);
         progressBar.startAnimation(anim);
-        anim.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-                CameraManager.sh().stopRecording();
-                isRecording = false;
-                returnFromRecordingUI();
-
-                if (outputFile != null) {
-                    checkFinishedRecording(outputFile);
-                } else {
-                    Log.e(TAG, "Why missing outputFile path is missing when finishing recording?");
-                }
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-
-        });
     }
 
     private void checkFinishedRecording(String outputFile) {
@@ -980,7 +1017,11 @@ public class RecorderActivity extends Activity {
             File file = new File(outputFile);
             if (file.exists()) {
                 Log.d(TAG, String.format("Output file exists: %s", outputFile));
-
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                retriever.setDataSource(outputFile);
+                String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                long timeInmillisec = Long.parseLong( time );
+                Log.d(TAG, String.format("Output file length: %d", timeInmillisec));
 
             } else {
                 throw new IOException(String.format("Failed saving output file: %s", outputFile));
@@ -1068,10 +1109,7 @@ public class RecorderActivity extends Activity {
     private void updateUIForSceneID(int sceneID) {
         Story story = remake.getStory();
         Scene scene = story.findScene(sceneID);
-        //aq.id(R.id.silhouette).image(scene.silhouetteURL,false, true);
-        //aq.id(R.id.silhouette).image(scene.silhouetteURL, false, true, 500, R.drawable.glass_dark);
-        aq.id(R.id.silhouette).image(scene.silhouetteURL, false, true, 0, 0, null, AQuery.FADE_IN);
-        //aq.id(R.id.silhouette).visibility(View.GONE);
+        aq.id(R.id.silhouette).image(scene.silhouetteURL, false, true, 0, 0, null, AQuery.FADE_IN, AQuery.RATIO_PRESERVE);
         aq.id(R.id.sceneNumber).text(scene.getTitle());
         aq.id(R.id.sceneTime).text(scene.getTimeString());
         aq.id(R.id.topScriptText).text(scene.script);
