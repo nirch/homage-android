@@ -58,7 +58,7 @@
         <!-- (A spoon full of Sugar, makes a database go down?) -->
         <meta-data android:name="DATABASE" android:value="HomageLocalStorage.db" />
         <meta-data android:name="VERSION" android:value="666" />
-        <meta-data android:name="QUERY_LOG" android:value="true" />
+        <meta-data android:name="QUERY_LOG" android:value="false" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.homage.model" />
 
         <activity

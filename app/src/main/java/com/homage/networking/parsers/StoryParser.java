@@ -34,7 +34,7 @@ public class StoryParser extends Parser {
         JSONObject storyInfo = (JSONObject)objectToParse;
         Log.v(TAG, String.format("Parsing a story: %s", storyInfo.getString("name")));
 
-        Story story = Story.findOrCreate(Parser.parseOID(storyInfo), false);
+        Story story = Story.findOrCreate(Parser.parseOID(storyInfo), true);
         story.remakesNum =      parseInt("remakes_num",0);
         story.thumbnail =       parseString("thumbnail",null);
         story.level =           parseInt("level",0);
@@ -44,7 +44,8 @@ public class StoryParser extends Parser {
         story.thumbnailRip =    parseInt("thumbnail_rip",0);
         story.orderId =         parseInt("order_id",0);
         story.video =           parseString("video",null);
-        story.save();
+
+        // story.save(); // Deprecated. All stories will be bulked saved in a single transaction.
 
         // Parse the scenes for this story.
         ScenesParser scenesParser = new ScenesParser();

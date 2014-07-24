@@ -398,6 +398,19 @@ public class CameraManager {
         profile.videoFrameHeight = recSize.height;
 
         //
+        // Camera settings
+        //
+        Camera.Parameters parameters = camera.getParameters();
+        // Lock exposure
+        parameters.setAutoExposureLock(true);
+        //Lock focus mode
+        if (parameters.getSupportedFocusModes()
+                .contains(Camera.Parameters.FOCUS_MODE_FIXED)) {
+            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_FIXED);
+        }
+        camera.setParameters(parameters);
+
+        //
         // Unlock the camera so it can be used by the media recorder.
         //
         camera.unlock();
@@ -433,17 +446,6 @@ public class CameraManager {
         mediaRecorder.setMaxDuration(videoDuration);
         mediaRecorder.setOnInfoListener(onRecordingInfoListener);
 
-        //
-        // Default frame rate (the camera may choose something else in very low lighting)
-        //
-        mediaRecorder.setVideoFrameRate(24);
-
-        // TODO: Set orientation hint here
-        //
-        // Support capturing video on both landscape orientations.
-        //
-
-
         // Prepare configured MediaRecorder
         try {
             mediaRecorder.prepare();
@@ -470,6 +472,22 @@ public class CameraManager {
             releaseMediaRecorder();
             camera.lock();
             isRecording = false;
+
+            //
+            // Camera settings
+            //
+            Camera.Parameters parameters = camera.getParameters();
+
+            // Unlock exposure
+            parameters.setAutoExposureLock(false);
+
+            // Unlockock focus mode
+            if (parameters.getSupportedFocusModes()
+                    .contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+            }
+            camera.setParameters(parameters);
+
         }
     }
 }

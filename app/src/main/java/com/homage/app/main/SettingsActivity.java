@@ -66,7 +66,6 @@ public class SettingsActivity extends PreferenceActivity {
 
             // Bind to preference click listener
             findPreference("settings_feedback").setOnPreferenceClickListener(onClickedPreference);
-            findPreference("settings_export_db").setOnPreferenceClickListener(onClickedExportDatabase);
         }
 
         private Preference.OnPreferenceClickListener onClickedPreference = new Preference.OnPreferenceClickListener() {

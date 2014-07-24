@@ -26,33 +26,30 @@ public class StoriesParser extends Parser {
     public void parse() throws JSONException {
         startBenchMark();
 
-        // TODO: finish memory cache optimisation
-        //Story.refreshMemoryCache();
+        Story.refreshMemoryCache();
 
-        if (lastParseTime > 0) {
-            int now = (int)(System.currentTimeMillis());
-            int delta = now - lastParseTime;
-            if (delta < threshold) {
-                Log.d(TAG, String.format("Stories parsed very recently (%d < %d). ignored.", delta, threshold));
-                return;
-            }
-            lastParseTime = now;
-        }
+//        if (lastParseTime > 0) {
+//            int now = (int)(System.currentTimeMillis());
+//            int delta = now - lastParseTime;
+//            if (delta < threshold) {
+//                Log.d(TAG, String.format("Stories parsed very recently (%d < %d). ignored.", delta, threshold));
+//                return;
+//            }
+//            lastParseTime = now;
+//        }
 
         lastParseTime = (int)(System.currentTimeMillis());
 
         JSONArray stories = (JSONArray)objectToParse;
         StoryParser storyParser = new StoryParser();
         JSONObject story;
-
         for (int i=0; i<stories.length();i++) {
             story = stories.getJSONObject(i);
             storyParser.objectToParse = story;
             storyParser.parse();
         }
 
-        // TODO: finish memory cache optimisation
-        //Story.persistMemoryCache();
+        Story.persistMemoryCache();
 
         endBenchMark();
     }

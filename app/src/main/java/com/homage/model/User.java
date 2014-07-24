@@ -7,6 +7,7 @@ import android.content.Context;
 
 import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
 
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,8 @@ public class User extends SugarRecord<User> {
     public long lastTimeUpdatedStories;
     //endregion
 
+    @Ignore
+    static private User currentUser = null;
 
     //region *** Factories ***
     public String getOID() {
@@ -76,17 +79,21 @@ public class User extends SugarRecord<User> {
             user.isLoggedIn = false;
             user.save();
         }
+        currentUser = null;
     }
 
     public static User getCurrent() {
+        if (currentUser != null) return currentUser;
         List<User> res = User.find(User.class, "is_logged_in = ?", "1");
-        if (res.size()>0) return res.get(0);
-        return null;
+        if (res.size()<1) return null;
+        currentUser = res.get(0);
+        return currentUser;
     }
 
     public void login() {
         User.logoutAllUsers();
         isLoggedIn = true;
+        currentUser = this;
     }
 
     public Remake unfinishedRemakeForStory(Story story) {

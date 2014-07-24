@@ -28,6 +28,7 @@ public class Footage extends SugarRecord<Remake> {
     //region *** Fields ***
     public String processedVideoS3Key;
     public String rawLocalFile;
+    public long rawLocalFileTime;
     public String rawVideoS3Key;
     public int sceneID;
     public int status;
@@ -88,8 +89,7 @@ public class Footage extends SugarRecord<Remake> {
 
     public String getTakeID() {
         if (rawLocalFile==null) return null;
-        String s = rawLocalFile.substring(rawLocalFile.lastIndexOf('/') + 1);
-        s = s.substring(0, s.lastIndexOf('.'));
+        String s = String.format("%s_%s_%d", remake.getOID(), String.valueOf(sceneID), rawLocalFileTime);
         return s;
     }
 

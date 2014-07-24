@@ -45,27 +45,19 @@ public class ScenesParser extends Parser {
 
         int sceneId = parseInt(sceneInfo, "id",0);
 
-        Scene scene = story.findSceneOrCreate(sceneId);
-
+        Scene scene = story.findSceneOrCreate(sceneId, true);
+        scene.tag = Scene.sTag(story.getOID(), sceneId);
         scene.context = parseString(sceneInfo, "context", null);
         scene.script = parseString(sceneInfo, "script",null);
         scene.duration = parseInt(sceneInfo, "duration",0);
         scene.videoURL = parseString(sceneInfo, "video",null);
-
-        // TODO: clear scene.thumbnail cache if thumbnail url changed
         scene.thumbnailURL = parseString(sceneInfo, "thumbnail",null);
-
-        // TODO: clear scene.silhouetteURL cache if silhouette url changed
         scene.silhouetteURL = parseString(sceneInfo, "silhouette",null);
-
         //at the moment, all the scenes are selfie enabled
         scene.isSelfie = true;
         //orig: scene.isSelfie = parseBool("selfie",false);
-
         scene.focusPointX = parseDouble(sceneInfo, "focus_point_x",0.5f);
         scene.focusPointY = parseDouble(sceneInfo, "focus_point_y",0.5f);
-
-        scene.save();
     }
 }
 

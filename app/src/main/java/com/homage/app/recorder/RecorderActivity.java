@@ -992,9 +992,6 @@ public class RecorderActivity extends Activity {
             }
         }.execute((Void)null);
 
-
-
-
         // Update UI
         hideControlsDrawer(false);
         hideOverlayButtons(false);
@@ -1032,8 +1029,11 @@ public class RecorderActivity extends Activity {
             if (footage == null) {
                 Log.e(TAG, "Error. why footage not found after finishing recording?");
             }
+
             if (footage.rawLocalFile==null) {
+                // Set the raw local file for the first time.
                 footage.rawLocalFile = outputFile;
+                footage.rawLocalFileTime = System.currentTimeMillis();
             } else {
                 // Ensure that the flow of successful upload doesn't happen
                 // When the previous rawLocalFile is still uploaded to s3
@@ -1041,6 +1041,7 @@ public class RecorderActivity extends Activity {
                 // To ignore successful upload of the older source file.
                 UploadManager.sh().reportSourceFileChange(footage.rawLocalFile, outputFile);
                 footage.rawLocalFile = outputFile;
+                footage.rawLocalFileTime = System.currentTimeMillis();
 
                 // Update server that the footage changed.
                 String remakeID = remake.getOID();

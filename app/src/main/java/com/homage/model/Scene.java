@@ -18,6 +18,7 @@ public class Scene extends SugarRecord<Scene> {
 
     //region *** Fields ***
     int sceneID;
+    public String tag;
     public String context;
     public int duration;
     public boolean isSelfie;
@@ -69,5 +70,8 @@ public class Scene extends SugarRecord<Scene> {
     //endregion
 
     //region *** Logic ***
+    static public String sTag(String storyOID, long sceneID) {
+        return String.format("%s_%d", storyOID, sceneID);
+    }
     //endregion
 }

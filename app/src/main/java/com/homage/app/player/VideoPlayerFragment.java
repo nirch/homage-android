@@ -175,8 +175,9 @@ public class VideoPlayerFragment
 
             // A remote video with a given URL.
             videoView.setVideoURI(Uri.parse(fileURL));
-
+            videoView.start();
         }
+
 
         videoView.setOnPreparedListener(this);
         videoView.setOnErrorListener(this);
