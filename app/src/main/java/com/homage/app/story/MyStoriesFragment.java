@@ -3,6 +3,7 @@ package com.homage.app.story;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -228,6 +229,10 @@ public class MyStoriesFragment extends Fragment {
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_my_stories, container, false);
         initialize();
+
+        // Allow orientation change.
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         return rootView;
     }
 

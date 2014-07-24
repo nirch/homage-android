@@ -13,22 +13,20 @@
     </RelativeLayout>
 
 
-    <Button
+    <Button android:id="@+id/makeYourOwnButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/make_your_own"
         android:drawableLeft="@drawable/icon_create_movie_small"
         android:drawablePadding="10dp"
-        android:id="@+id/makeYourOwnButton"
         android:layout_gravity="center_horizontal"
         android:background="@android:color/transparent"
         style="@style/actionButton" />
 
-    <TextView
+    <TextView android:id="@+id/storyDescription"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="Story Description"
-        android:id="@+id/storyDescription"
         android:layout_gravity="center_horizontal"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:gravity="center"
@@ -36,7 +34,7 @@
         android:layout_centerVertical="true"
         />
 
-    <RelativeLayout
+    <RelativeLayout android:id="@+id/remakesContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >

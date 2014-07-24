@@ -9,7 +9,6 @@ import android.widget.Button;
 import com.androidquery.util.Constants;
 import com.homage.app.R;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
-import com.homage.app.player.VideoPlayerActivity;
 import com.homage.model.Footage;
 import com.homage.model.Remake;
 import com.homage.model.Scene;

@@ -4,16 +4,20 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.GridView;
 import android.widget.BaseAdapter;
 import android.widget.AdapterView;
@@ -27,6 +31,7 @@ import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
+import com.homage.views.ActivityHelper;
 
 import java.util.List;
 
@@ -190,6 +195,9 @@ public class StoryDetailsFragment extends Fragment {
             ft.commit();
         }
 
+        // Allow orientation change.
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+
         // Initialize the video of the story we need to show in the fragment.
         Bundle b = new Bundle();
         b.putString(VideoPlayerFragment.K_FILE_URL, story.video);
@@ -215,6 +223,12 @@ public class StoryDetailsFragment extends Fragment {
                 main.refetchRemakesForStory(story);
             }
         }, 500);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        handleEmbeddedVideoConfiguration(newConfig);
     }
 
     @Override
@@ -252,16 +266,82 @@ public class StoryDetailsFragment extends Fragment {
     //endregion
 
 
-    //region video player calls
-    private void playStoryMovie() {
-        Intent myIntent = new Intent(this.getActivity(), FullScreenVideoPlayerActivity.class);
-        Uri videoURL = Uri.parse(story.video);
-        myIntent.putExtra(VideoPlayerFragment.K_FILE_URL, videoURL.toString());
-        myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
-        myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, true);
-        startActivity(myIntent);
+    //region *** Fullscreen ***
+    private void handleEmbeddedVideoConfiguration(Configuration cfg) {
+        int orientation = cfg.orientation;
+
+        switch (orientation) {
+            case Configuration.ORIENTATION_LANDSCAPE:
+                enterFullScreen();
+                break;
+
+            case Configuration.ORIENTATION_PORTRAIT:
+                exitFullScreen();
+                break;
+        }
     }
 
+    void enterFullScreen() {
+        Log.v(TAG, "Video, change to full screen");
+
+        // Hide everything else
+        aq.id(R.id.makeYourOwnButton).visibility(View.GONE);
+        aq.id(R.id.storyDescription).visibility(View.GONE);
+        aq.id(R.id.remakesContainer).visibility(View.GONE);
+
+        // Show the video in full screen.
+        View container = aq.id(R.id.storyDetailsVideoContainer).getView();
+        DisplayMetrics metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) container.getLayoutParams();
+        params.width =  metrics.widthPixels;
+        params.height = metrics.heightPixels;
+
+        container.setLayoutParams(params);
+
+        // Actionbar
+        getActivity().getActionBar().hide();
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        // (remove the top margin that is there for the action bar)
+        container = getActivity().findViewById(R.id.bigContainer);
+        android.support.v4.widget.DrawerLayout.LayoutParams params2 = (android.support.v4.widget.DrawerLayout.LayoutParams)container.getLayoutParams();
+        params2.setMargins(0,0,0,0);
+        container.setLayoutParams(params2);
+    }
+
+    void exitFullScreen() {
+        Log.v(TAG, "Video, exit full screen");
+
+        aq.id(R.id.makeYourOwnButton).visibility(View.VISIBLE);
+        aq.id(R.id.storyDescription).visibility(View.VISIBLE);
+        aq.id(R.id.remakesContainer).visibility(View.VISIBLE);
+
+        // Return to original layout
+        View container = aq.id(R.id.storyDetailsVideoContainer).getView();
+        DisplayMetrics metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams)container.getLayoutParams();
+        params.width =  metrics.widthPixels;
+        params.height = (int) (216*metrics.density);
+        container.setLayoutParams(params);
+
+        // Actionbar
+        getActivity().getActionBar().show();
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        // (remove the top margin that is there for the action bar)
+        container = getActivity().findViewById(R.id.bigContainer);
+        android.support.v4.widget.DrawerLayout.LayoutParams params2 = (android.support.v4.widget.DrawerLayout.LayoutParams)container.getLayoutParams();
+        int m = (int)(45.0f*metrics.density);
+        params2.setMargins(0,m,0,0);
+        container.setLayoutParams(params2);
+    }
+
+    //endregion
+
+
+    //region video player calls
     private void playRemakeMovie(String remakeID) {
         Intent myIntent = new Intent(this.getActivity(), FullScreenVideoPlayerActivity.class);
         Remake remake = Remake.findByOID(remakeID);
@@ -269,6 +349,7 @@ public class StoryDetailsFragment extends Fragment {
         myIntent.putExtra(VideoPlayerFragment.K_FILE_URL, videoURL.toString());
         myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
         myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, true);
+        myIntent.putExtra(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
         startActivity(myIntent);
     }
 

@@ -1,16 +1,20 @@
 package com.homage.app.player;
 
 import android.app.Activity;
+import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -110,6 +114,12 @@ public class VideoPlayerFragment
         fullStop();
     }
 
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        if (isEmbedded) handleEmbeddedVideoConfiguration(newConfig);
+//    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -155,11 +165,17 @@ public class VideoPlayerFragment
     }
 
     private void initializeVideoPlayer() {
+
         if (filePath != null) {
+
+            // A local video file.
             videoView.setVideoPath(filePath);
+
         } else if (fileURL != null) {
+
+            // A remote video with a given URL.
             videoView.setVideoURI(Uri.parse(fileURL));
-            if (videoView != null) videoView.start();
+
         }
 
         videoView.setOnPreparedListener(this);
@@ -188,7 +204,7 @@ public class VideoPlayerFragment
         autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, true);
         isEmbedded = b.getBoolean(K_IS_EMBEDDED, false);
         thumbURL = b.getString(K_THUMB_URL, null);
-
+        Log.d(TAG, String.format("Will play video in fragment: %s %s", filePath, fileURL));
         alreadyGotSettings = true;
     }
 
@@ -228,12 +244,13 @@ public class VideoPlayerFragment
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
-        Log.d(TAG, String.format("Video is prepared for playing: %s", filePath));
-        aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
+        Log.d(TAG, String.format("Video is prepared for playing: %s %s", filePath, fileURL));
         aq.id(R.id.videoCurtain).visibility(View.GONE);
-        aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
-        aq.id(R.id.videoThumbnailImage).animate(R.anim.animation_fadeout);
+        aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
         if (autoStartPlaying) start();
+
+        //aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
+        //aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
     }
 
 
@@ -289,7 +306,6 @@ public class VideoPlayerFragment
     void showThumbState() {
         if (videoView != null) videoView.seekTo(0);
         pause();
-        aq.id(R.id.videoThumbnailImage).animate(R.anim.animation_fadein);
         aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
         aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
         aq.id(R.id.videoView).visibility(View.INVISIBLE);
@@ -301,7 +317,7 @@ public class VideoPlayerFragment
     }
 
     void hideThumb() {
-        aq.id(R.id.videoThumbnailImage).animate(R.anim.animation_fadeout);
+        aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
         aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
     }
     //endregion
@@ -371,13 +387,14 @@ public class VideoPlayerFragment
                 Log.v(TAG, "media track lagging");
                 break;
 
-            case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
-                Log.v(TAG, "media rendering start");
-                break;
-
             case MediaPlayer.MEDIA_INFO_BUFFERING_START:
                 Log.v(TAG, "media buffering start");
                 aq.id(R.id.videoFragmentLoading).visibility(View.VISIBLE);
+                break;
+
+            case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
+                Log.v(TAG, "media rendering start");
+                aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
                 break;
 
             case MediaPlayer.MEDIA_INFO_BUFFERING_END:

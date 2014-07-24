@@ -17,7 +17,6 @@ import android.widget.VideoView;
 import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
-import com.homage.app.player.VideoPlayerActivity;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.model.Remake;
 import com.homage.model.Scene;

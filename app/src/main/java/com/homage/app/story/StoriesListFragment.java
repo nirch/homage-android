@@ -17,6 +17,7 @@ package com.homage.app.story;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -139,6 +140,10 @@ public class StoriesListFragment extends Fragment {
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_stories, container, false);
         initialize();
+
+        // Force portrait.
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         return rootView;
     }
 

@@ -24,9 +24,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -41,7 +41,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.androidquery.AQuery;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -54,15 +53,12 @@ import com.homage.app.story.StoriesListFragment;
 import com.homage.app.story.StoryDetailsFragment;
 import com.homage.app.user.LoginActivity;
 import com.homage.app.story.MyStoriesFragment;
-import com.homage.media.camera.CameraManager;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
-
 import java.util.HashMap;
-import java.util.List;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -143,6 +139,9 @@ public class MainActivity extends ActionBarActivity
         // Refresh stories
         showRefreshProgress();
         HomageServer.sh().refetchStories();
+
+        // Force portrait
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         //region *** Bind to UI event handlers ***
         /**********************************/

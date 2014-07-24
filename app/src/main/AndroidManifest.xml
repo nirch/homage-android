@@ -72,9 +72,25 @@
             </intent-filter>
         </activity>
 
+
+        /**
+
+        $$\   $$\  $$$$$$\  $$\      $$\  $$$$$$\   $$$$$$\  $$$$$$$$\
+        $$ |  $$ |$$  __$$\ $$$\    $$$ |$$  __$$\ $$  __$$\ $$  _____|
+        $$ |  $$ |$$ /  $$ |$$$$\  $$$$ |$$ /  $$ |$$ /  \__|$$ |
+        $$$$$$$$ |$$ |  $$ |$$\$$\$$ $$ |$$$$$$$$ |$$ |$$$$\ $$$$$\
+        $$  __$$ |$$ |  $$ |$$ \$$$  $$ |$$  __$$ |$$ |\_$$ |$$  __|
+        $$ |  $$ |$$ |  $$ |$$ |\$  /$$ |$$ |  $$ |$$ |  $$ |$$ |
+        $$ |  $$ | $$$$$$  |$$ | \_/ $$ |$$ |  $$ |\$$$$$$  |$$$$$$$$\
+        \__|  \__| \______/ \__|     \__|\__|  \__| \______/ \________|
+
+                               Main Activity
+
+        */
         <activity
             android:name=".main.MainActivity"
-            android:screenOrientation="portrait"
+            android:screenOrientation="sensor"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat"
             >
             <intent-filter>
@@ -147,23 +163,6 @@
             >
         </activity>
 
-
-
-        <!--
-            ############################################
-
-                            Video Player
-                              Activity
-
-            ############################################
-        -->
-        <activity
-            android:name=".player.VideoPlayerActivity"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@style/Theme.Transparent"
-            >
-
-        </activity>
 
         <!-- Settings activity -->
         <activity android:name=".main.SettingsActivity"></activity>
