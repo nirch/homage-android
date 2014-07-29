@@ -67,6 +67,33 @@ public class Scene extends SugarRecord<Scene> {
         String secondsRounded = nf.format(duration/1000.0f);
         return String.format("%s SEC", secondsRounded);
     }
+
+    public static Scene findOrCreate(Story story, int sceneID) {
+        Scene scene = story.findScene(sceneID);
+        if (scene != null) return scene;
+        return new Scene(story, sceneID);
+    }
+
+    public static Scene findOrCreate(Story story, int sceneID, boolean useMemCache) {
+        // If not using memory cache, just use the regular findOrCreate method.
+        if (!useMemCache) return findOrCreate(story, sceneID);
+
+        // If using the memory cache, check if the object is in the cache first.
+        MemCache cache = MemCache.sh();
+        String tag = Scene.sTag(story.getOID(), sceneID);
+        Scene scene = cache.getSceneByTag(tag);
+        if (scene != null) return scene;
+
+        // Not found in mem cache.
+        // Find or create using local storage.
+        // And cache the object in memory.
+        scene = findOrCreate(story, sceneID);
+        scene.tag = tag;
+        cache.putScene(scene);
+
+        // Return story
+        return scene;
+    }
     //endregion
 
     //region *** Logic ***

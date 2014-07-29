@@ -44,13 +44,5 @@ public class StoryParser extends Parser {
         story.thumbnailRip =    parseInt("thumbnail_rip",0);
         story.orderId =         parseInt("order_id",0);
         story.video =           parseString("video",null);
-
-        // story.save(); // Deprecated. All stories will be bulked saved in a single transaction.
-
-        // Parse the scenes for this story.
-        ScenesParser scenesParser = new ScenesParser();
-        scenesParser.objectToParse = storyInfo.getJSONArray("scenes");
-        scenesParser.story = story;
-        scenesParser.parse();
     }
 }

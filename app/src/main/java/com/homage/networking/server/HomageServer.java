@@ -118,7 +118,6 @@ public class HomageServer extends Server {
     }
     //endregion
 
-
     //region *** Remakes ***
     /**
      *
@@ -181,22 +180,39 @@ public class HomageServer extends Server {
      * Refetch all remakes for a given story.
      * @param storyOID The story object id of the story the remakes are related to.
      * @param userInfo Optional HashMap<String,Object> containing user info about the request.
+     * @param limit Optional Integer indicating the max number of results.
+     * @param userInfo Optional HashMap<String,Object> containing user info about the request.
      */
-    public void refetchRemakesForStory(String storyOID, HashMap<String,Object> userInfo) {
+    public void refetchRemakesForStory(String storyOID, HashMap<String,Object> userInfo, Integer limit, Integer skip) {
         Log.v(TAG, String.format("Refetching remakes for story OID: %s", storyOID));
 
         // Request info
         HashMap<String,Object> info = new HashMap<String, Object>();
         info.put(IK_STORY_OID, storyOID);
 
+        // Parameters
+        HashMap<String, String> parameters = null;
+        if (limit != null || skip != null) {
+            parameters = new HashMap<String, String>();
+            if (limit != null) parameters.put("limit", String.valueOf(limit));
+            if (skip != null) parameters.put("skip", String.valueOf(skip));
+        }
+
         // User Info
         if (userInfo != null) info.putAll(userInfo);
 
         // The GET request
         super.GET(
-                R.string.url_story_remakes, storyOID, null,
-                INTENT_REMAKES_FOR_STORY, info, new RemakesParser()
-        );
+                R.string.url_story_remakes,
+                storyOID,
+                parameters,
+                INTENT_REMAKES_FOR_STORY,
+                info,
+                new RemakesParser());
+    }
+
+    public void refetchRemakesForStory(String storyOID, HashMap<String,Object> userInfo) {
+        refetchRemakesForStory(storyOID, userInfo, null, null);
     }
 
     /**
@@ -236,7 +252,7 @@ public class HomageServer extends Server {
     //endregion
 
     //region *** Footages ***
-    public void updateFootageUploadStart(String remakeID, int sceneID, String takeID, HashMap<String,Object> userInfo) {
+    public void putFootage(String remakeID, int sceneID, String takeID, HashMap<String, Object> userInfo) {
         Log.v(TAG, String.format("Update server about upload start, take id:%s", takeID));
 
         // Request parameters
@@ -387,8 +403,9 @@ public class HomageServer extends Server {
         super.PUT(R.string.url_update_user, parameters, INTENT_USER_UPDATED, null, userParser);
     }
 
-    public void updateUserPreferences() {
-
+    public void updateUserPreferences(HashMap<String, String> parameters) {
+        UserParser userParser = new UserParser();
+        super.PUT(R.string.url_update_user, parameters, INTENT_USER_PREFERENCES_UPDATE, null, userParser);
     }
 
 

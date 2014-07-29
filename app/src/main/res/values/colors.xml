@@ -16,6 +16,9 @@
 
     <color name="homage_recorder_script_background">#44ffffff</color>
 
+    <color name="homage_recorder_progress">#FF7D5F</color>
+    <color name="homage_recorder_progress_bg">#AADDDDDD</color>
+
 
     <color name="homage_record_highlight">#ffff4034</color>
     <color name="homage_record_button">#FF7D5F</color>

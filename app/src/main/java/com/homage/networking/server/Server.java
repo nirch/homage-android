@@ -27,12 +27,9 @@
 
 package com.homage.networking.server;
 
-import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -40,7 +37,6 @@ import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.networking.parsers.Parser;
 
-import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
@@ -50,19 +46,20 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpParams;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import android.support.v4.content.LocalBroadcastManager;
@@ -303,6 +300,16 @@ abstract public class Server {
 
                 // GET requests.
                 request = new HttpGet();
+                if (parameters != null) {
+                    List<NameValuePair> params = new LinkedList<NameValuePair>();
+                    for (String k : parameters.keySet()) {
+                        String v = parameters.get(k);
+                        params.add(new BasicNameValuePair(k, v));
+                    }
+                    String paramsString = URLEncodedUtils.format(params, "utf-8");
+                    url += "?";
+                    url += paramsString;
+                }
 
             } else if (method.equals("POST")) {
 

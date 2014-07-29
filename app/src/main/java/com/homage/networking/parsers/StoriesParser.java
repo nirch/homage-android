@@ -2,6 +2,7 @@ package com.homage.networking.parsers;
 
 import android.util.Log;
 
+import com.homage.model.MemCache;
 import com.homage.model.Story;
 
 import org.json.JSONArray;
@@ -26,30 +27,46 @@ public class StoriesParser extends Parser {
     public void parse() throws JSONException {
         startBenchMark();
 
-        Story.refreshMemoryCache();
-
-//        if (lastParseTime > 0) {
-//            int now = (int)(System.currentTimeMillis());
-//            int delta = now - lastParseTime;
-//            if (delta < threshold) {
-//                Log.d(TAG, String.format("Stories parsed very recently (%d < %d). ignored.", delta, threshold));
-//                return;
-//            }
-//            lastParseTime = now;
-//        }
-
+        if (lastParseTime > 0) {
+            int now = (int)(System.currentTimeMillis());
+            int delta = now - lastParseTime;
+            if (delta < threshold) {
+                Log.d(TAG, String.format("Stories parsed very recently (%d < %d). ignored.", delta, threshold));
+                return;
+            }
+            lastParseTime = now;
+        }
         lastParseTime = (int)(System.currentTimeMillis());
 
+        //
+        // Parse, cache and persist all stories in a single transaction.
+        //
+        MemCache cache = MemCache.sh();
+        cache.refreshStories();
         JSONArray stories = (JSONArray)objectToParse;
         StoryParser storyParser = new StoryParser();
-        JSONObject story;
+        JSONObject storyInfo;
         for (int i=0; i<stories.length();i++) {
-            story = stories.getJSONObject(i);
-            storyParser.objectToParse = story;
+            storyInfo = stories.getJSONObject(i);
+            storyParser.objectToParse = storyInfo;
             storyParser.parse();
         }
+        cache.persistStories();
 
-        Story.persistMemoryCache();
+        //
+        // Parse, cache and persist all scenes for all stories in a single transaction.
+        //
+        cache.refreshScenes();
+        ScenesParser scenesParser = new ScenesParser();
+        for (int i=0; i<stories.length();i++) {
+            storyInfo = stories.getJSONObject(i);
+            String oid = Parser.parseOID(storyInfo);
+            Story story = cache.getStoryByOID(oid);
+            scenesParser.story = story;
+            scenesParser.objectToParse = storyInfo.getJSONArray("scenes");
+            scenesParser.parse();
+        }
+        cache.persistScenes();
 
         endBenchMark();
     }

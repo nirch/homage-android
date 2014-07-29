@@ -52,7 +52,7 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
         aq.id(R.id.bigImpactTitle).text(getResources().getString(R.string.title_great_job));
         aq.id(R.id.descriptionText).text("You nailed all scenes. Lets finish the movie");
         aq.id(R.id.actionButton).text("CREATE MOVIE");
-        aq.id(R.id.actionButton).getButton().setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_create_movie_small,0,0,0);
+        aq.id(R.id.actionButton).getButton().setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_create_movie,0,0,0);
 
         //region *** Bind to UI event handlers ***
 

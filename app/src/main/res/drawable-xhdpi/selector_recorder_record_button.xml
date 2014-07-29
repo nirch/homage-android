@@ -4,7 +4,7 @@
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
             <solid android:color="@color/homage_record_button" />
-            <stroke android:width="12px" android:color="@color/homage_record_button_stroke"/>
+            <stroke android:width="18px" android:color="@color/homage_record_button_stroke"/>
         </shape>
     </item>
     <item android:state_pressed="true">
@@ -13,14 +13,14 @@
             <gradient android:angle="270"
                 android:startColor="@color/homage_record_highlight"
                 android:endColor="@color/homage_record_button" />
-            <stroke android:width="12px" android:color="@color/homage_record_button_stroke"/>
+            <stroke android:width="18px" android:color="@color/homage_record_button_stroke"/>
         </shape>
     </item>
     <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
             <solid android:color="@color/homage_record_button" />
-            <stroke android:width="8px" android:color="@color/homage_record_button_stroke"/>
+            <stroke android:width="14px" android:color="@color/homage_record_button_stroke"/>
         </shape>
     </item>
 </selector>

@@ -3,28 +3,16 @@
 
     <item android:id="@android:id/background">
         <shape>
-            <corners android:radius="5dip" />
-            <gradient
-                android:startColor="#ff9d9e9d"
-                android:centerColor="#ff5a5d5a"
-                android:centerY="0.75"
-                android:endColor="#ff747674"
-                android:angle="270"
-                />
+            <shape>
+                <solid android:color="@color/homage_recorder_progress_bg"/>
+            </shape>
         </shape>
     </item>
 
     <item android:id="@android:id/progress">
         <clip>
             <shape>
-                <corners android:radius="5dip" />
-                <gradient
-                    android:startColor="@color/homage_impact"
-                    android:centerColor="@color/homage_impact"
-                    android:centerY="0.5"
-                    android:endColor="@color/homage_dark_void_2"
-                    android:angle="270"
-                    />
+                <solid android:color="@color/homage_impact"/>
             </shape>
         </clip>
     </item>

@@ -1,11 +1,9 @@
 package com.homage.networking.uploader;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.amazonaws.services.s3.transfer.Upload;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.SettingsActivity;
 import com.homage.model.Footage;
@@ -102,12 +100,11 @@ public class UploadManager {
             if (worker.startWorking()) {
                 footage.currentlyUploaded = 1;
                 footage.save();
-
-                HomageServer.sh().updateFootageUploadStart(
-                        remake.getOID(),
-                        footage.sceneID,
-                        footage.getTakeID(),
-                        null);
+//                HomageServer.sh().putFootage(
+//                        remake.getOID(),
+//                        footage.sceneID,
+//                        footage.getTakeID(),
+//                        null);
             }
         }
     }

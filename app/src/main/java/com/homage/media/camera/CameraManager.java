@@ -287,8 +287,6 @@ public class CameraManager {
             int videoWidth = previewSize.width;
             int videoHeight = previewSize.height;
 
-            //float videoAspectRatio = (float)videoWidth/(float)videoHeight;
-            //float containerAspectRatio = (float)containerWidth/(float)containerHeight;
             float dx = (float)containerWidth / (float)videoWidth;
             float dy = (float)containerHeight / (float)videoHeight;
 

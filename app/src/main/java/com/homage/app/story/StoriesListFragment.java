@@ -19,6 +19,7 @@ import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ public class StoriesListFragment extends Fragment {
     ListView storiesListView;
     AQuery aq;
     ProgressDialog pd;
+    boolean allowAppearAnimations = false;
 
     static boolean createdOnce = false;
 
@@ -77,7 +79,7 @@ public class StoriesListFragment extends Fragment {
             aq.id(R.id.storyName).text(story.name);
             aq.id(R.id.storyRemakesCount).text(String.format("#%d", story.remakesNum));
 
-            if (i>3) {
+            if (allowAppearAnimations) {
                 aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
             } else {
                 aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
@@ -118,7 +120,12 @@ public class StoriesListFragment extends Fragment {
         stories = Story.allActiveStories();
         storiesListView = aq.id(R.id.storiesListView).getListView();
         storiesListView.setAdapter(adapter);
-
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                allowAppearAnimations = true;
+            }
+        }, 500);
         createdOnce = true;
 
         if (stories.size() > 0) {
@@ -143,6 +150,10 @@ public class StoriesListFragment extends Fragment {
 
         // Force portrait.
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        // Show actionbar
+        getActivity().getActionBar().show();
+
 
         return rootView;
     }
@@ -184,6 +195,23 @@ public class StoriesListFragment extends Fragment {
 
     }
 
+
+    public void refresh() {
+        allowAppearAnimations = false;
+        if (stories == null) {
+            stories = Story.allActiveStories();
+        } else {
+            stories.clear();
+            stories.addAll(Story.allActiveStories());
+        }
+        adapter.notifyDataSetChanged();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                allowAppearAnimations = true;
+            }
+        }, 500);
+    }
 
     //region *** UI event handlers ***
     // -------------------

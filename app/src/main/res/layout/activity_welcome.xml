@@ -21,20 +21,6 @@
         android:layout_centerInParent="true"
         >
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            >
-
-            <fragment android:name="com.homage.app.player.VideoPlayerFragment"
-                android:id="@+id/videoPlayerFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                class="com.homage.app.player.VideoPlayerFragment"
-                tools:layout="@layout/fragment_homage_video_view" />
-            </FrameLayout>
-
-
         <Button android:id="@+id/letsCreateButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,5 +32,18 @@
             android:drawablePadding="20dp" />
 
     </RelativeLayout>
+
+    <FrameLayout android:id="@+id/welcomeVidoeContainer"
+        android:layout_width="match_parent"
+        android:layout_height="216dp"
+        android:layout_centerInParent="true"
+        >
+        <fragment android:name="com.homage.app.player.VideoPlayerFragment"
+        android:id="@+id/videoPlayerFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.homage.app.player.VideoPlayerFragment"
+        tools:layout="@layout/fragment_homage_video_view" />
+    </FrameLayout>
 
 </RelativeLayout>
