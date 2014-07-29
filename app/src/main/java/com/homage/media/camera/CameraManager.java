@@ -486,7 +486,7 @@ public class CameraManager {
             // Unlock exposure
             parameters.setAutoExposureLock(false);
 
-            // Unlockock focus mode
+            // Unlock focus mode
             if (parameters.getSupportedFocusModes()
                     .contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
                 parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
