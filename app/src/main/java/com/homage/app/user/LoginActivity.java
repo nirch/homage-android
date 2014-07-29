@@ -27,6 +27,7 @@ import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.main.WelcomeScreenActivity;
+import com.homage.model.Remake;
 import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
@@ -188,8 +189,13 @@ public class LoginActivity extends Activity {
             Bundle b = intent.getExtras();
             boolean success = b.getBoolean("success", false);
             if (success) {
+                // Clear local storage info of remakes.
                 User user = User.getCurrent();
                 if (user == null) return;
+
+                // Cleanup
+                User.cleanDeprecatedLocalUsersForUser(user);
+
                 Intent startIntent;
                 startIntent = new Intent(LoginActivity.this, MainActivity.class);
                 Toast.makeText(LoginActivity.this, String.format("Hello %s", user.getTag()), Toast.LENGTH_LONG).show();

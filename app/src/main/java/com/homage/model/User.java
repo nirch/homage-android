@@ -4,6 +4,7 @@
 package com.homage.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
@@ -88,6 +89,9 @@ public class User extends SugarRecord<User> {
         if (res.size()<1) return null;
         currentUser = res.get(0);
         return currentUser;
+    }
+
+    public static void cleanDeprecatedLocalUsersForUser(User user) {
     }
 
     public void login() {

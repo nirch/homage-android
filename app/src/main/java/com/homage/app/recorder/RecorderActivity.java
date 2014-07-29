@@ -354,7 +354,7 @@ public class RecorderActivity extends Activity {
         int m = (h - (w * 9 / 16)) / 2;
 
         View topBlackBar = aq.id(R.id.blackBarTop).getView();
-        View bottomBlackBar = aq.id(R.id.blackBarTop).getView();
+        View bottomBlackBar = aq.id(R.id.blackBarBottom).getView();
 
         if (m > 0) {
 
