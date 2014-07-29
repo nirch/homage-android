@@ -56,6 +56,7 @@ import com.homage.app.story.MyStoriesFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.mixpanel.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import java.util.HashMap;
@@ -166,6 +167,12 @@ public class MainActivity extends ActionBarActivity
     protected void onPause() {
         super.onPause();
         removeObservers();
+    }
+
+    @Override
+    protected void onDestroy() {
+        HMixPanel.sh().flush();
+        super.onDestroy();
     }
 
     @Override

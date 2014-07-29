@@ -1,8 +1,11 @@
 package com.homage.networking.mixpanel;
 
 
+
 import android.content.Context;
 import android.util.Log;
+
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +16,8 @@ public class HMixPanel {
     String TAG = "TAG_"+getClass().getName();
 
     public static final String MIXPANEL_TOKEN = "7d575048f24cb2424cd5c9799bbb49b1";
+    public MixpanelAPI mMixpanel;
+
 
     private Context context;
 
@@ -24,9 +29,7 @@ public class HMixPanel {
         this.context = context;
 
         // Do your initializations here.
-        // .
-        // .
-        // .
+        mMixpanel = MixpanelAPI.getInstance(context, MIXPANEL_TOKEN);
     }
 
     private static HMixPanel instance = new HMixPanel();
@@ -52,7 +55,8 @@ public class HMixPanel {
             }
 
             // Send the tracking event using mixpanel.
-            //mixpanel.track(eventName, props);
+            mMixpanel.track(eventName, props);
+
 
         } catch (JSONException e) {
             Log.e(TAG, "Mixpanel tracking JSON error.", e);
@@ -61,5 +65,9 @@ public class HMixPanel {
         }
     }
     //endregion
+
+    public void flush () {
+        instance.flush();
+    }
 
 }
