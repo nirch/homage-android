@@ -189,12 +189,8 @@ public class LoginActivity extends Activity {
             Bundle b = intent.getExtras();
             boolean success = b.getBoolean("success", false);
             if (success) {
-                // Clear local storage info of remakes.
                 User user = User.getCurrent();
                 if (user == null) return;
-
-                // Cleanup
-                User.cleanDeprecatedLocalUsersForUser(user);
 
                 Intent startIntent;
                 startIntent = new Intent(LoginActivity.this, MainActivity.class);
@@ -243,8 +239,7 @@ public class LoginActivity extends Activity {
         SharedPreferences p = HomageApplication.getSettings(this);
         SharedPreferences.Editor editor = p.edit();
         editor.putString(HomageApplication.SK_EMAIL, email);
-        // TODO: encrypt passwords.
-        editor.putString(HomageApplication.SK_PASSWORD, password);
+        // editor.putString(HomageApplication.SK_PASSWORD, password); no need to save password
         editor.commit();
 
         // Create or update user, depending on flow.
@@ -254,6 +249,7 @@ public class LoginActivity extends Activity {
             // Not logged in. Create user with email + password.
             HomageServer.sh().createUser(email, password, null);
         } else {
+            // Update user upon join
             HomageServer.sh().updateUserUponJoin(user, email, password, null);
         }
     }

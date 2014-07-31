@@ -21,8 +21,10 @@ import android.widget.VideoView;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.networking.analytics.HEvents;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 
 public class VideoPlayerFragment
         extends
@@ -44,7 +46,6 @@ public class VideoPlayerFragment
     public static final String K_IS_EMBEDDED = "isEmbedded";
     public static final String K_THUMB_URL = "thumbURL";
 
-
     // Video file path / url
     String filePath;
     String fileURL;
@@ -56,6 +57,10 @@ public class VideoPlayerFragment
     boolean autoHideControls = true;
     boolean autoStartPlaying = true;
     boolean isEmbedded = false;
+
+    // Info
+    HashMap<String, Object> info;
+    long initTime;
 
     // Views & Layout
     AQuery aq;
@@ -191,13 +196,17 @@ public class VideoPlayerFragment
 
     //region *** Media player ***
     private void initializePlayerSettings(Bundle b) {
+        info = new HashMap<String, Object>();
+        initTime = System.currentTimeMillis();
         filePath = b.getString(K_FILE_PATH);
         if (filePath == null) {
             fileURL = b.getString(K_FILE_URL);
-            if (fileURL == null) {
-                return;
-            }
+            if (fileURL == null) return;
+            info.put(HEvents.HK_VIDEO_FILE_URL, fileURL);
+        } else {
+            info.put(HEvents.HK_VIDEO_FILE_PATH,filePath);
         }
+        info.put(HEvents.HK_VIDEO_INIT_TIME, initTime);
 
         // More settings
         allowToggleFullscreen = b.getBoolean(K_ALLOW_TOGGLE_FULLSCREEN, true);
@@ -207,6 +216,10 @@ public class VideoPlayerFragment
         thumbURL = b.getString(K_THUMB_URL, null);
         Log.d(TAG, String.format("Will play video in fragment: %s %s", filePath, fileURL));
         alreadyGotSettings = true;
+
+        if (autoStartPlaying) {
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_WILL_AUTO_PLAY, info);
+        }
     }
 
     // Bind to UI events
@@ -248,7 +261,9 @@ public class VideoPlayerFragment
         Log.d(TAG, String.format("Video is prepared for playing: %s %s", filePath, fileURL));
         aq.id(R.id.videoCurtain).visibility(View.GONE);
         aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
-        if (autoStartPlaying) start();
+        if (autoStartPlaying) {
+            start();
+        }
 
         //aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
         //aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
@@ -285,8 +300,10 @@ public class VideoPlayerFragment
 
     void togglePlayPause() {
         if (videoView.isPlaying()) {
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PAUSE, info);
             pause();
         } else {
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
             start();
         }
     }
@@ -301,7 +318,10 @@ public class VideoPlayerFragment
         ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
         ib.setImageResource(R.drawable.selector_video_button_pause);
         aq.id(R.id.videoView).visibility(View.VISIBLE);
-        if (videoView != null) videoView.start();
+        if (videoView != null) {
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYING, info);
+            videoView.start();
+        }
     }
 
     void showThumbState() {
@@ -352,6 +372,11 @@ public class VideoPlayerFragment
     View.OnClickListener onClickedStopButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
+            HashMap<String, Object> eInfo = new HashMap<String, Object>(info);
+            eInfo.put(HEvents.HK_VIDEO_POSITION, videoView.getCurrentPosition());
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_STOP, eInfo);
+
             fullStop();
         }
     };
@@ -367,6 +392,7 @@ public class VideoPlayerFragment
         @Override
         public void onClick(View v) {
             hideThumb();
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
             aq.id(R.id.loadingVideoPprogress).visibility(View.VISIBLE);
             videoView.seekTo(0);
             start();
@@ -390,6 +416,7 @@ public class VideoPlayerFragment
 
             case MediaPlayer.MEDIA_INFO_BUFFERING_START:
                 Log.v(TAG, "media buffering start");
+                HEvents.sh().track(HEvents.H_EVENT_VIDEO_BUFFERING_START, info);
                 aq.id(R.id.videoFragmentLoading).visibility(View.VISIBLE);
                 break;
 
@@ -400,6 +427,7 @@ public class VideoPlayerFragment
 
             case MediaPlayer.MEDIA_INFO_BUFFERING_END:
                 Log.v(TAG, "media buffering end");
+                HEvents.sh().track(HEvents.H_EVENT_VIDEO_BUFFERING_END, info);
                 aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
                 break;
 

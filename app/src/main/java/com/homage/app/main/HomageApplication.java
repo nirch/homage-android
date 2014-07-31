@@ -13,7 +13,6 @@
  */
 package com.homage.app.main;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -27,7 +26,7 @@ import android.util.Log;
 
 import com.androidquery.callback.BitmapAjaxCallback;
 import com.homage.media.camera.CameraManager;
-import com.homage.networking.mixpanel.HMixPanel;
+import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import com.homage.networking.uploader.UploadManager;
