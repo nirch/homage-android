@@ -211,7 +211,9 @@ public class StoryDetailsFragment extends Fragment {
         videoPlayerFragment.setOnFinishedPlayback(new Runnable() {
             @Override
             public void run() {
-                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                try {
+                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                } catch (Exception e) {}
             }
         });
 
@@ -219,7 +221,9 @@ public class StoryDetailsFragment extends Fragment {
         videoPlayerFragment.setOnStartedPlayback(new Runnable() {
             @Override
             public void run() {
-                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                try {
+                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                } catch (Exception e) {}
             }
         });
 
