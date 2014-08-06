@@ -1,14 +1,18 @@
 package com.homage.app.story;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +32,7 @@ import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.uploader.UploadManager;
 
+import java.io.File;
 import java.util.List;
 
 public class MyStoriesFragment extends Fragment {
@@ -156,22 +161,17 @@ public class MyStoriesFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, String.format("my story, clicked share: %s", remake.getOID()));
-
-                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-                    sharingIntent.setType("text/plain");
-                    sharingIntent.putExtra(
-                            Intent.EXTRA_TEXT,
-                            String.format(
-                                    "Check out this video I created with #HomageApp\n" +
-                                            "\n" +
-                                            "#%s\n" +
-                                            "#%sHomageApp\n" +
-                                            "\n" +
-                                            "http://play.homage.it/%s",
-                                    story.name, story.name, remake.getOID()
-                            )
-                    );
-                    startActivity(Intent.createChooser(sharingIntent,"Share using"));
+                    User user = User.getCurrent();
+                    if (user.isGuest()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        AlertDialog alert = builder.setMessage(R.string.share_signed_in_only)
+                                .setTitle(R.string.join_us_title)
+                                .setPositiveButton(R.string.ok_got_it, null)
+                                .create();
+                        alert.show();
+                        return;
+                    }
+                    shareRemake(remake);
                 }
             });
 
@@ -216,15 +216,79 @@ public class MyStoriesFragment extends Fragment {
             return rowView;
         }
 
-
-
-
         @Override
         public boolean isEmpty() {
             return remakes.size() == 0;
         }
     };
 
+    //region *** Share ***
+    private void shareRemake(final Remake sharedRemake) {
+        AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
+        CharSequence items[] = new CharSequence[] {"Email Message", "Send Link (plain text)"};
+        adb.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface d, int n) {
+            }
+        });
+        adb.setNegativeButton("Cancel", null);
+        adb.setPositiveButton("Share", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ListView lw = ((AlertDialog)dialog).getListView();
+                Integer selectedPosition = lw.getCheckedItemPosition();
+                switch (selectedPosition) {
+                    case 0:
+                        shareRemakeUsingEmailMessage(sharedRemake);
+                        break;
+                    default:
+                        shareRemakeUsingPlainText(sharedRemake);
+
+                }
+            }
+        });
+        adb.setTitle("Share video");
+        adb.show();
+    }
+
+    private void shareRemakeUsingEmailMessage(Remake sharedRemake) {
+        Story story = sharedRemake.getStory();
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        sharingIntent.setType("message/rfc822");
+        Spanned html = Html.fromHtml(
+                new StringBuilder()
+                        .append("<p><b>Check out this video I created with the Homage App for android</b></p>")
+                        .append(String.format("<p><a href='%s'>%s</a></p>", sharedRemake.videoURL, sharedRemake.videoURL))
+                        .toString());
+        sharingIntent.putExtra(
+                Intent.EXTRA_TEXT,
+                html
+        );
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, String.format(
+                "Check my awesome video : %s",
+                story.name));
+        startActivity(Intent.createChooser(sharingIntent, "Share using"));
+    }
+
+    private void shareRemakeUsingPlainText(Remake sharedRemake) {
+        Story story = sharedRemake.getStory();
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(
+                Intent.EXTRA_TEXT,
+                String.format(
+                        "Check out this video I created with #HomageApp\n" +
+                                "\n" +
+                                "#%s\n" +
+                                "#%sHomageApp\n" +
+                                "\n" +
+                                "http://play.homage.it/%s",
+                        story.name, story.name, sharedRemake.getOID()
+                )
+        );
+        startActivity(Intent.createChooser(sharingIntent,"Share using"));
+    }
+    //endregion
 
     //region *** fragment life cycle related
     @Override

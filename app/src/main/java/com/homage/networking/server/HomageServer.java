@@ -349,9 +349,9 @@ public class HomageServer extends Server {
         if (password != null) parameters.put("password",password);
 
         if (isPublic) {
-            parameters.put("is_public","true");
+            parameters.put("is_public","1");
         } else {
-            parameters.put("is_public","true");
+            parameters.put("is_public","0");
         }
         parameters.put("device[identifier_for_vendor]",
             Settings.Secure.getString(HomageApplication.getContext().getContentResolver(),Settings.Secure.ANDROID_ID)

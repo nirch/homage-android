@@ -204,6 +204,20 @@
                     </android.support.v4.view.ViewPager>
                 </FrameLayout>
 
+                <ImageView android:id="@+id/videosPageIndicator1"
+                    style="@style/HomageVideosPageIndicator"
+                    android:src="@drawable/page1"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    />
+
+                <ImageView android:id="@+id/videosPageIndicator2"
+                    style="@style/HomageVideosPageIndicator"
+                    android:src="@drawable/page2"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    />
+
                 <!-- More action buttons at the bottom of the screen, under the videos -->
                 <LinearLayout style="@style/HomageImpactButtonsContainer" android:weightSum="2"
                     android:id="@+id/linearLayout">

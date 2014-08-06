@@ -45,11 +45,24 @@ public class VideoPlayerFragment
     public static final String K_AUTO_START_PLAYING = "autoStartPlaying";
     public static final String K_IS_EMBEDDED = "isEmbedded";
     public static final String K_THUMB_URL = "thumbURL";
+    public static final String K_THUMB_DRAWABLE_ID = "thumbDrawableId";
+
+    private Runnable onFinishedPlayback;
+    private Runnable onStartedPlayback;
+
+    public void setOnFinishedPlayback(Runnable r) {
+        this.onFinishedPlayback = r;
+    }
+
+    public void setOnStartedPlayback(Runnable r) {
+        this.onStartedPlayback = r;
+    }
 
     // Video file path / url
     String filePath;
     String fileURL;
     String thumbURL;
+    int thumbDrawableId;
 
     // More settings
     boolean allowToggleFullscreen = false;
@@ -150,6 +163,10 @@ public class VideoPlayerFragment
                     200,
                     R.drawable.glass_dark,
                     null, AQuery.FADE_IN);
+        } else if (thumbDrawableId > 0) {
+            aq.id(R.id.videoThumbnailImage).image(thumbDrawableId);
+        } else {
+            aq.id(R.id.videoThumbnailImage).visibility(View.GONE);
         }
 
         showThumbWhileLoading();
@@ -214,6 +231,8 @@ public class VideoPlayerFragment
         autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, true);
         isEmbedded = b.getBoolean(K_IS_EMBEDDED, false);
         thumbURL = b.getString(K_THUMB_URL, null);
+        thumbDrawableId = b.getInt(K_THUMB_DRAWABLE_ID, 0);
+
         Log.d(TAG, String.format("Will play video in fragment: %s %s", filePath, fileURL));
         alreadyGotSettings = true;
 
@@ -236,7 +255,9 @@ public class VideoPlayerFragment
     public void onCompletion(MediaPlayer mediaPlayer) {
         Log.d(TAG, String.format("Finished playing video: %s", filePath));
         videoView.pause();
-
+        if (onFinishedPlayback != null) {
+            new Handler().post(onFinishedPlayback);
+        }
         if (finishOnCompletion) {
             getActivity().finish();
         } else {
@@ -322,6 +343,9 @@ public class VideoPlayerFragment
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYING, info);
             videoView.start();
         }
+        if (onStartedPlayback != null) {
+            new Handler().post(onStartedPlayback);
+        }
     }
 
     void showThumbState() {
@@ -347,6 +371,9 @@ public class VideoPlayerFragment
     void fullStop() {
         videoView.seekTo(0);
         videoView.pause();
+        if (onFinishedPlayback != null) {
+            new Handler().post(onFinishedPlayback);
+        }
         if (finishOnCompletion) {
             VideoPlayerFragment.this.getActivity().finish();
             return;

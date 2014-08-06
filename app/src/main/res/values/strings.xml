@@ -44,6 +44,12 @@
     <string name="no">No</string>
     <string name="report_abusive_remake_title">Report As Inappropriate</string>
 
+    <string name="join_us_title">Join us!</string>
+    <string name="publish_signed_in_only">Only signed in users can publish remakes. Please sign in to continue</string>
+    <string name="share_signed_in_only">Only signed in users can share remakes. Please sign in to continue</string>
+    <string name="ok_got_it">OK, Got it</string>
+
+
     <string name="continue_remake_title">Continue Remake</string>
     <string name="continue_remake_message">Continue from the last saved point, or start from scratch?</string>
 

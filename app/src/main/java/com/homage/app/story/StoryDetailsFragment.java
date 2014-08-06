@@ -206,6 +206,23 @@ public class StoryDetailsFragment extends Fragment {
         b.putBoolean(VideoPlayerFragment.K_IS_EMBEDDED, true);
         b.putString(VideoPlayerFragment.K_THUMB_URL, story.thumbnail);
         videoPlayerFragment.setArguments(b);
+
+        // When video not playing, don't allow orientation changes.
+        videoPlayerFragment.setOnFinishedPlayback(new Runnable() {
+            @Override
+            public void run() {
+                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+        });
+
+        // When video playing, allow orientation changes.
+        videoPlayerFragment.setOnStartedPlayback(new Runnable() {
+            @Override
+            public void run() {
+                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+            }
+        });
+
         return rootView;
     }
 

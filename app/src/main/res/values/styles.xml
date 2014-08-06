@@ -71,9 +71,15 @@
 
     <style name="HomageImpactButtonsContainer">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">60dp</item>
+        <item name="android:layout_height">56dp</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:background">@color/homage_void</item>
+    </style>
+
+    <style name="HomageVideosPageIndicator">
+        <item name="android:layout_marginBottom">58dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">14dp</item>
     </style>
 
     <style name="HomageImpactButton">
