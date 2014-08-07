@@ -15,7 +15,6 @@ import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.views.ActivityHelper;
-import com.homage.networking.mixpanel.HMixPanel;
 
 import java.util.HashMap;
 

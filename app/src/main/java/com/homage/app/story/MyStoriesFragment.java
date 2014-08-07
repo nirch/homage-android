@@ -38,6 +38,7 @@ import java.util.List;
 public class MyStoriesFragment extends Fragment {
     String TAG = "TAG_MyStoriesFragment";
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final int SHARE_RESPONSE = 0;
 
     View rootView;
     LayoutInflater inflater;
@@ -286,9 +287,21 @@ public class MyStoriesFragment extends Fragment {
                         story.name, story.name, sharedRemake.getOID()
                 )
         );
-        startActivity(Intent.createChooser(sharingIntent,"Share using"));
+        startActivityForResult(sharingIntent,SHARE_RESPONSE);
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == SHARE_RESPONSE) {
+            // Make sure the request was successful
+            Log.d(TAG,"share response");
+        }
+    }
+
     //endregion
+
+
 
     //region *** fragment life cycle related
     @Override

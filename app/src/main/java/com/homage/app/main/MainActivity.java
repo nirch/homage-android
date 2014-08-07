@@ -59,7 +59,7 @@ import com.homage.app.story.MyStoriesFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
-import com.homage.networking.mixpanel.HMixPanel;
+import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import java.util.HashMap;
@@ -441,7 +441,7 @@ public class MainActivity extends ActionBarActivity
         View container = findViewById(R.id.bigContainer);
         android.support.v4.widget.DrawerLayout.LayoutParams params2 = (android.support.v4.widget.DrawerLayout.LayoutParams)container.getLayoutParams();
         int m = (int)(45.0f*metrics.density);
-        params2.setMargins(0,m,0,0);
+        params2.setMargins(0, m, 0, 0);
         container.setLayoutParams(params2);
     }
 
