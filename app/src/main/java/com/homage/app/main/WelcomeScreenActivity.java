@@ -38,6 +38,7 @@ public class WelcomeScreenActivity extends FragmentActivity {
         b.putBoolean(VideoPlayerFragment.K_AUTO_START_PLAYING, true);
         b.putBoolean(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
         b.putString(VideoPlayerFragment.K_FILE_URL, videoURL.toString());
+        b.putInt(VideoPlayerFragment.K_THUMB_DRAWABLE_ID, R.drawable.intro_video_thumb);
 
         FragmentManager fm = getSupportFragmentManager();
         VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment)fm.findFragmentById(R.id.videoPlayerFragment);

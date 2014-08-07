@@ -77,7 +77,10 @@ public class Remake extends SugarRecord<Remake> {
 
     public static Remake findOrCreate(String oid, Story story, User user) {
         Remake remake = Remake.findByOID(oid);
-        if (remake != null) return remake;
+        if (remake != null) {
+            remake.user = user;
+            return remake;
+        }
         return new Remake(oid, story, user);
     }
 

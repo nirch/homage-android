@@ -35,12 +35,15 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+
 import com.androidquery.AQuery;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -427,6 +430,21 @@ public class MainActivity extends ActionBarActivity
         actionBar.setDisplayShowTitleEnabled(false);
     }
 
+    public void showActionBar() {
+        // Actionbar
+        getActionBar().show();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        View container = findViewById(R.id.bigContainer);
+        android.support.v4.widget.DrawerLayout.LayoutParams params2 = (android.support.v4.widget.DrawerLayout.LayoutParams)container.getLayoutParams();
+        int m = (int)(45.0f*metrics.density);
+        params2.setMargins(0,m,0,0);
+        container.setLayoutParams(params2);
+    }
+
     public void updateLoginState() {
         User user = User.getCurrent();
         if (user==null) {
@@ -536,6 +554,8 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void showStoryDetails(Story story) {
+        showActionBar();
+
         currentSection = SECTION_STORY_DETAILS;
         currentStory = story;
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -547,6 +567,8 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void showStories() {
+        showActionBar();
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         currentSection = SECTION_STORIES;
         currentStory = null;
@@ -556,6 +578,8 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void showMyStories() {
+        showActionBar();
+
         User user = User.getCurrent();
         if (user==null) return;
 

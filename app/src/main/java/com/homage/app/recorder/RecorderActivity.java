@@ -151,6 +151,10 @@ public class RecorderActivity extends Activity {
     private boolean viewsInitialized;
     private FrameLayout recPreviewContainer;
 
+    private int currentVideoPage = -1;
+    private ImageView videosPageIndicator1, videosPageIndicator2;
+
+
     // Media
     MediaPlayer mp;
 
@@ -205,6 +209,9 @@ public class RecorderActivity extends Activity {
         fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.animation_fadein);
         fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.animation_fadeout);
         videosPager = (ViewPager)aq.id(R.id.videosPager).getView();
+        videosPageIndicator1 = aq.id(R.id.videosPageIndicator1).getImageView();
+        videosPageIndicator2 = aq.id(R.id.videosPageIndicator2).getImageView();
+
         closeControlsDrawer(false);
         updateScriptBar();
         scenesListView.setVisibility(View.GONE);
@@ -214,15 +221,6 @@ public class RecorderActivity extends Activity {
         for (Scene scene : scenes) {
             Log.d(TAG, String.format("Preloading %s", scene.silhouetteURL));
             aq.image(scene.silhouetteURL, false, true, 0, 0);
-        }
-        //endregion
-
-        //region *** State initialization ***
-        try {
-            stateMachine = new RecorderStateMachine();
-            stateMachine.handleCurrentState();
-        } catch (RecorderException ex) {
-            Log.e(TAG, "Recorder state machine error.", ex);
         }
         //endregion
 
@@ -319,6 +317,17 @@ public class RecorderActivity extends Activity {
         } else {
             updateScenesList();
         }
+
+        //region *** State initialization ***
+        try {
+            if (stateMachine == null) {
+                stateMachine = new RecorderStateMachine();
+                stateMachine.handleCurrentState();
+            }
+        } catch (RecorderException ex) {
+            Log.e(TAG, "Recorder state machine error.", ex);
+        }
+        //endregion
     }
 
     private void initViews() {
@@ -803,6 +812,9 @@ public class RecorderActivity extends Activity {
             myIntent.putExtra("sceneID",currentSceneID);
             RecorderActivity.this.startActivityForResult(myIntent, ACTION_ADVANCE_AND_HANDLE_STATE);
             overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
+            if (currentSceneID>0) {
+                updateUIForSceneID(currentSceneID);
+            }
         }
 
         private void makingAScene() {
@@ -815,6 +827,8 @@ public class RecorderActivity extends Activity {
             Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlayFinishedSceneMessageDlgActivity.class);
             myIntent.putExtra("remakeOID", remake.getOID());
             myIntent.putExtra("sceneID",currentSceneID);
+            int nextSceneID = remake.nextReadyForFirstRetakeSceneID();
+            updateUIForSceneID(nextSceneID);
             RecorderActivity.this.startActivityForResult(myIntent, ACTION_BY_RESULT_CODE);
             overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
         }
@@ -1126,7 +1140,7 @@ public class RecorderActivity extends Activity {
     private void updateUIForSceneID(int sceneID) {
         Story story = remake.getStory();
         Scene scene = story.findScene(sceneID);
-        aq.id(R.id.silhouette).image(scene.silhouetteURL, false, true, 0, 0, null, AQuery.FADE_IN, AQuery.RATIO_PRESERVE);
+        aq.id(R.id.silhouette).image(scene.silhouetteURL, false, true, 0, 0, null, 0, AQuery.RATIO_PRESERVE);
         aq.id(R.id.sceneNumber).text(scene.getTitle());
         aq.id(R.id.sceneTime).text(scene.getTimeString());
         aq.id(R.id.topScriptText).text(scene.script);
@@ -1199,6 +1213,18 @@ public class RecorderActivity extends Activity {
         overridePendingTransition(R.anim.animation_fadein_with_zoom, R.anim.animation_fadeout_with_zoom);
     }
 
+    private void updateVideosPageIndicator(int position) {
+        if (currentVideoPage == position) return;
+        if (position == 0) {
+            videosPageIndicator1.setVisibility(View.VISIBLE);
+            videosPageIndicator2.setVisibility(View.INVISIBLE);
+        } else {
+            videosPageIndicator1.setVisibility(View.INVISIBLE);
+            videosPageIndicator2.setVisibility(View.VISIBLE);
+        }
+        currentVideoPage = position;
+    }
+
     //region *** UI event handlers ***
     /**
      *  ==========================
@@ -1236,7 +1262,13 @@ public class RecorderActivity extends Activity {
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             videosAdapter.doneIfPlaying();
         }
+
+        @Override
+        public void onPageSelected(int position) {
+            updateVideosPageIndicator(position);
+        }
     };
+
 
     private View.OnClickListener onClickedCloseDrawerButton = new View.OnClickListener() {
         @Override

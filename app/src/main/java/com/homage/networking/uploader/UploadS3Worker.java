@@ -133,7 +133,8 @@ public class UploadS3Worker implements ProgressListener, UploadWorker {
                 totalBytesUploaded = 0;
                 break;
             default:
-                Log.v(TAG, String.format("Progress upload %d %.02f %s", progressEvent.getEventCode(), progress, source));
+                //Log.v(TAG, String.format("Progress upload %d %.02f %s", progressEvent.getEventCode(), progress, source));
+                break;
         }
     }
 

@@ -1,20 +1,30 @@
 package com.homage.app.main;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.app.ActionBar;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
+import com.facebook.Settings;
 import com.homage.app.R;
 import com.homage.app.user.TextReaderActivity;
 import com.homage.model.User;
@@ -36,6 +46,10 @@ public class SettingsActivity extends PreferenceActivity {
     public static final String UPLOADER_ACTIVE = "settings_uploader_active";
     public static final String SKIP_STORY_DETAILS = "settings_skip_story_details";
 
+    protected ProgressDialog pd;
+
+    SettingsFragment sf;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,12 +57,47 @@ public class SettingsActivity extends PreferenceActivity {
         // Custom actionbar layout
         initCustomActionBar();
 
+        sf = new SettingsFragment();
+
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction().replace(
                 android.R.id.content,
-                new SettingsFragment()
+                sf
         ).commit();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initObservers();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        removeObservers();
+    }
+
+
+    //region *** Observers ***
+    private void initObservers() {
+        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
+        lbm.registerReceiver(onUserPrefUpdated, new IntentFilter(HomageServer.INTENT_USER_PREFERENCES_UPDATE));
+    }
+
+    private void removeObservers() {
+        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
+        lbm.unregisterReceiver(onUserPrefUpdated);
+    }
+
+    private BroadcastReceiver onUserPrefUpdated = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (pd != null) pd.dismiss();
+            sf.updateSettingsValues();
+        }
+    };
+    //endregion
 
     private void initCustomActionBar() {
         ActionBar actionBar = getActionBar();
@@ -61,6 +110,14 @@ public class SettingsActivity extends PreferenceActivity {
         actionBar.setHomeButtonEnabled(false);
     }
 
+    private void showProgress() {
+        Resources res = getResources();
+        pd = new ProgressDialog(this);
+        pd.setTitle(res.getString(R.string.pd_title_please_wait));
+        pd.setMessage(res.getString(R.string.pd_msg_deleting_remake));
+        pd.setCancelable(true);
+        pd.show();
+    }
 
     public static class SettingsFragment extends PreferenceFragment {
         String TAG = "TAG_"+getClass().getName();
@@ -83,14 +140,17 @@ public class SettingsActivity extends PreferenceActivity {
         }
 
 
-        private void updateSettingsValues() {
-            User user = User.getCurrent();
+        public void updateSettingsValues() {
+            User user = User.getCurrent(true);
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
             SharedPreferences.Editor e = sp.edit();
+            CheckBoxPreference publicPref = (CheckBoxPreference)findPreference("settings_remakes_are_public");
             if (user.isPublic) {
                 e.putBoolean(SettingsActivity.REMAKES_ARE_PUBLIC, true);
+                publicPref.setChecked(true);
             } else {
                 e.putBoolean(SettingsActivity.REMAKES_ARE_PUBLIC, false);
+                publicPref.setChecked(false);
             }
             e.commit();
         }
@@ -106,10 +166,32 @@ public class SettingsActivity extends PreferenceActivity {
             public boolean onPreferenceClick(Preference preference) {
                 Log.d(TAG, String.format("Clicked %s", preference.getKey()));
                 User user = User.getCurrent();
+
+                if (user.isGuest()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    AlertDialog alert = builder.setMessage(R.string.publish_signed_in_only)
+                            .setTitle(R.string.join_us_title)
+                            .setPositiveButton(R.string.ok_got_it, null)
+                            .create();
+                    alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            updateSettingsValues();
+                        }
+                    });
+                    alert.show();
+                    return true;
+                }
+
+                SettingsActivity act = (SettingsActivity)getActivity();
                 HashMap<String, String> parameters = new HashMap<String, String>();
                 parameters.put("user_id", user.getOID());
-                parameters.put("is_public", user.isPublic ? "YES" : "NO");
+
+                // Toggle
+                parameters.put("is_public", !user.isPublic ? "1" : "0");
+
                 HomageServer.sh().updateUserPreferences(parameters);
+                act.showProgress();
 
                 return false;
             }

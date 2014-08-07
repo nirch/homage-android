@@ -48,7 +48,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
-        android:src="@drawable/intro_video_thumb"
         android:visibility="gone"
         />
 

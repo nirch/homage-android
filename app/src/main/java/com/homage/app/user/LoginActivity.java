@@ -12,10 +12,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
@@ -97,7 +99,19 @@ public class LoginActivity extends Activity {
         //
         // Facebook
         //
-        initFaceLoginButton();
+
+        // By default, be logged out of facebook when opening the login screen.
+        Session session = Session.getActiveSession();
+        if (session != null) session.closeAndClearTokenInformation();
+        LoginButton fbLoginButton = (LoginButton)findViewById(R.id.facebookLoginButton);
+        fbLoginButton.setVisibility(View.GONE);
+        // Initialize the button (after waiting for a while)
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                initFaceLoginButton();
+            }
+        }, 800);
 
         //region *** Bind to UI event handlers ***
         /**********************************/
@@ -189,12 +203,8 @@ public class LoginActivity extends Activity {
             Bundle b = intent.getExtras();
             boolean success = b.getBoolean("success", false);
             if (success) {
-                // Clear local storage info of remakes.
                 User user = User.getCurrent();
                 if (user == null) return;
-
-                // Cleanup
-                User.cleanDeprecatedLocalUsersForUser(user);
 
                 Intent startIntent;
                 startIntent = new Intent(LoginActivity.this, MainActivity.class);
@@ -243,8 +253,7 @@ public class LoginActivity extends Activity {
         SharedPreferences p = HomageApplication.getSettings(this);
         SharedPreferences.Editor editor = p.edit();
         editor.putString(HomageApplication.SK_EMAIL, email);
-        // TODO: encrypt passwords.
-        editor.putString(HomageApplication.SK_PASSWORD, password);
+        // editor.putString(HomageApplication.SK_PASSWORD, password); no need to save password
         editor.commit();
 
         // Create or update user, depending on flow.
@@ -254,6 +263,7 @@ public class LoginActivity extends Activity {
             // Not logged in. Create user with email + password.
             HomageServer.sh().createUser(email, password, null);
         } else {
+            // Update user upon join
             HomageServer.sh().updateUserUponJoin(user, email, password, null);
         }
     }
@@ -297,19 +307,33 @@ public class LoginActivity extends Activity {
             Log.e(TAG, "No such algorithm", e);
         }
 
-        // By default, be logged out of facebook when opening the login screen.
-        Session session = Session.getActiveSession();
-        if (session != null) session.closeAndClearTokenInformation();
-
         // Set permissions
         List<String> permissions = Arrays.asList("email,user_birthday,public_profile");
         Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(LoginActivity.this, permissions);
         LoginButton loginButton = (LoginButton)findViewById(R.id.facebookLoginButton);
-        loginButton.setReadPermissions(permissions);
+        loginButton.setVisibility(View.VISIBLE);
+        aq.id(R.id.facebookLoginButton).animate(R.anim.animation_fadein_with_zoom);
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Resources res = getResources();
+                pd = new ProgressDialog(LoginActivity.this);
+                pd.setTitle(res.getString(R.string.login_pd_title));
+                pd.setMessage(res.getString(R.string.login_pd_signing_in));
+                pd.setCancelable(false);
+                pd.show();            }
+        });
+
         loginButton.setSessionStatusCallback(new Session.StatusCallback() {
             // callback when session changes state
             @Override
             public void call(Session session, SessionState state, Exception exception) {
+                if (exception != null) {
+                    if (pd != null) pd.dismiss();
+                    Toast.makeText(LoginActivity.this, "Facebook login failed.", Toast.LENGTH_LONG).show();
+                }
+
                 if (state.isOpened()) {
                     updateFacebookUserInfo(session);
                 } else if (state.isClosed()) {
@@ -320,13 +344,6 @@ public class LoginActivity extends Activity {
     }
 
     private void updateFacebookUserInfo(final Session session) {
-//        Resources res = getResources();
-//        pd = new ProgressDialog(this);
-//        pd.setTitle(res.getString(R.string.login_pd_title));
-//        pd.setMessage(res.getString(R.string.login_pd_signing_in));
-//        pd.setCancelable(false);
-//        pd.show();
-
         // make request to the /me API
         Request request = Request.newMeRequest(
                 session,
@@ -336,14 +353,15 @@ public class LoginActivity extends Activity {
                     public void onCompleted(
                             GraphUser fbUser,
                             Response response) {
-                        // TODO Auto-generated method stub
+
+                        // Got facebook user info.
                         if (fbUser != null) {
                             loginFaceBookUser(session, fbUser);
                         }
+
                     }
                 }
         );
-
         Request.executeBatchAsync(request);
     }
 

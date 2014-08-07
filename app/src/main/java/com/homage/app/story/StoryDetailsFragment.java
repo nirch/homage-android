@@ -206,6 +206,27 @@ public class StoryDetailsFragment extends Fragment {
         b.putBoolean(VideoPlayerFragment.K_IS_EMBEDDED, true);
         b.putString(VideoPlayerFragment.K_THUMB_URL, story.thumbnail);
         videoPlayerFragment.setArguments(b);
+
+        // When video not playing, don't allow orientation changes.
+        videoPlayerFragment.setOnFinishedPlayback(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                } catch (Exception e) {}
+            }
+        });
+
+        // When video playing, allow orientation changes.
+        videoPlayerFragment.setOnStartedPlayback(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                } catch (Exception e) {}
+            }
+        });
+
         return rootView;
     }
 
@@ -330,15 +351,8 @@ public class StoryDetailsFragment extends Fragment {
         container.setLayoutParams(params);
 
         // Actionbar
-        getActivity().getActionBar().show();
-        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        // (remove the top margin that is there for the action bar)
-        container = getActivity().findViewById(R.id.bigContainer);
-        android.support.v4.widget.DrawerLayout.LayoutParams params2 = (android.support.v4.widget.DrawerLayout.LayoutParams)container.getLayoutParams();
-        int m = (int)(45.0f*metrics.density);
-        params2.setMargins(0,m,0,0);
-        container.setLayoutParams(params2);
+        MainActivity mainActivity = (MainActivity)getActivity();
+        mainActivity.showActionBar();
     }
 
     //endregion

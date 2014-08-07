@@ -91,6 +91,11 @@ public class User extends SugarRecord<User> {
         return currentUser;
     }
 
+    public static User getCurrent(boolean refreshCache) {
+        if (refreshCache) currentUser = null;
+        return getCurrent();
+    }
+
     public static void cleanDeprecatedLocalUsersForUser(User user) {
     }
 

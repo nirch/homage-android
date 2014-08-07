@@ -1,4 +1,4 @@
-package com.homage.networking.mixpanel;
+package com.homage.networking.analytics;
 
 
 
