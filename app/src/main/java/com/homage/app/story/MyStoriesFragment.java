@@ -63,7 +63,13 @@ public class MyStoriesFragment extends Fragment {
     }
 
     public void refresh() {
-        remakes = user.allAvailableRemakesLatestOnTop();
+        if (remakes == null) {
+            remakes = user.allAvailableRemakesLatestOnTop();
+        } else {
+            remakes.clear();
+            remakes.addAll(user.allAvailableRemakesLatestOnTop());
+        }
+
         if (remakes.size() == 0) {
             aq.id(R.id.noRemakesMessage).visibility(View.VISIBLE);
         } else {
@@ -203,7 +209,7 @@ public class MyStoriesFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, String.format("my story, clicked play: %s", remake.getOID()));
-                    FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, true);
+                    FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, true);
                 }
             });
 
@@ -232,6 +238,9 @@ public class MyStoriesFragment extends Fragment {
 
         // Allow orientation change.
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        // Show actionbar
+        getActivity().getActionBar().show();
 
         return rootView;
     }

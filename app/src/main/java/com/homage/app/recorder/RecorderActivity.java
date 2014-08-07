@@ -16,20 +16,11 @@
 */
 package com.homage.app.recorder;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.Camera;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -41,17 +32,15 @@ import android.util.Log;
 
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
-import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -220,13 +209,13 @@ public class RecorderActivity extends Activity {
         updateScriptBar();
         scenesListView.setVisibility(View.GONE);
 
-//        // Preload and cache silhouettes in the background
-//        List<Scene> scenes = story.getScenesOrdered();
-//        for (Scene scene : scenes) {
-//            Log.d(TAG, String.format("Preloading %s", scene.silhouetteURL));
-//            aq.image(scene.silhouetteURL, false, true, 0, 0);
-//        }
-//        //endregion
+        // Preload and cache silhouettes in the background
+        List<Scene> scenes = story.getScenesOrdered();
+        for (Scene scene : scenes) {
+            Log.d(TAG, String.format("Preloading %s", scene.silhouetteURL));
+            aq.image(scene.silhouetteURL, false, true, 0, 0);
+        }
+        //endregion
 
         //region *** State initialization ***
         try {
@@ -351,10 +340,37 @@ public class RecorderActivity extends Activity {
         closeControlsDrawer(false);
         //hideControlsDrawer(false);
 
+        // Videos paging adapter
         videosAdapter = new RecorderVideosPagerAdapter(this, this.remake);
         ViewPager videosPager = (ViewPager)aq.id(R.id.videosPager).getView();
         videosPager.setAdapter(videosAdapter);
         videosPager.setOnPageChangeListener(onVideosPagerChangeListener);
+
+        // Black bars at the top and bottom of silhouette + camera preview
+        // (used to crop camera preview to 16/9 in case of other screen aspect ratios)
+        ImageView silhouette = aq.id(R.id.silhouette).getImageView();
+        int w = silhouette.getWidth();
+        int h = silhouette.getHeight();
+        int m = (h - (w * 9 / 16)) / 2;
+
+        View topBlackBar = aq.id(R.id.blackBarTop).getView();
+        View bottomBlackBar = aq.id(R.id.blackBarBottom).getView();
+
+        if (m > 0) {
+
+            android.widget.RelativeLayout.LayoutParams params;
+
+            params = (android.widget.RelativeLayout.LayoutParams) topBlackBar.getLayoutParams();
+            params.height = m;
+            topBlackBar.setLayoutParams(params);
+
+            params = (android.widget.RelativeLayout.LayoutParams) bottomBlackBar.getLayoutParams();
+            params.height = m;
+            bottomBlackBar.setLayoutParams(params);
+        } else {
+            topBlackBar.setVisibility(View.GONE);
+            bottomBlackBar.setVisibility(View.GONE);
+        }
     }
     //endregion
 
@@ -1000,7 +1016,7 @@ public class RecorderActivity extends Activity {
         // Progress bar animation
         ProgressBar progressBar = aq.id(R.id.recordingProgressBar).getProgressBar();
         progressBar.setVisibility(View.VISIBLE);
-        progressBar.setAlpha(0.3f);
+        progressBar.setAlpha(0.7f);
         ProgressBarAnimation anim = new ProgressBarAnimation(progressBar, 0, 100);
         anim.setDuration(scene.duration);
         progressBar.startAnimation(anim);
@@ -1042,18 +1058,18 @@ public class RecorderActivity extends Activity {
                 UploadManager.sh().reportSourceFileChange(footage.rawLocalFile, outputFile);
                 footage.rawLocalFile = outputFile;
                 footage.rawLocalFileTime = System.currentTimeMillis();
-
-                // Update server that the footage changed.
-                String remakeID = remake.getOID();
-                int sceneID = footage.sceneID;
-                String takeID = footage.getTakeID();
-                HomageServer.sh().updateFootageUploadStart(
-                        remakeID,
-                        sceneID,
-                        takeID,
-                        null
-                );
             }
+
+            // Inform server about availability of new take.
+            String remakeID = remake.getOID();
+            int sceneID = footage.sceneID;
+            String takeID = footage.getTakeID();
+            HomageServer.sh().putFootage(
+                    remakeID,
+                    sceneID,
+                    takeID,
+                    null
+            );
 
             footage.save();
             updateScenesList();

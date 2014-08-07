@@ -16,13 +16,14 @@ public class FullScreenVideoPlayerActivity extends FragmentActivity
     String TAG = "TAG_FullScreenVideoPlayerActivity";
     AQuery aq;
 
-    static public void openFullScreenVideoForURL(Activity activity, String url, boolean finishOnCompletion) {
+    static public void openFullScreenVideoForURL(Activity activity, String url, String thumbURL, boolean finishOnCompletion) {
         try {
             Intent myIntent = new Intent(activity, FullScreenVideoPlayerActivity.class);
             Uri videoURL = Uri.parse(url);
             myIntent.putExtra(VideoPlayerFragment.K_FILE_URL, videoURL.toString());
             myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
             myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, finishOnCompletion);
+            myIntent.putExtra(VideoPlayerFragment.K_THUMB_URL, thumbURL);
             activity.startActivity(myIntent);
         } catch (Exception e) {
             Toast.makeText(activity, "Video unavailable.", Toast.LENGTH_SHORT).show();

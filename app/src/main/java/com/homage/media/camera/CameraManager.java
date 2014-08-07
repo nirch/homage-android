@@ -287,8 +287,6 @@ public class CameraManager {
             int videoWidth = previewSize.width;
             int videoHeight = previewSize.height;
 
-            //float videoAspectRatio = (float)videoWidth/(float)videoHeight;
-            //float containerAspectRatio = (float)containerWidth/(float)containerHeight;
             float dx = (float)containerWidth / (float)videoWidth;
             float dy = (float)containerHeight / (float)videoHeight;
 
@@ -401,13 +399,20 @@ public class CameraManager {
         // Camera settings
         //
         Camera.Parameters parameters = camera.getParameters();
+
         // Lock exposure
         parameters.setAutoExposureLock(true);
-        //Lock focus mode
+
+        // Lock focus mode
         if (parameters.getSupportedFocusModes()
                 .contains(Camera.Parameters.FOCUS_MODE_FIXED)) {
             parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_FIXED);
         }
+
+        // Lock white balance
+        parameters.setAutoWhiteBalanceLock(true);
+
+        // Set the params
         camera.setParameters(parameters);
 
         //
@@ -481,11 +486,15 @@ public class CameraManager {
             // Unlock exposure
             parameters.setAutoExposureLock(false);
 
-            // Unlockock focus mode
+            // Unlock focus mode
             if (parameters.getSupportedFocusModes()
                     .contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
                 parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
             }
+
+            // Unlock the white balance
+            parameters.setAutoWhiteBalanceLock(false);
+
             camera.setParameters(parameters);
 
         }

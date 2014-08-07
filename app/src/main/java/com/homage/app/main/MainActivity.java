@@ -329,18 +329,13 @@ public class MainActivity extends ActionBarActivity
             boolean success = b.getBoolean("success", false);
             hideRefreshProgress();
 
-            /*
-            if (success) {
-                // Preload all stories images to cache
-                List<Story> stories = Story.allActiveStories();
-                for (Story story : stories) {
-                    aq.id(R.id.imagesPreloader).image(story.thumbnail, true, true, 200, 0);
+            if (currentSection == SECTION_STORIES && success) {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
+                if (f!=null) {
+                    ((StoriesListFragment)f).refresh();
                 }
-            }
-            */
-
-            if (currentSection == SECTION_STORIES) {
-                showStories();
+                //showStories();
             }
         }
     };
@@ -589,7 +584,7 @@ public class MainActivity extends ActionBarActivity
     //endregion
 
     public void refetchRemakesForStory(Story story) {
-        HomageServer.sh().refetchRemakesForStory(story.getOID(), null);
+        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, null, null); // Implement partial fetch
         showRefreshProgress();
     }
 

@@ -245,10 +245,13 @@ public class StoryDetailsFragment extends Fragment {
     public void refreshData() {
         // Just an example of refreshing the data from local storage,
         // after it was fetched from server and parsed.
+
         adapter.notifyDataSetChanged();
         aq.id(R.id.loadingRemakesProgress).visibility(View.INVISIBLE);
     }
     //endregion
+
+
 
     //region *** UI event handlers ***
     // -------------------
@@ -368,7 +371,7 @@ public class StoryDetailsFragment extends Fragment {
     final View.OnClickListener onClickedPlayStoryVideo = new View.OnClickListener() {
         @Override
         public void onClick(View button) {
-            FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), story.video, true);
+            FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), story.video, story.thumbnail, true);
         }
     };
 

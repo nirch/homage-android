@@ -3,12 +3,7 @@
  */
 package com.homage.model;
 
-import android.content.Context;
-
-import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
-import com.orm.dsl.Ignore;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,11 +23,6 @@ public class Story extends SugarRecord<Story> {
     public String thumbnail;
     public int level;
     //endregion
-
-    @Ignore
-    static HashMap<String, Story> memoryCachedStoriesByOID;
-    static HashMap<Long, Story> memoryCachedStoriesByID;
-    static HashMap<String, Scene> memoryCachedScenesByTag;
 
     //region *** Factories ***
     public Story() {
@@ -59,15 +49,15 @@ public class Story extends SugarRecord<Story> {
         if (!useMemCache) return findOrCreate(oid);
 
         // If using the memory cache, check if the object is in the cache first.
-        Story story = memoryCachedStoriesByOID.get(oid);
+        MemCache cache = MemCache.sh();
+        Story story = cache.getStoryByOID(oid);
         if (story != null) return story;
 
-        // Not found in cache.
+        // Not found in mem cache.
         // Find or create using local storage.
         // And cache the object in memory.
         story = findOrCreate(oid);
-        memoryCachedStoriesByOID.put(oid, story);
-        memoryCachedStoriesByID.put(story.getId(), story);
+        cache.putStory(story);
 
         // Return story
         return story;
@@ -79,39 +69,6 @@ public class Story extends SugarRecord<Story> {
         return null;
     }
 
-    public static void refreshMemoryCache() {
-        if (memoryCachedStoriesByOID == null) {
-            memoryCachedStoriesByOID = new HashMap<String, Story>();
-            memoryCachedStoriesByID = new HashMap<Long, Story>();
-            memoryCachedScenesByTag = new HashMap<String, Scene>();
-        }
-
-        // Cache all stories info in memory
-        Iterator<Story> stories = Story.findAll(Story.class);
-        while (stories.hasNext()) {
-            Story story = stories.next();
-            memoryCachedStoriesByOID.put(story.getOID(), story);
-            memoryCachedStoriesByID.put(story.getId(), story);
-        }
-
-        // Cache all scenes info in memory
-        Iterator<Scene> scenes = Scene.findAll(Scene.class);
-        while (scenes.hasNext()) {
-            Scene scene = scenes.next();
-            memoryCachedScenesByTag.put(scene.tag, scene);
-        }
-    }
-
-    public static void persistMemoryCache() {
-        if (memoryCachedStoriesByOID == null) return;
-
-        // Bulk save of all stories in a single transaction.
-        saveInTx(memoryCachedStoriesByOID.values());
-
-        // Bulk save of all scenes info in a single transaction.
-        saveInTx(memoryCachedScenesByTag.values());
-    }
-
     public static List<Story> allActiveStories() {
         List<Story> res = Story.find(
                 Story.class,            // Entity class
@@ -121,30 +78,6 @@ public class Story extends SugarRecord<Story> {
                 "order_id",             // order by
                 "");                    // limit
         return res;
-    }
-
-    public Scene findSceneOrCreate(int sceneID) {
-        Scene scene = findScene(sceneID);
-        if (scene != null) return scene;
-        return new Scene(this, sceneID);
-    }
-
-    public Scene findSceneOrCreate(int sceneID, boolean useMemCache) {
-        if (!useMemCache) return findSceneOrCreate(sceneID);
-
-        // If using the memory cache, check if the object is in the cache first.
-        String sTag = Scene.sTag(getOID(), sceneID);
-        Scene scene = memoryCachedScenesByTag.get(sTag);
-        if (scene != null) return scene;
-
-        // Not found in cache.
-        // Find or create using local storage.
-        // And cache the object in memory.
-        scene = findSceneOrCreate(sceneID);
-        memoryCachedScenesByTag.put(sTag, scene);
-
-        // Return story
-        return scene;
     }
 
     public Scene findScene(int sceneID) {
