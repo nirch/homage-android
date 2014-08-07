@@ -114,7 +114,7 @@ public class WelcomeScreenActivity extends FragmentActivity {
             WelcomeScreenActivity.this.startActivity(startIntent);
             overridePendingTransition(0, 0);
             WelcomeScreenActivity.this.finish();
-            HMixPanel.sh().track("pushed lets create");
+            //HMixPanel.sh().track("pushed lets create",);
         }
     };
     //endregion

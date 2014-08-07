@@ -26,6 +26,7 @@ import com.homage.app.recorder.RecorderActivity;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.server.HomageServer;
 import com.homage.networking.uploader.UploadManager;
 
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.List;
 public class MyStoriesFragment extends Fragment {
     String TAG = "TAG_MyStoriesFragment";
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final int SHARE_RESPONSE = 0;
 
     View rootView;
     LayoutInflater inflater;
@@ -171,7 +173,7 @@ public class MyStoriesFragment extends Fragment {
                                     story.name, story.name, remake.getOID()
                             )
                     );
-                    startActivity(Intent.createChooser(sharingIntent,"Share using"));
+                    startActivityForResult(sharingIntent, SHARE_RESPONSE);
                 }
             });
 
@@ -258,5 +260,12 @@ public class MyStoriesFragment extends Fragment {
                 main.refetchRemakesForCurrentUser();
             }
         }, 500);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SHARE_RESPONSE) {
+            Log.d(TAG,"share response");
+
+        }
     }
 }
