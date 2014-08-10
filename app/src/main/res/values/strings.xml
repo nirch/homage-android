@@ -149,9 +149,6 @@
     <string name="placeholder_story_title">Story title</string>
     <string name="placeholder_story_remakes_count">#666</string>
 
-
-
-
     <!-- debug -->
     <string name="debug_unimplemented_title">Unimplemented</string>
     <string name="debug_unimplemented_description">This feature is still under construction. Try again in a later version.</string>

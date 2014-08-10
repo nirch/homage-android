@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -62,7 +63,10 @@ import com.homage.model.User;
 import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -78,9 +82,17 @@ public class MainActivity extends ActionBarActivity
     static final int SECTION_HOWTO      = 4;
     static final int SECTION_STORY_DETAILS      = 101;
 
+    static final int SHARE_METHOD_COPY_URL  = 0;
+    static final int SHARE_METHOD_FACEBOOK  = 1;
+    static final int SHARE_METHOD_WHATS_APP = 2;
+    static final int SHARE_METHOD_EMAIL     = 3;
+    static final int SHARE_METHOD_MESSAGE   = 4;
+    static final int SHARE_METHOD_WEIBO     = 5;
+    static final int SHARE_METHOD_TWITTER   = 6;
+
+
 
     static final int REQUEST_CODE_RECORDER = 10001;
-
 
     static final String FRAGMENT_TAG_ME = "fragment me";
     static final String FRAGMENT_TAG_STORIES = "fragment stories";
@@ -176,37 +188,6 @@ public class MainActivity extends ActionBarActivity
     protected void onDestroy() {
         HMixPanel.sh().flush();
         super.onDestroy();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-        if (requestCode != REQUEST_CODE_RECORDER) return;
-
-        Log.d(TAG, String.format("Returned from recorder with result code: %d", resultCode));
-
-        switch (resultCode) {
-            case RecorderActivity.DISMISS_REASON_FINISHED_REMAKE:
-                // User sent a remake to rendering. Show the create movie progress bar
-                // To keep track of the rendering.
-                String remakeOID = resultData.getStringExtra("remakeOID");
-                if (remakeOID==null) return;
-                Remake renderedRemake = Remake.findByOID(remakeOID);
-                if (renderedRemake==null) {
-                    Log.e(TAG, "Critical error. Recorder sent remake to rendering, but not found in local storage.");
-                    break;
-                }
-                Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
-                movieProgressFragment.showProgressForRemake(renderedRemake);
-                showStories();
-                break;
-
-            case RecorderActivity.DISMISS_REASON_USER_ABORTED_PRESSING_X:
-                // No need to do anything
-                break;
-
-            default:
-                // Do nothing
-        }
     }
 
     @Override
@@ -796,6 +777,78 @@ public class MainActivity extends ActionBarActivity
             super.onBackPressed();
         }
 
+    }
+
+    //region *** Share ***
+    public void shareRemake(final Remake sharedRemake) {
+
+        final Story story = sharedRemake.getStory();
+        final String downloadLink = "https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8";
+
+        final Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+
+        final List<ResolveInfo> activities = getPackageManager().queryIntentActivities(i, 0);
+
+        List<String> appNames = new ArrayList<String>();
+        for (ResolveInfo info : activities) {
+            appNames.add(info.loadLabel(getPackageManager()).toString());
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Complete Action using...");
+        builder.setItems(appNames.toArray(new CharSequence[appNames.size()]), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                ResolveInfo info = activities.get(item);
+                int share_method = -1;
+
+                if(info.activityInfo.packageName.equals("com.google.android.gm")) {
+                    i.putExtra(Intent.EXTRA_SUBJECT, story.shareMessage);
+                    i.putExtra(Intent.EXTRA_TEXT,
+                            String.format(
+                                    "%s \n keep calm and get Homage at: \n %s" ,
+                                    sharedRemake.shareURL , downloadLink));
+                    share_method = SHARE_METHOD_EMAIL;
+
+                } else {
+                    i.putExtra(Intent.EXTRA_TEXT,
+                            String.format(
+                                    "%s: \n %s \n keep calm and get Homage at: \n %s" ,
+                                    story.shareMessage , sharedRemake.shareURL , downloadLink));
+                }
+
+                if(info.activityInfo.packageName.equals("com.whatsapp")) {
+                    share_method = SHARE_METHOD_WHATS_APP;
+                }
+
+                if(info.activityInfo.packageName.equals("com.google.android.apps.docs")) {
+                    share_method = SHARE_METHOD_COPY_URL;
+                }
+
+                if(info.activityInfo.packageName.equals("com.facebook.katana")) {
+                    share_method = SHARE_METHOD_FACEBOOK;
+                }
+
+                if(info.activityInfo.packageName.equals("com.twitter.android")) {
+                    share_method = SHARE_METHOD_TWITTER;
+                }
+
+                if(info.activityInfo.packageName.equals("com.android.mms")) {
+                    share_method = SHARE_METHOD_MESSAGE;
+                }
+
+                HomageServer.sh().reportRemakeShareForUser(
+                        sharedRemake.getOID(),sharedRemake.userID,share_method);
+
+                // start the selected activity
+                i.setPackage(info.activityInfo.packageName);
+                startActivity(i);
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+        return;
     }
     //endregion
 }

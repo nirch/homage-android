@@ -109,6 +109,13 @@ public class HomageServer extends Server {
         urlIDs.add(R.string.url_text);
         urlIDs.add(R.string.url_update_user);
         urlIDs.add(R.string.url_user_remakes);
+        urlIDs.add(R.string.url_session_update);
+        urlIDs.add(R.string.url_session_end);
+        urlIDs.add(R.string.url_session_begin);
+        urlIDs.add(R.string.url_view_remake);
+        urlIDs.add(R.string.url_view_story);
+        urlIDs.add(R.string.url_share_remake);
+
         super.initURLSCache(urlIDs);
 
         // Set the user agent.
@@ -450,7 +457,7 @@ public class HomageServer extends Server {
       HashMap<String,String> params = new HashMap<String, String>();
       params.put("user_id", userID);
       params.put("remake_id", remakeID);
-      params.put("share_method", String.format("%f" ,shareMethod));
+      params.put("share_method", String.format("%d" ,shareMethod));
 
       super.POST(R.string.url_share_remake, params, INTENT_REMAKE_SHARE, null, null);
 
