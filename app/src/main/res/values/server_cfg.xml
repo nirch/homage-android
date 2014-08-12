@@ -3,8 +3,9 @@
     <bool name="is_production_server">false</bool>
 
     <!-- DEV Server -->
-    <string name="server_dev_host">homage-server-app-dev.elasticbeanstalk.com</string>
-    <integer name="server_dev_port">80</integer>
+    <!-- <string name="server_dev_host">homage-server-app-dev.elasticbeanstalk.com</string> -->
+    <string name="server_dev_host">192.168.0.102</string>
+    <integer name="server_dev_port">9292</integer>
     <string name="server_dev_protocol">http</string>
 
     <!-- Production Server -->

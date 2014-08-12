@@ -13,6 +13,7 @@ import com.homage.model.Footage;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
+import com.homage.networking.analytics.HEvents;
 
 public class RecorderOverlayFinishedSceneMessageDlgActivity extends RecorderOverlayDlgActivity {
     String TAG = "TAG_" + getClass().getName();
@@ -126,7 +127,7 @@ public class RecorderOverlayFinishedSceneMessageDlgActivity extends RecorderOver
             // Open video player.
             FullScreenVideoPlayerActivity.openFullScreenVideoForFile(
                     RecorderOverlayFinishedSceneMessageDlgActivity.this,
-                    footage.rawLocalFile,
+                    footage.rawLocalFile, HEvents.H_SCENE, null,
                     true
             );
         }

@@ -31,6 +31,7 @@ import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.uploader.UploadManager;
+import com.homage.networking.analytics.HEvents;
 
 import java.io.File;
 import java.util.List;
@@ -210,7 +211,7 @@ public class MyStoriesFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, String.format("my story, clicked play: %s", remake.getOID()));
-                    FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, true);
+                    FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, HEvents.H_REMAKE , remake.getOID().toString(), true);
                 }
             });
 

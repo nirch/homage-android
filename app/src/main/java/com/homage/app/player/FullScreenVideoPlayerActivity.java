@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.networking.analytics.HEvents;
 import com.homage.views.ActivityHelper;
 
 public class FullScreenVideoPlayerActivity extends FragmentActivity
@@ -16,7 +17,7 @@ public class FullScreenVideoPlayerActivity extends FragmentActivity
     String TAG = "TAG_FullScreenVideoPlayerActivity";
     AQuery aq;
 
-    static public void openFullScreenVideoForURL(Activity activity, String url, String thumbURL, boolean finishOnCompletion) {
+    static public void openFullScreenVideoForURL(Activity activity, String url, String thumbURL, int entityType, String entityID, boolean finishOnCompletion) {
         try {
             Intent myIntent = new Intent(activity, FullScreenVideoPlayerActivity.class);
             Uri videoURL = Uri.parse(url);
@@ -24,18 +25,36 @@ public class FullScreenVideoPlayerActivity extends FragmentActivity
             myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
             myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, finishOnCompletion);
             myIntent.putExtra(VideoPlayerFragment.K_THUMB_URL, thumbURL);
+
+            if (entityID == null) {
+                myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, "");
+            } else {
+                myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, entityID);
+            }
+
+            myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, entityType);
+
             activity.startActivity(myIntent);
         } catch (Exception e) {
             Toast.makeText(activity, "Video unavailable.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    static public void openFullScreenVideoForFile(Activity activity, String filePath, boolean finishOnCompletion) {
+    static public void openFullScreenVideoForFile(Activity activity, String filePath, int entityType, String entityID, boolean finishOnCompletion) {
         try {
             Intent myIntent = new Intent(activity, FullScreenVideoPlayerActivity.class);
             myIntent.putExtra(VideoPlayerFragment.K_FILE_PATH, filePath);
             myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
             myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, finishOnCompletion);
+
+            if (entityID == null) {
+                myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, "");
+            } else {
+                myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, entityID);
+            }
+
+            myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, entityType);
+
             activity.startActivity(myIntent);
         } catch (Exception e) {
             Toast.makeText(activity, "Video unavailable.", Toast.LENGTH_SHORT).show();

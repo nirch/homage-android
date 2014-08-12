@@ -29,6 +29,7 @@ import com.homage.app.player.VideoPlayerFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.analytics.HEvents;
 import com.homage.networking.server.HomageServer;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 import com.homage.views.ActivityHelper;
@@ -205,6 +206,10 @@ public class StoryDetailsFragment extends Fragment {
         b.putBoolean(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
         b.putBoolean(VideoPlayerFragment.K_IS_EMBEDDED, true);
         b.putString(VideoPlayerFragment.K_THUMB_URL, story.thumbnail);
+
+        b.putString(HEvents.HK_VIDEO_ENTITY_ID, story.getOID().toString());
+        b.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_STORY);
+
         videoPlayerFragment.setArguments(b);
 
         // When video not playing, don't allow orientation changes.
@@ -367,6 +372,10 @@ public class StoryDetailsFragment extends Fragment {
         myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
         myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, true);
         myIntent.putExtra(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
+
+        myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
+        myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
+
         startActivity(myIntent);
     }
 
@@ -385,7 +394,7 @@ public class StoryDetailsFragment extends Fragment {
     final View.OnClickListener onClickedPlayStoryVideo = new View.OnClickListener() {
         @Override
         public void onClick(View button) {
-            FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), story.video, story.thumbnail, true);
+            FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), story.video, story.thumbnail, HEvents.H_STORY , story.getOID().toString(),  true);
         }
     };
 

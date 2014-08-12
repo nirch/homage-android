@@ -21,6 +21,7 @@ import com.homage.model.Footage;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
+import com.homage.networking.analytics.HEvents;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 
@@ -205,7 +206,7 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
             // Open video player.
             FullScreenVideoPlayerActivity.openFullScreenVideoForFile(
                     RecorderOverlayFinishedAllSceneMessageDlgActivity.this,
-                    footage.rawLocalFile,
+                    footage.rawLocalFile, HEvents.H_SCENE, null,
                     true
             );
         }

@@ -60,6 +60,7 @@ import com.homage.app.story.MyStoriesFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.analytics.HEvents;
 import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
@@ -186,8 +187,8 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     protected void onDestroy() {
-        HMixPanel.sh().flush();
         super.onDestroy();
+        HMixPanel.sh().flush();
     }
 
     @Override
@@ -584,6 +585,10 @@ public class MainActivity extends ActionBarActivity
         myIntent.putExtra(VideoPlayerFragment.K_FILE_URL, videoURL.toString());
         myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
         myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, true);
+
+        myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, "");
+        myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_INTRO_MOVIE);
+
         startActivity(myIntent);
     }
     //endregion

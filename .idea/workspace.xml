@@ -15,33 +15,45 @@
   </component>
   <component name="AndroidLayouts">
     <shared>
-      <config />
+      <config>
+        <devices>
+          <device id="Nexus 4" />
+          <device id="Nexus 7 2013" />
+        </devices>
+      </config>
     </shared>
+    <layouts>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_full_screen_homage_video.xml">
+        <config>
+          <theme>@style/HomageTheme</theme>
+        </config>
+      </layout>
+    </layouts>
   </component>
   <component name="AndroidLogFilters">
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="DEBUG" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="app: com.homage.app" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="989c76e2-5975-4253-b20f-25bcb341c851" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/android_query_full_0_26_7.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/appcompat_v7_18_0_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/aws_android_sdk_1_7_1_1_core.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/aws_android_sdk_1_7_1_1_s3.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/bolts.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/mixpanel_android_4_2_1.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/play_services_3_1_59.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/sugar_1_3.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/support_annotations_20_0_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/support_v4_20_0_0.xml" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/libs/mongo-java-driver-2.12.3.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/mongo_java_driver_2_12_3.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/intermediates/model_data.bin" afterPath="$PROJECT_DIR$/build/intermediates/model_data.bin" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/MyStoriesFragment.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/MyStoriesFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/model/Remake.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/model/Remake.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/parsers/RemakeParser.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/parsers/RemakeParser.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/model/Story.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/model/Story.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/parsers/StoryParser.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/parsers/StoryParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedAllSceneMessageDlgActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedAllSceneMessageDlgActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedSceneMessageDlgActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedSceneMessageDlgActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayRetakeSceneQuestionDlgActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayRetakeSceneQuestionDlgActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoryDetailsFragment.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoryDetailsFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/app.iml" afterPath="$PROJECT_DIR$/app/app.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/build.gradle" afterPath="$PROJECT_DIR$/app/build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/intermediates/dex-cache/cache.xml" afterPath="$PROJECT_DIR$/build/intermediates/dex-cache/cache.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/values/server_cfg.xml" afterPath="$PROJECT_DIR$/app/src/main/res/values/server_cfg.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Homage.iws" />
@@ -64,289 +76,151 @@
     <favorites_list name="Homage" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5">
-      <split-first>
-        <leaf>
-          <file leaf-file-name="HomageServer.java" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-231.34616" vertical-offset="135" max-vertical-offset="7500">
-                  <caret line="455" column="0" selection-start-line="455" selection-start-column="0" selection-end-line="455" selection-end-column="0" />
-                  <folding>
-                    <element signature="e#4391#4411#0" expanded="true" />
-                    <element signature="e#4433#4459#0" expanded="true" />
-                    <element signature="e#4481#4509#0" expanded="true" />
-                    <element signature="e#4531#4551#0" expanded="true" />
-                    <element signature="e#4573#4596#0" expanded="true" />
-                    <element signature="e#4618#4639#0" expanded="true" />
-                    <element signature="e#4661#4680#0" expanded="true" />
-                    <element signature="e#4702#4728#0" expanded="true" />
-                    <element signature="e#4750#4783#0" expanded="true" />
-                    <element signature="e#4805#4822#0" expanded="true" />
-                    <element signature="e#4844#4868#0" expanded="true" />
-                    <element signature="e#4890#4915#0" expanded="true" />
-                    <element signature="e#4937#4964#0" expanded="true" />
-                    <element signature="e#4986#5010#0" expanded="true" />
-                    <element signature="e#5032#5058#0" expanded="true" />
-                    <element signature="e#5080#5104#0" expanded="true" />
-                    <element signature="e#5126#5149#0" expanded="true" />
-                    <element signature="e#5171#5196#0" expanded="true" />
-                    <element signature="e#5694#5714#0" expanded="true" />
-                    <element signature="e#6286#6302#0" expanded="true" />
-                    <element signature="e#6550#6566#0" expanded="true" />
-                    <element signature="e#6775#6798#0" expanded="true" />
-                    <element signature="e#7319#7335#0" expanded="true" />
-                    <element signature="e#7710#7738#0" expanded="true" />
-                    <element signature="e#8518#8534#0" expanded="true" />
-                    <element signature="e#9058#9084#0" expanded="true" />
-                    <element signature="e#9894#9910#0" expanded="true" />
-                    <element signature="e#10092#10117#0" expanded="true" />
-                    <element signature="e#10416#10442#0" expanded="true" />
-                    <element signature="e#11135#11155#0" expanded="true" />
-                    <element signature="e#12260#12280#0" expanded="true" />
-                    <element signature="e#12627#12643#0" expanded="true" />
-                    <element signature="e#12778#12794#0" expanded="true" />
-                    <element signature="e#12894#12913#0" expanded="true" />
-                    <element signature="e#13996#14012#0" expanded="true" />
-                    <element signature="e#15170#15191#0" expanded="true" />
-                    <element signature="e#15286#15287#0" expanded="true" />
-                    <element signature="e#15330#15331#0" expanded="true" />
-                    <element signature="e#15499#15515#0" expanded="true" />
-                    <element signature="e#16291#16315#0" expanded="true" />
-                    <element signature="e#16520#16544#0" expanded="true" />
-                    <element signature="e#16810#16826#0" expanded="true" />
-                    <element signature="e#16990#17023#0" expanded="true" />
-                    <element signature="e#18112#18128#0" expanded="true" />
-                    <element signature="e#18296#18321#0" expanded="true" />
-                    <element signature="e#18635#18651#0" expanded="true" />
-                    <element signature="e#18858#18881#0" expanded="true" />
-                    <element signature="e#19038#19062#0" expanded="true" />
-                    <element signature="e#19417#19433#0" expanded="true" />
-                    <element signature="e#19790#19813#0" expanded="true" />
-                    <element signature="e#19978#20002#0" expanded="true" />
-                    <element signature="e#20281#20297#0" expanded="true" />
-                    <element signature="e#20401#20427#0" expanded="true" />
-                    <element signature="e#20703#20719#0" expanded="true" />
-                    <element signature="e#20826#20850#0" expanded="true" />
-                    <element signature="e#21131#21147#0" expanded="true" />
-                    <element signature="e#21254#21281#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="Server.java" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/Server.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-6.576923" vertical-offset="2604" max-vertical-offset="5955">
-                  <caret line="220" column="0" selection-start-line="220" selection-start-column="0" selection-end-line="220" selection-end-column="0" />
-                  <folding>
-                    <element signature="n#!!doc" expanded="true" />
-                    <element signature="e#3319#3359#0" expanded="true" />
-                    <element signature="e#3529#3568#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="AndroidManifest.xml" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-8.884615" vertical-offset="159" max-vertical-offset="3555">
-                  <caret line="26" column="17" selection-start-line="26" selection-start-column="16" selection-end-line="26" selection-end-column="17" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="R.java" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/build/generated/source/r/debug/com/homage/app/R.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-1.117647" vertical-offset="14958" max-vertical-offset="64410">
-                  <caret line="1006" column="76" selection-start-line="1006" selection-start-column="76" selection-end-line="1006" selection-end-column="76" />
-                  <folding>
-                    <element signature="e#0#243391#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="strings.xml" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-9.653846" vertical-offset="1954" max-vertical-offset="2535">
-                  <caret line="147" column="34" selection-start-line="147" selection-start-column="33" selection-end-line="147" selection-end-column="34" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="attrs.xml" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/src/main/res/values/attrs.xml">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="165">
-                  <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="ZygoteInit.java" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-19/com/android/internal/os/ZygoteInit.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="10696" max-vertical-offset="11325">
-                  <caret line="787" column="0" selection-start-line="787" selection-start-column="0" selection-end-line="787" selection-end-column="0" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="MyStoriesFragment.java" pinned="false" current="true" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/story/MyStoriesFragment.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.33333334" vertical-offset="3069" max-vertical-offset="4020">
-                  <caret line="224" column="0" selection-start-line="224" selection-start-column="0" selection-end-line="224" selection-end-column="0" />
-                  <folding>
-                    <element signature="imports" expanded="true" />
-                    <element signature="e#4872#5248#0" expanded="true" />
-                    <element signature="e#5233#5234#0" expanded="true" />
-                    <element signature="e#5319#6146#0" expanded="true" />
-                    <element signature="e#5765#5794#0" expanded="true" />
-                    <element signature="e#5838#5860#0" expanded="true" />
-                    <element signature="e#5913#5931#0" expanded="true" />
-                    <element signature="e#6131#6132#0" expanded="true" />
-                    <element signature="e#6218#7391#0" expanded="true" />
-                    <element signature="e#7376#7377#0" expanded="true" />
-                    <element signature="e#7460#7822#0" expanded="true" />
-                    <element signature="e#7807#7808#0" expanded="true" />
-                    <element signature="e#7916#7917#0" expanded="true" />
-                    <element signature="e#7966#7967#0" expanded="true" />
-                    <element signature="e#9122#9335#0" expanded="true" />
-                    <element signature="e#9324#9325#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="WelcomeScreenActivity.java" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="1860">
-                  <caret line="16" column="39" selection-start-line="16" selection-start-column="39" selection-end-line="16" selection-end-column="39" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="11731" max-vertical-offset="12270">
-                  <caret line="839" column="0" selection-start-line="839" selection-start-column="0" selection-end-line="839" selection-end-column="0" />
-                  <folding>
-                    <element signature="imports" expanded="true" />
-                    <element signature="e#13579#14081#0" expanded="true" />
-                    <element signature="e#14074#14075#0" expanded="true" />
-                    <element signature="e#14128#14283#0" expanded="true" />
-                    <element signature="e#14276#14277#0" expanded="true" />
-                    <element signature="e#14464#14502#0" expanded="true" />
-                    <element signature="e#14581#14614#0" expanded="true" />
-                    <element signature="e#14699#14738#0" expanded="true" />
-                    <element signature="e#14820#14856#0" expanded="true" />
-                    <element signature="e#23339#23383#0" expanded="true" />
-                    <element signature="e#23408#23453#0" expanded="true" />
-                    <element signature="e#23898#23938#0" expanded="true" />
-                    <element signature="e#24012#24050#0" expanded="true" />
-                    <element signature="e#24117#24129#0" expanded="true" />
-                    <element signature="e#24904#24948#0" expanded="true" />
-                    <element signature="e#24973#25019#0" expanded="true" />
-                    <element signature="e#25551#25583#0" expanded="true" />
-                    <element signature="e#28869#28877#0" expanded="true" />
-                    <element signature="e#29213#31303#0" expanded="true" />
-                    <element signature="e#31292#31293#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.058479533" vertical-offset="2835" max-vertical-offset="12375">
-                  <caret line="191" column="0" selection-start-line="191" selection-start-column="0" selection-end-line="191" selection-end-column="0" />
-                  <folding>
-                    <element signature="n#!!doc" expanded="true" />
-                    <element signature="imports" expanded="true" />
-                    <element signature="e#28869#28877#0" expanded="true" />
-                    <element signature="e#29213#31303#0" expanded="true" />
-                    <element signature="e#31292#31293#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="server_cfg.xml" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/src/main/res/values/server_cfg.xml">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="33" max-vertical-offset="585">
-                  <caret line="2" column="43" selection-start-line="2" selection-start-column="43" selection-end-line="2" selection-end-column="43" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="Remake.java" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/model/Remake.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="521" max-vertical-offset="2370">
-                  <caret line="63" column="18" selection-start-line="63" selection-start-column="18" selection-end-line="63" selection-end-column="18" />
-                  <folding>
-                    <element signature="e#1287#1288#0" expanded="true" />
-                    <element signature="e#1318#1319#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="RemakeParser.java" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/parsers/RemakeParser.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="751" max-vertical-offset="1290">
-                  <caret line="74" column="0" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="StoryParser.java" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/parsers/StoryParser.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="240" max-vertical-offset="810">
-                  <caret line="46" column="66" selection-start-line="46" selection-start-column="66" selection-end-line="46" selection-end-column="66" />
-                  <folding>
-                    <element signature="imports" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="Story.java" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/model/Story.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2265">
-                  <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf>
+      <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1451" max-vertical-offset="11970">
+              <caret line="174" column="0" selection-start-line="174" selection-start-column="0" selection-end-line="174" selection-end-column="0" />
+              <folding>
+                <element signature="e#6629#6779#0" expanded="true" />
+                <element signature="e#6768#6769#0" expanded="true" />
+                <element signature="e#11176#11821#0" expanded="true" />
+                <element signature="e#11814#11815#0" expanded="true" />
+                <element signature="e#11873#12804#0" expanded="true" />
+                <element signature="e#12797#12798#0" expanded="true" />
+                <element signature="e#12890#13345#0" expanded="true" />
+                <element signature="e#13338#13339#0" expanded="true" />
+                <element signature="e#13404#13575#0" expanded="true" />
+                <element signature="e#13568#13569#0" expanded="true" />
+                <element signature="e#13627#14129#0" expanded="true" />
+                <element signature="e#14122#14123#0" expanded="true" />
+                <element signature="e#14176#14331#0" expanded="true" />
+                <element signature="e#14324#14325#0" expanded="true" />
+                <element signature="e#14512#14550#0" expanded="true" />
+                <element signature="e#14629#14662#0" expanded="true" />
+                <element signature="e#14747#14786#0" expanded="true" />
+                <element signature="e#14868#14904#0" expanded="true" />
+                <element signature="e#23528#23572#0" expanded="true" />
+                <element signature="e#23597#23642#0" expanded="true" />
+                <element signature="e#24087#24127#0" expanded="true" />
+                <element signature="e#24201#24239#0" expanded="true" />
+                <element signature="e#24306#24318#0" expanded="true" />
+                <element signature="e#24320#24597#0" expanded="true" />
+                <element signature="e#24582#24583#0" expanded="true" />
+                <element signature="e#24636#24868#0" expanded="true" />
+                <element signature="e#24853#24854#0" expanded="true" />
+                <element signature="e#25093#25137#0" expanded="true" />
+                <element signature="e#25162#25208#0" expanded="true" />
+                <element signature="e#25740#25772#0" expanded="true" />
+                <element signature="e#25883#27009#0" expanded="true" />
+                <element signature="e#26990#26991#0" expanded="true" />
+                <element signature="e#27287#27586#0" expanded="true" />
+                <element signature="e#27579#27580#0" expanded="true" />
+                <element signature="e#27647#28280#0" expanded="true" />
+                <element signature="e#28273#28274#0" expanded="true" />
+                <element signature="e#29058#29066#0" expanded="true" />
+                <element signature="e#29402#31492#0" expanded="true" />
+                <element signature="e#31481#31482#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fragment_navigation_drawer.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_navigation_drawer.xml">
+          <provider editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="270">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+          <provider selected="true" editor-type-id="android-designer">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FullScreenVideoPlayerActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="521" max-vertical-offset="1125">
+              <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RecorderOverlayFinishedAllSceneMessageDlgActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedAllSceneMessageDlgActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="3120" max-vertical-offset="3345">
+              <caret line="208" column="63" selection-start-line="208" selection-start-column="63" selection-end-line="208" selection-end-column="63" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="StoryDetailsFragment.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoryDetailsFragment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="5940" max-vertical-offset="6870">
+              <caret line="396" column="157" selection-start-line="396" selection-start-column="157" selection-end-line="396" selection-end-column="157" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="VideoPlayerFragment.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="5036" max-vertical-offset="6795">
+              <caret line="390" column="0" selection-start-line="390" selection-start-column="0" selection-end-line="390" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WelcomeScreenActivity.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.38768116" vertical-offset="161" max-vertical-offset="1665">
+              <caret line="42" column="11" selection-start-line="42" selection-start-column="11" selection-end-line="42" selection-end-column="11" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NavigationDrawerFragment.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/NavigationDrawerFragment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="570" max-vertical-offset="6240">
+              <caret line="38" column="13" selection-start-line="38" selection-start-column="13" selection-end-line="38" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HomageServer.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="6975" max-vertical-offset="8205">
+              <caret line="465" column="14" selection-start-line="465" selection-start-column="14" selection-end-line="465" selection-end-column="14" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HEvents.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1203" max-vertical-offset="1755">
+              <caret line="110" column="0" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -1219,7 +1093,7 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="5626075827000" />
+        <entry key="$PROJECT_DIR$" value="5626438948000" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -1385,6 +1259,7 @@
                             <option value="$MODULE_DIR$/libs/aws-android-sdk-1.7.1.1-core.jar" />
                             <option value="$MODULE_DIR$/libs/aws-android-sdk-1.7.1.1-s3.jar" />
                             <option value="$MODULE_DIR$/libs/android-query-full.0.26.7.jar" />
+                            <option value="$MODULE_DIR$/libs/mongo-java-driver-2.12.3.jar" />
                           </list>
                         </option>
                         <option name="path" value="$PROJECT_DIR$/app" />
@@ -1571,16 +1446,23 @@
       <list>
         <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/networking/mixpanel/HMixPanel.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/model/Story.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/networking/parsers/StoryParser.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/model/Remake.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/networking/parsers/RemakeParser.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/server_cfg.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/MyStoriesFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoryDetailsFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedAllSceneMessageDlgActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedSceneMessageDlgActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayRetakeSceneQuestionDlgActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java" />
       </list>
     </option>
   </component>
@@ -1692,212 +1574,6 @@
               <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="values" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="raw" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="menu" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="layout-land" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="layout" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="drawable-xhdpi" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="java" />
               <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -1936,269 +1612,7 @@
               <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="networking" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="networking" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="networking" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="parsers" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="camera" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="user" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="story" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="recorder" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="player" />
               <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -2237,31 +1651,13 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Homage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="homage-android" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
               <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -2273,7 +1669,7 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="recentsLimit" value="5" />
     <property name="FullScreen" value="false" />
-    <property name="SearchEverywhereHistoryKey" value="is_production_server&#9;PSI&#9;JAVA://com.homage.app.R.bool#is_production_server&#10;public int&#9;PSI&#9;JAVA://org.apache.harmony.security.tests.x509.SubjectPublicKeyInfoTest&#10;hmix&#9;PSI&#9;JAVA://com.homage.networking.mixpanel.HMixPanel" />
+    <property name="SearchEverywhereHistoryKey" value="VideoPlayerFragment&#9;PSI&#9;JAVA://com.homage.app.player.VideoPlayerFragment&#10;is_production_server&#9;PSI&#9;JAVA://com.homage.app.R.bool#is_production_server&#10;public int&#9;PSI&#9;JAVA://org.apache.harmony.security.tests.x509.SubjectPublicKeyInfoTest&#10;hmix&#9;PSI&#9;JAVA://com.homage.networking.mixpanel.HMixPanel" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="0076e3b1c911189a" />
     <property name="last_opened_file_path" value="$USER_HOME$" />
     <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
@@ -2311,19 +1707,6 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method />
-    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -2349,6 +1732,19 @@
       <envs />
       <properties />
       <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -2492,15 +1888,15 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
+      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19270833" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32917964" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32917964" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -2512,8 +1908,8 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32917964" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32917964" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
@@ -2537,24 +1933,104 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/Server.java</url>
-          <line>219</line>
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java</url>
+          <line>44</line>
           <properties />
-          <option name="timeStamp" value="41" />
+          <option name="timeStamp" value="47" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java</url>
+          <line>174</line>
+          <properties />
+          <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java</url>
+          <line>189</line>
+          <properties />
+          <option name="timeStamp" value="66" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java</url>
+          <line>184</line>
+          <properties />
+          <option name="timeStamp" value="67" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java</url>
+          <line>21</line>
+          <properties />
+          <option name="timeStamp" value="70" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java</url>
+          <line>95</line>
+          <properties />
+          <option name="timeStamp" value="73" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java</url>
+          <line>99</line>
+          <properties />
+          <option name="timeStamp" value="74" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java</url>
+          <line>588</line>
+          <properties />
+          <option name="timeStamp" value="76" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java</url>
+          <line>133</line>
+          <properties />
+          <option name="timeStamp" value="77" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java</url>
+          <line>390</line>
+          <properties />
+          <option name="timeStamp" value="78" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java</url>
+          <line>110</line>
+          <properties />
+          <option name="timeStamp" value="79" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java</url>
+          <line>42</line>
+          <properties />
+          <option name="timeStamp" value="80" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="45" />
+      <option name="time" value="81" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/parsers/StoryParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="240" max-vertical-offset="810">
+          <caret line="46" column="66" selection-start-line="46" selection-start-column="66" selection-end-line="46" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/model/Story.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="165" max-vertical-offset="2415">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="150" max-vertical-offset="540">
           <caret line="10" column="27" selection-start-line="10" selection-start-column="27" selection-end-line="10" selection-end-column="27" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2616,15 +2092,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.12295082" vertical-offset="0" max-vertical-offset="1815">
           <caret line="43" column="13" selection-start-line="43" selection-start-column="13" selection-end-line="43" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoryDetailsFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33286119" vertical-offset="4610" max-vertical-offset="5580">
-          <caret line="384" column="10" selection-start-line="384" selection-start-column="8" selection-end-line="384" selection-end-column="10" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2643,7 +2110,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2655,29 +2121,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="5013" max-vertical-offset="6885">
-          <caret line="28" column="13" selection-start-line="28" selection-start-column="13" selection-end-line="28" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="150" max-vertical-offset="855">
-          <caret line="22" column="49" selection-start-line="22" selection-start-column="30" selection-end-line="22" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/classes.jar!/android/support/v4/app/Fragment.class">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="21.44" vertical-offset="2711" max-vertical-offset="4080">
           <caret line="146" column="16" selection-start-line="146" selection-start-column="16" selection-end-line="146" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2693,15 +2140,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="47808" max-vertical-offset="72855">
           <caret line="3357" column="0" selection-start-line="3357" selection-start-column="0" selection-end-line="3357" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="1860">
-          <caret line="16" column="39" selection-start-line="16" selection-start-column="39" selection-end-line="16" selection-end-column="39" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2717,9 +2155,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="240" max-vertical-offset="810">
           <caret line="46" column="66" selection-start-line="46" selection-start-column="66" selection-end-line="46" selection-end-column="66" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2727,7 +2162,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.7826087" vertical-offset="3" max-vertical-offset="555">
           <caret line="29" column="61" selection-start-line="21" selection-start-column="4" selection-end-line="29" selection-end-column="61" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2735,7 +2169,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.40661478" vertical-offset="691" max-vertical-offset="1230">
           <caret line="61" column="26" selection-start-line="61" selection-start-column="26" selection-end-line="61" selection-end-column="26" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2743,15 +2176,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="751" max-vertical-offset="1290">
           <caret line="74" column="0" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-19/com/android/internal/os/ZygoteInit.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="10696" max-vertical-offset="11325">
-          <caret line="787" column="0" selection-start-line="787" selection-start-column="0" selection-end-line="787" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2759,10 +2183,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="521" max-vertical-offset="2370">
           <caret line="63" column="18" selection-start-line="63" selection-start-column="18" selection-end-line="63" selection-end-column="18" />
-          <folding>
-            <element signature="e#1287#1288#0" expanded="true" />
-            <element signature="e#1318#1319#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2776,7 +2197,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.884615" vertical-offset="159" max-vertical-offset="3555">
+        <state vertical-scroll-proportion="0.0" vertical-offset="159" max-vertical-offset="3555">
           <caret line="26" column="17" selection-start-line="26" selection-start-column="16" selection-end-line="26" selection-end-column="17" />
           <folding />
         </state>
@@ -2784,159 +2205,262 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/build/generated/source/r/debug/com/homage/app/R.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.117647" vertical-offset="14958" max-vertical-offset="64410">
+        <state vertical-scroll-proportion="0.0" vertical-offset="15090" max-vertical-offset="64485">
           <caret line="1006" column="76" selection-start-line="1006" selection-start-column="76" selection-end-line="1006" selection-end-column="76" />
-          <folding>
-            <element signature="e#0#243391#0" expanded="false" />
-          </folding>
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/list_row_remake.xml">
+      <provider editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="855">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
+      <provider editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="870">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/Server.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2201" max-vertical-offset="5580">
+          <caret line="219" column="0" selection-start-line="219" selection-start-column="0" selection-end-line="219" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-19/java/lang/ClassLoader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="9596" max-vertical-offset="11625">
+          <caret line="760" column="0" selection-start-line="760" selection-start-column="0" selection-end-line="760" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_full_screen_homage_video.xml">
+      <provider editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="330">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/views/ActivityHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="795">
+          <caret line="14" column="23" selection-start-line="14" selection-start-column="23" selection-end-line="14" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-19/android/media/MediaPlayer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="17081" max-vertical-offset="46725">
+          <caret line="1219" column="7" selection-start-line="1219" selection-start-column="7" selection-end-line="1219" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-19/android/widget/VideoView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="9795" max-vertical-offset="12405">
+          <caret line="738" column="25" selection-start-line="738" selection-start-column="25" selection-end-line="738" selection-end-column="25" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.653846" vertical-offset="1954" max-vertical-offset="2535">
-          <caret line="147" column="34" selection-start-line="147" selection-start-column="33" selection-end-line="147" selection-end-column="34" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1803" max-vertical-offset="2535">
+          <caret line="136" column="72" selection-start-line="136" selection-start-column="72" selection-end-line="136" selection-end-column="72" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/values/server_cfg.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="33" max-vertical-offset="585">
-          <caret line="2" column="43" selection-start-line="2" selection-start-column="43" selection-end-line="2" selection-end-column="43" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="48" max-vertical-offset="600">
+          <caret line="32" column="18" selection-start-line="32" selection-start-column="18" selection-end-line="32" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/Server.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/SplashScreenActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.576923" vertical-offset="2604" max-vertical-offset="5955">
-          <caret line="220" column="0" selection-start-line="220" selection-start-column="0" selection-end-line="220" selection-end-column="0" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#3319#3359#0" expanded="true" />
-            <element signature="e#3529#3568#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="93" max-vertical-offset="645">
+          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/model/User.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-231.34616" vertical-offset="135" max-vertical-offset="7500">
-          <caret line="455" column="0" selection-start-line="455" selection-start-column="0" selection-end-line="455" selection-end-column="0" />
-          <folding>
-            <element signature="e#4391#4411#0" expanded="true" />
-            <element signature="e#4433#4459#0" expanded="true" />
-            <element signature="e#4481#4509#0" expanded="true" />
-            <element signature="e#4531#4551#0" expanded="true" />
-            <element signature="e#4573#4596#0" expanded="true" />
-            <element signature="e#4618#4639#0" expanded="true" />
-            <element signature="e#4661#4680#0" expanded="true" />
-            <element signature="e#4702#4728#0" expanded="true" />
-            <element signature="e#4750#4783#0" expanded="true" />
-            <element signature="e#4805#4822#0" expanded="true" />
-            <element signature="e#4844#4868#0" expanded="true" />
-            <element signature="e#4890#4915#0" expanded="true" />
-            <element signature="e#4937#4964#0" expanded="true" />
-            <element signature="e#4986#5010#0" expanded="true" />
-            <element signature="e#5032#5058#0" expanded="true" />
-            <element signature="e#5080#5104#0" expanded="true" />
-            <element signature="e#5126#5149#0" expanded="true" />
-            <element signature="e#5171#5196#0" expanded="true" />
-            <element signature="e#5694#5714#0" expanded="true" />
-            <element signature="e#6286#6302#0" expanded="true" />
-            <element signature="e#6550#6566#0" expanded="true" />
-            <element signature="e#6775#6798#0" expanded="true" />
-            <element signature="e#7319#7335#0" expanded="true" />
-            <element signature="e#7710#7738#0" expanded="true" />
-            <element signature="e#8518#8534#0" expanded="true" />
-            <element signature="e#9058#9084#0" expanded="true" />
-            <element signature="e#9894#9910#0" expanded="true" />
-            <element signature="e#10092#10117#0" expanded="true" />
-            <element signature="e#10416#10442#0" expanded="true" />
-            <element signature="e#11135#11155#0" expanded="true" />
-            <element signature="e#12260#12280#0" expanded="true" />
-            <element signature="e#12627#12643#0" expanded="true" />
-            <element signature="e#12778#12794#0" expanded="true" />
-            <element signature="e#12894#12913#0" expanded="true" />
-            <element signature="e#13996#14012#0" expanded="true" />
-            <element signature="e#15170#15191#0" expanded="true" />
-            <element signature="e#15286#15287#0" expanded="true" />
-            <element signature="e#15330#15331#0" expanded="true" />
-            <element signature="e#15499#15515#0" expanded="true" />
-            <element signature="e#16291#16315#0" expanded="true" />
-            <element signature="e#16520#16544#0" expanded="true" />
-            <element signature="e#16810#16826#0" expanded="true" />
-            <element signature="e#16990#17023#0" expanded="true" />
-            <element signature="e#18112#18128#0" expanded="true" />
-            <element signature="e#18296#18321#0" expanded="true" />
-            <element signature="e#18635#18651#0" expanded="true" />
-            <element signature="e#18858#18881#0" expanded="true" />
-            <element signature="e#19038#19062#0" expanded="true" />
-            <element signature="e#19417#19433#0" expanded="true" />
-            <element signature="e#19790#19813#0" expanded="true" />
-            <element signature="e#19978#20002#0" expanded="true" />
-            <element signature="e#20281#20297#0" expanded="true" />
-            <element signature="e#20401#20427#0" expanded="true" />
-            <element signature="e#20703#20719#0" expanded="true" />
-            <element signature="e#20826#20850#0" expanded="true" />
-            <element signature="e#21131#21147#0" expanded="true" />
-            <element signature="e#21254#21281#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="23.038462" vertical-offset="1019" max-vertical-offset="2730">
+          <caret line="38" column="43" selection-start-line="38" selection-start-column="43" selection-end-line="38" selection-end-column="43" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java">
+    <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-19/com/android/internal/os/ZygoteInit.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="11731" max-vertical-offset="12270">
-          <caret line="839" column="0" selection-start-line="839" selection-start-column="0" selection-end-line="839" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#13579#14081#0" expanded="true" />
-            <element signature="e#14074#14075#0" expanded="true" />
-            <element signature="e#14128#14283#0" expanded="true" />
-            <element signature="e#14276#14277#0" expanded="true" />
-            <element signature="e#14464#14502#0" expanded="true" />
-            <element signature="e#14581#14614#0" expanded="true" />
-            <element signature="e#14699#14738#0" expanded="true" />
-            <element signature="e#14820#14856#0" expanded="true" />
-            <element signature="e#23339#23383#0" expanded="true" />
-            <element signature="e#23408#23453#0" expanded="true" />
-            <element signature="e#23898#23938#0" expanded="true" />
-            <element signature="e#24012#24050#0" expanded="true" />
-            <element signature="e#24117#24129#0" expanded="true" />
-            <element signature="e#24904#24948#0" expanded="true" />
-            <element signature="e#24973#25019#0" expanded="true" />
-            <element signature="e#25551#25583#0" expanded="true" />
-            <element signature="e#28869#28877#0" expanded="true" />
-            <element signature="e#29213#31303#0" expanded="true" />
-            <element signature="e#31292#31293#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="10773" max-vertical-offset="11325">
+          <caret line="787" column="0" selection-start-line="787" selection-start-column="0" selection-end-line="787" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/story/MyStoriesFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334" vertical-offset="3069" max-vertical-offset="4020">
-          <caret line="224" column="0" selection-start-line="224" selection-start-column="0" selection-end-line="224" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2505" max-vertical-offset="3780">
+          <caret line="213" column="129" selection-start-line="213" selection-start-column="129" selection-end-line="213" selection-end-column="129" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoryDetailsFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="5940" max-vertical-offset="6870">
+          <caret line="396" column="157" selection-start-line="396" selection-start-column="157" selection-end-line="396" selection-end-column="157" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedSceneMessageDlgActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1173" max-vertical-offset="1920">
+          <caret line="129" column="65" selection-start-line="129" selection-start-column="65" selection-end-line="129" selection-end-column="65" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayRetakeSceneQuestionDlgActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="588" max-vertical-offset="1320">
+          <caret line="96" column="64" selection-start-line="96" selection-start-column="64" selection-end-line="96" selection-end-column="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/NavigationDrawerFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="4713" max-vertical-offset="5445">
+          <caret line="38" column="13" selection-start-line="38" selection-start-column="13" selection-end-line="38" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_navigation_drawer.xml">
+      <provider editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="270">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="6031" max-vertical-offset="7500">
+          <caret line="465" column="14" selection-start-line="465" selection-start-column="14" selection-end-line="465" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedAllSceneMessageDlgActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1968" max-vertical-offset="2700">
+          <caret line="208" column="63" selection-start-line="208" selection-start-column="63" selection-end-line="208" selection-end-column="63" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="521" max-vertical-offset="1125">
+          <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="5036" max-vertical-offset="6795">
+          <caret line="390" column="0" selection-start-line="390" selection-start-column="0" selection-end-line="390" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1203" max-vertical-offset="1755">
+          <caret line="110" column="0" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1451" max-vertical-offset="11970">
+          <caret line="174" column="0" selection-start-line="174" selection-start-column="0" selection-end-line="174" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#4872#5248#0" expanded="true" />
-            <element signature="e#5233#5234#0" expanded="true" />
-            <element signature="e#5319#6146#0" expanded="true" />
-            <element signature="e#5765#5794#0" expanded="true" />
-            <element signature="e#5838#5860#0" expanded="true" />
-            <element signature="e#5913#5931#0" expanded="true" />
-            <element signature="e#6131#6132#0" expanded="true" />
-            <element signature="e#6218#7391#0" expanded="true" />
-            <element signature="e#7376#7377#0" expanded="true" />
-            <element signature="e#7460#7822#0" expanded="true" />
-            <element signature="e#7807#7808#0" expanded="true" />
-            <element signature="e#7916#7917#0" expanded="true" />
-            <element signature="e#7966#7967#0" expanded="true" />
-            <element signature="e#9122#9335#0" expanded="true" />
-            <element signature="e#9324#9325#0" expanded="true" />
+            <element signature="e#6629#6779#0" expanded="true" />
+            <element signature="e#6768#6769#0" expanded="true" />
+            <element signature="e#11176#11821#0" expanded="true" />
+            <element signature="e#11814#11815#0" expanded="true" />
+            <element signature="e#11873#12804#0" expanded="true" />
+            <element signature="e#12797#12798#0" expanded="true" />
+            <element signature="e#12890#13345#0" expanded="true" />
+            <element signature="e#13338#13339#0" expanded="true" />
+            <element signature="e#13404#13575#0" expanded="true" />
+            <element signature="e#13568#13569#0" expanded="true" />
+            <element signature="e#13627#14129#0" expanded="true" />
+            <element signature="e#14122#14123#0" expanded="true" />
+            <element signature="e#14176#14331#0" expanded="true" />
+            <element signature="e#14324#14325#0" expanded="true" />
+            <element signature="e#14512#14550#0" expanded="true" />
+            <element signature="e#14629#14662#0" expanded="true" />
+            <element signature="e#14747#14786#0" expanded="true" />
+            <element signature="e#14868#14904#0" expanded="true" />
+            <element signature="e#23528#23572#0" expanded="true" />
+            <element signature="e#23597#23642#0" expanded="true" />
+            <element signature="e#24087#24127#0" expanded="true" />
+            <element signature="e#24201#24239#0" expanded="true" />
+            <element signature="e#24306#24318#0" expanded="true" />
+            <element signature="e#24320#24597#0" expanded="true" />
+            <element signature="e#24582#24583#0" expanded="true" />
+            <element signature="e#24636#24868#0" expanded="true" />
+            <element signature="e#24853#24854#0" expanded="true" />
+            <element signature="e#25093#25137#0" expanded="true" />
+            <element signature="e#25162#25208#0" expanded="true" />
+            <element signature="e#25740#25772#0" expanded="true" />
+            <element signature="e#25883#27009#0" expanded="true" />
+            <element signature="e#26990#26991#0" expanded="true" />
+            <element signature="e#27287#27586#0" expanded="true" />
+            <element signature="e#27579#27580#0" expanded="true" />
+            <element signature="e#27647#28280#0" expanded="true" />
+            <element signature="e#28273#28274#0" expanded="true" />
+            <element signature="e#29058#29066#0" expanded="true" />
+            <element signature="e#29402#31492#0" expanded="true" />
+            <element signature="e#31481#31482#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.38768116" vertical-offset="161" max-vertical-offset="1665">
+          <caret line="42" column="11" selection-start-line="42" selection-start-column="11" selection-end-line="42" selection-end-column="11" />
+          <folding />
         </state>
       </provider>
     </entry>

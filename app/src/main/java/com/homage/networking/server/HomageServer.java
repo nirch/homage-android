@@ -468,6 +468,7 @@ public class HomageServer extends Server {
       Log.v(TAG, String.format("Reporting view start: %s for entity: %s user: %s" , viewID , entityID, userID));
       HashMap<String,String> params = new HashMap<String, String>();
       params.put("view_id" , viewID);
+      params.put("user_id" , userID);
       params.put("playback_event", HMPlaybackEventStart);
 
       if (entityType == HMSTORY)
@@ -486,9 +487,10 @@ public class HomageServer extends Server {
      Log.v(TAG, String.format("Reporting view stop: %s for entity: %s user: %s" , viewID , entityID, userID));
      HashMap<String,String> params = new HashMap<String, String>();
      params.put("view_id" , viewID);
+     params.put("user_id" , userID);
      params.put("playback_event", HMPlaybackEventStop);
-     params.put("playback_duration", String.format("%f", playbackTime));
-     params.put("total_duration", String.format("%f", totalDuration));
+     params.put("playback_duration", String.format("%d", playbackTime));
+     params.put("total_duration", String.format("%d", totalDuration));
 
 
         if (entityType == HMSTORY)
