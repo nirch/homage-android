@@ -530,12 +530,5 @@ public class HomageServer extends Server {
         params.put("user_id", userID);
         super.POST(R.string.url_session_update, params, INTENT_USER_UPDATE_SESSION, null, null);
     }
-
-
-
-
-
-
-
     // end region
 }

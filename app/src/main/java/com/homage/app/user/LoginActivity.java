@@ -35,6 +35,8 @@ import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import com.homage.views.ActivityHelper;
 
+import org.bson.types.ObjectId;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -181,7 +183,16 @@ public class LoginActivity extends Activity {
                     startIntent = new Intent(LoginActivity.this, MainActivity.class);
                     Toast.makeText(LoginActivity.this, String.format("Hello %s", user.getTag()), Toast.LENGTH_LONG).show();
                 }
-                HomageServer.sh().updateAppInfo(user.getOID());
+
+                if (HomageApplication.getInstance().currentSessionID != null)
+                {
+                    HomageServer.sh().updateAppInfo(user.getOID());
+                    String sessionID = new ObjectId().toString();
+                    String userID    = user.getOID().toString();
+                    HomageServer.sh().reportSessionBegin(sessionID,userID);
+                    HomageApplication.getInstance().currentSessionID = sessionID;
+                }
+
                 LoginActivity.this.startActivity(startIntent);
                 overridePendingTransition(0, 0);
                 LoginActivity.this.finish();
@@ -209,6 +220,11 @@ public class LoginActivity extends Activity {
                 Intent startIntent;
                 startIntent = new Intent(LoginActivity.this, MainActivity.class);
                 Toast.makeText(LoginActivity.this, String.format("Hello %s", user.getTag()), Toast.LENGTH_LONG).show();
+
+                String sessionID = HomageApplication.getInstance().currentSessionID;
+                String userID    = user.getOID().toString();
+                HomageServer.sh().reportSessionUpdate(sessionID,userID);
+
                 LoginActivity.this.startActivity(startIntent);
                 overridePendingTransition(0, 0);
                 LoginActivity.this.finish();

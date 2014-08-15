@@ -289,7 +289,7 @@ public class RecorderActivity extends Activity {
 
     @Override
     protected void onStop() {
-        super.onResume();
+        super.onStop();
         CameraManager.sh().releaseCamera();
     }
 

@@ -67,7 +67,7 @@ public class HMixPanel {
     //endregion
 
     public void flush () {
-        instance.flush();
+        if (instance != null) mMixpanel.flush();
     }
 
 }

@@ -213,6 +213,10 @@ public class MainActivity extends ActionBarActivity
                     showLogin();
                 } else {
                     // User is logged in. Will logout user and go back to the first login screen.
+                    String sessionID = HomageApplication.getInstance().currentSessionID;
+                    String userID = user.getOID().toString();
+                    if (sessionID != null) HomageServer.sh().reportSessionEnd(sessionID,userID);
+                    HomageApplication.getInstance().currentSessionID = null;
                     logout();
                 }
                 break;
@@ -531,6 +535,7 @@ public class MainActivity extends ActionBarActivity
         Intent myIntent = new Intent(this, LoginActivity.class);
         myIntent.putExtra(LoginActivity.SK_ALLOW_GUEST_LOGIN, true);
         myIntent.putExtra(LoginActivity.SK_START_MAIN_ACTIVITY_AFTER_LOGIN, true);
+
         startActivity(myIntent);
         finish();
     }

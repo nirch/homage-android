@@ -13,6 +13,10 @@ import com.homage.model.User;
 import com.homage.networking.server.HomageServer;
 import com.homage.views.ActivityHelper;
 
+import org.bson.types.ObjectId;
+
+import java.util.HashMap;
+
 public class SplashScreenActivity extends Activity {
 
     private final int SPLASH_DISPLAY_LENGTH = 1000;
@@ -42,6 +46,10 @@ public class SplashScreenActivity extends Activity {
                 overridePendingTransition(0, 0);
             } else {
                 Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+                //String userID = user.getOID().toString();
+                //String sessionID = new ObjectId().toString();
+                //HomageServer.sh().reportSessionBegin(sessionID,userID);
+                //HomageApplication.getInstance().currentSessionID = sessionID;
                 SplashScreenActivity.this.startActivity(intent);
                 SplashScreenActivity.this.finish();
                 overridePendingTransition(0, 0);
