@@ -5,6 +5,7 @@ package com.homage.networking.analytics;
 import android.content.Context;
 import android.util.Log;
 
+import com.homage.model.User;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import org.json.JSONException;
@@ -13,7 +14,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class HMixPanel {
-    String TAG = "TAG_"+getClass().getName();
+    String TAG = "TAG_" + getClass().getName();
 
     public static final String MIXPANEL_TOKEN = "7d575048f24cb2424cd5c9799bbb49b1";
     public MixpanelAPI mMixpanel;
@@ -33,10 +34,12 @@ public class HMixPanel {
     }
 
     private static HMixPanel instance = new HMixPanel();
+
     public static HMixPanel sharedInstance() {
-        if(instance == null) instance = new HMixPanel();
+        if (instance == null) instance = new HMixPanel();
         return instance;
     }
+
     public static HMixPanel sh() {
         return HMixPanel.sharedInstance();
     }
@@ -44,14 +47,16 @@ public class HMixPanel {
 
     //region *** Mixpanel helper methods ... ***
     public void track(String eventName, HashMap<String, String> mappedProps) {
-        try
-        {
+        try {
             JSONObject props = new JSONObject();
 
             // Iterate the mapped props and build the JSONObject
-            for (String k : mappedProps.keySet()) {
-                String v = mappedProps.get(k);
-                props.put(k, v);
+
+            if (mappedProps != null) {
+                for (String k : mappedProps.keySet()) {
+                    String v = mappedProps.get(k);
+                    props.put(k, v);
+                }
             }
 
             // Send the tracking event using mixpanel.
@@ -64,10 +69,61 @@ public class HMixPanel {
             Log.e(TAG, "Mixpanel tracking general error.", e);
         }
     }
-    //endregion
 
-    public void flush () {
+    public void registerSuperProperties(HashMap<String, String> mappedProps) {
+        try {
+            JSONObject props = new JSONObject();
+
+            // Iterate the mapped props and build the JSONObject
+            for (String k : mappedProps.keySet()) {
+                String v = mappedProps.get(k);
+                props.put(k, v);
+            }
+
+            // Send the tracking event using mixpanel.
+            mMixpanel.registerSuperProperties(props);
+
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Mixpanel registerSuperProperties JSON error.", e);
+        } catch (Exception e) {
+            Log.e(TAG, "Mixpanel registerSuperProperties general error.", e);
+        }
+    }
+
+    public void flush() {
         if (instance != null) mMixpanel.flush();
     }
+
+    public void identify(String userID)
+    {
+       mMixpanel.identify(userID);
+    }
+
+    public void setPeople(HashMap<String,String> mappedProps)
+    {
+        try {
+            JSONObject props = new JSONObject();
+
+            // Iterate the mapped props and build the JSONObject
+            for (String k : mappedProps.keySet()) {
+                String v = mappedProps.get(k);
+                props.put(k, v);
+            }
+
+            mMixpanel.getPeople().set(props);
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Mixpanel set people JSON error.", e);
+        } catch (Exception e) {
+            Log.e(TAG, "Mixpanel set people general error.", e);
+        }
+    }
+
+    public void createAliasForUser(User user, String alias)
+    {
+        mMixpanel.alias(alias,null);
+    }
+    //endregion
 
 }

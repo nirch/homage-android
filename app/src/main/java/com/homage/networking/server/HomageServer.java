@@ -418,8 +418,11 @@ public class HomageServer extends Server {
         UserParser userParser = new UserParser();
         userParser.loginParsedUser = true;
 
+        HashMap<String, Object> info = new HashMap<String, Object>();
+        info.put("user_id",user.getOID());
+
         // Post the request
-        super.PUT(R.string.url_update_user, parameters, INTENT_USER_UPDATED, null, userParser);
+        super.PUT(R.string.url_update_user, parameters, INTENT_USER_UPDATED, info, userParser);
     }
 
     public void updateUserPreferences(HashMap<String, String> parameters) {

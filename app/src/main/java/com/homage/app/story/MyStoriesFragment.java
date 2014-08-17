@@ -30,10 +30,12 @@ import com.homage.app.recorder.RecorderActivity;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.uploader.UploadManager;
 import com.homage.networking.analytics.HEvents;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 public class MyStoriesFragment extends Fragment {
@@ -81,6 +83,7 @@ public class MyStoriesFragment extends Fragment {
         } else {
             aq.id(R.id.noRemakesMessage).visibility(View.GONE);
         }
+        HMixPanel.sh().track("MEUserRefresh",null);
         adapter.notifyDataSetChanged();
     }
 
@@ -130,6 +133,10 @@ public class MyStoriesFragment extends Fragment {
                 rowView = inflater.inflate(R.layout.list_row_my_story, myStoriesListView, false);
             final Remake remake = (Remake) getItem(i);
             final Story story = remake.getStory();
+
+            final HashMap props = new HashMap<String,String>();
+            props.put("story" , story.name);
+            props.put("remake_id", remake.getOID());
 
             AQuery aq = new AQuery(rowView);
             aq.id(R.id.storyName).text(story.name);
@@ -198,6 +205,8 @@ public class MyStoriesFragment extends Fragment {
                         case 3: // DONE
                             // Open recorder with a new remake.
                             openRecorderForNewRemake(story);
+                            props.put("remake_id", remake.getOID());
+                            HMixPanel.sh().track("MEDoRemake",props);
                             break;
 
                         default:
@@ -211,9 +220,11 @@ public class MyStoriesFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, String.format("my story, clicked play: %s", remake.getOID()));
+                    HMixPanel.sh().track("MEPlayRemake",props);
                     FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, HEvents.H_REMAKE , remake.getOID().toString(), true);
                 }
             });
+
 
             return rowView;
         }
@@ -268,4 +279,12 @@ public class MyStoriesFragment extends Fragment {
             }
         }, 500);
     }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        HMixPanel.sh().track("MEEnterTab",null);
+    }
+
 }

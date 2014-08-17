@@ -15,6 +15,7 @@ import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.networking.analytics.HEvents;
+import com.homage.networking.analytics.HMixPanel;
 import com.homage.views.ActivityHelper;
 
 import java.util.HashMap;
@@ -118,7 +119,7 @@ public class WelcomeScreenActivity extends FragmentActivity {
             WelcomeScreenActivity.this.startActivity(startIntent);
             overridePendingTransition(0, 0);
             WelcomeScreenActivity.this.finish();
-            //HMixPanel.sh().track("pushed lets create",);
+            HMixPanel.sh().track("pushed lets create",null);
         }
     };
     //endregion

@@ -84,6 +84,10 @@ public class HEvents {
         int playbackTimeMilSeconds;
         int totalDurationMilSeconds;
 
+        HashMap props = new HashMap<String,String>();
+        props.put("entity_id", entityID);
+        props.put("entity_type", Integer.toString(entityType));
+
         switch (eventCode) {
             // Add your analytics implementation here.
             // IMPORTANT: Don't do long operations on the UI thread.
@@ -95,6 +99,7 @@ public class HEvents {
             case H_EVENT_VIDEO_PLAYER_WILL_PLAY:
                 viewID = new ObjectId().toString();
                 HomageServer.sh().reportVideoViewStart(viewID,entityType,entityID,userID);
+                HMixPanel.sh().track("start_play_video",props);
                 break;
             case H_EVENT_VIDEO_PLAYER_FINISH:
                 if (viewID == null) return;
@@ -104,6 +109,9 @@ public class HEvents {
                 totalDurationMilSeconds = Integer.parseInt(info.get(HEvents.HK_VIDEO_TOTAL_DURATION).toString());
                 totalDuration = totalDurationMilSeconds / 1000;
                 HomageServer.sh().reportVideoViewStop(viewID,entityType,entityID,userID,playbackTime,totalDuration);
+                props.put("playing_time",playbackTime);
+                props.put("total_duration",totalDuration);
+                HMixPanel.sh().track("finish_playing_video",props);
                 viewID = null;
 
                 break;
@@ -115,8 +123,10 @@ public class HEvents {
                 totalDurationMilSeconds = Integer.parseInt(info.get(HEvents.HK_VIDEO_TOTAL_DURATION).toString());
                 totalDuration = totalDurationMilSeconds / 1000;
                 HomageServer.sh().reportVideoViewStop(viewID,entityType,entityID,userID,playbackTime,totalDuration);
+                props.put("playing_time",playbackTime);
+                props.put("total_duration",totalDuration);
+                HMixPanel.sh().track("stop_playing_video",props);
                 viewID = null;
-
                 break;
         }
     }

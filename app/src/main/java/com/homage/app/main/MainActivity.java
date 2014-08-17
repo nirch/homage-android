@@ -562,6 +562,7 @@ public class MainActivity extends ActionBarActivity
         fragmentManager.beginTransaction()
                 .replace(R.id.container, StoriesListFragment.newInstance(currentSection), FRAGMENT_TAG_STORIES)
                 .commitAllowingStateLoss();
+        HMixPanel.sh().track("appMoveToStoriesTab",null);
     }
 
     public void showMyStories() {
@@ -577,11 +578,14 @@ public class MainActivity extends ActionBarActivity
                 .setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout)
                 .replace(R.id.container, MyStoriesFragment.newInstance(currentSection, user), FRAGMENT_TAG_ME)
                 .commitAllowingStateLoss();
+        HMixPanel.sh().track("appMoveToMeTab",null);
     }
 
     public void showSettings() {
         Intent myIntent = new Intent(this, SettingsActivity.class);
+        HMixPanel.sh().track("appMoveToSettingsTab",null);
         startActivity(myIntent);
+
     }
 
     public void showHowTo() {
@@ -593,6 +597,8 @@ public class MainActivity extends ActionBarActivity
 
         myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, "");
         myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_INTRO_MOVIE);
+
+        HMixPanel.sh().track("appWillPlayIntroMovie",null);
 
         startActivity(myIntent);
     }
@@ -673,6 +679,10 @@ public class MainActivity extends ActionBarActivity
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Log.d(TAG, String.format("Chosen to delete remake %s", remake.getOID()));
+                    HashMap props = new HashMap<String,String>();
+                    props.put("story" , remake.getStory().name);
+                    props.put("remake_id" , remake.getOID());
+                    HMixPanel.sh().track("MEDeleteRemake",props);
                     deleteRemake(remake);
                 }
             })
@@ -707,6 +717,9 @@ public class MainActivity extends ActionBarActivity
         final Story theStory = remake.getStory();
         final User user = User.getCurrent();
 
+        HashMap props = new HashMap<String,String>();
+        props.put("story" , theStory.name);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.continue_remake_message);
         builder.setItems(
@@ -717,6 +730,7 @@ public class MainActivity extends ActionBarActivity
                             case 0:
                                 // Open recorder for the remake.
                                 String remakeOID = theRemake.getOID();
+                                HMixPanel.sh().track("doOldRemake",null);
                                 Intent myIntent = new Intent(MainActivity.this, RecorderActivity.class);
                                 Bundle b = new Bundle();
                                 b.putString("remakeOID", remakeOID);
@@ -725,6 +739,7 @@ public class MainActivity extends ActionBarActivity
                                 break;
                             case 1:
                                 user.deleteAllUnfinishedRemakesForStory(theStory);
+                                HMixPanel.sh().track("doNewRemakeOld",null);
                                 sendRemakeStoryRequest(theStory);
                                 break;
                             case 2:
@@ -849,6 +864,12 @@ public class MainActivity extends ActionBarActivity
 
                 HomageServer.sh().reportRemakeShareForUser(
                         sharedRemake.getOID(),sharedRemake.userID,share_method);
+
+                HashMap props = new HashMap<String,String>();
+                props.put("story", story.name);
+                props.put("remake_id", sharedRemake.getOID());
+                props.put("share_method", Integer.toString(share_method));
+                HMixPanel.sh().track("MEShareRemake",props);
 
                 // start the selected activity
                 i.setPackage(info.activityInfo.packageName);

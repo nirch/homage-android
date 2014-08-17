@@ -272,6 +272,7 @@ public class HomageApplication extends SugarApp {
                         String sessionID = HomageApplication.getInstance().currentSessionID;
                         HomageServer.sh().reportSessionEnd(sessionID,userID);
                         HomageApplication.getInstance().currentSessionID = null;
+                        HMixPanel.sh().track("AppMovedToBackGround",null);
                     }
                 };
                 timer.start();

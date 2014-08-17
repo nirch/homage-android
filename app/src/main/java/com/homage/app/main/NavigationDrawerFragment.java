@@ -30,6 +30,7 @@ import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.analytics.HMixPanel;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -309,6 +310,24 @@ public class NavigationDrawerFragment extends Fragment {
 
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
+
+        switch (position) {
+            case 0: //stories
+                HMixPanel.sh().track("UserPressedStoriesTab", null);
+                break;
+            case 1: //me
+                HMixPanel.sh().track("UserPressedmeTab", null);
+                break;
+            case 2: //settings
+                HMixPanel.sh().track("UserPressedSettingsTab", null);
+                break;
+            case 3: //intro movie
+                HMixPanel.sh().track("UserPressedIntroStoryTab", null);
+                break;
+            default:
+                break;
+        }
+
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
 
