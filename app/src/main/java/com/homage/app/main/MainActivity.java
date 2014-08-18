@@ -91,8 +91,6 @@ public class MainActivity extends ActionBarActivity
     static final int SHARE_METHOD_WEIBO     = 5;
     static final int SHARE_METHOD_TWITTER   = 6;
 
-
-
     static final int REQUEST_CODE_RECORDER = 10001;
 
     static final String FRAGMENT_TAG_ME = "fragment me";
@@ -597,6 +595,7 @@ public class MainActivity extends ActionBarActivity
 
         myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, "");
         myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_INTRO_MOVIE);
+        myIntent.putExtra(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_HOW_TO_TAB);
 
         HMixPanel.sh().track("appWillPlayIntroMovie",null);
 

@@ -8,6 +8,7 @@ import android.widget.Button;
 
 import com.androidquery.util.Constants;
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 import com.homage.model.Footage;
 import com.homage.model.Remake;
@@ -136,7 +137,7 @@ public class RecorderOverlayFinishedSceneMessageDlgActivity extends RecorderOver
             // Open video player.
             FullScreenVideoPlayerActivity.openFullScreenVideoForFile(
                     RecorderOverlayFinishedSceneMessageDlgActivity.this,
-                    footage.rawLocalFile, HEvents.H_SCENE, null,
+                    footage.rawLocalFile, HEvents.H_SCENE, null, HomageApplication.HM_RECORDER_PREVIEW,
                     true
             );
         }

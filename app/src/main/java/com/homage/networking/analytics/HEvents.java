@@ -29,13 +29,14 @@ public class HEvents {
     public final static int H_EVENT_VIDEO_PLAYER_WILL_PLAY              = 1010;
     public final static int H_EVENT_VIDEO_FULL_STOP                     = 1011;
 
-    public final static String HK_VIDEO_INIT_TIME         = "videoInitTime";
-    public final static String HK_VIDEO_FILE_PATH         = "videoFilePath";
-    public final static String HK_VIDEO_ENTITY_TYPE       = "videoEntityType";
-    public final static String HK_VIDEO_ENTITY_ID         = "videoEntityID";
-    public final static String HK_VIDEO_USER_ID           = "videoUserID";
-    public final static String HK_VIDEO_PLAYBACK_TIME     = "videoPlaybackTime";
-    public final static String HK_VIDEO_TOTAL_DURATION    = "videoTotalDuration";
+    public final static String HK_VIDEO_INIT_TIME          = "videoInitTime";
+    public final static String HK_VIDEO_FILE_PATH          = "videoFilePath";
+    public final static String HK_VIDEO_ENTITY_TYPE        = "videoEntityType";
+    public final static String HK_VIDEO_ENTITY_ID          = "videoEntityID";
+    public final static String HK_VIDEO_USER_ID            = "videoUserID";
+    public final static String HK_VIDEO_PLAYBACK_TIME      = "videoPlaybackTime";
+    public final static String HK_VIDEO_TOTAL_DURATION     = "videoTotalDuration";
+    public final static String HK_VIDEO_ORIGINATING_SCREEN = "originatingScreen";
 
 
     public final static int H_STORY       = 0;
@@ -79,6 +80,8 @@ public class HEvents {
         int entityType    = Integer.parseInt(info.get(HK_VIDEO_ENTITY_TYPE).toString());
         String entityID   = info.get(HK_VIDEO_ENTITY_ID).toString();
         String userID     = User.getCurrent().getOID().toString();
+        int originatingScreen = Integer.parseInt(info.get(HEvents.HK_VIDEO_ORIGINATING_SCREEN).toString());
+
         int playbackTime;
         int totalDuration;
         int playbackTimeMilSeconds;
@@ -87,6 +90,7 @@ public class HEvents {
         HashMap props = new HashMap<String,String>();
         props.put("entity_id", entityID);
         props.put("entity_type", Integer.toString(entityType));
+        props.put("originating_screen", Integer.toString(originatingScreen));
 
         switch (eventCode) {
             // Add your analytics implementation here.
@@ -98,7 +102,7 @@ public class HEvents {
                 break;
             case H_EVENT_VIDEO_PLAYER_WILL_PLAY:
                 viewID = new ObjectId().toString();
-                HomageServer.sh().reportVideoViewStart(viewID,entityType,entityID,userID);
+                HomageServer.sh().reportVideoViewStart(viewID,entityType,entityID,userID,originatingScreen);
                 HMixPanel.sh().track("start_play_video",props);
                 break;
             case H_EVENT_VIDEO_PLAYER_FINISH:
@@ -108,7 +112,7 @@ public class HEvents {
 
                 totalDurationMilSeconds = Integer.parseInt(info.get(HEvents.HK_VIDEO_TOTAL_DURATION).toString());
                 totalDuration = totalDurationMilSeconds / 1000;
-                HomageServer.sh().reportVideoViewStop(viewID,entityType,entityID,userID,playbackTime,totalDuration);
+                HomageServer.sh().reportVideoViewStop(viewID,entityType,entityID,userID,playbackTime,totalDuration,originatingScreen);
                 props.put("playing_time",Integer.toString(playbackTime));
                 props.put("total_duration",Integer.toString(totalDuration));
                 HMixPanel.sh().track("finish_playing_video",props);
@@ -122,7 +126,7 @@ public class HEvents {
 
                 totalDurationMilSeconds = Integer.parseInt(info.get(HEvents.HK_VIDEO_TOTAL_DURATION).toString());
                 totalDuration = totalDurationMilSeconds / 1000;
-                HomageServer.sh().reportVideoViewStop(viewID,entityType,entityID,userID,playbackTime,totalDuration);
+                HomageServer.sh().reportVideoViewStop(viewID,entityType,entityID,userID,playbackTime,totalDuration,originatingScreen);
                 props.put("playing_time",Integer.toString(playbackTime));
                 props.put("total_duration",Integer.toString(totalDuration));
                 HMixPanel.sh().track("stop_playing_video",props);

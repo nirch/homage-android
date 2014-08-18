@@ -36,10 +36,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="989c76e2-5975-4253-b20f-25bcb341c851" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HMixPanel.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HMixPanel.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/user/LoginActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/user/LoginActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/NavigationDrawerFragment.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/NavigationDrawerFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/MyStoriesFragment.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/MyStoriesFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedAllSceneMessageDlgActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedAllSceneMessageDlgActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedSceneMessageDlgActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedSceneMessageDlgActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayRetakeSceneQuestionDlgActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayRetakeSceneQuestionDlgActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderVideosPagerAdapter.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderVideosPagerAdapter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoryDetailsFragment.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoryDetailsFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/values/server_cfg.xml" afterPath="$PROJECT_DIR$/app/src/main/res/values/server_cfg.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Homage.iws" />
@@ -66,8 +77,8 @@
       <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.730769" vertical-offset="1730" max-vertical-offset="12615">
-              <caret line="140" column="0" selection-start-line="140" selection-start-column="0" selection-end-line="140" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="8096" max-vertical-offset="12600">
+              <caret line="597" column="63" selection-start-line="597" selection-start-column="63" selection-end-line="597" selection-end-column="63" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -78,83 +89,56 @@
       <file leaf-file-name="VideoPlayerFragment.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="5036" max-vertical-offset="6795">
-              <caret line="390" column="0" selection-start-line="390" selection-start-column="0" selection-end-line="390" selection-end-column="0" />
+            <state vertical-scroll-proportion="-6.730769" vertical-offset="5465" max-vertical-offset="7215">
+              <caret line="393" column="0" selection-start-line="393" selection-start-column="0" selection-end-line="393" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="VideoView.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-19/android/widget/VideoView.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="9896" max-vertical-offset="12405">
+              <caret line="738" column="4" selection-start-line="738" selection-start-column="4" selection-end-line="738" selection-end-column="4" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NavigationDrawerFragment.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/NavigationDrawerFragment.java">
+      <file leaf-file-name="HomageServer.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-12.5" vertical-offset="3845" max-vertical-offset="5715">
-              <caret line="328" column="9" selection-start-line="328" selection-start-column="9" selection-end-line="328" selection-end-column="9" />
+            <state vertical-scroll-proportion="0.3320965" vertical-offset="6571" max-vertical-offset="7455">
+              <caret line="497" column="0" selection-start-line="497" selection-start-column="0" selection-end-line="497" selection-end-column="0" />
+              <folding>
+                <element signature="e#15499#15515#0" expanded="true" />
+                <element signature="e#16295#16311#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RecorderVideosPagerAdapter.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderVideosPagerAdapter.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-6.730769" vertical-offset="3425" max-vertical-offset="4140">
+              <caret line="250" column="0" selection-start-line="250" selection-start-column="0" selection-end-line="250" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="server_cfg.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/values/server_cfg.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="645">
+              <caret line="7" column="40" selection-start-line="7" selection-start-column="40" selection-end-line="7" selection-end-column="40" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RecorderActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1751" max-vertical-offset="21345">
-              <caret line="140" column="20" selection-start-line="140" selection-start-column="20" selection-end-line="140" selection-end-column="20" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HMixPanel.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HMixPanel.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="910" max-vertical-offset="1845">
-              <caret line="127" column="29" selection-start-line="127" selection-start-column="29" selection-end-line="127" selection-end-column="29" />
-              <folding>
-                <element signature="e#1258#1259#0" expanded="true" />
-                <element signature="e#1307#1308#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Server.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/Server.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="261" max-vertical-offset="5580">
-              <caret line="92" column="46" selection-start-line="92" selection-start-column="24" selection-end-line="92" selection-end-column="46" />
-              <folding>
-                <element signature="e#3319#3359#0" expanded="true" />
-                <element signature="e#3589#3630#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LoginActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/user/LoginActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3766" max-vertical-offset="9045">
-              <caret line="273" column="0" selection-start-line="273" selection-start-column="0" selection-end-line="273" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#5953#5961#0" expanded="true" />
-                <element signature="e#19188#19204#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HomageApplication.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33269963" vertical-offset="3575" max-vertical-offset="4830">
-              <caret line="274" column="0" selection-start-line="274" selection-start-column="0" selection-end-line="274" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -162,18 +146,38 @@
       <file leaf-file-name="HEvents.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1905">
-              <caret line="20" column="28" selection-start-line="20" selection-start-column="28" selection-end-line="20" selection-end-column="28" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1144" max-vertical-offset="1965">
+              <caret line="104" column="33" selection-start-line="104" selection-start-column="33" selection-end-line="104" selection-end-column="33" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SettingsActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/SettingsActivity.java">
+      <file leaf-file-name="HMixPanel.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HMixPanel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3600">
-              <caret line="41" column="25" selection-start-line="41" selection-start-column="25" selection-end-line="41" selection-end-column="25" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="551" max-vertical-offset="1815">
+              <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FullScreenVideoPlayerActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="198" max-vertical-offset="1155">
+              <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WelcomeScreenActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="116" max-vertical-offset="1680">
+              <caret line="38" column="0" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -1410,32 +1414,33 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/model/Remake.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/networking/parsers/RemakeParser.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/values/server_cfg.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlaySceneMessageDlgActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout-land/activity_recorder.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoriesListFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/SplashScreenActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/user/LoginActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/NavigationDrawerFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/MyStoriesFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoryDetailsFragment.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedAllSceneMessageDlgActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedSceneMessageDlgActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayRetakeSceneQuestionDlgActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout-land/activity_recorder.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoriesListFragment.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoryDetailsFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderVideosPagerAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/story/MyStoriesFragment.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/SplashScreenActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/user/LoginActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/main/NavigationDrawerFragment.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HMixPanel.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/values/server_cfg.xml" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-349" />
+    <option name="x" value="-334" />
     <option name="y" value="-1058" />
     <option name="width" value="1920" />
     <option name="height" value="1058" />
@@ -2173,7 +2178,7 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="recentsLimit" value="5" />
     <property name="FullScreen" value="false" />
-    <property name="SearchEverywhereHistoryKey" value="settings&#9;FILE&#9;file:///Users/yoavcaspin/Documents/homage_projects/Android/homage-android/app/src/main/java/com/homage/app/main/SettingsActivity.java&#10;userpress&#9;PSI&#9;JAVA://com.homage.networking.analytics.HEvents#H_EVENT_VIDEO_USER_PRESSED_PLAY&#10;UserPress&#9;PSI&#9;JAVA://com.homage.app.recorder.RecorderActivity#DISMISS_REASON_USER_ABORTED_PRESSING_X&#10;onpause&#9;PSI&#9;JAVA://com.facebook.LoginActivity#onPause&#10;progressIndicatorButton&#9;PSI&#9;JAVA://com.homage.app.R.id#progressIndicatorButton&#10;recorderOverlayDismissButton&#9;PSI&#9;JAVA://com.homage.app.R.id#recorderOverlayDismissButton&#10;onclickedsee&#9;PSI&#9;JAVA://com.homage.app.recorder.RecorderOverlayRetakeSceneQuestionDlgActivity#onClickedSeePreviewButton&#10;onClickedSeePreviewButton&#9;PSI&#9;JAVA://com.homage.app.recorder.RecorderOverlayFinishedSceneMessageDlgActivity#onClickedSeePreviewButton&#10;oops&#9;PSI&#9;JAVA://com.homage.app.recorder.RecorderOverlayFinishedAllSceneMessageDlgActivity#onClickedOopsNoButton&#10;actionButton&#9;PSI&#9;JAVA://com.homage.app.R.id#actionButton&#10;overlayRetakeSceneButton&#9;PSI&#9;JAVA://com.homage.app.R.id#overlayRetakeSceneButton&#10;recorderOverlayFlipCameraButton&#9;PSI&#9;JAVA://com.homage.app.R.id#recorderOverlayFlipCameraButton&#10;scenesListView&#9;PSI&#9;JAVA://com.homage.app.R.id#scenesListView&#10;recorderSceneDirectionButton&#9;PSI&#9;JAVA://com.homage.app.R.id#recorderSceneDirectionButton&#10;recorderSceneScriptButton&#9;PSI&#9;JAVA://com.homage.app.R.id#recorderSceneScriptButton&#10;script&#9;PSI&#9;JAVA://com.homage.app.R.string#button_show_script&#10;registerLoginAnalyticsForUser&#9;PSI&#9;JAVA://com.homage.app.user.LoginActivity#registerLoginAnalyticsForUser&#10;track&#9;PSI&#9;JAVA://com.homage.networking.analytics.HMixPanel#track&#10;loginparseduser&#9;PSI&#9;JAVA://com.homage.networking.parsers.UserParser#loginParsedUser&#10;hmi&#9;FILE&#9;file:///Users/yoavcaspin/Documents/homage_projects/Android/homage-android/app/src/main/java/com/homage/networking/analytics/HMixPanel.java&#10;reportsessio&#9;PSI&#9;JAVA://com.homage.networking.server.HomageServer#reportSessionEnd&#10;VideoPlayerFragment&#9;PSI&#9;JAVA://com.homage.app.player.VideoPlayerFragment&#10;is_production_server&#9;PSI&#9;JAVA://com.homage.app.R.bool#is_production_server&#10;public int&#9;PSI&#9;JAVA://org.apache.harmony.security.tests.x509.SubjectPublicKeyInfoTest&#10;hmix&#9;PSI&#9;JAVA://com.homage.networking.mixpanel.HMixPanel" />
+    <property name="SearchEverywhereHistoryKey" value="origi&#9;PSI&#9;JAVA://com.homage.app.player.VideoPlayerFragment#originatingScreen&#10;originatin&#9;PSI&#9;JAVA://com.homage.app.player.VideoPlayerFragment#originatingScreen&#10;howto&#9;PSI&#9;JAVA://com.homage.app.main.MainActivity#showHowTo&#10;entity&#9;PSI&#9;JAVA://com.homage.app.player.VideoPlayerFragment#entityType&#10;videospa&#9;PSI&#9;JAVA://com.homage.app.R.id#videosPager&#10;videoplayer&#9;PSI&#9;JAVA://com.homage.app.player.VideoPlayerFragment&#10;&#9;FILE&#9;file:///Users/yoavcaspin/Documents/homage_projects/Android/homage-android/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java&#10;settings&#9;FILE&#9;file:///Users/yoavcaspin/Documents/homage_projects/Android/homage-android/app/src/main/java/com/homage/app/main/SettingsActivity.java&#10;userpress&#9;PSI&#9;JAVA://com.homage.networking.analytics.HEvents#H_EVENT_VIDEO_USER_PRESSED_PLAY&#10;UserPress&#9;PSI&#9;JAVA://com.homage.app.recorder.RecorderActivity#DISMISS_REASON_USER_ABORTED_PRESSING_X&#10;onpause&#9;PSI&#9;JAVA://com.facebook.LoginActivity#onPause&#10;progressIndicatorButton&#9;PSI&#9;JAVA://com.homage.app.R.id#progressIndicatorButton&#10;recorderOverlayDismissButton&#9;PSI&#9;JAVA://com.homage.app.R.id#recorderOverlayDismissButton&#10;onclickedsee&#9;PSI&#9;JAVA://com.homage.app.recorder.RecorderOverlayRetakeSceneQuestionDlgActivity#onClickedSeePreviewButton&#10;onClickedSeePreviewButton&#9;PSI&#9;JAVA://com.homage.app.recorder.RecorderOverlayFinishedSceneMessageDlgActivity#onClickedSeePreviewButton&#10;oops&#9;PSI&#9;JAVA://com.homage.app.recorder.RecorderOverlayFinishedAllSceneMessageDlgActivity#onClickedOopsNoButton&#10;actionButton&#9;PSI&#9;JAVA://com.homage.app.R.id#actionButton&#10;overlayRetakeSceneButton&#9;PSI&#9;JAVA://com.homage.app.R.id#overlayRetakeSceneButton&#10;recorderOverlayFlipCameraButton&#9;PSI&#9;JAVA://com.homage.app.R.id#recorderOverlayFlipCameraButton&#10;scenesListView&#9;PSI&#9;JAVA://com.homage.app.R.id#scenesListView&#10;recorderSceneDirectionButton&#9;PSI&#9;JAVA://com.homage.app.R.id#recorderSceneDirectionButton&#10;recorderSceneScriptButton&#9;PSI&#9;JAVA://com.homage.app.R.id#recorderSceneScriptButton&#10;script&#9;PSI&#9;JAVA://com.homage.app.R.string#button_show_script&#10;registerLoginAnalyticsForUser&#9;PSI&#9;JAVA://com.homage.app.user.LoginActivity#registerLoginAnalyticsForUser&#10;track&#9;PSI&#9;JAVA://com.homage.networking.analytics.HMixPanel#track&#10;loginparseduser&#9;PSI&#9;JAVA://com.homage.networking.parsers.UserParser#loginParsedUser&#10;hmi&#9;FILE&#9;file:///Users/yoavcaspin/Documents/homage_projects/Android/homage-android/app/src/main/java/com/homage/networking/analytics/HMixPanel.java&#10;reportsessio&#9;PSI&#9;JAVA://com.homage.networking.server.HomageServer#reportSessionEnd&#10;VideoPlayerFragment&#9;PSI&#9;JAVA://com.homage.app.player.VideoPlayerFragment&#10;is_production_server&#9;PSI&#9;JAVA://com.homage.app.R.bool#is_production_server&#10;public int&#9;PSI&#9;JAVA://org.apache.harmony.security.tests.x509.SubjectPublicKeyInfoTest&#10;hmix&#9;PSI&#9;JAVA://com.homage.networking.mixpanel.HMixPanel" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="0076e3b1c911189a" />
     <property name="last_opened_file_path" value="$USER_HOME$" />
     <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
@@ -2357,7 +2362,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-349" y="-1058" width="1920" height="1058" extended-state="6" />
+    <frame x="-334" y="-1058" width="1920" height="1058" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -2440,7 +2445,7 @@
       <breakpoints>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java</url>
-          <line>44</line>
+          <line>45</line>
           <properties />
           <option name="timeStamp" value="47" />
         </line-breakpoint>
@@ -2452,61 +2457,61 @@
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java</url>
-          <line>212</line>
+          <line>210</line>
           <properties />
           <option name="timeStamp" value="81" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java</url>
-          <line>215</line>
+          <line>213</line>
           <properties />
           <option name="timeStamp" value="82" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java</url>
-          <line>245</line>
+          <line>252</line>
           <properties />
           <option name="timeStamp" value="98" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java</url>
-          <line>260</line>
+          <line>267</line>
           <properties />
           <option name="timeStamp" value="103" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java</url>
-          <line>295</line>
+          <line>302</line>
           <properties />
           <option name="timeStamp" value="105" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java</url>
-          <line>533</line>
+          <line>534</line>
           <properties />
           <option name="timeStamp" value="110" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java</url>
-          <line>282</line>
+          <line>289</line>
           <properties />
           <option name="timeStamp" value="111" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java</url>
-          <line>190</line>
+          <line>188</line>
           <properties />
           <option name="timeStamp" value="113" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java</url>
-          <line>239</line>
+          <line>246</line>
           <properties />
           <option name="timeStamp" value="115" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java</url>
-          <line>225</line>
+          <line>232</line>
           <properties />
           <option name="timeStamp" value="121" />
         </line-breakpoint>
@@ -2516,38 +2521,32 @@
           <properties />
           <option name="timeStamp" value="122" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderVideosPagerAdapter.java</url>
+          <line>236</line>
+          <properties />
+          <option name="timeStamp" value="133" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderVideosPagerAdapter.java</url>
+          <line>243</line>
+          <properties />
+          <option name="timeStamp" value="134" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderVideosPagerAdapter.java</url>
+          <line>250</line>
+          <properties />
+          <option name="timeStamp" value="135" />
+        </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="133" />
+      <option name="time" value="146" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-19/android/app/Application.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="195" max-vertical-offset="4110">
-          <caret line="60" column="52" selection-start-line="54" selection-start-column="8" selection-end-line="60" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.satyan/sugar/1.3/classes.jar!/com/orm/SugarApp.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="15" max-vertical-offset="375">
-          <caret line="1" column="13" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-19/android/app/ActivityThread.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3320965" vertical-offset="38926" max-vertical-offset="72855">
-          <caret line="2771" column="0" selection-start-line="2771" selection-start-column="0" selection-end-line="2771" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$APPLICATION_HOME_DIR$/sdk/platforms/android-19/android.jar!/org/apache/http/impl/conn/DefaultResponseParser.class">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.22263451" vertical-offset="0" max-vertical-offset="539">
@@ -2584,14 +2583,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="8566" max-vertical-offset="13575">
           <caret line="625" column="0" selection-start-line="625" selection-start-column="0" selection-end-line="625" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-19.807692" vertical-offset="1000" max-vertical-offset="1665">
-          <caret line="121" column="16" selection-start-line="121" selection-start-column="13" selection-end-line="121" selection-end-column="16" />
           <folding />
         </state>
       </provider>
@@ -2758,50 +2749,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedAllSceneMessageDlgActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2761" max-vertical-offset="3510">
-          <caret line="215" column="56" selection-start-line="215" selection-start-column="31" selection-end-line="215" selection-end-column="56" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#6172#6628#0" expanded="false" />
-            <element signature="e#6621#6622#0" expanded="false" />
-            <element signature="e#7564#8463#0" expanded="false" />
-            <element signature="e#8456#8457#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedSceneMessageDlgActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1221" max-vertical-offset="2175">
-          <caret line="122" column="43" selection-start-line="122" selection-start-column="43" selection-end-line="122" selection-end-column="43" />
-          <folding>
-            <element signature="e#4230#5126#0" expanded="false" />
-            <element signature="e#5119#5120#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayRetakeSceneQuestionDlgActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="588" max-vertical-offset="1410">
-          <caret line="86" column="0" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout-land/activity_recorder.xml">
-      <provider editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2773" max-vertical-offset="6225">
-          <caret line="223" column="27" selection-start-line="223" selection-start-column="27" selection-end-line="223" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/included_render_progress.xml">
       <provider editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="690">
@@ -2811,14 +2758,6 @@
       </provider>
       <provider selected="true" editor-type-id="android-designer">
         <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/build/generated/source/r/debug/com/homage/app/R.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-12.64" vertical-offset="22589" max-vertical-offset="64440">
-          <caret line="1532" column="66" selection-start-line="1532" selection-start-column="66" selection-end-line="1532" selection-end-column="66" />
-          <folding />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout-land/included_retake_overlay_dlg.xml">
@@ -2842,14 +2781,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoryDetailsFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="4761" max-vertical-offset="5895">
-          <caret line="425" column="27" selection-start-line="425" selection-start-column="27" selection-end-line="425" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/facebook/src/com/facebook/LoginActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1236" max-vertical-offset="1950">
@@ -2858,37 +2789,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/story/MyStoriesFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-16.192308" vertical-offset="314" max-vertical-offset="3525">
-          <caret line="85" column="51" selection-start-line="85" selection-start-column="51" selection-end-line="85" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/SplashScreenActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1" max-vertical-offset="720">
           <caret line="35" column="47" selection-start-line="35" selection-start-column="47" selection-end-line="35" selection-end-column="47" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="24.384615" vertical-offset="6769" max-vertical-offset="7440">
-          <caret line="456" column="19" selection-start-line="456" selection-start-column="19" selection-end-line="456" selection-end-column="19" />
-          <folding>
-            <element signature="e#15499#15515#0" expanded="true" />
-            <element signature="e#16295#16311#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/server_cfg.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="645">
-          <caret line="2" column="27" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="27" />
           <folding />
         </state>
       </provider>
@@ -2904,47 +2808,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="5036" max-vertical-offset="6795">
-          <caret line="390" column="0" selection-start-line="390" selection-start-column="0" selection-end-line="390" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1751" max-vertical-offset="21345">
-          <caret line="140" column="20" selection-start-line="140" selection-start-column="20" selection-end-line="140" selection-end-column="20" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1905">
-          <caret line="20" column="28" selection-start-line="20" selection-start-column="28" selection-end-line="20" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/SettingsActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3600">
           <caret line="41" column="25" selection-start-line="41" selection-start-column="25" selection-end-line="41" selection-end-column="25" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.730769" vertical-offset="1730" max-vertical-offset="12615">
-          <caret line="140" column="0" selection-start-line="140" selection-start-column="0" selection-end-line="140" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2968,23 +2836,170 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HMixPanel.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="910" max-vertical-offset="1845">
-          <caret line="127" column="29" selection-start-line="127" selection-start-column="29" selection-end-line="127" selection-end-column="29" />
+        <state vertical-scroll-proportion="-15.576923" vertical-offset="315" max-vertical-offset="4935">
+          <caret line="60" column="53" selection-start-line="60" selection-start-column="53" selection-end-line="60" selection-end-column="53" />
           <folding>
-            <element signature="e#1258#1259#0" expanded="true" />
-            <element signature="e#1307#1308#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/HomageApplication.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayRetakeSceneQuestionDlgActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33269963" vertical-offset="3575" max-vertical-offset="4830">
-          <caret line="274" column="0" selection-start-line="274" selection-start-column="0" selection-end-line="274" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.33948863" vertical-offset="706" max-vertical-offset="1410">
+          <caret line="86" column="6" selection-start-line="86" selection-start-column="6" selection-end-line="86" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedSceneMessageDlgActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.375" vertical-offset="1401" max-vertical-offset="2130">
+          <caret line="139" column="103" selection-start-line="139" selection-start-column="103" selection-end-line="139" selection-end-column="103" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderOverlayFinishedAllSceneMessageDlgActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2326" max-vertical-offset="3030">
+          <caret line="232" column="103" selection-start-line="232" selection-start-column="103" selection-end-line="232" selection-end-column="103" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/build/generated/source/r/debug/com/homage/app/R.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.36" vertical-offset="24141" max-vertical-offset="64440">
+          <caret line="1630" column="34" selection-start-line="1630" selection-start-column="34" selection-end-line="1630" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout-land/activity_recorder.xml">
+      <provider editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2773" max-vertical-offset="6225">
+          <caret line="223" column="27" selection-start-line="223" selection-start-column="27" selection-end-line="223" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.692307" vertical-offset="15149" max-vertical-offset="21345">
+          <caret line="1076" column="54" selection-start-line="1076" selection-start-column="53" selection-end-line="1076" selection-end-column="54" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/story/MyStoriesFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.692307" vertical-offset="2294" max-vertical-offset="3525">
+          <caret line="224" column="133" selection-start-line="224" selection-start-column="132" selection-end-line="224" selection-end-column="133" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/story/StoryDetailsFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="4551" max-vertical-offset="5880">
+          <caret line="381" column="103" selection-start-line="379" selection-start-column="8" selection-end-line="381" selection-end-column="103" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/WelcomeScreenActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="116" max-vertical-offset="1680">
+          <caret line="38" column="0" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/main/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="8096" max-vertical-offset="12600">
+          <caret line="597" column="63" selection-start-line="597" selection-start-column="63" selection-end-line="597" selection-end-column="63" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/FullScreenVideoPlayerActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="198" max-vertical-offset="1155">
+          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/recorder/RecorderVideosPagerAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.730769" vertical-offset="3425" max-vertical-offset="4140">
+          <caret line="250" column="0" selection-start-line="250" selection-start-column="0" selection-end-line="250" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-19/android/widget/VideoView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="9896" max-vertical-offset="12405">
+          <caret line="738" column="4" selection-start-line="738" selection-start-column="4" selection-end-line="738" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/app/player/VideoPlayerFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.730769" vertical-offset="5465" max-vertical-offset="7215">
+          <caret line="393" column="0" selection-start-line="393" selection-start-column="0" selection-end-line="393" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HMixPanel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="551" max-vertical-offset="1815">
+          <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/analytics/HEvents.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1144" max-vertical-offset="1965">
+          <caret line="104" column="33" selection-start-line="104" selection-start-column="33" selection-end-line="104" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/server_cfg.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="645">
+          <caret line="7" column="40" selection-start-line="7" selection-start-column="40" selection-end-line="7" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/homage/networking/server/HomageServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3320965" vertical-offset="6571" max-vertical-offset="7455">
+          <caret line="497" column="0" selection-start-line="497" selection-start-column="0" selection-end-line="497" selection-end-column="0" />
+          <folding>
+            <element signature="e#15499#15515#0" expanded="true" />
+            <element signature="e#16295#16311#0" expanded="true" />
           </folding>
         </state>
       </provider>

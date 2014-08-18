@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 import com.homage.app.player.VideoPlayerFragment;
@@ -221,7 +222,7 @@ public class MyStoriesFragment extends Fragment {
                 public void onClick(View v) {
                     Log.d(TAG, String.format("my story, clicked play: %s", remake.getOID()));
                     HMixPanel.sh().track("MEPlayRemake",props);
-                    FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, HEvents.H_REMAKE , remake.getOID().toString(), true);
+                    FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, HEvents.H_REMAKE , remake.getOID().toString(), HomageApplication.HM_ME_TAB, true);
                 }
             });
 

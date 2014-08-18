@@ -466,13 +466,14 @@ public class HomageServer extends Server {
 
   }
 
-  public void reportVideoViewStart(String viewID, int entityType, String entityID, String userID)
+  public void reportVideoViewStart(String viewID, int entityType, String entityID, String userID, int originatingScreen)
   {
       Log.v(TAG, String.format("Reporting view start: %s for entity: %s user: %s" , viewID , entityID, userID));
       HashMap<String,String> params = new HashMap<String, String>();
       params.put("view_id" , viewID);
       params.put("user_id" , userID);
       params.put("playback_event", HMPlaybackEventStart);
+      params.put("originating_screen" , Integer.toString(originatingScreen));
 
       if (entityType == HMSTORY)
       {
@@ -485,7 +486,7 @@ public class HomageServer extends Server {
       }
   }
 
-   public void reportVideoViewStop(String viewID, int entityType, String entityID, String userID, int playbackTime, int totalDuration)
+   public void reportVideoViewStop(String viewID, int entityType, String entityID, String userID, int playbackTime, int totalDuration, int originatingScreen)
    {
      Log.v(TAG, String.format("Reporting view stop: %s for entity: %s user: %s" , viewID , entityID, userID));
      HashMap<String,String> params = new HashMap<String, String>();
@@ -494,7 +495,7 @@ public class HomageServer extends Server {
      params.put("playback_event", HMPlaybackEventStop);
      params.put("playback_duration", String.format("%d", playbackTime));
      params.put("total_duration", String.format("%d", totalDuration));
-
+     params.put("originating_screen" , Integer.toString(originatingScreen));
 
         if (entityType == HMSTORY)
         {

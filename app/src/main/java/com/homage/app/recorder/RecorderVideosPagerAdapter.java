@@ -16,11 +16,13 @@ import android.widget.VideoView;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
+import com.homage.networking.analytics.HEvents;
 
 public class RecorderVideosPagerAdapter
         extends PagerAdapter
@@ -227,7 +229,6 @@ public class RecorderVideosPagerAdapter
 
             // Open video player.
 
-
             Intent myIntent = new Intent(context, FullScreenVideoPlayerActivity.class);
             Bundle b = new Bundle();
 
@@ -236,13 +237,21 @@ public class RecorderVideosPagerAdapter
                 Log.d(TAG, "Clicked our scene video button");
                 b.putString(VideoPlayerFragment.K_FILE_URL, scene.videoURL);
                 b.putString(VideoPlayerFragment.K_THUMB_URL, scene.thumbnailURL);
+                b.putString(HEvents.HK_VIDEO_ENTITY_ID, "");
+                b.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_SCENE);
+
             } else {
                 Log.d(TAG, "Clicked our story video button");
                 b.putString(VideoPlayerFragment.K_FILE_URL, story.video);
                 b.putString(VideoPlayerFragment.K_THUMB_URL, story.thumbnail);
+                b.putString(HEvents.HK_VIDEO_ENTITY_ID, story.getOID());
+                b.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_STORY);
             }
+
+            b.putInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_RECORDER_PREVIEW);
             myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
             myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, true);
+
             myIntent.putExtras(b);
             context.startActivity(myIntent);
 

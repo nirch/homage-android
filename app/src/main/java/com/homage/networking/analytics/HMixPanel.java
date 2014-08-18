@@ -33,9 +33,9 @@ public class HMixPanel {
         // Do your initializations here.
         boolean isProductionServer = context.getResources().getBoolean(R.bool.is_production_server);
 
-        if (isProductionServer) {
+        //if (isProductionServer) {
             mMixpanel = MixpanelAPI.getInstance(context, MIXPANEL_TOKEN);
-        }
+        //}
     }
 
     private static HMixPanel instance = new HMixPanel();

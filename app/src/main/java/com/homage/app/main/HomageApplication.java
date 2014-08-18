@@ -53,6 +53,13 @@ public class HomageApplication extends SugarApp {
     public static final String SK_EMAIL = "email";
     public static final String SK_PASSWORD = "password";
 
+    public static final int HM_STORY_DETAILS_TAB = 0;
+    public static final int HM_ME_TAB            = 1;
+    public static final int HM_WELCOME_SCREEN    = 2;
+    public static final int HM_HOW_TO_TAB        = 3;
+    public static final int HM_RECORDER_PREVIEW  = 4;
+    public static final int HM_RECORDER_MENU     = 5;
+
     private Timer mActivityTransitionTimer;
     private TimerTask mActivityTransitionTimerTask;
     public boolean wasInBackground;

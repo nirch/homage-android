@@ -65,6 +65,7 @@ public class VideoPlayerFragment
     String thumbURL;
     String entityID;
     int entityType;
+    int originatingScreen;
     int thumbDrawableId;
 
     // More settings
@@ -221,6 +222,7 @@ public class VideoPlayerFragment
         filePath = b.getString(K_FILE_PATH);
         entityType = b.getInt(HEvents.HK_VIDEO_ENTITY_TYPE);
         entityID = b.getString(HEvents.HK_VIDEO_ENTITY_ID);
+        originatingScreen = b.getInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN);
 
         if (filePath == null) {
             fileURL = b.getString(K_FILE_URL);
@@ -232,6 +234,7 @@ public class VideoPlayerFragment
         info.put(HEvents.HK_VIDEO_INIT_TIME, initTime);
         info.put(HEvents.HK_VIDEO_ENTITY_TYPE, entityType);
         info.put(HEvents.HK_VIDEO_ENTITY_ID, entityID);
+        info.put(HEvents.HK_VIDEO_ORIGINATING_SCREEN, originatingScreen);
 
         // More settings
         allowToggleFullscreen = b.getBoolean(K_ALLOW_TOGGLE_FULLSCREEN, true);

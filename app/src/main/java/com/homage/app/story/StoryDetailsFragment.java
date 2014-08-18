@@ -24,6 +24,7 @@ import android.widget.AdapterView;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.model.Remake;
@@ -211,6 +212,7 @@ public class StoryDetailsFragment extends Fragment {
 
         b.putString(HEvents.HK_VIDEO_ENTITY_ID, story.getOID().toString());
         b.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_STORY);
+        b.putInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
 
         videoPlayerFragment.setArguments(b);
 
@@ -377,6 +379,7 @@ public class StoryDetailsFragment extends Fragment {
 
         myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
         myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
+        myIntent.putExtra(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
 
         startActivity(myIntent);
     }
@@ -396,12 +399,9 @@ public class StoryDetailsFragment extends Fragment {
     final View.OnClickListener onClickedPlayStoryVideo = new View.OnClickListener() {
         @Override
         public void onClick(View button) {
-            FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), story.video, story.thumbnail, HEvents.H_STORY , story.getOID().toString(),  true);
+            FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), story.video, story.thumbnail, HEvents.H_STORY , story.getOID().toString(), HomageApplication.HM_STORY_DETAILS_TAB, true);
         }
     };
-
-
-
 
     private void createNewRemake() {
         if (story == null) return;

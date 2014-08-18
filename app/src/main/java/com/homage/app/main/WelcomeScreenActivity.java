@@ -43,6 +43,7 @@ public class WelcomeScreenActivity extends FragmentActivity {
 
         b.putString(HEvents.HK_VIDEO_ENTITY_ID, "");
         b.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_INTRO_MOVIE);
+        b.putInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_WELCOME_SCREEN);
 
         FragmentManager fm = getSupportFragmentManager();
         VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment)fm.findFragmentById(R.id.videoPlayerFragment);
