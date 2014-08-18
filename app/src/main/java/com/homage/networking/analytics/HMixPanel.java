@@ -5,6 +5,7 @@ package com.homage.networking.analytics;
 import android.content.Context;
 import android.util.Log;
 
+import com.homage.app.R;
 import com.homage.model.User;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
@@ -30,7 +31,11 @@ public class HMixPanel {
         this.context = context;
 
         // Do your initializations here.
-        mMixpanel = MixpanelAPI.getInstance(context, MIXPANEL_TOKEN);
+        boolean isProductionServer = context.getResources().getBoolean(R.bool.is_production_server);
+
+        if (isProductionServer) {
+            mMixpanel = MixpanelAPI.getInstance(context, MIXPANEL_TOKEN);
+        }
     }
 
     private static HMixPanel instance = new HMixPanel();
@@ -60,9 +65,7 @@ public class HMixPanel {
             }
 
             // Send the tracking event using mixpanel.
-            mMixpanel.track(eventName, props);
-
-
+            if (mMixpanel != null) mMixpanel.track(eventName, props);
         } catch (JSONException e) {
             Log.e(TAG, "Mixpanel tracking JSON error.", e);
         } catch (Exception e) {
@@ -81,7 +84,7 @@ public class HMixPanel {
             }
 
             // Send the tracking event using mixpanel.
-            mMixpanel.registerSuperProperties(props);
+            if (mMixpanel != null) mMixpanel.registerSuperProperties(props);
 
 
         } catch (JSONException e) {
@@ -111,7 +114,7 @@ public class HMixPanel {
                 props.put(k, v);
             }
 
-            mMixpanel.getPeople().set(props);
+            if (mMixpanel != null) mMixpanel.getPeople().set(props);
 
         } catch (JSONException e) {
             Log.e(TAG, "Mixpanel set people JSON error.", e);
@@ -122,7 +125,7 @@ public class HMixPanel {
 
     public void createAliasForUser(User user, String alias)
     {
-        mMixpanel.alias(alias,null);
+        if (mMixpanel != null) mMixpanel.alias(alias,null);
     }
     //endregion
 

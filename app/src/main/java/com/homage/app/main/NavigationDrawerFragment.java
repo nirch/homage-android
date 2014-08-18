@@ -312,16 +312,16 @@ public class NavigationDrawerFragment extends Fragment {
         mCurrentSelectedPosition = position;
 
         switch (position) {
-            case 0: //stories
+            case 1: //stories
                 HMixPanel.sh().track("UserPressedStoriesTab", null);
                 break;
-            case 1: //me
+            case 2: //me
                 HMixPanel.sh().track("UserPressedmeTab", null);
                 break;
-            case 2: //settings
+            case 3: //settings
                 HMixPanel.sh().track("UserPressedSettingsTab", null);
                 break;
-            case 3: //intro movie
+            case 4: //intro movie
                 HMixPanel.sh().track("UserPressedIntroStoryTab", null);
                 break;
             default:

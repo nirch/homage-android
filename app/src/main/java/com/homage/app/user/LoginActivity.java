@@ -205,13 +205,13 @@ public class LoginActivity extends Activity {
 
         if (user.getOID().equals(User.getCurrent().getOID().toString())) {
             HashMap props = new HashMap<String,String>();
-            props.put("login_method" , HMSameConnect);
+            props.put("login_method" , Integer.toString(HMSameConnect));
             HMixPanel.sh().track("UserLogin",props);
             return;
         }
 
         HashMap props = new HashMap<String,String>();
-        props.put("login_method",login_method);
+        props.put("login_method",Integer.toString(login_method));
         if (user.isFirstUse) {
             HMixPanel.sh().track("UserSignup",props);
         } else {
@@ -314,7 +314,7 @@ public class LoginActivity extends Activity {
                 }
 
                 HashMap props = new HashMap<String,String>();
-                props.put("login_method",login_method);
+                props.put("login_method",Integer.toString(login_method));
                 HMixPanel.sh().track("UserUpdate",props);
 
                 LoginActivity.this.startActivity(startIntent);

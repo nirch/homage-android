@@ -109,8 +109,8 @@ public class HEvents {
                 totalDurationMilSeconds = Integer.parseInt(info.get(HEvents.HK_VIDEO_TOTAL_DURATION).toString());
                 totalDuration = totalDurationMilSeconds / 1000;
                 HomageServer.sh().reportVideoViewStop(viewID,entityType,entityID,userID,playbackTime,totalDuration);
-                props.put("playing_time",playbackTime);
-                props.put("total_duration",totalDuration);
+                props.put("playing_time",Integer.toString(playbackTime));
+                props.put("total_duration",Integer.toString(totalDuration));
                 HMixPanel.sh().track("finish_playing_video",props);
                 viewID = null;
 
@@ -123,8 +123,8 @@ public class HEvents {
                 totalDurationMilSeconds = Integer.parseInt(info.get(HEvents.HK_VIDEO_TOTAL_DURATION).toString());
                 totalDuration = totalDurationMilSeconds / 1000;
                 HomageServer.sh().reportVideoViewStop(viewID,entityType,entityID,userID,playbackTime,totalDuration);
-                props.put("playing_time",playbackTime);
-                props.put("total_duration",totalDuration);
+                props.put("playing_time",Integer.toString(playbackTime));
+                props.put("total_duration",Integer.toString(totalDuration));
                 HMixPanel.sh().track("stop_playing_video",props);
                 viewID = null;
                 break;
