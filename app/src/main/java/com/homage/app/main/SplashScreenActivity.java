@@ -50,10 +50,6 @@ public class SplashScreenActivity extends Activity {
                 overridePendingTransition(0, 0);
             } else {
                 Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
-                //String userID = user.getOID().toString();
-                //String sessionID = new ObjectId().toString();
-                //HomageServer.sh().reportSessionBegin(sessionID,userID);
-                //HomageApplication.getInstance().currentSessionID = sessionID;
                 SplashScreenActivity.this.startActivity(intent);
                 SplashScreenActivity.this.finish();
                 overridePendingTransition(0, 0);
