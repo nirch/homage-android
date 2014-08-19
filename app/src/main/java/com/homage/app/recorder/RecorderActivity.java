@@ -231,6 +231,8 @@ public class RecorderActivity extends Activity {
         }
         //endregion
 
+        updateVideosPageIndicator(0);
+
         //region *** Bind to UI event handlers ***
         /**********************************/
         /** Binding to UI event handlers **/
@@ -681,12 +683,18 @@ public class RecorderActivity extends Activity {
         videosAdapter.hideSurfaces();
         showOverlayButtons(false);
 
-        CameraManager cm = CameraManager.sh();
-        cm.preview.show();
-        hideCurtainsAnimated(true);
+        final CameraManager cm = CameraManager.sh();
         videosAdapter.done();
         updateScriptBar();
         aq.id(R.id.createMovieButton).visibility(View.GONE);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                cm.preview.show();
+                hideCurtainsAnimated(true);
+            }
+        }, 400);
     }
 
     private void controlsDrawerOpened() {
