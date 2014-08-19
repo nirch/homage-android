@@ -166,7 +166,14 @@ public class MyStoriesFragment extends Fragment {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         AlertDialog alert = builder.setMessage(R.string.share_signed_in_only)
                                 .setTitle(R.string.join_us_title)
-                                .setPositiveButton(R.string.ok_got_it, null)
+                                .setNegativeButton(R.string.ok_got_it, null)
+                                .setPositiveButton(R.string.join_us_title, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        MainActivity activity = (MainActivity)getActivity();
+                                        activity.showLogin();
+                                    }
+                                })
                                 .create();
                         alert.show();
                         return;
