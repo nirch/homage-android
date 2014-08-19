@@ -211,6 +211,7 @@
             android:name="com.homage.networking.uploader.UploaderService"
             android:exported="false"
             />
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="7bd6b9ef1b8248abf003986810a461d1dc6b3c13"/>
 
         <!-- GCM -->
         <!--

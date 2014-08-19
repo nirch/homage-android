@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.view.View;
 
 import com.androidquery.AQuery;
+import com.crashlytics.android.Crashlytics;
 import com.homage.app.R;
 import com.homage.app.user.LoginActivity;
 import com.homage.model.User;
@@ -23,6 +24,7 @@ public class SplashScreenActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Crashlytics.start(this);
         setContentView(R.layout.activity_splash_screen);
         aq = new AQuery(this);
 
