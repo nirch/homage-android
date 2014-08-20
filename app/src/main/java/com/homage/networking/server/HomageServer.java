@@ -74,14 +74,13 @@ public class HomageServer extends Server {
     //endregion
     final static public String IK_REMAKE_OID        = "remakeOID";
     final static public String IK_USER_OID          = "userOID";
-<<<<<<< HEAD
+
     final static public int HMSTORY      = 0;
     final static public int HMREMAKE     = 1;
     final static public int HMINTROMOVIE = 2;
     final static public int HMSCENE      = 3;
     final static public String HMPlaybackEventStart = "0";
     final static public String HMPlaybackEventStop = "1";
-=======
     //endregion
 
     //region *** more settings ***
@@ -89,7 +88,6 @@ public class HomageServer extends Server {
     public int topRemakesCount = 10;
     //endregion
 
->>>>>>> a57ede48db820f387e51386ab17f8df65c95a0b4
     //region *** singleton pattern ***
     private static HomageServer instance = new HomageServer();
 

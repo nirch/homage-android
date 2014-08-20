@@ -22,13 +22,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 18
-<<<<<<< HEAD
-        versionCode 800
-        versionName "0.8.2"
-=======
-        versionCode 804
+        versionCode 805
         versionName "0.8.4"
->>>>>>> a57ede48db820f387e51386ab17f8df65c95a0b4
     }
     buildTypes {
         release {
