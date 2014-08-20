@@ -79,6 +79,8 @@ public class HEvents {
 
         int entityType    = Integer.parseInt(info.get(HK_VIDEO_ENTITY_TYPE).toString());
         String entityID   = info.get(HK_VIDEO_ENTITY_ID).toString();
+
+        if (User.getCurrent() == null) return;
         String userID     = User.getCurrent().getOID().toString();
         int originatingScreen = Integer.parseInt(info.get(HEvents.HK_VIDEO_ORIGINATING_SCREEN).toString());
 

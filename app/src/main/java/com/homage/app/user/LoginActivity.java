@@ -419,6 +419,7 @@ public class LoginActivity extends Activity {
         List<String> permissions = Arrays.asList("email,user_birthday,public_profile");
         Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(LoginActivity.this, permissions);
         LoginButton loginButton = (LoginButton)findViewById(R.id.facebookLoginButton);
+        loginButton.setReadPermissions(Arrays.asList("public_profile","email", "user_birthday"));
         loginButton.setVisibility(View.VISIBLE);
         aq.id(R.id.facebookLoginButton).animate(R.anim.animation_fadein_with_zoom);
 
