@@ -196,7 +196,7 @@ abstract public class Server {
 
         // Send the GET request in the background.
         String url = url(urlID);
-        url = url + "/" + urlSuffix;
+        if (urlSuffix!=null) url = url + "/" + urlSuffix;
         new BackgroundRequest().execute("GET", url, parameters, intentName, info, parser);
     }
 

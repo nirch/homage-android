@@ -28,6 +28,7 @@ package com.homage.networking.server;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.res.Resources;
 import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -73,12 +74,22 @@ public class HomageServer extends Server {
     //endregion
     final static public String IK_REMAKE_OID        = "remakeOID";
     final static public String IK_USER_OID          = "userOID";
+<<<<<<< HEAD
     final static public int HMSTORY      = 0;
     final static public int HMREMAKE     = 1;
     final static public int HMINTROMOVIE = 2;
     final static public int HMSCENE      = 3;
     final static public String HMPlaybackEventStart = "0";
     final static public String HMPlaybackEventStop = "1";
+=======
+    //endregion
+
+    //region *** more settings ***
+    public boolean prefetchTopRemakes = false;
+    public int topRemakesCount = 10;
+    //endregion
+
+>>>>>>> a57ede48db820f387e51386ab17f8df65c95a0b4
     //region *** singleton pattern ***
     private static HomageServer instance = new HomageServer();
 
@@ -124,6 +135,11 @@ public class HomageServer extends Server {
                 userAgent,
                 HomageApplication.getInstance().getVersionName()
         );
+
+        // More settings
+        Resources res = context.getResources();
+        prefetchTopRemakes = res.getBoolean(R.bool.prefetch_top_remakes);
+        topRemakesCount = res.getInteger(R.integer.top_remakes_count);
     }
     //endregion
 
@@ -133,7 +149,18 @@ public class HomageServer extends Server {
      */
     public void refetchStories() {
         Log.v(TAG, "Refetching stories");
-        super.GET(R.string.url_stories, null, INTENT_STORIES, null, new StoriesParser());
+
+        HashMap<String, String> parameters;
+
+        if (prefetchTopRemakes) {
+            // Also prefetch the top remakes for each story.
+            parameters = new HashMap<String, String>();
+            parameters.put("remakes", "6");
+        } else {
+            // Fetch stories only.
+            parameters = null;
+        }
+        super.GET(R.string.url_stories, null, parameters, INTENT_STORIES, null, new StoriesParser());
     }
     //endregion
 

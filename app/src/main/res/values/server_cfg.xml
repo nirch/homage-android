@@ -2,6 +2,12 @@
 <resources>
     <bool name="is_production_server">false</bool>
 
+    <!-- prefetch_top_remakes: experimental. not implemented yet. Leave as false for now -->
+    <bool name="prefetch_top_remakes">false</bool>
+
+    <!-- top_remakes_count: Limits the number of remakes to fetch when entering a stort details screen -->
+    <integer name="top_remakes_count">10</integer>
+
     <!-- DEV Server -->
     <!--<string name="server_dev_host">homage-server-app-dev.elasticbeanstalk.com</string>-->
     <string name="server_dev_host">192.168.0.102</string>
