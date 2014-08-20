@@ -600,8 +600,18 @@ public class MainActivity extends ActionBarActivity
     }
     //endregion
 
-    public void refetchRemakesForStory(Story story) {
+    public void refetchTopRemakesForStory(Story story) {
+        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, 10, null); // Implement partial fetch
+        showRefreshProgress();
+    }
+
+    public void refetchAllRemakesForStory(Story story) {
         HomageServer.sh().refetchRemakesForStory(story.getOID(), null, null, null); // Implement partial fetch
+        showRefreshProgress();
+    }
+
+    public void refetchMoreRemakesForStory(Story story) {
+        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, null, 10); // Implement partial fetch
         showRefreshProgress();
     }
 
@@ -769,7 +779,7 @@ public class MainActivity extends ActionBarActivity
 
                 case SECTION_STORY_DETAILS:
                     if (currentStory==null) break;
-                    refetchRemakesForStory(MainActivity.this.currentStory);
+                    refetchAllRemakesForStory(MainActivity.this.currentStory);
                     break;
 
                 case SECTION_ME:

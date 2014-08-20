@@ -28,6 +28,7 @@ package com.homage.networking.server;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.res.Resources;
 import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -71,6 +72,11 @@ public class HomageServer extends Server {
     final static public String IK_USER_OID          = "userOID";
     //endregion
 
+    //region *** more settings ***
+    public boolean prefetchTopRemakes = false;
+    public int topRemakesCount = 10;
+    //endregion
+
     //region *** singleton pattern ***
     private static HomageServer instance = new HomageServer();
     public static HomageServer sharedInstance() {
@@ -105,6 +111,11 @@ public class HomageServer extends Server {
                 userAgent,
                 HomageApplication.getInstance().getVersionName()
         );
+
+        // More settings
+        Resources res = context.getResources();
+        prefetchTopRemakes = res.getBoolean(R.bool.prefetch_top_remakes);
+        topRemakesCount = res.getInteger(R.integer.top_remakes_count);
     }
     //endregion
 
@@ -114,7 +125,18 @@ public class HomageServer extends Server {
      */
     public void refetchStories() {
         Log.v(TAG, "Refetching stories");
-        super.GET(R.string.url_stories, null, INTENT_STORIES, null, new StoriesParser());
+
+        HashMap<String, String> parameters;
+
+        if (prefetchTopRemakes) {
+            // Also prefetch the top remakes for each story.
+            parameters = new HashMap<String, String>();
+            parameters.put("remakes", "6");
+        } else {
+            // Fetch stories only.
+            parameters = null;
+        }
+        super.GET(R.string.url_stories, null, parameters, INTENT_STORIES, null, new StoriesParser());
     }
     //endregion
 
