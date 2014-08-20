@@ -48,8 +48,6 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class HomageServer extends Server {
-    String TAG = "TAG_"+getClass().getName();
-
     //region *** Intent names ***
     final static public String INTENT_USER_CREATION             = "intent user creation";
     final static public String INTENT_STORIES                   = "intent stories";
@@ -64,12 +62,25 @@ public class HomageServer extends Server {
     final static public String INTENT_RENDER                    = "intent render";
     final static public String INTENT_USER_UPDATED              = "intent user updated";
     final static public String INTENT_USER_PREFERENCES_UPDATE   = "intent user preference update";
-    //endregion
-
+    final static public String INTENT_REMAKE_SHARE              = "intent remake share";
+    final static public String INTENT_STORY_VIEW                = "intent story view";
+    final static public String INTENT_REMAKE_VIEW               = "intent remake view";
+    final static public String INTENT_USER_BEGIN_SESSION        = "intent user begin session";
+    final static public String INTENT_USER_END_SESSION          = "intent user begin session";
+    final static public String INTENT_USER_UPDATE_SESSION       = "intent user begin session";
     //region *** info keys ***
     final static public String IK_STORY_OID         = "storyOID";
+
+    //endregion
     final static public String IK_REMAKE_OID        = "remakeOID";
     final static public String IK_USER_OID          = "userOID";
+
+    final static public int HMSTORY      = 0;
+    final static public int HMREMAKE     = 1;
+    final static public int HMINTROMOVIE = 2;
+    final static public int HMSCENE      = 3;
+    final static public String HMPlaybackEventStart = "0";
+    final static public String HMPlaybackEventStop = "1";
     //endregion
 
     //region *** more settings ***
@@ -79,6 +90,10 @@ public class HomageServer extends Server {
 
     //region *** singleton pattern ***
     private static HomageServer instance = new HomageServer();
+
+    //endregion
+    String TAG = "TAG_"+getClass().getName();
+
     public static HomageServer sharedInstance() {
         if(instance == null) instance = new HomageServer();
         return instance;
@@ -103,6 +118,13 @@ public class HomageServer extends Server {
         urlIDs.add(R.string.url_text);
         urlIDs.add(R.string.url_update_user);
         urlIDs.add(R.string.url_user_remakes);
+        urlIDs.add(R.string.url_session_update);
+        urlIDs.add(R.string.url_session_end);
+        urlIDs.add(R.string.url_session_begin);
+        urlIDs.add(R.string.url_view_remake);
+        urlIDs.add(R.string.url_view_story);
+        urlIDs.add(R.string.url_share_remake);
+
         super.initURLSCache(urlIDs);
 
         // Set the user agent.
@@ -421,8 +443,11 @@ public class HomageServer extends Server {
         UserParser userParser = new UserParser();
         userParser.loginParsedUser = true;
 
+        HashMap<String, Object> info = new HashMap<String, Object>();
+        info.put("user_id",user.getOID());
+
         // Post the request
-        super.PUT(R.string.url_update_user, parameters, INTENT_USER_UPDATED, null, userParser);
+        super.PUT(R.string.url_update_user, parameters, INTENT_USER_UPDATED, info, userParser);
     }
 
     public void updateUserPreferences(HashMap<String, String> parameters) {
@@ -444,4 +469,95 @@ public class HomageServer extends Server {
 
 
     //endregion
+
+    // *** Analytics ***
+    //-(NSString *)generateBSONID;
+    //-(void)reportRemakeShare:(NSString *)remakeID forUserID:(NSString *)userID shareMethod:(NSNumber *)shareMethod;
+    //-(void)reportVideoStartWithViewID:(NSString *)viewID forEntity:(NSInteger)entityType withID:(NSString *)entityID forUserID:(NSString *)userID;
+    //-(void)reportVideoStopWithViewID:(NSString *)viewID forEntity:(NSInteger)entityType withID:(NSString *)entityID forUserID:(NSString *)userID forDuration:(NSNumber *)playbackTime outOfTotalDuration:(NSNumber *)videoDuration;
+    //-(void)reportSession:(NSString *)sessionID beginForUser:(NSString *)userID;
+    //-(void)reportSession:(NSString *)sessionID endForUser:(NSString *)userID;
+    //-(void)reportSession:(NSString *)sessionID updateForUser:(NSString *)userID;
+
+  public void reportRemakeShareForUser (String remakeID, String userID, int shareMethod)
+  {
+      Log.v(TAG, String.format("Reporting remake: %s user: %s" , remakeID , userID));
+      HashMap<String,String> params = new HashMap<String, String>();
+      params.put("user_id", userID);
+      params.put("remake_id", remakeID);
+      params.put("share_method", String.format("%d" ,shareMethod));
+
+      super.POST(R.string.url_share_remake, params, INTENT_REMAKE_SHARE, null, null);
+
+  }
+
+  public void reportVideoViewStart(String viewID, int entityType, String entityID, String userID, int originatingScreen)
+  {
+      Log.v(TAG, String.format("Reporting view start: %s for entity: %s user: %s" , viewID , entityID, userID));
+      HashMap<String,String> params = new HashMap<String, String>();
+      params.put("view_id" , viewID);
+      params.put("user_id" , userID);
+      params.put("playback_event", HMPlaybackEventStart);
+      params.put("originating_screen" , Integer.toString(originatingScreen));
+
+      if (entityType == HMSTORY)
+      {
+          params.put("story_id", entityID);
+          super.POST(R.string.url_view_story, params, INTENT_STORY_VIEW, null, null);
+      } else if (entityType == HMREMAKE)
+      {
+          params.put("remake_id", entityID);
+          super.POST(R.string.url_view_remake, params, INTENT_REMAKE_VIEW, null, null);
+      }
+  }
+
+   public void reportVideoViewStop(String viewID, int entityType, String entityID, String userID, int playbackTime, int totalDuration, int originatingScreen)
+   {
+     Log.v(TAG, String.format("Reporting view stop: %s for entity: %s user: %s" , viewID , entityID, userID));
+     HashMap<String,String> params = new HashMap<String, String>();
+     params.put("view_id" , viewID);
+     params.put("user_id" , userID);
+     params.put("playback_event", HMPlaybackEventStop);
+     params.put("playback_duration", String.format("%d", playbackTime));
+     params.put("total_duration", String.format("%d", totalDuration));
+     params.put("originating_screen" , Integer.toString(originatingScreen));
+
+        if (entityType == HMSTORY)
+        {
+            params.put("story_id", entityID);
+            super.POST(R.string.url_view_story, params, INTENT_STORY_VIEW, null, null);
+        } else if (entityType == HMREMAKE)
+        {
+            params.put("remake_id", entityID);
+            super.POST(R.string.url_view_remake, params, INTENT_REMAKE_VIEW, null, null);
+        }
+   }
+
+   public void reportSessionBegin(String sessionID, String userID)
+   {
+       Log.v(TAG, String.format("Reporting session: %s begin for user: %s" , sessionID, userID));
+       HashMap<String,String> params = new HashMap<String, String>();
+       params.put("session_id", sessionID);
+       params.put("user_id", userID);
+       super.POST(R.string.url_session_begin, params, INTENT_USER_BEGIN_SESSION, null, null);
+   }
+
+    public void reportSessionEnd(String sessionID, String userID)
+    {
+        Log.v(TAG, String.format("Reporting session: %s end for user: %s" , sessionID, userID));
+        HashMap<String,String> params = new HashMap<String, String>();
+        params.put("session_id", sessionID);
+        params.put("user_id", userID);
+        super.POST(R.string.url_session_end, params, INTENT_USER_END_SESSION, null, null);
+    }
+
+    public void reportSessionUpdate(String sessionID, String userID)
+    {
+        Log.v(TAG, String.format("Reporting session: %s update for user: %s" , sessionID, userID));
+        HashMap<String,String> params = new HashMap<String, String>();
+        params.put("session_id", sessionID);
+        params.put("user_id", userID);
+        super.POST(R.string.url_session_update, params, INTENT_USER_UPDATE_SESSION, null, null);
+    }
+    // end region
 }

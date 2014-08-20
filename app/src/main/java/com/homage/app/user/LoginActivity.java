@@ -17,31 +17,30 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.facebook.*;
-import com.facebook.android.Facebook;
 import com.facebook.model.*;
 import com.facebook.widget.LoginButton;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.main.WelcomeScreenActivity;
-import com.homage.model.Remake;
 import com.homage.model.User;
+import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import com.homage.views.ActivityHelper;
 
+import org.bson.types.ObjectId;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,12 +53,20 @@ public class LoginActivity extends Activity {
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
+    public final static int HMFaceBookConnect       = 0;
+    public final static int HMMailConnect           = 1;
+    public final static int HMGuestConnect          = 2;
+    public final static int HMTwitterConnect        = 3;
+    public final static int HMSameConnect = 4;
+
 
     AQuery aq;
     ProgressDialog pd;
 
     boolean allowGuestLogin = false;
     boolean startMainActivityAfterLogin = false;
+
+    int login_method;
 
     //region *** Lifecycle ***
     @Override
@@ -161,6 +168,58 @@ public class LoginActivity extends Activity {
         HomageServer.sh().createGuest();
     }
 
+    private boolean shouldExcludethisAdressFromMixpanel(String userEmail)
+    {
+        ArrayList<String> mailAdresses = new ArrayList<String>(Arrays.asList("yoavcaspin@gmail.com","nir@homage.it","tomer@homage.it","yoav@homage.it","nirh2@yahoo.com","nir.channes@gmail.com","ranpeer@gmail.com","tomer.harry@gmail.com","hiorit@gmail.com"));
+
+        for (String mail : mailAdresses)
+        {
+           if (mail.equals(userEmail)) return true;
+        }
+
+        return false;
+    }
+
+    private void registerLoginAnalyticsForUser(User user) {
+
+        HMixPanel.sh().identify(user.getOID().toString());
+
+        if (user.email != null) {
+            HashMap props = new HashMap<String,String>();
+            props.put("email",user.email);
+            props.put("homage_id",user.getOID().toString());
+            HMixPanel.sh().registerSuperProperties(props);
+            HMixPanel.sh().setPeople(props);
+
+            if (shouldExcludethisAdressFromMixpanel(user.email))
+            {
+                props = new HashMap<String,String>();
+                props.put("$ignore","true");
+                HMixPanel.sh().registerSuperProperties(props);
+            }
+        } else {
+            HashMap props = new HashMap<String, String>();
+            props.put("email", "guest");
+            props.put("homage_id", user.getOID().toString());
+        }
+
+        if (user.getOID().equals(User.getCurrent().getOID().toString())) {
+            HashMap props = new HashMap<String,String>();
+            props.put("login_method" , Integer.toString(HMSameConnect));
+            HMixPanel.sh().track("UserLogin",props);
+            return;
+        }
+
+        HashMap props = new HashMap<String,String>();
+        props.put("login_method",Integer.toString(login_method));
+        if (user.isFirstUse) {
+            HMixPanel.sh().track("UserSignup",props);
+        } else {
+            HMixPanel.sh().track("UserLogin",props);
+        }
+    }
+
+
     // Observers handlers
     private BroadcastReceiver onUserCreation = new BroadcastReceiver() {
         @Override
@@ -181,7 +240,18 @@ public class LoginActivity extends Activity {
                     startIntent = new Intent(LoginActivity.this, MainActivity.class);
                     Toast.makeText(LoginActivity.this, String.format("Hello %s", user.getTag()), Toast.LENGTH_LONG).show();
                 }
-                HomageServer.sh().updateAppInfo(user.getOID());
+
+                if (HomageApplication.getInstance().currentSessionID != null)
+                {
+                    HomageServer.sh().updateAppInfo(user.getOID());
+                    String sessionID = new ObjectId().toString();
+                    String userID    = user.getOID().toString();
+                    HomageServer.sh().reportSessionBegin(sessionID,userID);
+                    HomageApplication.getInstance().currentSessionID = sessionID;
+                }
+
+                registerLoginAnalyticsForUser(user);
+
                 LoginActivity.this.startActivity(startIntent);
                 overridePendingTransition(0, 0);
                 LoginActivity.this.finish();
@@ -202,13 +272,51 @@ public class LoginActivity extends Activity {
             if (pd != null) pd.dismiss();
             Bundle b = intent.getExtras();
             boolean success = b.getBoolean("success", false);
+            HashMap<String, Object> requestInfo = (HashMap<String, Object>)
+                    intent.getSerializableExtra(Server.SR_REQUEST_INFO);
+
             if (success) {
                 User user = User.getCurrent();
                 if (user == null) return;
 
+                final String previousUserID = (String)requestInfo.get("user_id");
+
                 Intent startIntent;
                 startIntent = new Intent(LoginActivity.this, MainActivity.class);
                 Toast.makeText(LoginActivity.this, String.format("Hello %s", user.getTag()), Toast.LENGTH_LONG).show();
+
+                if (!previousUserID.equals(user.getOID().toString())) {
+                    HMixPanel.sh().createAliasForUser(user,previousUserID);
+                    HMixPanel.sh().identify(user.getOID());
+
+                    String sessionID = HomageApplication.getInstance().currentSessionID;
+                    String userID    = user.getOID().toString();
+                    HomageServer.sh().reportSessionUpdate(sessionID,userID);
+                }
+
+                if (user.email != null) {
+                    HashMap props = new HashMap<String,String>();
+                    props.put("email",user.email);
+                    props.put("homage_id",user.getOID().toString());
+                    HMixPanel.sh().registerSuperProperties(props);
+                    HMixPanel.sh().setPeople(props);
+
+                    if (shouldExcludethisAdressFromMixpanel(user.email))
+                    {
+                        props = new HashMap<String,String>();
+                        props.put("$ignore","true");
+                        HMixPanel.sh().registerSuperProperties(props);
+                    }
+                } else {
+                    HashMap props = new HashMap<String, String>();
+                    props.put("email", "unknown");
+                    props.put("homage_id", user.getOID().toString());
+                }
+
+                HashMap props = new HashMap<String,String>();
+                props.put("login_method",Integer.toString(login_method));
+                HMixPanel.sh().track("UserUpdate",props);
+
                 LoginActivity.this.startActivity(startIntent);
                 overridePendingTransition(0, 0);
                 LoginActivity.this.finish();
@@ -318,11 +426,13 @@ public class LoginActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Resources res = getResources();
+                login_method = HMFaceBookConnect;
                 pd = new ProgressDialog(LoginActivity.this);
                 pd.setTitle(res.getString(R.string.login_pd_title));
                 pd.setMessage(res.getString(R.string.login_pd_signing_in));
                 pd.setCancelable(false);
-                pd.show();            }
+                pd.show();
+            }
         });
 
         loginButton.setSessionStatusCallback(new Session.StatusCallback() {
@@ -457,6 +567,7 @@ public class LoginActivity extends Activity {
             String user = aq.id(R.id.loginMail).getText().toString().trim();
             String password = aq.id(R.id.loginPassword).getText().toString().trim();
             if (validatedUserPassword(user, password)) {
+                login_method = HMMailConnect;
                 login(user, password);
             }
         }
@@ -474,6 +585,7 @@ public class LoginActivity extends Activity {
             if (allowGuestLogin && user == null) {
                 // Pressed guest login.
                 Log.d(TAG, "Pressed login as guest.");
+                login_method = HMGuestConnect;
                 loginAsGuest();
                 return;
             }

@@ -70,6 +70,7 @@ public class RemakeParser extends Parser {
         remake.grade =          parseInt("grade",0);
         remake.createdAt =      parseDateAsTimestamp("created_at",-1);
         remake.stillPublic =    true;
+        remake.userID      =    Parser.parseOID(remakeInfo.getJSONObject("user_id"));
 
         remake.save();
 

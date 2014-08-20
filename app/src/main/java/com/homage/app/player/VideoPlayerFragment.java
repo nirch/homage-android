@@ -22,6 +22,7 @@ import android.widget.VideoView;
 import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.networking.analytics.HEvents;
+import com.homage.networking.server.HomageServer;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -62,6 +63,9 @@ public class VideoPlayerFragment
     String filePath;
     String fileURL;
     String thumbURL;
+    String entityID;
+    int entityType;
+    int originatingScreen;
     int thumbDrawableId;
 
     // More settings
@@ -216,6 +220,10 @@ public class VideoPlayerFragment
         info = new HashMap<String, Object>();
         initTime = System.currentTimeMillis();
         filePath = b.getString(K_FILE_PATH);
+        entityType = b.getInt(HEvents.HK_VIDEO_ENTITY_TYPE);
+        entityID = b.getString(HEvents.HK_VIDEO_ENTITY_ID);
+        originatingScreen = b.getInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN);
+
         if (filePath == null) {
             fileURL = b.getString(K_FILE_URL);
             if (fileURL == null) return;
@@ -224,6 +232,9 @@ public class VideoPlayerFragment
             info.put(HEvents.HK_VIDEO_FILE_PATH,filePath);
         }
         info.put(HEvents.HK_VIDEO_INIT_TIME, initTime);
+        info.put(HEvents.HK_VIDEO_ENTITY_TYPE, entityType);
+        info.put(HEvents.HK_VIDEO_ENTITY_ID, entityID);
+        info.put(HEvents.HK_VIDEO_ORIGINATING_SCREEN, originatingScreen);
 
         // More settings
         allowToggleFullscreen = b.getBoolean(K_ALLOW_TOGGLE_FULLSCREEN, true);
@@ -256,7 +267,11 @@ public class VideoPlayerFragment
         Log.d(TAG, String.format("Finished playing video: %s", filePath));
         videoView.pause();
         if (onFinishedPlayback != null) {
+            info.put(HEvents.HK_VIDEO_PLAYBACK_TIME, videoView.getCurrentPosition());
+            info.put(HEvents.HK_VIDEO_TOTAL_DURATION, videoView.getDuration());
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_FINISH, info);
             new Handler().post(onFinishedPlayback);
+
         }
         if (finishOnCompletion) {
             getActivity().finish();
@@ -283,6 +298,7 @@ public class VideoPlayerFragment
         aq.id(R.id.videoCurtain).visibility(View.GONE);
         aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
         if (autoStartPlaying) {
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_WILL_PLAY , info);
             start();
         }
 
@@ -324,7 +340,6 @@ public class VideoPlayerFragment
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PAUSE, info);
             pause();
         } else {
-            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
             start();
         }
     }
@@ -369,8 +384,14 @@ public class VideoPlayerFragment
 
     //region *** video commands ***
     void fullStop() {
+        HashMap<String, Object> eInfo = new HashMap<String, Object>(info);
+        eInfo.put(HEvents.HK_VIDEO_PLAYBACK_TIME, videoView.getCurrentPosition());
+        eInfo.put(HEvents.HK_VIDEO_TOTAL_DURATION, videoView.getDuration());
+
         videoView.seekTo(0);
         videoView.pause();
+
+        HEvents.sh().track(HEvents.H_EVENT_VIDEO_FULL_STOP, eInfo);
         if (onFinishedPlayback != null) {
             new Handler().post(onFinishedPlayback);
         }
@@ -401,7 +422,8 @@ public class VideoPlayerFragment
         public void onClick(View v) {
 
             HashMap<String, Object> eInfo = new HashMap<String, Object>(info);
-            eInfo.put(HEvents.HK_VIDEO_POSITION, videoView.getCurrentPosition());
+            eInfo.put(HEvents.HK_VIDEO_PLAYBACK_TIME, videoView.getCurrentPosition());
+            eInfo.put(HEvents.HK_VIDEO_TOTAL_DURATION, videoView.getDuration());
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_STOP, eInfo);
 
             fullStop();

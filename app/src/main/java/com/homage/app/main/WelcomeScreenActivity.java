@@ -14,7 +14,11 @@ import android.view.View;
 import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.player.VideoPlayerFragment;
+import com.homage.networking.analytics.HEvents;
+import com.homage.networking.analytics.HMixPanel;
 import com.homage.views.ActivityHelper;
+
+import java.util.HashMap;
 
 public class WelcomeScreenActivity extends FragmentActivity {
     static final String TAG = "TAG_WelcomeScreenActivity";
@@ -36,6 +40,10 @@ public class WelcomeScreenActivity extends FragmentActivity {
         b.putBoolean(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
         b.putString(VideoPlayerFragment.K_FILE_URL, videoURL.toString());
         b.putInt(VideoPlayerFragment.K_THUMB_DRAWABLE_ID, R.drawable.intro_video_thumb);
+
+        b.putString(HEvents.HK_VIDEO_ENTITY_ID, "");
+        b.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_INTRO_MOVIE);
+        b.putInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_WELCOME_SCREEN);
 
         FragmentManager fm = getSupportFragmentManager();
         VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment)fm.findFragmentById(R.id.videoPlayerFragment);
@@ -112,6 +120,7 @@ public class WelcomeScreenActivity extends FragmentActivity {
             WelcomeScreenActivity.this.startActivity(startIntent);
             overridePendingTransition(0, 0);
             WelcomeScreenActivity.this.finish();
+            HMixPanel.sh().track("pushed lets create",null);
         }
     };
     //endregion

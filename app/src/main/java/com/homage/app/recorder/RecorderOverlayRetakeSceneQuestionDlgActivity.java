@@ -8,11 +8,16 @@ import android.widget.Button;
 
 import com.androidquery.util.Constants;
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 import com.homage.model.Footage;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
+import com.homage.networking.analytics.HEvents;
+import com.homage.networking.analytics.HMixPanel;
+
+import java.util.HashMap;
 
 public class RecorderOverlayRetakeSceneQuestionDlgActivity extends RecorderOverlayDlgActivity {
     String TAG = "TAG_" + getClass().getName();
@@ -90,10 +95,16 @@ public class RecorderOverlayRetakeSceneQuestionDlgActivity extends RecorderOverl
             if (footage == null) return;
             Log.d(TAG, String.format("User want to see preview video: %s", footage.rawLocalFile));
 
+            HashMap props = new HashMap<String,String>();
+            props.put("story" , remake.getStory().name);
+            props.put("remake_id" , remake.getOID());
+            props.put("scene_id" , Integer.toString(scene.getSceneID()));
+            HMixPanel.sh().track("RESeePreview",props);
+
             // Open video player.
             FullScreenVideoPlayerActivity.openFullScreenVideoForFile(
                     RecorderOverlayRetakeSceneQuestionDlgActivity.this,
-                    footage.rawLocalFile,
+                    footage.rawLocalFile, HEvents.H_SCENE, null, HomageApplication.HM_RECORDER_PREVIEW,
                     true
             );
         }

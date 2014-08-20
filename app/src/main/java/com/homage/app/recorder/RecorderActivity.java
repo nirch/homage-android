@@ -54,6 +54,7 @@ import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.uploader.UploadManager;
 import com.homage.views.ActivityHelper;
@@ -61,6 +62,7 @@ import com.homage.views.Pacman;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -193,6 +195,11 @@ public class RecorderActivity extends Activity {
         //region *** Layout initializations ***
         Log.d(TAG, String.format("Started recorder for remake: %s", remake.getOID()));
 
+        HashMap props = new HashMap<String,String>();
+        props.put("story" , remake.getStory().name);
+        props.put("remake_id" , remake.getOID());
+        HMixPanel.sh().track("REEnterRecorder",props);
+
         // Make this activity, full screen with no title bar.
         ActivityHelper.goFullScreen(this);
 
@@ -291,7 +298,7 @@ public class RecorderActivity extends Activity {
 
     @Override
     protected void onStop() {
-        super.onResume();
+        super.onStop();
         CameraManager.sh().releaseCamera();
     }
 
@@ -654,6 +661,10 @@ public class RecorderActivity extends Activity {
             controlsDrawer.startAnimation(anim);
         } else {
             controlsDrawer.setTranslationY(0);
+            HashMap props = new HashMap<String,String>();
+            props.put("story" , remake.getStory().name);
+            props.put("remake_id" , remake.getOID());
+            HMixPanel.sh().track("REexpandMenu",props);
             controlsDrawerOpened();
         }
     }
@@ -985,6 +996,14 @@ public class RecorderActivity extends Activity {
 
         final Scene scene = story.findScene(currentSceneID);
         isRecording = true;
+
+        HashMap props = new HashMap<String,String>();
+        props.put("story" , remake.getStory().name);
+        props.put("remake_id" , remake.getOID());
+        props.put("scene_id", Integer.toString(currentSceneID));
+        HMixPanel.sh().track("REStartRecording",props);
+
+
         updateScriptBar();
 
         //
@@ -1120,7 +1139,14 @@ public class RecorderActivity extends Activity {
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+
+                HashMap props = new HashMap<String,String>();
+                props.put("story" , remake.getStory().name);
+                props.put("remake_id" , remake.getOID());
+                HMixPanel.sh().track("UserClosedRecorder",props);
+
                 recorderDoneWithReason(DISMISS_REASON_USER_ABORTED_PRESSING_X);
+
             }
         });
         builder.setNegativeButton(R.string.no, null);
@@ -1131,7 +1157,15 @@ public class RecorderActivity extends Activity {
     private void updateScriptBar() {
         aq.id(R.id.topScript).visibility(View.GONE);
         aq.id(R.id.bottomScript).visibility(View.GONE);
-        if (!shouldShowScriptBar) return;
+        HashMap props = new HashMap<String,String>();
+        props.put("story" , remake.getStory().name);
+        props.put("remake_id" , remake.getOID());
+        if (!shouldShowScriptBar) {
+            HMixPanel.sh().track("REHideScript", props);
+            return;
+        } else {
+            HMixPanel.sh().track("REShowScript",props);
+        }
 
         if (isRecording) {
             aq.id(R.id.bottomScript).visibility(View.VISIBLE);
@@ -1192,6 +1226,13 @@ public class RecorderActivity extends Activity {
     private void clickedSceneAtItem(int i) {
         Footage.ReadyState readyState = footagesReadyStates.get(i);
         Scene scene = scenes.get(i);
+
+        HashMap props = new HashMap<String,String>();
+        props.put("story" , remake.getStory().name);
+        props.put("remake_id" , remake.getOID());
+        props.put("scene_id" , Integer.toString(currentSceneID));
+        HMixPanel.sh().track("REReturnToScene",props);
+
         if (readyState == Footage.ReadyState.STILL_LOCKED) {
             Toast.makeText(
                     RecorderActivity.this,
@@ -1291,10 +1332,19 @@ public class RecorderActivity extends Activity {
         public void onClick(View view) {
             if (isRecording) return;
 
+            HashMap props = new HashMap<String,String>();
+            props.put("story" , remake.getStory().name);
+            props.put("remake_id" , remake.getOID());
+            props.put("scene_id", Integer.toString(currentSceneID));
+
             if (isCountingDownToRecording()) {
                 cancelCountingDownToRecording();
+                HMixPanel.sh().track("RECancelRecord",props);
+
             } else {
                 startCountingDownToRecording();
+                String eventName = String.format("REHitRecordScene%d" , currentSceneID);
+                HMixPanel.sh().track(eventName,props);
             }
         }
     };
@@ -1312,8 +1362,16 @@ public class RecorderActivity extends Activity {
             Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlaySceneMessageDlgActivity.class);
             myIntent.putExtra("remakeOID",remake.getOID());
             myIntent.putExtra("sceneID",currentSceneID);
+
+            HashMap props = new HashMap<String,String>();
+            props.put("story" , remake.getStory().name);
+            props.put("remake_id" , remake.getOID());
+            props.put("scene_id", Integer.toString(currentSceneID));
+            HMixPanel.sh().track("REMenuSceneDirection",props);
+
             RecorderActivity.this.startActivityForResult(myIntent, ACTION_DO_NOTHING);
             overridePendingTransition(R.anim.animation_fadein_with_zoom, R.anim.animation_fadeout_with_zoom);
+
         }
     };
 
@@ -1362,6 +1420,11 @@ public class RecorderActivity extends Activity {
         @Override
         public void onClick(View v) {
             CameraManager.sh().flipCamera();
+            HashMap props = new HashMap<String,String>();
+            props.put("story" , remake.getStory().name);
+            props.put("remake_id" , remake.getOID());
+            props.put("scene_id" , Integer.toString(currentSceneID));
+            HMixPanel.sh().track("REFlipCamera",props);
         }
     };
 
@@ -1371,6 +1434,13 @@ public class RecorderActivity extends Activity {
             if (!remake.allScenesTaken()) return;
             //stateMachine.setState(RecorderState.FINISHED_ALL_SCENES_MESSAGE);
             try {
+
+                HashMap props = new HashMap<String,String>();
+                props.put("story" , remake.getStory().name);
+                props.put("remake_id" , remake.getOID());
+                props.put("scene_id" , Integer.toString(currentSceneID));
+                HMixPanel.sh().track("RECreateMovie",props);
+
                 stateMachine.advanceState();
                 stateMachine.handleCurrentState();
             } catch (RecorderException e) {

@@ -10,6 +10,9 @@ import com.homage.app.R;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
+import com.homage.networking.analytics.HMixPanel;
+
+import java.util.HashMap;
 
 public class RecorderOverlaySceneMessageDlgActivity extends RecorderOverlayDlgActivity {
     String TAG = "TAG_" + getClass().getName();
@@ -51,7 +54,20 @@ public class RecorderOverlaySceneMessageDlgActivity extends RecorderOverlayDlgAc
 
         //region *** Bind to UI event handlers ***
         aq.id(R.id.actionButton).clicked(onClickedActionButton);
+
+        HashMap props = new HashMap<String,String>();
+        props.put("story",remake.getStory().name);
+        props.put("remake_id",remakeOID);
+        props.put("scene_id",Integer.toString(sceneID));
+        HMixPanel.sh().track("RESceneDescriptionStart",props);
         //endregion
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        HMixPanel.sh().track("RESceneDescriptionStart",null);
     }
 
     //region *** UI event handlers ***

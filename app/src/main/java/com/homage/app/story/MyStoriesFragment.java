@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 import com.homage.app.player.VideoPlayerFragment;
@@ -30,9 +31,12 @@ import com.homage.app.recorder.RecorderActivity;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.uploader.UploadManager;
+import com.homage.networking.analytics.HEvents;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 public class MyStoriesFragment extends Fragment {
@@ -80,6 +84,7 @@ public class MyStoriesFragment extends Fragment {
         } else {
             aq.id(R.id.noRemakesMessage).visibility(View.GONE);
         }
+        HMixPanel.sh().track("MEUserRefresh",null);
         adapter.notifyDataSetChanged();
     }
 
@@ -98,7 +103,7 @@ public class MyStoriesFragment extends Fragment {
 
     private void openRecorderForNewRemake(Story story) {
         Log.d(TAG, "new remake");
-        MainActivity mainActivity = (MainActivity)getActivity();
+        MainActivity mainActivity = (MainActivity) getActivity();
         mainActivity.remakeStory(story);
     }
 
@@ -125,14 +130,19 @@ public class MyStoriesFragment extends Fragment {
 
         @Override
         public View getView(int i, View rowView, ViewGroup viewGroup) {
-            if (rowView == null) rowView = inflater.inflate(R.layout.list_row_my_story, myStoriesListView, false);
-            final Remake remake = (Remake)getItem(i);
+            if (rowView == null)
+                rowView = inflater.inflate(R.layout.list_row_my_story, myStoriesListView, false);
+            final Remake remake = (Remake) getItem(i);
             final Story story = remake.getStory();
+
+            final HashMap props = new HashMap<String,String>();
+            props.put("story" , story.name);
+            props.put("remake_id", remake.getOID());
 
             AQuery aq = new AQuery(rowView);
             aq.id(R.id.storyName).text(story.name);
 
-            if (i>3) {
+            if (i > 3) {
                 aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
             } else {
                 aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark);
@@ -151,7 +161,7 @@ public class MyStoriesFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, String.format("my story, clicked delete: %s", remake.getOID()));
-                    MainActivity mainActivity = (MainActivity)getActivity();
+                    MainActivity mainActivity = (MainActivity) getActivity();
                     mainActivity.askUserIfWantToDeleteRemake(remake);
                 }
             });
@@ -187,7 +197,7 @@ public class MyStoriesFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, String.format("my story, clicked remake: %s", remake.getOID()));
-                    MainActivity mainActivity = (MainActivity)getActivity();
+                    MainActivity mainActivity = (MainActivity) getActivity();
 
                     switch (remake.status) {
                         case 1: // IN PROGRESS
@@ -203,6 +213,8 @@ public class MyStoriesFragment extends Fragment {
                         case 3: // DONE
                             // Open recorder with a new remake.
                             openRecorderForNewRemake(story);
+                            props.put("remake_id", remake.getOID());
+                            HMixPanel.sh().track("MEDoRemake",props);
                             break;
 
                         default:
@@ -216,9 +228,11 @@ public class MyStoriesFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, String.format("my story, clicked play: %s", remake.getOID()));
-                    FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, true);
+                    HMixPanel.sh().track("MEPlayRemake",props);
+                    FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, HEvents.H_REMAKE , remake.getOID().toString(), HomageApplication.HM_ME_TAB, true);
                 }
             });
+
 
             return rowView;
         }
@@ -231,71 +245,14 @@ public class MyStoriesFragment extends Fragment {
 
     //region *** Share ***
     private void shareRemake(final Remake sharedRemake) {
-        AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
-        CharSequence items[] = new CharSequence[] {"Email Message", "Send Link (plain text)"};
-        adb.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface d, int n) {
-            }
-        });
-        adb.setNegativeButton("Cancel", null);
-        adb.setPositiveButton("Share", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ListView lw = ((AlertDialog)dialog).getListView();
-                Integer selectedPosition = lw.getCheckedItemPosition();
-                switch (selectedPosition) {
-                    case 0:
-                        shareRemakeUsingEmailMessage(sharedRemake);
-                        break;
-                    default:
-                        shareRemakeUsingPlainText(sharedRemake);
 
-                }
-            }
-        });
-        adb.setTitle("Share video");
-        adb.show();
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity.shareRemake(sharedRemake);
+
     }
 
-    private void shareRemakeUsingEmailMessage(Remake sharedRemake) {
-        Story story = sharedRemake.getStory();
-        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-        sharingIntent.setType("message/rfc822");
-        Spanned html = Html.fromHtml(
-                new StringBuilder()
-                        .append("<p><b>Check out this video I created with the Homage App for android</b></p>")
-                        .append(String.format("<p><a href='%s'>%s</a></p>", sharedRemake.videoURL, sharedRemake.videoURL))
-                        .toString());
-        sharingIntent.putExtra(
-                Intent.EXTRA_TEXT,
-                html
-        );
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, String.format(
-                "Check my awesome video : %s",
-                story.name));
-        startActivity(Intent.createChooser(sharingIntent, "Share using"));
-    }
-
-    private void shareRemakeUsingPlainText(Remake sharedRemake) {
-        Story story = sharedRemake.getStory();
-        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-        sharingIntent.setType("text/plain");
-        sharingIntent.putExtra(
-                Intent.EXTRA_TEXT,
-                String.format(
-                        "Check out this video I created with #HomageApp\n" +
-                                "\n" +
-                                "#%s\n" +
-                                "#%sHomageApp\n" +
-                                "\n" +
-                                "http://play.homage.it/%s",
-                        story.name, story.name, sharedRemake.getOID()
-                )
-        );
-        startActivity(Intent.createChooser(sharingIntent,"Share using"));
-    }
     //endregion
+
 
     //region *** fragment life cycle related
     @Override
@@ -325,9 +282,17 @@ public class MyStoriesFragment extends Fragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                MainActivity main = (MainActivity)getActivity();
+                MainActivity main = (MainActivity) getActivity();
                 main.refetchRemakesForCurrentUser();
             }
         }, 500);
     }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        HMixPanel.sh().track("MEEnterTab",null);
+    }
+
 }

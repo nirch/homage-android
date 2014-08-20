@@ -13,12 +13,15 @@
  */
 package com.homage.app.main;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -26,13 +29,18 @@ import android.util.Log;
 
 import com.androidquery.callback.BitmapAjaxCallback;
 import com.homage.media.camera.CameraManager;
+import com.homage.model.User;
 import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import com.homage.networking.uploader.UploadManager;
 import com.orm.SugarApp;
 
+import org.bson.types.ObjectId;
+
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class HomageApplication extends SugarApp {
@@ -45,7 +53,21 @@ public class HomageApplication extends SugarApp {
     public static final String SK_EMAIL = "email";
     public static final String SK_PASSWORD = "password";
 
+    public static final int HM_STORY_DETAILS_TAB = 0;
+    public static final int HM_ME_TAB            = 1;
+    public static final int HM_WELCOME_SCREEN    = 2;
+    public static final int HM_HOW_TO_TAB        = 3;
+    public static final int HM_RECORDER_PREVIEW  = 4;
+    public static final int HM_RECORDER_MENU     = 5;
+
+    private Timer mActivityTransitionTimer;
+    private TimerTask mActivityTransitionTimerTask;
+    public boolean wasInBackground;
+    private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 15000;
+
     private static Context instance;
+
+    public String currentSessionID;
 
     private UploadManager uploadManager;
 
@@ -64,6 +86,7 @@ public class HomageApplication extends SugarApp {
         super.onCreate();
         Log.d(TAG, "Started Homage android application.");
 
+        registerActivityLifecycleCallbacks(new MyActivityLifecycleCallbacks());
         // Limit memory cache
         BitmapAjaxCallback.setCacheLimit(12);
 
@@ -194,6 +217,134 @@ public class HomageApplication extends SugarApp {
         //note that you can configure the max image cache count, see CONFIGURATION
         BitmapAjaxCallback.clearCache();
     }
+
+    private static final class MyActivityLifecycleCallbacks implements ActivityLifecycleCallbacks {
+
+        int activityCounter = 0;
+        CountDownTimer timer;
+
+        String TAG = "TAG_" + getClass().getName();
+
+        public void onActivityCreated(Activity activity, Bundle bundle) {
+            Log.e(TAG,"onActivityCreated:" + activity.getLocalClassName());
+        }
+
+        public void onActivityDestroyed(Activity activity) {
+            Log.e(TAG,"onActivityDestroyed:" + activity.getLocalClassName());
+
+            String userID = null;
+            if (User.getCurrent() != null)
+            {
+                userID = User.getCurrent().getOID().toString();
+            }
+
+            String sessionID = HomageApplication.getInstance().currentSessionID;
+
+            if (activityCounter == 0 && sessionID != null && userID != null) {
+                if (timer != null) timer.cancel();
+                Log.e(TAG,"activity counter: " + activityCounter);
+                Log.e(TAG,"probably moving to background?");
+                HomageServer.sh().reportSessionEnd(sessionID,userID);
+                HomageApplication.getInstance().currentSessionID = null;
+            }
+        }
+
+        public void onActivityPaused(Activity activity) {
+            Log.e(TAG,"onActivityPaused:" + activity.getLocalClassName());
+
+            String userID = null;
+            if (User.getCurrent() != null)
+            {
+                userID = User.getCurrent().getOID().toString();
+            }
+
+            String sessionID = HomageApplication.getInstance().currentSessionID;
+
+            activityCounter -= 1;
+            Log.e(TAG,"activity counter:" + activityCounter);
+
+            if (activityCounter == 0 && sessionID != null && userID != null) {
+                Log.e(TAG,"creating countdown timer to end session");
+                timer = new CountDownTimer(15000,1500) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        Log.e(TAG,"tick ToCk");
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        Log.e(TAG,"activity counter: " + activityCounter);
+                        Log.e(TAG,"probably moving to background?");
+                        String userID = User.getCurrent().getOID().toString();
+                        String sessionID = HomageApplication.getInstance().currentSessionID;
+                        HomageServer.sh().reportSessionEnd(sessionID,userID);
+                        HomageApplication.getInstance().currentSessionID = null;
+                        HMixPanel.sh().track("AppMovedToBackGround",null);
+                    }
+                };
+                timer.start();
+            }
+        }
+
+        public void onActivityResumed(Activity activity) {
+            Log.e(TAG,"onActivityResumed:" + activity.getLocalClassName());
+
+            if (timer != null) {
+                Log.e(TAG,"canceling countdown timer. seesion will remain active");
+                timer.cancel();
+            }
+
+            String sessionID = HomageApplication.getInstance().currentSessionID;
+            activityCounter += 1;
+            Log.e(TAG,"activity counter:" + activityCounter);
+
+            if (User.getCurrent()!= null && sessionID == null)
+            {
+                String userID = User.getCurrent().getOID().toString();
+                sessionID = new ObjectId().toString();
+                HomageServer.sh().reportSessionBegin(sessionID,userID);
+                HomageApplication.getInstance().currentSessionID = sessionID;
+            }
+        }
+
+        public void onActivitySaveInstanceState(Activity activity,
+                                                Bundle outState) {
+            Log.e(TAG,"onActivitySaveInstanceState:" + activity.getLocalClassName());
+        }
+
+        public void onActivityStarted(Activity activity) {
+            Log.e(TAG,"onActivityStarted:" + activity.getLocalClassName());
+        }
+
+        public void onActivityStopped(Activity activity) {
+            Log.e(TAG,"onActivityStopped:" + activity.getLocalClassName());
+        }
+    }
+
+    public void startActivityTransitionTimer() {
+        this.mActivityTransitionTimer = new Timer();
+        this.mActivityTransitionTimerTask = new TimerTask() {
+            public void run() {
+                HomageApplication.this.wasInBackground = true;
+            }
+        };
+
+        this.mActivityTransitionTimer.schedule(mActivityTransitionTimerTask,
+                MAX_ACTIVITY_TRANSITION_TIME_MS);
+    }
+
+    public void stopActivityTransitionTimer() {
+        if (this.mActivityTransitionTimerTask != null) {
+            this.mActivityTransitionTimerTask.cancel();
+        }
+
+        if (this.mActivityTransitionTimer != null) {
+            this.mActivityTransitionTimer.cancel();
+        }
+
+        this.wasInBackground = false;
+    }
+
 
     //endregion
 }

@@ -26,15 +26,19 @@ import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.analytics.HEvents;
+import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 import com.homage.views.ActivityHelper;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class StoryDetailsFragment extends Fragment {
@@ -205,6 +209,11 @@ public class StoryDetailsFragment extends Fragment {
         b.putBoolean(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
         b.putBoolean(VideoPlayerFragment.K_IS_EMBEDDED, true);
         b.putString(VideoPlayerFragment.K_THUMB_URL, story.thumbnail);
+
+        b.putString(HEvents.HK_VIDEO_ENTITY_ID, story.getOID().toString());
+        b.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_STORY);
+        b.putInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
+
         videoPlayerFragment.setArguments(b);
 
         // When video not playing, don't allow orientation changes.
@@ -402,6 +411,11 @@ public class StoryDetailsFragment extends Fragment {
         myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
         myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, true);
         myIntent.putExtra(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
+
+        myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
+        myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
+        myIntent.putExtra(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
+
         startActivity(myIntent);
     }
 
@@ -420,12 +434,9 @@ public class StoryDetailsFragment extends Fragment {
     final View.OnClickListener onClickedPlayStoryVideo = new View.OnClickListener() {
         @Override
         public void onClick(View button) {
-            FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), story.video, story.thumbnail, true);
+            FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), story.video, story.thumbnail, HEvents.H_STORY , story.getOID().toString(), HomageApplication.HM_STORY_DETAILS_TAB, true);
         }
     };
-
-
-
 
     private void createNewRemake() {
         if (story == null) return;
@@ -433,11 +444,16 @@ public class StoryDetailsFragment extends Fragment {
         User user = User.getCurrent();
         if (user == null) return;
 
+        HashMap props = new HashMap<String,String>();
+        props.put("story" , story.name);
+
+
         Remake unfinishedRemake = user.unfinishedRemakeForStory(story);
         MainActivity main = (MainActivity) this.getActivity();
         if (unfinishedRemake == null) {
             // No info about an unfinished remake exists in local storage.
             // Create a new remake.
+            HMixPanel.sh().track("SDNewRemake",props);
             main.sendRemakeStoryRequest(story);
         } else {
             // An unfinished remake exists. Ask user if she want to continue this remake

@@ -11,8 +11,13 @@ import com.crashlytics.android.Crashlytics;
 import com.homage.app.R;
 import com.homage.app.user.LoginActivity;
 import com.homage.model.User;
+import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.views.ActivityHelper;
+
+import org.bson.types.ObjectId;
+
+import java.util.HashMap;
 
 public class SplashScreenActivity extends Activity {
 
@@ -30,6 +35,7 @@ public class SplashScreenActivity extends Activity {
 
         // Hide the systems bars (soft navigation bar and status bar)
         ActivityHelper.hideSystemBars(this);
+        HMixPanel.sh().track("AppLaunch",null);
 
         final User user = User.getCurrent();
         new Handler().postDelayed(new Runnable(){

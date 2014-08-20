@@ -16,11 +16,14 @@ import android.widget.Toast;
 
 import com.androidquery.util.Constants;
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 import com.homage.model.Footage;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
+import com.homage.networking.analytics.HEvents;
+import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 
@@ -167,6 +170,11 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
         @Override
         public void onClick(View button) {
             showAreYouSureYouWantToRetakeSceneDlg();
+            HashMap props = new HashMap<String,String>();
+            props.put("story" , remake.getStory().name);
+            props.put("remake_id" , remake.getOID());
+            props.put("scene_id" , Integer.toString(scene.getSceneID()));
+            HMixPanel.sh().track("RERetakeLast",props);
         }
     };
 
@@ -175,7 +183,13 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
     final View.OnClickListener onClickedOopsNoButton = new View.OnClickListener() {
         @Override
         public void onClick(View button) {
+            HashMap props = new HashMap<String,String>();
+            props.put("story" , remake.getStory().name);
+            props.put("remake_id" , remake.getOID());
+            props.put("scene_id" , Integer.toString(scene.getSceneID()));
+            HMixPanel.sh().track("REOopsNope",props);
             hideAreYouSureYouWantToRetakeSceneDlg();
+
         }
     };
 
@@ -186,6 +200,11 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
         @Override
         public void onClick(View button) {
             setResult(ResultCode.RETAKE_SCENE.getValue());
+            HashMap props = new HashMap<String,String>();
+            props.put("story" , remake.getStory().name);
+            props.put("remake_id" , remake.getOID());
+            props.put("scene_id" , Integer.toString(scene.getSceneID()));
+            HMixPanel.sh().track("YeahRetakeThisScene",props);
             finish();
             RecorderOverlayFinishedAllSceneMessageDlgActivity.this.overridePendingTransition(
                     R.anim.animation_fadeout_with_zoom,
@@ -202,10 +221,16 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
             if (footage == null) return;
             Log.d(TAG, String.format("User want to see preview video: %s", footage.rawLocalFile));
 
+            HashMap props = new HashMap<String,String>();
+            props.put("story" , remake.getStory().name);
+            props.put("remake_id" , remake.getOID());
+            props.put("scene_id" , Integer.toString(scene.getSceneID()));
+            HMixPanel.sh().track("RESeePreview",props);
+
             // Open video player.
             FullScreenVideoPlayerActivity.openFullScreenVideoForFile(
                     RecorderOverlayFinishedAllSceneMessageDlgActivity.this,
-                    footage.rawLocalFile,
+                    footage.rawLocalFile, HEvents.H_SCENE, null, HomageApplication.HM_RECORDER_PREVIEW,
                     true
             );
         }

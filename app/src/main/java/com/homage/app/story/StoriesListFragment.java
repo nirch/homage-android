@@ -34,6 +34,9 @@ import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.analytics.HMixPanel;
+
+import java.util.HashMap;
 import java.util.List;
 
 public class StoriesListFragment extends Fragment {
@@ -204,6 +207,9 @@ public class StoriesListFragment extends Fragment {
             stories.clear();
             stories.addAll(Story.allActiveStories());
         }
+
+        HMixPanel.sh().track("UserRefreshStories",null);
+
         adapter.notifyDataSetChanged();
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -224,6 +230,12 @@ public class StoriesListFragment extends Fragment {
             if (user == null) return;
 
             Story story = stories.get(i);
+
+            HashMap props = new HashMap<String ,String>();
+            props.put("story" , story.name);
+            props.put("index" , Integer.toString(i));
+            HMixPanel.sh().track("SelectedAStory",props);
+
             if (story == null) return;
 
             // Remake the story

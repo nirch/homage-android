@@ -27,6 +27,7 @@ public class Remake extends SugarRecord<Remake> {
     public String videoURL;
     public long createdAt;
     public boolean stillPublic;
+    public String userID;
     //endregion
 
     //region *** Relationships ***
