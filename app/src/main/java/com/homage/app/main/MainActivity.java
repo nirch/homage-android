@@ -82,6 +82,7 @@ public class MainActivity extends ActionBarActivity
     static final int SECTION_SETTINGS   = 3;
     static final int SECTION_HOWTO      = 4;
     static final int SECTION_STORY_DETAILS      = 101;
+    ////dsjhfdsjkhfjdshfjksdh
 
     static final int SHARE_METHOD_COPY_URL  = 0;
     static final int SHARE_METHOD_FACEBOOK  = 1;
