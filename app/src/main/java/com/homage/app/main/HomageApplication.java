@@ -223,14 +223,14 @@ public class HomageApplication extends SugarApp {
         int activityCounter = 0;
         CountDownTimer timer;
 
-        String TAG = "TAG_" + getClass().getName();
+        String TAG = "TAG_MyActivityLifecycleCallbacks";
 
         public void onActivityCreated(Activity activity, Bundle bundle) {
-            Log.e(TAG,"onActivityCreated:" + activity.getLocalClassName());
+            Log.v(TAG,"onActivityCreated:" + activity.getLocalClassName());
         }
 
         public void onActivityDestroyed(Activity activity) {
-            Log.e(TAG,"onActivityDestroyed:" + activity.getLocalClassName());
+            Log.v(TAG,"onActivityDestroyed:" + activity.getLocalClassName());
 
             String userID = null;
             if (User.getCurrent() != null)
@@ -242,15 +242,15 @@ public class HomageApplication extends SugarApp {
 
             if (activityCounter == 0 && sessionID != null && userID != null) {
                 if (timer != null) timer.cancel();
-                Log.e(TAG,"activity counter: " + activityCounter);
-                Log.e(TAG,"probably moving to background?");
+                Log.v(TAG,"activity counter: " + activityCounter);
+                Log.v(TAG,"probably moving to background?");
                 HomageServer.sh().reportSessionEnd(sessionID,userID);
                 HomageApplication.getInstance().currentSessionID = null;
             }
         }
 
         public void onActivityPaused(Activity activity) {
-            Log.e(TAG,"onActivityPaused:" + activity.getLocalClassName());
+            Log.v(TAG,"onActivityPaused:" + activity.getLocalClassName());
 
             String userID = null;
             if (User.getCurrent() != null)
@@ -261,20 +261,20 @@ public class HomageApplication extends SugarApp {
             String sessionID = HomageApplication.getInstance().currentSessionID;
 
             activityCounter -= 1;
-            Log.e(TAG,"activity counter:" + activityCounter);
+            Log.v(TAG,"activity counter:" + activityCounter);
 
             if (activityCounter == 0 && sessionID != null && userID != null) {
-                Log.e(TAG,"creating countdown timer to end session");
+                Log.v(TAG,"creating countdown timer to end session");
                 timer = new CountDownTimer(15000,1500) {
                     @Override
                     public void onTick(long millisUntilFinished) {
-                        Log.e(TAG,"tick ToCk");
+                        Log.v(TAG,"tick ToCk");
                     }
 
                     @Override
                     public void onFinish() {
-                        Log.e(TAG,"activity counter: " + activityCounter);
-                        Log.e(TAG,"probably moving to background?");
+                        Log.v(TAG,"activity counter: " + activityCounter);
+                        Log.v(TAG,"probably moving to background?");
                         String userID = User.getCurrent().getOID().toString();
                         String sessionID = HomageApplication.getInstance().currentSessionID;
                         HomageServer.sh().reportSessionEnd(sessionID,userID);
@@ -287,16 +287,16 @@ public class HomageApplication extends SugarApp {
         }
 
         public void onActivityResumed(Activity activity) {
-            Log.e(TAG,"onActivityResumed:" + activity.getLocalClassName());
+            Log.v(TAG,"onActivityResumed:" + activity.getLocalClassName());
 
             if (timer != null) {
-                Log.e(TAG,"canceling countdown timer. seesion will remain active");
+                Log.v(TAG,"canceling countdown timer. seesion will remain active");
                 timer.cancel();
             }
 
             String sessionID = HomageApplication.getInstance().currentSessionID;
             activityCounter += 1;
-            Log.e(TAG,"activity counter:" + activityCounter);
+            Log.v(TAG,"activity counter:" + activityCounter);
 
             if (User.getCurrent()!= null && sessionID == null)
             {
@@ -309,15 +309,15 @@ public class HomageApplication extends SugarApp {
 
         public void onActivitySaveInstanceState(Activity activity,
                                                 Bundle outState) {
-            Log.e(TAG,"onActivitySaveInstanceState:" + activity.getLocalClassName());
+            Log.v(TAG,"onActivitySaveInstanceState:" + activity.getLocalClassName());
         }
 
         public void onActivityStarted(Activity activity) {
-            Log.e(TAG,"onActivityStarted:" + activity.getLocalClassName());
+            Log.v(TAG,"onActivityStarted:" + activity.getLocalClassName());
         }
 
         public void onActivityStopped(Activity activity) {
-            Log.e(TAG,"onActivityStopped:" + activity.getLocalClassName());
+            Log.v(TAG,"onActivityStopped:" + activity.getLocalClassName());
         }
     }
 
