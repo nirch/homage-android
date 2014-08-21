@@ -1,6 +1,13 @@
 Homage android client.
 ======================
+
+KEEP CALM
+AND
+USE THE REPO WISELY!
+
+When committing/pushing changes:
 Please DO NOT commit or push files that are not source related.
+Please DO NOT commit or push files that are related to external libraries (unless authorized to do so).
 Ignore and stop tracking build files or files related to your IDE or specific to your machine.
 Ignore and stop tracking external libraries and sdks (facebook sdk etc).
 Check exactly what you are doing before pushing to repo.
