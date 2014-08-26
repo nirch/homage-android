@@ -190,6 +190,38 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        if (requestCode != REQUEST_CODE_RECORDER) return;
+
+        Log.d(TAG, String.format("Returned from recorder with result code: %d", resultCode));
+
+        switch (resultCode) {
+            case RecorderActivity.DISMISS_REASON_FINISHED_REMAKE:
+                // User sent a remake to rendering. Show the create movie progress bar
+                // To keep track of the rendering.
+                String remakeOID = resultData.getStringExtra("remakeOID");
+                if (remakeOID == null) return;
+                Remake renderedRemake = Remake.findByOID(remakeOID);
+                if (renderedRemake == null) {
+                    Log.e(TAG, "Critical error. Recorder sent remake to rendering, but not found in local storage.");
+                    break;
+                }
+                Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
+                movieProgressFragment.showProgressForRemake(renderedRemake);
+                showStories();
+                break;
+
+            case RecorderActivity.DISMISS_REASON_USER_ABORTED_PRESSING_X:
+                // No need to do anything
+                break;
+
+            default:
+                // Do nothing
+        }
+    }
+
+
+    @Override
     public void onNavigationDrawerItemSelected(final int position) {
         new Handler().postDelayed(new Runnable() {
             @Override
