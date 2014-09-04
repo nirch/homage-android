@@ -225,6 +225,7 @@
                         android:id="@+id/recorderSceneDirectionButton"
                         style="@style/HomageImpactButton"
                         android:drawableStart="@drawable/icon_scene_direction_black"
+                        android:drawableLeft="@drawable/icon_scene_direction_black"
                         android:text="@string/button_scene_direction"
 
                         />
@@ -233,6 +234,7 @@
                         android:id="@+id/recorderSceneScriptButton"
                         style="@style/HomageImpactButton"
                         android:drawableStart="@drawable/icon_script_black"
+                        android:drawableLeft="@drawable/icon_script_black"
                         android:text="@string/button_show_script"
                         />
                 </LinearLayout>
@@ -288,6 +290,7 @@
             </LinearLayout>
 
             <LinearLayout android:id="@+id/recorderShortDetailsSpacerContainer"
+                android:orientation="horizontal"
                 android:layout_width="80dp"
                 android:layout_height="fill_parent"
                 >
@@ -379,6 +382,7 @@
         style="@style/HomageRecorderOnTopButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:src="@drawable/icon_close" />
 
     <ImageButton android:id="@+id/recorderOverlaySceneDescriptionButton"
@@ -391,6 +395,7 @@
         style="@style/HomageRecorderOnTopButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:src="@drawable/icon_camera_flip" />
 
 
