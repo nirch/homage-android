@@ -27,6 +27,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -64,6 +65,7 @@ import com.homage.networking.analytics.HEvents;
 import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
+import com.vim.vimapi.vTool;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -157,6 +159,7 @@ public class MainActivity extends ActionBarActivity
 
         // Force portrait
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
 
         //region *** Bind to UI event handlers ***
         /**********************************/

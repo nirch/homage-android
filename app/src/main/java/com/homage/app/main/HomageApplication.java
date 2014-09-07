@@ -204,7 +204,7 @@ public class HomageApplication extends SugarApp {
                 Log.e(TAG, String.format("App crashed. %s %s %d", ex.getMessage(), element.getClassName(), element.getLineNumber()));
             } catch(Exception uex) {}
 
-            CameraManager.sh().releaseMediaRecorder();
+            //CameraManager.sh().releaseMediaRecorder();
             CameraManager.sh().releaseCamera();
             mDefaultHandler.uncaughtException(thread, ex);
         }

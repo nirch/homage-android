@@ -9,17 +9,24 @@
     tools:context=".RecorderActivity">
 
     <!-- The camera preview container -->
-    <FrameLayout android:id="@+id/preview_container"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        />
+    <com.android.grafika.AspectFrameLayout
+        android:id="@+id/cameraPreview_afl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" >
+        <android.opengl.GLSurfaceView
+            android:id="@+id/cameraPreviewSurfaceView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center" />
+    </com.android.grafika.AspectFrameLayout>
 
     <!-- The "curtains" concealing the camera preview. Allows the camera to be faded in
      or faded out, by setting the alpha on the "curtains" view -->
     <FrameLayout android:id="@+id/recorderCurtains"
-        android:background="@drawable/dark_void_gradient"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="fill_parent"
+        />
 
     <!--                -->
     <!-- The silhouette -->
@@ -33,19 +40,19 @@
         android:scaleType="fitXY"
         />
 
-    <View android:id="@+id/blackBarTop"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_alignParentTop="true"
-        android:background="@color/homage_black">
-    </View>
+    <!--<View android:id="@+id/blackBarTop"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:background="@color/homage_black">-->
+    <!--</View>-->
 
-    <View android:id="@+id/blackBarBottom"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_alignParentBottom="true"
-        android:background="@color/homage_black">
-    </View>
+    <!--<View android:id="@+id/blackBarBottom"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:background="@color/homage_black">-->
+    <!--</View>-->
 
     <RelativeLayout android:id="@+id/topScript"
         android:layout_width="match_parent"

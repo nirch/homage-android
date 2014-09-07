@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
+import com.homage.app.BuildConfig;
 import com.homage.app.R;
 import com.homage.app.user.LoginActivity;
 import com.homage.model.User;
@@ -28,8 +30,17 @@ public class SplashScreenActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        String TAG = "TAG_SplashScreenActivity";
+
         super.onCreate(savedInstanceState);
-        Crashlytics.start(this);
+
+        if (!BuildConfig.DEBUG) {
+            Log.d(TAG, "Will start crashlytics");
+            Crashlytics.start(this);
+        } else {
+            Log.d(TAG, "Will not start crashlytics");
+        }
+
         setContentView(R.layout.activity_splash_screen);
         aq = new AQuery(this);
 
