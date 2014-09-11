@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="cameraPreferredRecodingWidth">640</integer>
-    <integer name="cameraPreferredRecodingHeight">480</integer>
+
+    <!-- Camera settings -->
+    <integer name="cameraBackPreferredRecodingWidth">1280</integer>
+    <integer name="cameraBackPreferredRecodingHeight">720</integer>
+
+    <integer name="cameraFrontPreferredRecodingWidth">640</integer>
+    <integer name="cameraFrontPreferredRecodingHeight">480</integer>
+
+    <bool name="cameraFrontAllowed">true</bool>
+
+    <!-- Video capture -->
+    <bool name="recorderUseMediaCodecWhenAvailable">true</bool>
+    <integer name="recorderMediaCodecPrefferedOutputWidth">640</integer>
+    <integer name="recorderMediaCodecPrefferedOutputHeight">360</integer>
+
+
 </resources>

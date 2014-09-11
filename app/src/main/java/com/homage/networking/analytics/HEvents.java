@@ -91,7 +91,7 @@ public class HEvents {
 
         HashMap props = new HashMap<String,String>();
         props.put("entity_id", entityID);
-        props.put("entity_type", Integer.toString(entityType));
+        props.put("playing_entity", Integer.toString(entityType));
         props.put("originating_screen", Integer.toString(originatingScreen));
 
         switch (eventCode) {

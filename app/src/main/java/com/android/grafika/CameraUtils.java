@@ -40,8 +40,7 @@ public class CameraUtils {
         // size, and has the same aspect ratio.
         Camera.Size ppsfv = parms.getPreferredPreviewSizeForVideo();
         if (ppsfv != null) {
-            Log.d(TAG, "Camera preferred preview size for video is " +
-                    ppsfv.width + "x" + ppsfv.height);
+            Log.d(TAG, "Camera preview size for video chosen " + width + "x" + height);
         }
 
         //for (Camera.Size size : parms.getSupportedPreviewSizes()) {
@@ -56,6 +55,7 @@ public class CameraUtils {
         }
 
         Log.w(TAG, "Unable to set preview size to " + width + "x" + height);
+        Log.d(TAG, "Set to default size of " + ppsfv.width + "x" + ppsfv.height);
         if (ppsfv != null) {
             parms.setPreviewSize(ppsfv.width, ppsfv.height);
         }

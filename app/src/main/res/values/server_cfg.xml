@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <bool name="is_production_server">true</bool>
+    <bool name="is_production_server">false</bool>
 
     <!-- prefetch_top_remakes: experimental. not implemented yet. Leave as false for now -->
     <bool name="prefetch_top_remakes">false</bool>
@@ -39,5 +39,6 @@
     <string name="url_share_remake">remake/share</string>
     <string name="url_android_pause">user/session_pause</string>
     <string name="url_android_resume">user/session_resume</string>
+    <string name="url_update_push_token">user/push_token</string>
 
 </resources>

@@ -68,6 +68,8 @@ public class HomageServer extends Server {
     final static public String INTENT_USER_BEGIN_SESSION        = "intent user begin session";
     final static public String INTENT_USER_END_SESSION          = "intent user begin session";
     final static public String INTENT_USER_UPDATE_SESSION       = "intent user begin session";
+    final static public String INTENT_USER_UPDATE_PUSH_TOKEN    = "intent update push token";
+
     //region *** info keys ***
     final static public String IK_STORY_OID         = "storyOID";
 
@@ -124,6 +126,7 @@ public class HomageServer extends Server {
         urlIDs.add(R.string.url_view_remake);
         urlIDs.add(R.string.url_view_story);
         urlIDs.add(R.string.url_share_remake);
+        urlIDs.add(R.string.url_update_push_token);
 
         super.initURLSCache(urlIDs);
 
@@ -397,14 +400,12 @@ public class HomageServer extends Server {
         } else {
             parameters.put("is_public","0");
         }
-        parameters.put("device[identifier_for_vendor]",
-            Settings.Secure.getString(HomageApplication.getContext().getContentResolver(),Settings.Secure.ANDROID_ID)
-        );
+        parameters.put("device[device_id]", HomageApplication.getDeviceId());
         parameters.put("device[model]", Device.getDeviceModel());
-        parameters.put("device[name]","Android Phone");
+        parameters.put("device[name]","android");
 
-        // TODO: implement GCM push identifier
-        parameters.put("device[push_token]","xxx");
+        String registrationId = HomageApplication.getInstance().getRegistrationId();
+        if (registrationId != null) parameters.put("device[android_push_token]", registrationId);
 
         // Facebook
         if (fbInfo != null) addFaceBookInfoToParameters(parameters, fbInfo);
@@ -430,11 +431,12 @@ public class HomageServer extends Server {
         parameters.put("email", email);
         if (password != null) parameters.put("password",password);
         parameters.put("is_public", "1");
-        parameters.put("device[identifier_for_vendor]",
-            Settings.Secure.getString(HomageApplication.getContext().getContentResolver(),Settings.Secure.ANDROID_ID)
-        );
+        parameters.put("device[device_id]", HomageApplication.getDeviceId());
         parameters.put("device[model]", Device.getDeviceModel());
-        parameters.put("device[name]","Android Phone");
+        parameters.put("device[name]","android");
+
+        String registrationId = HomageApplication.getInstance().getRegistrationId();
+        if (registrationId != null) parameters.put("device[android_push_token]", registrationId);
 
         // Facebook
         if (fbInfo != null) addFaceBookInfoToParameters(parameters, fbInfo);
@@ -467,6 +469,21 @@ public class HomageServer extends Server {
         super.POST(R.string.url_report_inappropriate, parameters, null, null, null);
     }
 
+
+    public void updatePushToken(String userId, String deviceId, String pushRegId, HashMap<String, Object> userInfo) {
+        Log.v(TAG, String.format("Update server about push token reg id:%s, %s, %s", userId, deviceId, pushRegId));
+
+        // Request parameters
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("android_push_token", pushRegId);
+        parameters.put("device_id", deviceId);
+        parameters.put("user_id", userId);
+        parameters.put("system_name","android");
+
+        super.PUT(R.string.url_update_push_token, parameters,
+                INTENT_USER_UPDATE_PUSH_TOKEN, userInfo, null
+        );
+    }
 
     //endregion
 

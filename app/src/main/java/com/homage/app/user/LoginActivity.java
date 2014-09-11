@@ -170,7 +170,7 @@ public class LoginActivity extends Activity {
 
     private boolean shouldExcludethisAdressFromMixpanel(String userEmail)
     {
-        ArrayList<String> mailAdresses = new ArrayList<String>(Arrays.asList("yoavcaspin@gmail.com","nir@homage.it","tomer@homage.it","yoav@homage.it","nirh2@yahoo.com","nir.channes@gmail.com","ranpeer@gmail.com","tomer.harry@gmail.com","hiorit@gmail.com"));
+        ArrayList<String> mailAdresses = new ArrayList<String>(Arrays.asList("aviv.israel@gmail.com", "yoavcaspin@gmail.com","nir@homage.it","tomer@homage.it","yoav@homage.it","nirh2@yahoo.com","nir.channes@gmail.com","ranpeer@gmail.com","tomer.harry@gmail.com","hiorit@gmail.com"));
 
         for (String mail : mailAdresses)
         {
@@ -182,7 +182,9 @@ public class LoginActivity extends Activity {
 
     private void registerLoginAnalyticsForUser(User user) {
 
-        HMixPanel.sh().identify(user.getOID().toString());
+        String userOID = user.getOID().toString();
+        HMixPanel mp = HMixPanel.sh();
+        mp.identify(userOID);
 
         if (user.email != null) {
             HashMap props = new HashMap<String,String>();

@@ -41,6 +41,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -101,12 +102,18 @@ public class RecorderActivity extends Activity
 
     LayoutInflater inflater;
 
+    public final static String K_SAVED_RECORDER_MAKING_A_SCENE_STATE = "savedRecorderMakingASceneState";
+    public final static String K_SAVED_CURRENT_SCENE_ID = "savedCurrentSceneId";
+
     final public static int RECORDER_CLOSED = 666;
 
     // Camera handler (handles messages from other threads)
     private CameraHandler mCameraHandler;
     private static TextureMovieEncoder sVideoEncoder = new TextureMovieEncoder();
     private boolean mRecordingEnabled;
+
+    private Intent starterIntent;
+    private boolean shouldReleaseCameraOnNavigation = true;
 
     // Some references to UI elements
     private AQuery aq;
@@ -159,6 +166,7 @@ public class RecorderActivity extends Activity
     public final static int DISMISS_REASON_FINISHED_REMAKE = 600;
 
     // Preview
+    private AspectFrameLayout previewContainer;
     private GLSurfaceView mGLView;
     private CameraSurfaceRenderer mRenderer;
 
@@ -166,11 +174,8 @@ public class RecorderActivity extends Activity
     private Animation fadeInAnimation, fadeOutAnimation;
     public int viewHeightForClosingControlsDrawer;
     private boolean viewsInitialized;
-
-
     private int currentVideoPage = -1;
     private ImageView videosPageIndicator1, videosPageIndicator2;
-
 
     // Media
     MediaPlayer mp;
@@ -181,6 +186,8 @@ public class RecorderActivity extends Activity
         super.onCreate(savedInstanceState);
         viewsInitialized = false;
         inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        starterIntent = getIntent();
 
         // Define a handler that receives camera-control messages from other threads.  All calls
         // to Camera must be made on the same thread.  Note we create this before the renderer
@@ -224,18 +231,11 @@ public class RecorderActivity extends Activity
         videosPager = (ViewPager)aq.id(R.id.videosPager).getView();
         videosPageIndicator1 = aq.id(R.id.videosPageIndicator1).getImageView();
         videosPageIndicator2 = aq.id(R.id.videosPageIndicator2).getImageView();
+        previewContainer = (AspectFrameLayout)findViewById(R.id.cameraPreview_afl);
 
         closeControlsDrawer(false);
         updateScriptBar();
         scenesListView.setVisibility(View.GONE);
-
-        // Preload and cache silhouettes in the background
-        List<Scene> scenes = story.getScenesOrdered();
-        for (Scene scene : scenes) {
-            Log.d(TAG, String.format("Preloading %s", scene.silhouetteURL));
-            aq.image(scene.silhouetteURL, false, true, 0, 0);
-        }
-        //endregion
 
         updateVideosPageIndicator(0);
 
@@ -313,37 +313,87 @@ public class RecorderActivity extends Activity
         super.onResume();
         closeControlsDrawer(true);
 
+        shouldReleaseCameraOnNavigation = true;
+
         final CameraManager cm = CameraManager.sh();
-        cm.reopenCamera();
+        cm.openCamera();
 
-        // Set the preview aspect ratio.
-        AspectFrameLayout layout = (AspectFrameLayout) findViewById(R.id.cameraPreview_afl);
-        layout.setAspectRatio((double)cm.mCameraPreviewWidth / cm.mCameraPreviewHeight);
+        // Reload Preview
+        reloadPreview();
 
-        mGLView.onResume();
-        mGLView.queueEvent(new Runnable() {
-            @Override public void run() {
-                mRenderer.setCameraPreviewSize(cm.mCameraPreviewWidth, cm.mCameraPreviewHeight);
-            }
-        });
         Log.d(TAG, "onResume complete: " + this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        CameraManager.sh().releaseCamera();
+        if (shouldReleaseCameraOnNavigation) {
+            CameraManager.sh().releaseCamera();
+        }
     }
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        CameraManager cm = CameraManager.sh();
-        //cm.releaseMediaRecorder();
-        cm.releaseCamera();
+        if (shouldReleaseCameraOnNavigation) {
+            CameraManager cm = CameraManager.sh();
+            cm.releaseCamera();
+            cm.releaseRecordingManagers();
+        }
     }
     //endregion
+
+    public void updateCroppingBlackBars(int h) {
+        h = 170;
+
+        View topBlackBar = aq.id(R.id.blackBarTop).getView();
+        View bottomBlackBar = aq.id(R.id.blackBarBottom).getView();
+
+        android.widget.RelativeLayout.LayoutParams params;
+
+        params = (android.widget.RelativeLayout.LayoutParams) topBlackBar.getLayoutParams();
+        params.height = h;
+        topBlackBar.setLayoutParams(params);
+
+        params = (android.widget.RelativeLayout.LayoutParams) bottomBlackBar.getLayoutParams();
+        params.height = h;
+        bottomBlackBar.setLayoutParams(params);
+    }
+
+    private void reloadPreview() {
+        final CameraManager cm = CameraManager.sh();
+
+        // Set the preview aspect ratio.
+        final AspectFrameLayout layout = (AspectFrameLayout) findViewById(R.id.cameraPreview_afl);
+
+        // Aspect ratio should always be set to 16/9
+        double videoAspectRatio = (double)cm.mCameraPreviewWidth / (double)cm.mCameraPreviewHeight;
+        double onScreenAspectRatio = (double)16/(double)9;
+
+        layout.setOriginalAspectRatio(videoAspectRatio);
+        layout.setAspectRatio(onScreenAspectRatio);
+        layout.requestLayout();
+
+        if (mGLView != null) {
+            mGLView.onResume();
+            mGLView.queueEvent(new Runnable() {
+                @Override
+                public void run() {
+                    mRenderer.setCameraPreviewSize(cm.mCameraPreviewWidth, cm.mCameraPreviewHeight);
+                }
+            });
+        }
+
+        showCurtainsAnimated(false);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                hideCurtainsAnimated(true);
+            }
+        }, 400);
+
+    }
 
     //region *** Views Initializations ***
     @Override
@@ -357,11 +407,29 @@ public class RecorderActivity extends Activity
             updateScenesList();
         }
 
+        // Black bars determined by silhouette size.
+        View s = aq.id(R.id.silhouette).getView();
+        View p = (View)s.getParent();
+        int h = s.getMeasuredHeight();
+        int sh = p.getMeasuredHeight();
+        int size = (sh - h)/2;
+        if (size < 0) size = 0;
+        updateCroppingBlackBars(size);
+
         //region *** State initialization ***
         try {
             if (stateMachine == null) {
                 stateMachine = new RecorderStateMachine();
+
+                Bundle b = starterIntent.getExtras();
+                boolean isRecorderMakingAScene = b.getBoolean(K_SAVED_RECORDER_MAKING_A_SCENE_STATE, false);
+                if (isRecorderMakingAScene) {
+                    int sceneId = b.getInt(K_SAVED_CURRENT_SCENE_ID);
+                    stateMachine.setState(RecorderState.MAKING_A_SCENE);
+                    currentSceneID = sceneId;
+                }
                 stateMachine.handleCurrentState();
+
             }
         } catch (RecorderException ex) {
             Log.e(TAG, "Recorder state machine error.", ex);
@@ -386,7 +454,6 @@ public class RecorderActivity extends Activity
         viewHeightForClosingControlsDrawer -= aq.id(R.id.recorderRecordButton).getView().getHeight()/2;
         recorderFullDetailsContainer.setAlpha(0);
         closeControlsDrawer(false);
-        //hideControlsDrawer(false);
 
         // Videos paging adapter
         videosAdapter = new RecorderVideosPagerAdapter(this, this.remake);
@@ -401,11 +468,22 @@ public class RecorderActivity extends Activity
         // Configure the GLSurfaceView.
         // This will start the Renderer thread, with an
         // appropriate EGL context.
-        mGLView = (GLSurfaceView)findViewById(R.id.cameraPreviewSurfaceView);
+
+        // Create the GL View from code (doesn't exist in xml layout)
+        mGLView = new GLSurfaceView(this);
+
+        // Set the layout parameters for the glView and add it to the preview container.
+        FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT);
+        mGLView.setLayoutParams(lp);
+        previewContainer.addView(mGLView);
+
+        // Setup the gl view for rendering.
         mGLView.setEGLContextClientVersion(2);     // select GLES 2.0
         mRenderer = new CameraSurfaceRenderer(getApplicationContext(), mCameraHandler, sVideoEncoder);
         mGLView.setRenderer(mRenderer);
-        mGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        mGLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
         // After initialized, fade in the camera by fading out the "curtains" slowly
         hideCurtainsAnimated(true);
@@ -694,13 +772,14 @@ public class RecorderActivity extends Activity
         updateScriptBar();
         aq.id(R.id.createMovieButton).visibility(View.GONE);
 
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                cm.preview.show();
-//                hideCurtainsAnimated(true);
-//            }
-//        }, 400);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                hideCurtainsAnimated(true);
+                mGLView.setVisibility(View.VISIBLE);
+            }
+        }, 400);
     }
 
     private void controlsDrawerOpened() {
@@ -718,9 +797,8 @@ public class RecorderActivity extends Activity
         videosAdapter.showSurfaces();
         hideOverlayButtons(false);
 
-//        CameraManager cm = CameraManager.sh();
-//        cm.preview.hide();
-        showCurtainsAnimated(false);
+        mGLView.setVisibility(View.INVISIBLE);
+        showCurtainsAnimated(true);
         updateScriptBar();
 
         // Check if need to show the create movie button or not
@@ -923,7 +1001,6 @@ public class RecorderActivity extends Activity
 
     private void startCountingDownToRecording() {
         if (isCountingDownToRecording()) return;
-
 
         // Countdown
         hideOverlayButtons(false);
@@ -1424,14 +1501,39 @@ public class RecorderActivity extends Activity
     private View.OnClickListener onClickedFlipCameraButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-//            CameraManager.sh().flipCamera();
-//            HashMap props = new HashMap<String,String>();
-//            props.put("story" , remake.getStory().name);
-//            props.put("remake_id" , remake.getOID());
-//            props.put("scene_id" , Integer.toString(currentSceneID));
-//            HMixPanel.sh().track("REFlipCamera",props);
+        // Analytics
+        HashMap props = new HashMap<String,String>();
+        props.put("story" , remake.getStory().name);
+        props.put("remake_id" , remake.getOID());
+        props.put("scene_id" , Integer.toString(currentSceneID));
+        HMixPanel.sh().track("REFlipCamera",props);
+
+        // Flip camera by saving state, opening another camera and restarting activity.
+        showCurtainsAnimated(true);
+        hideOverlayButtons(false);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGLView.setVisibility(View.GONE);
+                flip();
+            }
+        }, 400);
+
         }
     };
+
+    private void flip() {
+        CameraManager cm = CameraManager.sh();
+        cm.flipCamera();
+        shouldReleaseCameraOnNavigation = false;
+        RecorderState currentRecorderState = stateMachine.currentState;
+        starterIntent.putExtra(K_SAVED_RECORDER_MAKING_A_SCENE_STATE, true);
+        starterIntent.putExtra(K_SAVED_CURRENT_SCENE_ID, currentSceneID);
+        startActivity(starterIntent);
+        overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
+        finish();
+    }
 
     private View.OnClickListener onClickedCreateMovieButton = new View.OnClickListener() {
         @Override

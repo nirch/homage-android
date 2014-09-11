@@ -27,21 +27,25 @@
 package com.homage.media.camera;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
 
 import com.android.grafika.CameraUtils;
+import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 
 import java.io.IOException;
 
 public class CameraManager {
     String TAG = "TAG_"+getClass().getName();
 
-    final int defaultBackWidth = 1280;
-    final int defaultBackHeight = 720;
-    final int defaultFrontWidth = 640;
-    final int defaultFrontHeight = 480;
+    int defaultBackWidth;
+    int defaultBackHeight;
+
+    int defaultFrontWidth;
+    int defaultFrontHeight;
 
     public int mCameraPreviewWidth;
     public int mCameraPreviewHeight;
@@ -53,16 +57,32 @@ public class CameraManager {
     Camera.Size recSize;
 
     //region *** singleton pattern ***
-    private boolean alreadyInitialized;
     private static CameraManager instance = new CameraManager();
     public static CameraManager sharedInstance() {
-        if(instance == null) instance = new CameraManager();
+        if(instance == null) {
+            instance = new CameraManager();
+        }
         return instance;
     }
     public static CameraManager sh() {
         return CameraManager.sharedInstance();
     }
+
+    public CameraManager() {
+        init();
+    }
     //endregion
+
+    private void init() {
+        Resources res = HomageApplication.getContext().getResources();
+
+        // Get defaults set in camera.xml
+        defaultBackWidth = res.getInteger(R.integer.cameraBackPreferredRecodingWidth);
+        defaultBackHeight = res.getInteger(R.integer.cameraBackPreferredRecodingHeight);
+        defaultFrontWidth = res.getInteger(R.integer.cameraFrontPreferredRecodingWidth);
+        defaultFrontHeight = res.getInteger(R.integer.cameraFrontPreferredRecodingHeight);
+
+    }
 
     private int currentCameraId;
     private boolean selfie = false;
@@ -76,12 +96,8 @@ public class CameraManager {
      * <p>
      * Sets mCameraPreviewWidth and mCameraPreviewHeight to the actual width/height of the preview.
      */
-    public void reopenCamera() {
-        if (mCamera != null) return;
-        openCamera(mCameraPreviewWidth, mCameraPreviewHeight);
-    }
 
-    public void openCamera(int desiredWidth, int desiredHeight) {
+    public void openCamera() {
         if (mCamera != null) {
             throw new RuntimeException("camera already initialized");
         }
@@ -89,19 +105,35 @@ public class CameraManager {
         Camera.CameraInfo info = new Camera.CameraInfo();
 
         int numCameras = Camera.getNumberOfCameras();
+        int desiredWidth, desiredHeight;
+        if (selfie) {
+            desiredWidth = defaultFrontWidth;
+            desiredHeight = defaultFrontHeight;
+        } else {
+            desiredWidth = defaultBackWidth;
+            desiredHeight = defaultBackHeight;
+        }
+
         for (int i = 0; i < numCameras; i++) {
             Camera.getCameraInfo(i, info);
-            if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+            if (!selfie && info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                mCamera = Camera.open(i);
+
+                break;
+            }
+            if (selfie && info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
                 mCamera = Camera.open(i);
                 break;
             }
         }
 
         if (mCamera == null) {
+            // Open some camera if none opened.
             mCamera = Camera.open();
         }
 
         if (mCamera == null) {
+            // Camera should have opened. If not, this is a critical error.
             throw new RuntimeException("Unable to open camera");
         }
 
@@ -134,8 +166,17 @@ public class CameraManager {
             Log.d(TAG, "releaseCamera -- done");
         }
     }
+
+    public void flipCamera() {
+        releaseCamera();
+        selfie = !selfie;
+    }
     //endregion
 
+    public void releaseRecordingManagers() {
+        // Release the used media recorder (MediaRecorder or MediaCodec).
+        Log.d(TAG, "Release the recorder used.");
+    }
 
     public void setCameraPreviewTexture(SurfaceTexture st) {
         try {

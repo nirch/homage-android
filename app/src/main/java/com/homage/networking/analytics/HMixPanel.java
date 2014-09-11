@@ -32,10 +32,9 @@ public class HMixPanel {
 
         // Do your initializations here.
         boolean isProductionServer = context.getResources().getBoolean(R.bool.is_production_server);
-
-        //if (isProductionServer) {
+        if (isProductionServer) {
             mMixpanel = MixpanelAPI.getInstance(context, MIXPANEL_TOKEN);
-        //}
+        }
     }
 
     private static HMixPanel instance = new HMixPanel();
@@ -95,12 +94,12 @@ public class HMixPanel {
     }
 
     public void flush() {
-        if (instance != null) mMixpanel.flush();
+        if (instance != null && mMixpanel != null) mMixpanel.flush();
     }
 
     public void identify(String userID)
     {
-       mMixpanel.identify(userID);
+        if (mMixpanel != null) mMixpanel.identify(userID);
     }
 
     public void setPeople(HashMap<String,String> mappedProps)

@@ -23,12 +23,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -67,9 +66,11 @@ import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import com.vim.vimapi.vTool;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -108,23 +109,24 @@ public class MainActivity extends ActionBarActivity
     private int currentSection;
     private Story currentStory;
 
-    public static final String EXTRA_MESSAGE = "message";
-    public static final String PROPERTY_REG_ID = "registration_id";
-    private static final String PROPERTY_APP_VERSION = "appVersion";
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
     ProgressDialog pd;
     MovieProgressFragment movieProgressFragment;
 
+    // GCM
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     GoogleCloudMessaging gcm;
     String regid;
+    AtomicInteger msgId = new AtomicInteger();
+    Context context;
+
 
     //region *** Lifecycle ***
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+
+        context = getApplicationContext();
 
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
@@ -160,6 +162,17 @@ public class MainActivity extends ActionBarActivity
         // Force portrait
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        // Check device for Play Services APK. If check succeeds, proceed with GCM registration.
+        if (checkPlayServices()) {
+            gcm = GoogleCloudMessaging.getInstance(this);
+            regid = HomageApplication.getRegistrationId(context);
+
+            if (regid.isEmpty()) {
+                registerInBackground();
+            }
+        } else {
+            Log.i(TAG, "No valid Google Play Services APK found.");
+        }
 
         //region *** Bind to UI event handlers ***
         /**********************************/
@@ -184,12 +197,13 @@ public class MainActivity extends ActionBarActivity
     protected void onPause() {
         super.onPause();
         removeObservers();
+        HMixPanel mp = HMixPanel.sh();
+        if (mp != null) mp.flush();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        HMixPanel.sh().flush();
     }
 
     @Override
@@ -301,16 +315,6 @@ public class MainActivity extends ActionBarActivity
             return false;
         }
         return true;
-    }
-
-    /**
-     * @return Application's {@code SharedPreferences}.
-     */
-    private SharedPreferences getGCMPreferences(Context context) {
-        // This sample app persists the registration ID in shared preferences, but
-        // how you store the regID in your app is up to you.
-        return getSharedPreferences(MainActivity.class.getSimpleName(),
-                Context.MODE_PRIVATE);
     }
 
     //region *** Observers ***
@@ -817,7 +821,6 @@ public class MainActivity extends ActionBarActivity
         @Override
         public void onClick(View view) {
 
-
             switch (currentSection) {
                 case SECTION_STORIES:
                     showRefreshProgress();
@@ -926,4 +929,45 @@ public class MainActivity extends ActionBarActivity
         return;
     }
     //endregion
+
+    //region *** GCM ***
+    /**
+     * Registers the application with GCM servers asynchronously.
+     * <p>
+     * Stores the registration ID and the app versionCode in the application's
+     * shared preferences.
+     */
+    private void registerInBackground() {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(context);
+                    }
+                    regid = gcm.register(HomageApplication.GCM_SENDER_ID);
+                    msg = "Device registered, registration ID=" + regid;
+
+                    // Persist the regID - no need to register again.
+                    HomageApplication.storeRegistrationId(context, regid);
+                } catch (IOException ex) {
+                    msg = "Error :" + ex.getMessage();
+                    // If there is an error, don't just keep trying to register.
+                    // Require the user to click a button again, or perform
+                    // exponential back-off.
+                }
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(String msg) {
+                Log.d(TAG, msg);
+            }
+        }.execute(null, null, null);
+    }
+
+    //endregion
+
+
 }

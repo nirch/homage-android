@@ -10,6 +10,8 @@
         ===================================================================
     -->
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <!-- Camera / Video recording / storage -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_VIDEO" />
@@ -19,16 +21,15 @@
 
 
     <!-- GCM -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission
         android:name="com.homage.app.permission.C2D_MESSAGE" />
-
     <permission
         android:name="com.homage.app.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
-
     <uses-permission
         android:name="com.google.android.c2dm.permission.RECEIVE" />
-
 
 
     <!-- Networking -->
@@ -43,6 +44,10 @@
         android:label="@string/app_name"
         android:theme="@style/HomageTheme"
         >
+
+        <!-- Google play services -->
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <!-- Facebook login -->
         <meta-data
@@ -137,6 +142,14 @@
         </activity>
 
         <activity
+            android:name=".recorder.RecorderOverlayWaitActivity"
+            android:screenOrientation="landscape"
+            >
+        </activity>
+
+
+
+        <activity
             android:name=".recorder.RecorderOverlaySceneMessageDlgActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.Transparent"
@@ -214,18 +227,15 @@
         <meta-data android:name="com.crashlytics.ApiKey" android:value="daa34917843cd9e52b65a68cec43efac16fb680a"/>
 
         <!-- GCM -->
-        <!--
         <receiver
-            android:name=".GcmBroadcastReceiver"
+            android:name="com.homage.networking.gcm.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <category android:name="com.example.gcm" />
             </intent-filter>
         </receiver>
-        <service android:name=".GcmIntentService" />
-        -->
-
+        <service android:name="com.homage.networking.gcm.GcmIntentService" />
 
 
     </application>

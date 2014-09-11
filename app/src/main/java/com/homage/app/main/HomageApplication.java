@@ -20,14 +20,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.androidquery.callback.BitmapAjaxCallback;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.homage.media.camera.CameraManager;
 import com.homage.model.User;
 import com.homage.networking.analytics.HMixPanel;
@@ -38,9 +44,11 @@ import com.orm.SugarApp;
 
 import org.bson.types.ObjectId;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 
 public class HomageApplication extends SugarApp {
@@ -60,16 +68,23 @@ public class HomageApplication extends SugarApp {
     public static final int HM_RECORDER_PREVIEW  = 4;
     public static final int HM_RECORDER_MENU     = 5;
 
+    public static final String PROPERTY_REG_ID = "registration_id";
+    private static final String PROPERTY_REG_ON_APP_VERSION = "reg_on_app_version";
+
     private Timer mActivityTransitionTimer;
     private TimerTask mActivityTransitionTimerTask;
+
     public boolean wasInBackground;
     private final long MAX_ACTIVITY_TRANSITION_TIME_MS = 15000;
 
     private static Context instance;
 
     public String currentSessionID;
+    private String deviceId;
 
     private UploadManager uploadManager;
+
+    static public final String GCM_SENDER_ID = "414832899241";
 
     public HomageApplication() {
         super();
@@ -85,6 +100,7 @@ public class HomageApplication extends SugarApp {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "Started Homage android application.");
+        Log.d(TAG, String.format("App version : %d", getAppVersion(getApplicationContext())));
 
         registerActivityLifecycleCallbacks(new MyActivityLifecycleCallbacks());
         // Limit memory cache
@@ -173,6 +189,82 @@ public class HomageApplication extends SugarApp {
     public static SharedPreferences getSettings(Context context) {
         return context.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE);
     }
+
+    public static String getDeviceId() {
+        return getDeviceId(getContext());
+    }
+
+    public static String getDeviceId(Context context) {
+        String id = getUniqueID(context);
+        if (id == null)
+            id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        return id;
+    }
+
+    private static String getUniqueID(Context context) {
+
+        String telephonyDeviceId = "NoTelephonyId";
+        String androidDeviceId = "NoAndroidId";
+
+        // get telephony id
+        try {
+            final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            telephonyDeviceId = tm.getDeviceId();
+            if (telephonyDeviceId == null) {
+                telephonyDeviceId = "NoTelephonyId";
+            }
+        } catch (Exception e) {
+        }
+
+        // get internal android device id
+        try {
+            androidDeviceId = android.provider.Settings.Secure.getString(context.getContentResolver(),
+                    android.provider.Settings.Secure.ANDROID_ID);
+            if (androidDeviceId == null) {
+                androidDeviceId = "NoAndroidId";
+            }
+        } catch (Exception e) {
+
+        }
+
+        // build up the uuid
+        try {
+            String id = getStringIntegerHexBlocks(androidDeviceId.hashCode())
+                    + "-"
+                    + getStringIntegerHexBlocks(telephonyDeviceId.hashCode());
+
+            return id;
+        } catch (Exception e) {
+            return "0000-0000-1111-1111";
+        }
+    }
+
+    public static String getStringIntegerHexBlocks(int value) {
+        String result = "";
+        String string = Integer.toHexString(value);
+
+        int remain = 8 - string.length();
+        char[] chars = new char[remain];
+        Arrays.fill(chars, '0');
+        string = new String(chars) + string;
+
+        int count = 0;
+        for (int i = string.length() - 1; i >= 0; i--) {
+            count++;
+            result = string.substring(i, i + 1) + result;
+            if (count == 4) {
+                result = "-" + result;
+                count = 0;
+            }
+        }
+
+        if (result.startsWith("-")) {
+            result = result.substring(1, result.length());
+        }
+
+        return result;
+    }
+
     //region *** Unhandled exceptions ***
 
     public String getVersionName() {
@@ -344,7 +436,68 @@ public class HomageApplication extends SugarApp {
 
         this.wasInBackground = false;
     }
-
-
     //endregion
+
+
+    /**
+     * @return Application's version code from the {@code PackageManager}.
+     */
+    public static int getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+    static public void storeRegistrationId(Context context, String regId) {
+        SharedPreferences sp = getSettings(context);
+        SharedPreferences.Editor e = sp.edit();
+        e.putInt(PROPERTY_REG_ON_APP_VERSION, HomageApplication.getInstance().getAppVersion(context));
+        e.putString(PROPERTY_REG_ID, regId);
+        e.commit();
+
+        // If user already logged in, update server about the new token.
+        User currentUser = User.getCurrent();
+        if (currentUser != null) {
+            String deviceId = HomageApplication.getDeviceId(context);
+            HomageServer.sh().updatePushToken(currentUser.getOID(), deviceId, regId, null);
+        }
+    }
+
+    /**
+     * Gets the current registration ID for application on GCM service, if there is one.
+     * <p>
+     * If result is empty, the app needs to register.
+     *
+     * @return registration ID, or empty string if there is no existing
+     *         registration ID.
+     */
+    static public String getRegistrationId() {
+        return getRegistrationId(getContext());
+    }
+
+    static public String getRegistrationId(Context context) {
+        final SharedPreferences prefs = getSettings(context);
+        String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+        if (registrationId.isEmpty()) {
+            Log.i("TAG_HomageApp", "Registration not found.");
+            return "";
+        }
+
+        // Check if app was updated; if so, it must clear the registration ID
+        // since the existing regID is not guaranteed to work with the new
+        // app version.
+        int registeredVersion = prefs.getInt(PROPERTY_REG_ON_APP_VERSION, Integer.MIN_VALUE);
+        int currentVersion = HomageApplication.getInstance().getAppVersion(context);
+        if (registeredVersion != currentVersion) {
+            Log.i("TAG_HomageApp", "App version changed.");
+            return "";
+        }
+        return registrationId;
+    }
+
 }
