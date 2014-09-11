@@ -21,6 +21,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.SurfaceTexture;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
@@ -123,6 +124,7 @@ public class RecorderActivity extends Activity
     private View recorderShortDetailsContainer;
     private ListView scenesListView;
     private ViewPager videosPager;
+    private View topBlackBar, bottomBlackBar;
     private RecorderVideosPagerAdapter videosAdapter;
 
     // Remake info
@@ -219,7 +221,7 @@ public class RecorderActivity extends Activity
         // Set the content layout, load resources and store some references to views
         setContentView(R.layout.activity_recorder);
 
-        // AQuery & Some references (just for shorter syntax later)
+        // AQuery & Some references (just for shorter syntax and faster access later)
         aq = new AQuery(this);
         controlsDrawer = aq.id(R.id.recorderControlsDrawer).getView();
         recordButton = aq.id(R.id.recorderRecordButton).getView();
@@ -231,6 +233,8 @@ public class RecorderActivity extends Activity
         videosPager = (ViewPager)aq.id(R.id.videosPager).getView();
         videosPageIndicator1 = aq.id(R.id.videosPageIndicator1).getImageView();
         videosPageIndicator2 = aq.id(R.id.videosPageIndicator2).getImageView();
+        topBlackBar = aq.id(R.id.blackBarTop).getView();
+        bottomBlackBar = aq.id(R.id.blackBarBottom).getView();
         previewContainer = (AspectFrameLayout)findViewById(R.id.cameraPreview_afl);
 
         closeControlsDrawer(false);
@@ -344,23 +348,6 @@ public class RecorderActivity extends Activity
     }
     //endregion
 
-    public void updateCroppingBlackBars(int h) {
-        h = 170;
-
-        View topBlackBar = aq.id(R.id.blackBarTop).getView();
-        View bottomBlackBar = aq.id(R.id.blackBarBottom).getView();
-
-        android.widget.RelativeLayout.LayoutParams params;
-
-        params = (android.widget.RelativeLayout.LayoutParams) topBlackBar.getLayoutParams();
-        params.height = h;
-        topBlackBar.setLayoutParams(params);
-
-        params = (android.widget.RelativeLayout.LayoutParams) bottomBlackBar.getLayoutParams();
-        params.height = h;
-        bottomBlackBar.setLayoutParams(params);
-    }
-
     private void reloadPreview() {
         final CameraManager cm = CameraManager.sh();
 
@@ -373,6 +360,7 @@ public class RecorderActivity extends Activity
 
         layout.setOriginalAspectRatio(videoAspectRatio);
         layout.setAspectRatio(onScreenAspectRatio);
+        layout.setCroppingBarsViews(topBlackBar, bottomBlackBar);
         layout.requestLayout();
 
         if (mGLView != null) {
@@ -406,15 +394,6 @@ public class RecorderActivity extends Activity
         } else {
             updateScenesList();
         }
-
-        // Black bars determined by silhouette size.
-        View s = aq.id(R.id.silhouette).getView();
-        View p = (View)s.getParent();
-        int h = s.getMeasuredHeight();
-        int sh = p.getMeasuredHeight();
-        int size = (sh - h)/2;
-        if (size < 0) size = 0;
-        updateCroppingBlackBars(size);
 
         //region *** State initialization ***
         try {
@@ -1297,7 +1276,7 @@ public class RecorderActivity extends Activity
 
     private void hideSilhouette(boolean animated) {
         if (animated) {
-            // TODO: implement
+            aq.id(R.id.silhouette).animate(fadeOutAnimation);
         } else {
             aq.id(R.id.silhouette).visibility(View.INVISIBLE);
         }
@@ -1509,6 +1488,7 @@ public class RecorderActivity extends Activity
         HMixPanel.sh().track("REFlipCamera",props);
 
         // Flip camera by saving state, opening another camera and restarting activity.
+        hideSilhouette(true);
         showCurtainsAnimated(true);
         hideOverlayButtons(false);
 
@@ -1526,6 +1506,8 @@ public class RecorderActivity extends Activity
     private void flip() {
         CameraManager cm = CameraManager.sh();
         cm.flipCamera();
+        cm.toastSelectedCamera(this);
+
         shouldReleaseCameraOnNavigation = false;
         RecorderState currentRecorderState = stateMachine.currentState;
         starterIntent.putExtra(K_SAVED_RECORDER_MAKING_A_SCENE_STATE, true);

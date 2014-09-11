@@ -17,11 +17,11 @@
 package com.android.grafika;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+
 
 /**
  * Layout that adjusts to maintain a specific aspect ratio.
@@ -32,6 +32,8 @@ public class AspectFrameLayout extends FrameLayout {
     private double mTargetAspect = -1.0;        // initially use default window size
     private double mOriginalAspectRatio = -1.0;
     private int cropBarsSize = 0;
+    private View topBlackBar;
+    private View bottomBlackBar;
 
     public AspectFrameLayout(Context context) {
         super(context);
@@ -39,6 +41,11 @@ public class AspectFrameLayout extends FrameLayout {
 
     public AspectFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    public void setCroppingBarsViews(View topBlackBar, View bottomBlackBar) {
+        this.topBlackBar = topBlackBar;
+        this.bottomBlackBar = bottomBlackBar;
     }
 
     /**
@@ -90,6 +97,15 @@ public class AspectFrameLayout extends FrameLayout {
                 // limited by narrow width; restrict height
                 initialHeight = (int) (initialWidth / mTargetAspect);
 
+                // Black bars determined by silhouette size.
+                if (topBlackBar != null && bottomBlackBar != null) {
+                    View parent = (View)getParent();
+                    int psize = parent.getMeasuredHeight();
+                    int size = (psize - initialHeight)/2;
+                    Log.d(TAG, String.format("cropping bars size:%d", size));
+                    updateCroppingBlackBars(size);
+                }
+
                 // Add crop bars and fix height if original video height should be cropped
                 // to target aspect ratio
                 if (mTargetAspect > mOriginalAspectRatio) {
@@ -105,7 +121,6 @@ public class AspectFrameLayout extends FrameLayout {
             Log.d(TAG, "new size=" + initialWidth + "x" + initialHeight + " + padding " +
                     horizPadding + "x" + vertPadding);
 
-
             initialWidth += horizPadding;
             initialHeight += vertPadding;
 
@@ -118,4 +133,17 @@ public class AspectFrameLayout extends FrameLayout {
         //        "] height=[" + View.MeasureSpec.toString(heightMeasureSpec) + "]");
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
+
+    public void updateCroppingBlackBars(int h) {
+        android.widget.RelativeLayout.LayoutParams params;
+        params = (android.widget.RelativeLayout.LayoutParams) topBlackBar.getLayoutParams();
+        params.height = h;
+        topBlackBar.setLayoutParams(params);
+
+        params = (android.widget.RelativeLayout.LayoutParams) bottomBlackBar.getLayoutParams();
+        params.height = h;
+        bottomBlackBar.setLayoutParams(params);
+    }
+
+
 }

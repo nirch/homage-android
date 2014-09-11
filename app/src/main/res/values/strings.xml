@@ -33,6 +33,9 @@
 
     <string name="title_great_job">GREAT JOB!</string>
 
+    <string name="back_camera_title">Back Camera</string>
+    <string name="front_camera_title">Selfie</string>
+
     <!-- Videos -->
     <string name="video_title_scene">WATCH OUR SCENE</string>
     <string name="video_title_story">WATCH OUR STORY</string>

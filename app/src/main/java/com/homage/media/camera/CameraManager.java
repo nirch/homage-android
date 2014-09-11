@@ -31,6 +31,8 @@ import android.content.res.Resources;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import com.android.grafika.CameraUtils;
 import com.homage.app.R;
@@ -86,7 +88,6 @@ public class CameraManager {
 
     private int currentCameraId;
     private boolean selfie = false;
-    Context context;
 
     Camera mCamera;
 
@@ -96,7 +97,6 @@ public class CameraManager {
      * <p>
      * Sets mCameraPreviewWidth and mCameraPreviewHeight to the actual width/height of the preview.
      */
-
     public void openCamera() {
         if (mCamera != null) {
             throw new RuntimeException("camera already initialized");
@@ -155,6 +155,10 @@ public class CameraManager {
         mCameraPreviewHeight = mCameraPreviewSize.height;
     }
 
+    public boolean isSelfie() {
+        return selfie;
+    }
+
     /**
      * Stops camera preview, and releases the camera to the system.
      */
@@ -170,6 +174,20 @@ public class CameraManager {
     public void flipCamera() {
         releaseCamera();
         selfie = !selfie;
+    }
+
+    public void toastSelectedCamera(Context context) {
+        Resources res = context.getResources();
+        String cameraTitle;
+
+        if (isSelfie()) {
+            cameraTitle = res.getString(R.string.front_camera_title);
+        } else {
+            cameraTitle = res.getString(R.string.back_camera_title);
+        }
+        Toast t = Toast.makeText(context, cameraTitle, Toast.LENGTH_SHORT);
+        t.setGravity(Gravity.TOP, 0,0);
+        t.show();
     }
     //endregion
 
