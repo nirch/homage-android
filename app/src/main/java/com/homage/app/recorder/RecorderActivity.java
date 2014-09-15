@@ -21,13 +21,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.SurfaceTexture;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.opengl.GLSurfaceView;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
@@ -49,11 +46,9 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.grafika.AspectFrameLayout;
-import com.android.grafika.TextureMovieEncoder;
+import com.android.grafika.HVideoEncoder;
 import com.androidquery.AQuery;
 import com.homage.app.R;
-import com.homage.app.main.HomageApplication;
-import com.homage.media.camera.CameraManager;
 import com.homage.model.Footage;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
@@ -67,7 +62,6 @@ import com.homage.views.Pacman;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
 
@@ -110,7 +104,7 @@ public class RecorderActivity extends Activity
 
     // Camera handler (handles messages from other threads)
     private CameraHandler mCameraHandler;
-    private static TextureMovieEncoder sVideoEncoder = new TextureMovieEncoder();
+    private static HVideoEncoder sHVideoEncoder = new HVideoEncoder();
     private boolean mRecordingEnabled;
 
     private Intent starterIntent;
@@ -167,7 +161,7 @@ public class RecorderActivity extends Activity
     public final static int DISMISS_REASON_USER_ABORTED_PRESSING_X = 500;
     public final static int DISMISS_REASON_FINISHED_REMAKE = 600;
 
-    // Preview
+    // Preview & Renderer
     private AspectFrameLayout previewContainer;
     private GLSurfaceView mGLView;
     private CameraSurfaceRenderer mRenderer;
@@ -197,7 +191,7 @@ public class RecorderActivity extends Activity
         mCameraHandler = new CameraHandler(this);
 
         // Is recording enabled?
-        mRecordingEnabled = sVideoEncoder.isRecording();
+        mRecordingEnabled = sHVideoEncoder.isRecording();
 
         //
         // Get info about the remake
@@ -316,8 +310,13 @@ public class RecorderActivity extends Activity
     protected void onResume() {
         super.onResume();
         closeControlsDrawer(true);
+        showCurtainsAnimated(false);
 
         shouldReleaseCameraOnNavigation = true;
+
+        //if (stateMachine == null) return;
+        //RecorderState currentState = stateMachine.currentState;
+        //if (currentState != RecorderState.MAKING_A_SCENE) return;
 
         final CameraManager cm = CameraManager.sh();
         cm.openCamera();
@@ -325,7 +324,6 @@ public class RecorderActivity extends Activity
         // Reload Preview
         reloadPreview();
 
-        Log.d(TAG, "onResume complete: " + this);
     }
 
     @Override
@@ -459,10 +457,20 @@ public class RecorderActivity extends Activity
         previewContainer.addView(mGLView);
 
         // Setup the gl view for rendering.
+        CameraManager cm = CameraManager.sh();
         mGLView.setEGLContextClientVersion(2);     // select GLES 2.0
-        mRenderer = new CameraSurfaceRenderer(getApplicationContext(), mCameraHandler, sVideoEncoder);
+
+        mRenderer = new CameraSurfaceRenderer(getApplicationContext(), mCameraHandler, sHVideoEncoder);
+        mRenderer.setOutputSettings(
+                cm.getOutputPreferredWidth(),
+                0,                                  // Determined later depending on aspect ratio
+                cm.getOutputPreferredBitRate());
+
         mGLView.setRenderer(mRenderer);
         mGLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+
+        // Store GL view and renderer
+        cm.storeGLViewAndRenderer(mGLView, mRenderer);
 
         // After initialized, fade in the camera by fading out the "curtains" slowly
         hideCurtainsAnimated(true);
@@ -892,7 +900,7 @@ public class RecorderActivity extends Activity
             myIntent.putExtra("remakeOID", remake.getOID());
             myIntent.putExtra("sceneID",currentSceneID);
             RecorderActivity.this.startActivityForResult(myIntent, ACTION_ADVANCE_AND_HANDLE_STATE);
-            overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
+            overridePendingTransition(0, 0);
             if (currentSceneID>0) {
                 updateUIForSceneID(currentSceneID);
             }
@@ -921,7 +929,6 @@ public class RecorderActivity extends Activity
             RecorderActivity.this.startActivityForResult(myIntent, ACTION_BY_RESULT_CODE);
             overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
         }
-
     }
     //endregion
 
@@ -1055,73 +1062,138 @@ public class RecorderActivity extends Activity
     private void startRecording() {
         if (isRecording) return;
 
-//        final Scene scene = story.findScene(currentSceneID);
-//        isRecording = true;
-//
-//        HashMap props = new HashMap<String,String>();
-//        props.put("story" , remake.getStory().name);
-//        props.put("remake_id" , remake.getOID());
-//        props.put("scene_id", Integer.toString(currentSceneID));
-//        HMixPanel.sh().track("REStartRecording",props);
-//
-//
-//        updateScriptBar();
-//
-//        //
-//        // Async listener that is notified while recording (and end of recording).
-//        //
-//        final MediaRecorder.OnInfoListener onRecordingInfoListener = new MediaRecorder.OnInfoListener() {
-//            @Override
-//            public void onInfo(MediaRecorder mr, int what, int extra) {
-//                if (what != MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) return;
-//                Log.d(TAG, String.format("finished (%d %d) recording duration %d", what, extra, scene.duration));
-//                CameraManager.sh().stopRecording();
-//                isRecording = false;
-//                returnFromRecordingUI();
-//                if (outputFile != null) {
-//                    checkFinishedRecording(outputFile);
-//                } else {
-//                    Log.e(TAG, "Why missing outputFile path is missing when finishing recording?");
-//                }
-//            }
-//        };
-//
-//        //
-//        // Start recording
-//        //
-//        new AsyncTask<Void, Integer, Void>(){
-//            @Override
-//            protected Void doInBackground(Void... arg0) {
-//                outputFile = CameraManager.sh().startRecording(scene.duration, onRecordingInfoListener);
-//                if (outputFile == null) {
-//                    Toast.makeText(
-//                            RecorderActivity.this,
-//                            "Failed to start recording.",
-//                            Toast.LENGTH_SHORT).show();
-//                    isRecording = false;
-//                    returnFromRecordingUI();
-//                    return null;
-//                }
-//                Log.d(TAG, String.format("Started recording to local file: %s", outputFile));
-//                return null;
-//            }
-//            @Override
-//            protected void onPostExecute(Void result) {
-//            }
-//        }.execute((Void)null);
-//
-//        // Update UI
-//        hideControlsDrawer(false);
-//        hideOverlayButtons(false);
-//        hideSilhouette(false);
-//
-//        // Progress bar animation
-//        ProgressBar progressBar = aq.id(R.id.recordingProgressBar).getProgressBar();
-//        progressBar.setVisibility(View.VISIBLE);
-//        progressBar.setAlpha(0.7f);
-//        ProgressBarAnimation anim = new ProgressBarAnimation(progressBar, 0, 100);
-//        anim.setDuration(scene.duration);
-//        progressBar.startAnimation(anim);
+        final Scene scene = story.findScene(currentSceneID);
+        isRecording = true;
+
+        // Analytics
+        HashMap props = new HashMap<String,String>();
+        props.put("story" , remake.getStory().name);
+        props.put("remake_id" , remake.getOID());
+        props.put("scene_id", Integer.toString(currentSceneID));
+        HMixPanel.sh().track("REStartRecording",props);
+
+        // Update the script bar.
+        updateScriptBar();
+
+        // Update UI
+        hideControlsDrawer(false);
+        hideOverlayButtons(false);
+        hideSilhouette(false);
+
+        // Progress bar animation
+        ProgressBar progressBar = aq.id(R.id.recordingProgressBar).getProgressBar();
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setAlpha(0.7f);
+        ProgressBarAnimation anim = new ProgressBarAnimation(progressBar, 0, 100);
+        anim.setDuration(scene.duration);
+        progressBar.startAnimation(anim);
+
+
+        // Let the camera manager handle the recording in the background.
+        CameraManager cm = CameraManager.sh();
+        cm.chooseRecordingMethod();
+        cm.startRecording(scene.duration, new CameraManager.RecordingListener() {
+            @Override
+            public void recordingInfo(int what, File outputFile, HashMap<String, Object> info) {
+                int toastMessage = -1;
+                boolean shouldReturnFromRecordingState = false;
+
+                switch(what) {
+                    case CameraManager.RECORDING_STARTED:
+                        toastMessage = R.string.recording_started;
+                        hideSilhouette(true);
+                        break;
+
+                    case CameraManager.RECORDING_FAILED:
+                        showSilhouette(true);
+                        toastMessage = R.string.recording_failed;
+                        shouldReturnFromRecordingState = true;
+                        break;
+
+                    case CameraManager.RECORDING_FAILED_TO_START:
+                        showSilhouette(true);
+                        toastMessage = R.string.recording_failed_to_start;
+                        shouldReturnFromRecordingState = true;
+                        break;
+
+                    case CameraManager.RECORDING_CANCELED:
+                        showSilhouette(true);
+                        toastMessage = R.string.recording_canceled;
+                        shouldReturnFromRecordingState = true;
+                        break;
+
+                    case CameraManager.RECORDING_FINISHED:
+                        break;
+
+                    case CameraManager.RECORDING_SUCCESS:
+                        isRecording = false;
+                        returnFromRecordingUI();
+                        handleSuccessfulTake(outputFile.toString());
+                        return;
+
+                }
+
+                // Show a message to the user if required.
+                if (toastMessage != -1) {
+                    Toast t = Toast.makeText(RecorderActivity.this, toastMessage, Toast.LENGTH_SHORT);
+                    t.setGravity(Gravity.TOP, 0,0);
+                    t.show();
+                }
+
+                if (shouldReturnFromRecordingState) {
+                    // Should return from recording state
+                    // and re enable user interaction
+                    isRecording = false;
+                    returnFromRecordingUI();
+                }
+
+            }
+        });
+    }
+
+    private void handleSuccessfulTake(String outputFile) {
+        try {
+            // All is well, update the footage object
+            Footage footage = remake.findFootage(currentSceneID);
+            if (footage == null) {
+                Log.e(TAG, "Error. why footage not found after finishing recording?");
+                return;
+            }
+
+            if (footage.rawLocalFile==null) {
+                // Set the raw local file for the first time.
+                footage.rawLocalFile = outputFile;
+                footage.rawLocalFileTime = System.currentTimeMillis();
+            } else {
+                // Ensure that the flow of successful upload doesn't happen
+                // When the previous rawLocalFile is still uploaded to s3
+                // Reporting about the new source file, will tell the manager
+                // To ignore successful upload of the older source file.
+                UploadManager.sh().reportSourceFileChange(footage.rawLocalFile, outputFile);
+                footage.rawLocalFile = outputFile;
+                footage.rawLocalFileTime = System.currentTimeMillis();
+            }
+
+            // Inform server about availability of new take.
+            String remakeID = remake.getOID();
+            int sceneID = footage.sceneID;
+            String takeID = footage.getTakeID();
+            HomageServer.sh().putFootage(
+                    remakeID,
+                    sceneID,
+                    takeID,
+                    null
+            );
+
+            footage.save();
+            updateScenesList();
+            UploadManager.sh().checkUploader();
+            stateMachine.advanceState();
+            stateMachine.handleCurrentState();
+
+        } catch (Exception ex) {
+            Log.e(TAG, "Checking recording finished failed.", ex);
+        }
     }
 
     private void checkFinishedRecording(String outputFile) {
@@ -1186,6 +1258,7 @@ public class RecorderActivity extends Activity
 
     private void returnFromRecordingUI() {
         showOverlayButtons(false);
+
         showControlsDrawer(false);
         aq.id(R.id.recordingProgressBar).visibility(View.GONE);
         isRecording = false;
@@ -1243,7 +1316,7 @@ public class RecorderActivity extends Activity
     private void updateUIForSceneID(int sceneID) {
         Story story = remake.getStory();
         Scene scene = story.findScene(sceneID);
-        aq.id(R.id.silhouette).image(scene.silhouetteURL, false, true, 0, 0, null, 0, AQuery.RATIO_PRESERVE);
+        aq.id(R.id.silhouette).image(scene.silhouetteURL, false, true, 0, 0, null, R.anim.animation_fadein, AQuery.RATIO_PRESERVE);
         aq.id(R.id.sceneNumber).text(scene.getTitle());
         aq.id(R.id.sceneTime).text(scene.getTimeString());
         aq.id(R.id.topScriptText).text(scene.script);
@@ -1279,6 +1352,14 @@ public class RecorderActivity extends Activity
             aq.id(R.id.silhouette).animate(fadeOutAnimation);
         } else {
             aq.id(R.id.silhouette).visibility(View.INVISIBLE);
+        }
+    }
+
+    private void showSilhouette(boolean animated) {
+        if (animated) {
+            aq.id(R.id.silhouette).animate(fadeInAnimation);
+        } else {
+            aq.id(R.id.silhouette).visibility(View.VISIBLE);
         }
     }
     //endregion

@@ -28,6 +28,7 @@ import com.android.grafika.gles.EglCore;
 import com.android.grafika.gles.FullFrameRect;
 import com.android.grafika.gles.Texture2dProgram;
 import com.android.grafika.gles.WindowSurface;
+import com.homage.app.recorder.CameraManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +59,7 @@ import java.lang.ref.WeakReference;
  *
  * TODO: tweak the API (esp. textureId) so it's less awkward for simple use cases.
  */
-public class TextureMovieEncoder implements Runnable {
+public class HVideoEncoder implements Runnable {
     private static final String TAG = "TAG_TextureMovieEncoder";
     private static final boolean VERBOSE = false;
 
@@ -75,11 +76,16 @@ public class TextureMovieEncoder implements Runnable {
     private FullFrameRect mFullScreen;
     private int mTextureId;
     private int mFrameNum;
-    private VideoEncoderCore mVideoEncoder;
+    private long timeStampStartNanos;
+    private long timePassedNanos;
+    private long maxDuration;
+    private long maxDurationNanos;
+    private HMovieMuxer mVideoEncoder;
+    private boolean sentStopRecordingRequest;
 
     // ----- accessed by multiple threads -----
     private volatile EncoderHandler mHandler;
-
+    private File mOutputFile;
     private Object mReadyFence = new Object();      // guards ready/running
     private boolean mReady;
     private boolean mRunning;
@@ -126,8 +132,17 @@ public class TextureMovieEncoder implements Runnable {
      * Returns after the recorder thread has started and is ready to accept Messages.  The
      * encoder may not yet be fully configured.
      */
-    public void startRecording(EncoderConfig config) {
-        Log.d(TAG, "Encoder: startRecording()");
+    public void startRecording(EncoderConfig config, long maxDuration) {
+        this.sentStopRecordingRequest = false;
+        this.maxDurationNanos = maxDuration * 1000000; // max duration in nanoseconds.
+
+        if (this.maxDurationNanos > 0) {
+            Log.d(TAG, String.format("Encoder: startRecording with time limit: %d (ns)", maxDurationNanos));
+        } else {
+            Log.d(TAG, "Encoder: startRecording.");
+        }
+
+
         synchronized (mReadyFence) {
             if (mRunning) {
                 Log.w(TAG, "Encoder thread already running");
@@ -212,6 +227,8 @@ public class TextureMovieEncoder implements Runnable {
             return;
         }
 
+
+
         mHandler.sendMessage(mHandler.obtainMessage(MSG_FRAME_AVAILABLE,
                 (int) (timestamp >> 32), (int) timestamp, transform));
     }
@@ -259,10 +276,10 @@ public class TextureMovieEncoder implements Runnable {
      * Handles encoder state change requests.  The handler is created on the encoder thread.
      */
     private static class EncoderHandler extends Handler {
-        private WeakReference<TextureMovieEncoder> mWeakEncoder;
+        private WeakReference<HVideoEncoder> mWeakEncoder;
 
-        public EncoderHandler(TextureMovieEncoder encoder) {
-            mWeakEncoder = new WeakReference<TextureMovieEncoder>(encoder);
+        public EncoderHandler(HVideoEncoder encoder) {
+            mWeakEncoder = new WeakReference<HVideoEncoder>(encoder);
         }
 
         @Override  // runs on encoder thread
@@ -270,7 +287,7 @@ public class TextureMovieEncoder implements Runnable {
             int what = inputMessage.what;
             Object obj = inputMessage.obj;
 
-            TextureMovieEncoder encoder = mWeakEncoder.get();
+            HVideoEncoder encoder = mWeakEncoder.get();
             if (encoder == null) {
                 Log.w(TAG, "EncoderHandler.handleMessage: encoder is null");
                 return;
@@ -323,11 +340,37 @@ public class TextureMovieEncoder implements Runnable {
      * @param timestampNanos The frame's timestamp, from SurfaceTexture.
      */
     private void handleFrameAvailable(float[] transform, long timestampNanos) {
-        if (VERBOSE) Log.d(TAG, "handleFrameAvailable tr=" + transform);
         mVideoEncoder.drainEncoder(false);
         mFullScreen.drawFrame(mTextureId, transform);
 
-        drawBox(mFrameNum++); // Example of drawing a box on the image
+        // Keep the time.
+        if (maxDurationNanos > 0) {
+            if (mFrameNum == 0) timeStampStartNanos = timestampNanos;
+            timePassedNanos = timestampNanos - timeStampStartNanos;
+            if (timePassedNanos >= maxDurationNanos && !sentStopRecordingRequest) {
+                Log.d(TAG, String.format("Max video duration reached (%d >= %d)", timePassedNanos, maxDurationNanos));
+                sentStopRecordingRequest = true;
+                CameraManager.sh().sendStopRecordingMessageToMainThread();
+            }
+        }
+
+        if (sentStopRecordingRequest) return;
+
+        // Just log something when debugging the app
+        // (Never forget set VERBOSE back to false!)
+        if (VERBOSE) {
+            Log.d(TAG, String.format(
+                    "handleFrameAvailable fn=%d tr=%s tp=%d",
+                    mFrameNum,
+                    transform,
+                    timePassedNanos));
+        }
+
+        // Counting the frames.
+        mFrameNum++;
+
+        // Candidate place for manipulating the image
+        //drawBox(mFrameNum++); // Example of drawing a box on the image
 
         mInputWindowSurface.setPresentationTime(timestampNanos);
         mInputWindowSurface.swapBuffers();
@@ -340,6 +383,7 @@ public class TextureMovieEncoder implements Runnable {
         Log.d(TAG, "handleStopRecording");
         mVideoEncoder.drainEncoder(true);
         releaseEncoder();
+        CameraManager.sh().sendFinishedRecordingMessageToMainThread(mOutputFile);
     }
 
     /**
@@ -378,14 +422,14 @@ public class TextureMovieEncoder implements Runnable {
     private void prepareEncoder(EGLContext sharedContext, int width, int height, int bitRate,
             File outputFile) {
         try {
-            mVideoEncoder = new VideoEncoderCore(width, height, bitRate, outputFile);
+            mVideoEncoder = new HMovieMuxer(width, height, bitRate, outputFile);
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
         mEglCore = new EglCore(sharedContext, EglCore.FLAG_RECORDABLE);
         mInputWindowSurface = new WindowSurface(mEglCore, mVideoEncoder.getInputSurface(), true);
         mInputWindowSurface.makeCurrent();
-
+        mOutputFile = outputFile;
         mFullScreen = new FullFrameRect(
                 new Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT));
     }

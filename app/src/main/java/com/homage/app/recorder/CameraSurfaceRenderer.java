@@ -1,20 +1,17 @@
 package com.homage.app.recorder;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
-import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
-import android.view.Gravity;
-import android.widget.Toast;
 
-import com.android.grafika.TextureMovieEncoder;
+import com.android.grafika.HVideoEncoder;
 import com.android.grafika.gles.FullFrameRect;
 import com.android.grafika.gles.Texture2dProgram;
 
 import java.io.File;
-import java.util.Random;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -35,8 +32,9 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
 
     private Context mContext;
     private CameraHandler mCameraHandler;
-    private TextureMovieEncoder mVideoEncoder;
+    private HVideoEncoder mHVideoEncoder;
     private File mOutputFile;
+
 
     private FullFrameRect mFullScreen;
 
@@ -47,11 +45,19 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
     private boolean mRecordingEnabled;
     private int mRecordingStatus;
     private int mFrameCount;
+    private int maxDuration;
 
     // width/height of the incoming camera preview frames
     private boolean mIncomingSizeUpdated;
     private int mIncomingWidth;
     private int mIncomingHeight;
+
+    // Some settings
+    int outputWidth;
+    int outputHeight;
+    int outputBitrate;
+
+    String outputFilePath;
 
     /**
      * Constructs CameraSurfaceRenderer.
@@ -60,11 +66,11 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
      * @param movieEncoder video encoder object
      */
     public CameraSurfaceRenderer(Context context, CameraHandler cameraHandler,
-                                 TextureMovieEncoder movieEncoder) {
+                                 HVideoEncoder movieEncoder) {
 
         mContext = context;
         mCameraHandler = cameraHandler;
-        mVideoEncoder = movieEncoder;
+        mHVideoEncoder = movieEncoder;
 
         mTextureId = -1;
 
@@ -74,6 +80,16 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
 
         mIncomingSizeUpdated = false;
         mIncomingWidth = mIncomingHeight = -1;
+    }
+
+    public void setOutputSettings(int outputWidth, int outputHeight, int outputBitrate) {
+        this.outputWidth = outputWidth;
+        this.outputHeight = outputHeight;
+        this.outputBitrate = outputBitrate;
+    }
+
+    public void setMaxDuration(int maxDuration) {
+        this.maxDuration = maxDuration;
     }
 
     /**
@@ -123,7 +139,7 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
         // We're starting up or coming back.  Either way we've got a new EGLContext that will
         // need to be shared with the video encoder, so figure out if a recording is already
         // in progress.
-        mRecordingEnabled = mVideoEncoder.isRecording();
+        mRecordingEnabled = mHVideoEncoder.isRecording();
         if (mRecordingEnabled) {
             mRecordingStatus = RECORDING_RESUMED;
         } else {
@@ -153,9 +169,9 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
     }
 
     @Override
+    @TargetApi(18)
     public void onDrawFrame(GL10 unused) {
         if (VERBOSE) Log.d(TAG, "onDrawFrame tex=" + mTextureId);
-        boolean showBox = false;
 
         // Latch the latest frame.  If there isn't anything new, we'll just re-use whatever
         // was there before.
@@ -167,25 +183,41 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
         if (mRecordingEnabled) {
             switch (mRecordingStatus) {
                 case RECORDING_OFF:
-                    // start recording
-                    Random r = new Random();
-                    int randomId = r.nextInt(10000);
-
+                    // First, make sure this device supports API 18 and above.
+                    // Otherwise this will fail without even attempting to record.
 
                     // Set the new output file
-                    String outputFileName = String.format("video_%05d.mp4", randomId);
+                    mOutputFile = CameraHelper.getOutputMediaFile(CameraHelper.MEDIA_TYPE_VIDEO);
+                    outputFilePath = mOutputFile.toString();
                     mCameraHandler.sendMessage(mCameraHandler.obtainMessage(
-                            CameraHandler.MSG_OUTPUTFILE_SET, outputFileName));
-                    mOutputFile = new File(mContext.getExternalFilesDir("Documents"), outputFileName);
-                    Log.d(TAG, String.format("START recording to: %s", mOutputFile.toString()));
+                            CameraHandler.MSG_OUTPUTFILE_SET, outputFilePath));
+                    Log.d(TAG, String.format("START recording to: %s", outputFilePath));
 
-                    mVideoEncoder.startRecording(new TextureMovieEncoder.EncoderConfig(
-                            mOutputFile, 640, 360, 1000000, EGL14.eglGetCurrentContext()));
+                    if (outputHeight == 0) {
+                        // Determine height depending on source aspect ratio
+                        // and output width.
+                        double aspectRatio = (double)mIncomingWidth / (double)mIncomingHeight;
+                        outputHeight = (int)((double)outputWidth / aspectRatio);
+                        Log.d(TAG, String.format("Output size: %d,%d", outputWidth, outputHeight));
+                    }
+
+                    // Setup the recording configuration
+                    HVideoEncoder.EncoderConfig recordingConfig = new HVideoEncoder.EncoderConfig(
+                            mOutputFile,                                // Output file name+path
+                            outputWidth,                                // Output video width
+                            outputHeight,                               // Output video height
+                            outputBitrate,                              // Output video bit rate
+                            EGL14.eglGetCurrentContext()                // EGL Context
+                    );
+
+                    // Start the recording with the given configuration
+                    mHVideoEncoder.startRecording(recordingConfig, maxDuration); // EncoderConfig, video max duration.
+
                     mRecordingStatus = RECORDING_ON;
                     break;
                 case RECORDING_RESUMED:
                     Log.d(TAG, "RESUME recording");
-                    mVideoEncoder.updateSharedContext(EGL14.eglGetCurrentContext());
+                    mHVideoEncoder.updateSharedContext(EGL14.eglGetCurrentContext());
                     mRecordingStatus = RECORDING_ON;
                     break;
                 case RECORDING_ON:
@@ -200,7 +232,7 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
                 case RECORDING_RESUMED:
                     // stop recording
                     Log.d(TAG, "STOP recording");
-                    mVideoEncoder.stopRecording();
+                    mHVideoEncoder.stopRecording();
                     mRecordingStatus = RECORDING_OFF;
                     break;
                 case RECORDING_OFF:
@@ -216,11 +248,11 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
         // we just do it here.
         //
         // TODO: be less lame.
-        mVideoEncoder.setTextureId(mTextureId);
+        mHVideoEncoder.setTextureId(mTextureId);
 
         // Tell the video encoder thread that a new frame is available.
         // This will be ignored if we're not actually recording.
-        mVideoEncoder.frameAvailable(mSurfaceTexture);
+        mHVideoEncoder.frameAvailable(mSurfaceTexture);
 
         if (mIncomingWidth <= 0 || mIncomingHeight <= 0) {
             // Texture size isn't set yet.  This is only used for the filters, but to be
@@ -238,22 +270,23 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
         // Draw the video frame.
         mSurfaceTexture.getTransformMatrix(mSTMatrix);
         mFullScreen.drawFrame(mTextureId, mSTMatrix);
-
-        // Draw a flashing box if we're recording.  This only appears on screen.
-        showBox = (mRecordingStatus == RECORDING_ON);
-        if (showBox && (++mFrameCount & 0x04) == 0) {
-            drawBox();
-        }
-    }
-
-    /**
-     * Draws a red box in the corner.
-     */
-    private void drawBox() {
-        GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
-        GLES20.glScissor(0, 0, 100, 100);
-        GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        GLES20.glDisable(GLES20.GL_SCISSOR_TEST);
     }
 }
+
+//    /** Used for debugging **
+//     // Draw a flashing box if we're recording.  This only appears on screen.
+//     showBox = (mRecordingStatus == RECORDING_ON);
+//     if (showBox && (++mFrameCount & 0x04) == 0) {
+//     drawBox();
+//     }
+//     **/
+//    /**
+//     * Draws a red box in the corner.
+//     */
+//    private void drawBox() {
+//        GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
+//        GLES20.glScissor(0, 0, 100, 100);
+//        GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+//        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+//        GLES20.glDisable(GLES20.GL_SCISSOR_TEST);
+//    }

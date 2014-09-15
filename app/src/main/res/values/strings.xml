@@ -36,6 +36,12 @@
     <string name="back_camera_title">Back Camera</string>
     <string name="front_camera_title">Selfie</string>
 
+    <string name="recording_started">Recording started.</string>
+    <string name="recording_canceled">Canceled recording.</string>
+    <string name="recording_failed">Recording failed.</string>
+    <string name="recording_failed_to_start">Recording failed to start.</string>
+    <string name="recording_scene_recorded_successfully">Scene recorded successfully</string>
+
     <!-- Videos -->
     <string name="video_title_scene">WATCH OUR SCENE</string>
     <string name="video_title_story">WATCH OUR STORY</string>

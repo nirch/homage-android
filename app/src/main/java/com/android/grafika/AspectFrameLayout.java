@@ -75,8 +75,6 @@ public class AspectFrameLayout extends FrameLayout {
                 " width=[" + MeasureSpec.toString(widthMeasureSpec) +
                 "] height=[" + View.MeasureSpec.toString(heightMeasureSpec) + "]");
 
-
-
         // Target aspect ratio will be < 0 if it hasn't been set yet.  In that case,
         // we just use whatever we've been handed.
         if (mTargetAspect > 0) {
@@ -103,7 +101,7 @@ public class AspectFrameLayout extends FrameLayout {
                     int psize = parent.getMeasuredHeight();
                     int size = (psize - initialHeight)/2;
                     Log.d(TAG, String.format("cropping bars size:%d", size));
-                    updateCroppingBlackBars(size);
+                    if (size < 200) updateCroppingBlackBars(size);
                 }
 
                 // Add crop bars and fix height if original video height should be cropped

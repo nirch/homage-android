@@ -47,51 +47,39 @@ public class CameraUtils {
         //    Log.d(TAG, "supported: " + size.width + "x" + size.height);
         //}
 
-        for (Camera.Size size : parms.getSupportedPreviewSizes()) {
+        List <Camera.Size> sizesList = parms.getSupportedPreviewSizes();
+        for (Camera.Size size : sizesList) {
             if (size.width == width && size.height == height) {
-                parms.setPreviewSize(width, height);
+                parms.setPreviewSize(size.width, size.height);
                 return;
             }
         }
 
+        // Unable to choose the preffered size.
+        // Choose the camera's default size instead.
         Log.w(TAG, "Unable to set preview size to " + width + "x" + height);
         Log.d(TAG, "Set to default size of " + ppsfv.width + "x" + ppsfv.height);
         if (ppsfv != null) {
             parms.setPreviewSize(ppsfv.width, ppsfv.height);
         }
-        // else use whatever the default size is
     }
 
     /**
-     * Attempts to find a fixed preview frame rate that matches the desired frame rate.
-     * <p>
-     * It doesn't seem like there's a great deal of flexibility here.
-     * <p>
-     * TODO: follow the recipe from http://stackoverflow.com/questions/22639336/#22645327
+     * Chooses the fps closest to the desired settings.
      *
      * @return The expected frame rate, in thousands of frames per second.
      */
-    public static int chooseFixedPreviewFps(Camera.Parameters parms, int desiredThousandFps) {
+    public static void chooseBestFPSRange(Camera.Parameters parms, int desiredThousandFps) {
         List<int[]> supported = parms.getSupportedPreviewFpsRange();
-
-        for (int[] entry : supported) {
-            //Log.d(TAG, "entry: " + entry[0] + " - " + entry[1]);
-            if ((entry[0] == entry[1]) && (entry[0] == desiredThousandFps)) {
-                parms.setPreviewFpsRange(entry[0], entry[1]);
-                return entry[0];
+        long minDistance = Long.MAX_VALUE;
+        int[] chosenFPSRange = supported.get(0);
+        for (int[] r : supported) {
+            long distance = Math.abs(r[0]-desiredThousandFps) + Math.abs(r[1]-desiredThousandFps);
+            if (distance < minDistance) {
+                chosenFPSRange = r;
+                minDistance = distance;
             }
         }
-
-        int[] tmp = new int[2];
-        parms.getPreviewFpsRange(tmp);
-        int guess;
-        if (tmp[0] == tmp[1]) {
-            guess = tmp[0];
-        } else {
-            guess = tmp[1] / 2;     // shrug
-        }
-
-        Log.d(TAG, "Couldn't find match for " + desiredThousandFps + ", using " + guess);
-        return guess;
+        parms.setPreviewFpsRange(chosenFPSRange[0], chosenFPSRange[1]);
     }
 }

@@ -29,7 +29,8 @@ public class Parser {
     public Error error;
     public HashMap<String, Object> responseInfo;
 
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    private SimpleDateFormat dateFormatter2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
      * By default, parsers expect a json object.
@@ -135,7 +136,14 @@ public class Parser {
             long lDate = dDate.getTime();
             return lDate;
         } catch (Exception ex) {
-            return defaultValue;
+            try {
+                // Handle older format, just in case.
+                Date dDate = dateFormatter2.parse(sDate);
+                long lDate = dDate.getTime();
+                return lDate;
+            } catch (Exception ex2) {
+                return defaultValue;
+            }
         }
     }
 

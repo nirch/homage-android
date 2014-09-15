@@ -2,8 +2,8 @@
 <resources>
 
     <!-- Camera settings -->
-    <integer name="cameraBackPreferredRecodingWidth">1280</integer>
-    <integer name="cameraBackPreferredRecodingHeight">720</integer>
+    <integer name="cameraBackPreferredRecodingWidth">640</integer>
+    <integer name="cameraBackPreferredRecodingHeight">480</integer>
 
     <integer name="cameraFrontPreferredRecodingWidth">640</integer>
     <integer name="cameraFrontPreferredRecodingHeight">480</integer>
@@ -11,9 +11,16 @@
     <bool name="cameraFrontAllowed">true</bool>
 
     <!-- Video capture -->
-    <bool name="recorderUseMediaCodecWhenAvailable">true</bool>
-    <integer name="recorderMediaCodecPrefferedOutputWidth">640</integer>
-    <integer name="recorderMediaCodecPrefferedOutputHeight">360</integer>
+    <bool name="recorderUseMediaCodecWhenAvailable">false</bool>
+    <bool name="recorderMediaCodecRecordsAudio">true</bool>
+    <integer name="recorderMediaCodecPreferredOutputBitRate">3000000</integer>
+    <integer name="recorderMediaCodecPreferredFPS">25000</integer>
+
+    <!-- Output Width -->
+    <integer name="recorderMediaCodecPreferredOutputWidth">640</integer>
+
+    <!-- Output Height -->
+    <!-- Height of the output is inferred depending on aspect ratio of the input -->
 
 
 </resources>

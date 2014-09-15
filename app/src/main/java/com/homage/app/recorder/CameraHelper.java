@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.homage.media.camera;
+package com.homage.app.recorder;
 
 import android.annotation.TargetApi;
 import android.hardware.Camera;
@@ -155,6 +155,7 @@ public class CameraHelper {
         return null;
     }
 
+
     /**
      * Creates a media file in the {@code Environment.DIRECTORY_PICTURES} directory. The directory
      * is persistent and available to other applications like gallery.
@@ -170,7 +171,7 @@ public class CameraHelper {
         }
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "CameraSample");
+                Environment.DIRECTORY_MOVIES), "CameraSample");
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
 

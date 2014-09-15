@@ -16,10 +16,13 @@
 
 package com.android.grafika;
 
+import android.annotation.TargetApi;
+import android.media.AudioRecord;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
+import android.media.MediaRecorder;
 import android.util.Log;
 import android.view.Surface;
 
@@ -37,18 +40,20 @@ import java.nio.ByteBuffer;
  * This class is not thread-safe, with one exception: it is valid to use the input surface
  * on one thread, and drain the output on a different thread.
  */
-public class VideoEncoderCore {
+@TargetApi(18)
+public class HMovieMuxer {
     private static final String TAG = "TAG_VideoEncoderCore";
     private static final boolean VERBOSE = false;
 
     // TODO: these ought to be configurable as well
     private static final String MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
-    private static final int FRAME_RATE = 30;               // 30fps
+    private static final int FRAME_RATE = 25;               // 25fps
     private static final int IFRAME_INTERVAL = 5;           // 5 seconds between I-frames
 
     private Surface mInputSurface;
     private MediaMuxer mMuxer;
     private MediaCodec mEncoder;
+    private MediaCodec mAudioEncoder;
     private MediaCodec.BufferInfo mBufferInfo;
     private int mTrackIndex;
     private boolean mMuxerStarted;
@@ -57,27 +62,44 @@ public class VideoEncoderCore {
     /**
      * Configures encoder and muxer state, and prepares the input Surface.
      */
-    public VideoEncoderCore(int width, int height, int bitRate, File outputFile)
+    public HMovieMuxer(int width, int height, int bitRate, File outputFile)
             throws IOException {
         mBufferInfo = new MediaCodec.BufferInfo();
 
-        MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE, width, height);
 
-        // Set some properties.  Failing to specify some of these can cause the MediaCodec
-        // configure() call to throw an unhelpful exception.
-        format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
+        // ************
+        //    VIDEO
+        // ************
+        MediaFormat videoFormat = MediaFormat.createVideoFormat(MIME_TYPE, width, height);
+        videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,
                 MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-        format.setInteger(MediaFormat.KEY_BIT_RATE, bitRate);
-        format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
-        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFRAME_INTERVAL);
-        if (VERBOSE) Log.d(TAG, "format: " + format);
+        videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitRate);
+        videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
+        videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFRAME_INTERVAL);
+        if (VERBOSE) Log.d(TAG, "video format: " + videoFormat);
 
         // Create a MediaCodec encoder, and configure it with our format.  Get a Surface
         // we can use for input and wrap it with a class that handles the EGL work.
         mEncoder = MediaCodec.createEncoderByType(MIME_TYPE);
-        mEncoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+        mEncoder.configure(videoFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         mInputSurface = mEncoder.createInputSurface();
         mEncoder.start();
+
+        // ************
+        //    AUDIO
+        // ************
+//        MediaRecorder mediaRecorder = new MediaRecorder();
+//        mediaRecorder.set
+//
+//        MediaFormat audioFormat = new MediaFormat();
+//        audioFormat.setString(MediaFormat.KEY_MIME, "audio/mp4a-latm");
+//        audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
+//        audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, 44100);
+//        audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1);
+//        audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, 64000);
+//        mAudioEncoder = MediaCodec.createEncoderByType("audio/mp4a-latm");
+//        mAudioEncoder.configure(audioFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+//        mAudioEncoder.start();
 
         // Create a MediaMuxer.  We can't add the video track and start() the muxer here,
         // because our MediaFormat doesn't have the Magic Goodies.  These can only be
@@ -140,6 +162,7 @@ public class VideoEncoderCore {
         ByteBuffer[] encoderOutputBuffers = mEncoder.getOutputBuffers();
         while (true) {
             int encoderStatus = mEncoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
+
             if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 // no output available yet
                 if (!endOfStream) {
@@ -157,7 +180,6 @@ public class VideoEncoderCore {
                 }
                 MediaFormat newFormat = mEncoder.getOutputFormat();
                 Log.d(TAG, "encoder output format changed: " + newFormat);
-
                 // now that we have the Magic Goodies, start the muxer
                 mTrackIndex = mMuxer.addTrack(newFormat);
                 mMuxer.start();
@@ -209,4 +231,5 @@ public class VideoEncoderCore {
             }
         }
     }
+
 }

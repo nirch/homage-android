@@ -24,8 +24,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -44,6 +46,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ListAdapter;
+import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.google.android.gms.common.ConnectionResult;
@@ -68,6 +72,7 @@ import com.vim.vimapi.vTool;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -119,6 +124,9 @@ public class MainActivity extends ActionBarActivity
     AtomicInteger msgId = new AtomicInteger();
     Context context;
 
+    // Sharing
+    HashMap<String, String> shareMimeTypes = new HashMap<String, String>();
+    HashMap<String, Integer> shareMethods = new HashMap<String, Integer>();
 
     //region *** Lifecycle ***
     @Override
@@ -173,6 +181,8 @@ public class MainActivity extends ActionBarActivity
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
+
+        initSharing();
 
         //region *** Bind to UI event handlers ***
         /**********************************/
@@ -851,12 +861,128 @@ public class MainActivity extends ActionBarActivity
 
     }
 
+
     //region *** Share ***
+    private void initSharing() {
+        shareMimeTypes.put("com.google.android.gm",      "message/rfc822");
+        shareMimeTypes.put("com.google.android.email",   "message/rfc822");
+        shareMimeTypes.put("com.facebook.katana",        "text/plain");
+        shareMimeTypes.put("com.whatsapp",               "text/plain");
+        shareMimeTypes.put("com.twitter.android",        "text/plain");
+        shareMimeTypes.put("com.google.android.talk",    "text/plain");
+
+        shareMethods.put("com.google.android.gm",      SHARE_METHOD_EMAIL);
+        shareMethods.put("com.google.android.email",   SHARE_METHOD_EMAIL);
+        shareMethods.put("com.facebook.katana",        SHARE_METHOD_FACEBOOK);
+        shareMethods.put("com.whatsapp",               SHARE_METHOD_WHATS_APP);
+        shareMethods.put("com.twitter.android",        SHARE_METHOD_TWITTER);
+        shareMethods.put("com.google.android.talk",    SHARE_METHOD_MESSAGE);
+    }
+
+    private List<ResolveInfo> getSupportedActivitiesForSharing() {
+        // Most important: GMail, Email, Whatsapp, Twitter, Facebook, others...
+        PackageManager pm = getPackageManager();
+        Intent i;
+
+        List<ResolveInfo> activities = new ArrayList<ResolveInfo>();
+
+        // EMAIL
+        i = new Intent(Intent.ACTION_SEND);
+        i.setType("message/rfc822");
+        final List<ResolveInfo> activitiesSupportingMail = getPackageManager().queryIntentActivities(i, 0);
+        for (ResolveInfo info : activitiesSupportingMail) {
+            String appName = info.loadLabel(pm).toString();
+            String packageName = info.activityInfo.packageName;
+            if (!shareMimeTypes.containsKey(packageName)) continue;
+            String mimeType = shareMimeTypes.get(packageName);
+            if (!mimeType.equals("message/rfc822")) continue;
+            activities.add(info);
+            Log.v(TAG, String.format("Mail share using >>>> %s %s", appName, info.activityInfo.packageName));
+        }
+
+        // PLAIN TEXT
+        i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        final List<ResolveInfo> activitiesSupportingText = getPackageManager().queryIntentActivities(i, 0);
+        for (ResolveInfo info : activitiesSupportingText) {
+            String appName = info.loadLabel(pm).toString();
+            String packageName = info.activityInfo.packageName;
+            if (!shareMimeTypes.containsKey(packageName)) continue;
+            String mimeType = shareMimeTypes.get(packageName);
+            if (!mimeType.equals("text/plain")) continue;
+            activities.add(info);
+            Log.v(TAG, String.format("Share using >>>> %s %s", appName, info.activityInfo.packageName));
+        }
+
+        return activities;
+    }
+
     public void shareRemake(final Remake sharedRemake) {
+        PackageManager pm = getPackageManager();
 
         final Story story = sharedRemake.getStory();
         final String downloadLink = "https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8";
 
+
+        final List<ResolveInfo> activities = getSupportedActivitiesForSharing();
+        List<String> appNames = new ArrayList<String>();
+        List<Drawable> appIcons = new ArrayList<Drawable>();
+        for (ResolveInfo info : activities) {
+            appNames.add(info.loadLabel(pm).toString());
+            try {
+                appIcons.add(pm.getApplicationIcon(info.activityInfo.packageName));
+            } catch (Exception ex) {
+                appIcons.add(null);
+            }
+        }
+
+        ListAdapter adapter = new ArrayAdapterWithIcons(this, appNames, appIcons);
+        new AlertDialog.Builder(this).setTitle("Share your story:")
+                .setAdapter(adapter, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item ) {
+                        ResolveInfo info = activities.get(item);
+                        String packageName = info.activityInfo.packageName;
+                        String mimeType = shareMimeTypes.get(packageName);
+                        Integer shareMethod = shareMethods.get(packageName);
+
+                        final Intent i = new Intent(Intent.ACTION_SEND);
+                        i.setType(mimeType);
+
+                        switch(shareMethod) {
+                            case SHARE_METHOD_EMAIL:
+                                i.putExtra(Intent.EXTRA_SUBJECT, story.shareMessage);
+                                i.putExtra(Intent.EXTRA_TEXT,
+                                        String.format(
+                                                "%s \n\n keep calm and get Homage at: \n\n %s" ,
+                                                sharedRemake.shareURL , downloadLink));
+                                break;
+                            default:
+                                i.putExtra(Intent.EXTRA_TEXT,
+                                        String.format(
+                                                "%s: \n %s \n keep calm and get Homage at: \n %s" ,
+                                                story.shareMessage , sharedRemake.shareURL , downloadLink));
+                        }
+
+
+                        // Analytics homage
+                        HomageServer.sh().reportRemakeShareForUser(
+                                sharedRemake.getOID(),sharedRemake.userID, packageName);
+
+                        // Analytics mixpanel
+                        HashMap props = new HashMap<String,String>();
+                        props.put("story", story.name);
+                        props.put("remake_id", sharedRemake.getOID());
+                        props.put("share_method", packageName);
+                        HMixPanel.sh().track("MEShareRemake",props);
+
+                        // start the selected activity
+                        i.setPackage(info.activityInfo.packageName);
+                        startActivity(i);
+                    }
+                }).show();
+
+
+        /*
         final Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("text/plain");
 
@@ -927,6 +1053,13 @@ public class MainActivity extends ActionBarActivity
         alert.show();
 
         return;
+        */
+
+                /*
+        Drawable icon = getPackageManager().getApplicationIcon("com.example.testnotification");
+imageView.setImageDrawable(icon);
+         */
+
     }
     //endregion
 

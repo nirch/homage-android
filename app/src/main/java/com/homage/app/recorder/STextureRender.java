@@ -1,4 +1,4 @@
-package com.homage.media.camera;
+package com.homage.app.recorder;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;

@@ -19,6 +19,7 @@ class CameraHandler extends Handler {
 
     public static final int MSG_SET_SURFACE_TEXTURE = 0;
     public static final int MSG_OUTPUTFILE_SET      = 1;
+    public static final int MSG_STOP_RECORDING      = 2;
 
     // Weak reference to the Activity; only access this from the UI thread.
     private WeakReference<RecorderActivity> mWeakActivity;

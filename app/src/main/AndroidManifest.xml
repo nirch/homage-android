@@ -4,7 +4,6 @@
     >
 
     <!--
-
         ===================================================================
           Uses permissions - לא לוקחים מפתח של חביתוש בלי רשות של רגע ודודלי
         ===================================================================
@@ -63,7 +62,12 @@
         <!-- Sugar ORM settings -->
         <!-- (A spoon full of Sugar, makes a database go down?) -->
         <meta-data android:name="DATABASE" android:value="HomageLocalStorage.db" />
-        <meta-data android:name="VERSION" android:value="666" />
+
+        <!--
+            No need to update model version unless the model has changed.
+            If model changed, change the version of the model according to the version of the app.
+        -->
+        <meta-data android:name="VERSION" android:value="1000" />
         <meta-data android:name="QUERY_LOG" android:value="false" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.homage.model" />
 

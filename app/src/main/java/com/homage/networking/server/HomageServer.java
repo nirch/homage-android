@@ -33,6 +33,7 @@ import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.homage.app.BuildConfig;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.device.Device;
@@ -88,6 +89,8 @@ public class HomageServer extends Server {
     //region *** more settings ***
     public boolean prefetchTopRemakes = false;
     public int topRemakesCount = 10;
+    private boolean serverAnalyticsOnDebug;
+    private boolean isDebug;
     //endregion
 
     //region *** singleton pattern ***
@@ -140,9 +143,16 @@ public class HomageServer extends Server {
         // More settings
         Resources res = context.getResources();
         prefetchTopRemakes = res.getBoolean(R.bool.prefetch_top_remakes);
+        serverAnalyticsOnDebug = res.getBoolean(R.bool.server_analytics_on_debug);
         topRemakesCount = res.getInteger(R.integer.top_remakes_count);
+        isDebug = BuildConfig.DEBUG;
     }
     //endregion
+
+    private boolean shouldBlockServerAnalytics() {
+        if (isDebug && !serverAnalyticsOnDebug) return true;
+        return false;
+    }
 
     //region *** Stories ***
     /**
@@ -496,8 +506,9 @@ public class HomageServer extends Server {
     //-(void)reportSession:(NSString *)sessionID endForUser:(NSString *)userID;
     //-(void)reportSession:(NSString *)sessionID updateForUser:(NSString *)userID;
 
-  public void reportRemakeShareForUser (String remakeID, String userID, int shareMethod)
+  public void reportRemakeShareForUser (String remakeID, String userID, String shareMethod)
   {
+      if (shouldBlockServerAnalytics()) return;
       Log.v(TAG, String.format("Reporting remake: %s user: %s" , remakeID , userID));
       HashMap<String,String> params = new HashMap<String, String>();
       params.put("user_id", userID);
@@ -510,6 +521,7 @@ public class HomageServer extends Server {
 
   public void reportVideoViewStart(String viewID, int entityType, String entityID, String userID, int originatingScreen)
   {
+      if (shouldBlockServerAnalytics()) return;
       Log.v(TAG, String.format("Reporting view start: %s for entity: %s user: %s" , viewID , entityID, userID));
       HashMap<String,String> params = new HashMap<String, String>();
       params.put("view_id" , viewID);
@@ -530,6 +542,7 @@ public class HomageServer extends Server {
 
    public void reportVideoViewStop(String viewID, int entityType, String entityID, String userID, int playbackTime, int totalDuration, int originatingScreen)
    {
+     if (shouldBlockServerAnalytics()) return;
      Log.v(TAG, String.format("Reporting view stop: %s for entity: %s user: %s" , viewID , entityID, userID));
      HashMap<String,String> params = new HashMap<String, String>();
      params.put("view_id" , viewID);
@@ -552,6 +565,7 @@ public class HomageServer extends Server {
 
    public void reportSessionBegin(String sessionID, String userID)
    {
+       if (shouldBlockServerAnalytics()) return;
        Log.v(TAG, String.format("Reporting session: %s begin for user: %s" , sessionID, userID));
        HashMap<String,String> params = new HashMap<String, String>();
        params.put("session_id", sessionID);
@@ -561,6 +575,7 @@ public class HomageServer extends Server {
 
     public void reportSessionEnd(String sessionID, String userID)
     {
+        if (shouldBlockServerAnalytics()) return;
         Log.v(TAG, String.format("Reporting session: %s end for user: %s" , sessionID, userID));
         HashMap<String,String> params = new HashMap<String, String>();
         params.put("session_id", sessionID);
@@ -570,6 +585,7 @@ public class HomageServer extends Server {
 
     public void reportSessionUpdate(String sessionID, String userID)
     {
+        if (shouldBlockServerAnalytics()) return;
         Log.v(TAG, String.format("Reporting session: %s update for user: %s" , sessionID, userID));
         HashMap<String,String> params = new HashMap<String, String>();
         params.put("session_id", sessionID);

@@ -8,6 +8,9 @@
     <!-- top_remakes_count: Limits the number of remakes to fetch when entering a stort details screen -->
     <integer name="top_remakes_count">10</integer>
 
+    <!-- Analytics -->
+    <bool name="server_analytics_on_debug">false</bool>
+
     <!-- DEV Server -->
     <string name="server_dev_host">homage-server-app-dev.elasticbeanstalk.com</string>
     <integer name="server_dev_port">80</integer>

@@ -14,7 +14,6 @@
 package com.homage.app.main;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,9 +31,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.androidquery.callback.BitmapAjaxCallback;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.homage.media.camera.CameraManager;
+import com.homage.app.recorder.CameraManager;
 import com.homage.model.User;
 import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
@@ -48,7 +45,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 
 public class HomageApplication extends SugarApp {
@@ -306,7 +302,6 @@ public class HomageApplication extends SugarApp {
     @Override
     public void onLowMemory(){
         //clear all memory cached images when system is in low memory
-        //note that you can configure the max image cache count, see CONFIGURATION
         BitmapAjaxCallback.clearCache();
     }
 
