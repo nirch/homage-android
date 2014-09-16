@@ -81,6 +81,8 @@ public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     String TAG = "TAG_MainActivity";
 
+    public static final String SK_START_MAIN_WITH = "startMainWith";
+
     AQuery aq;
     AQuery actionAQ;
 
@@ -142,15 +144,25 @@ public class MainActivity extends ActionBarActivity
 
         aq = new AQuery(this);
 
+
+        // Navigation drawer
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
         lastRemakeSentToRender = null;
 
-        // Set up the drawer.
+        // Navigate to another default section if requested
+        Intent i = getIntent();
+        final String mainStartsWith = i.getStringExtra(SK_START_MAIN_WITH);
+        int defaultSelection = -1;
+        if (mainStartsWith != null && mainStartsWith.equals("MyStories")) defaultSelection = 2;
+
+            // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
-                (DrawerLayout)findViewById(R.id.drawer_layout));
+                (DrawerLayout)findViewById(R.id.drawer_layout),
+                defaultSelection
+                );
 
         // Custom actionbar layout
         ActionBar actionBar = getSupportActionBar();

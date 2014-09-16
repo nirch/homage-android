@@ -98,11 +98,11 @@ public class GcmIntentService extends IntentService {
         //
         // Got a message. Take some info about it from the extras parameters.
         //
-        Intent intent = null;
         Uri alertSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         String title = extras.getString("title","Homage");
         String text = extras.getString("text","Keep calm and check homage");
-        int pushType = extras.getInt("type", PushMessageTypeGeneralMessage);
+        String pushTypeString = extras.getString("type", "3");
+        int pushType = Integer.parseInt(pushTypeString);
 
         //
         // We want to show a notification to the user.
@@ -112,49 +112,70 @@ public class GcmIntentService extends IntentService {
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle(title)
                         .setContentText(text)
-                        .setSound(alertSound);
+                        .setSound(alertSound)
+                        .setAutoCancel(true);
 
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
 
-        //
-        // Create an intent that defines what happens when the user
-        // selects the notification.
-        // It also depends on the state of the application
-        intent = createIntentForTheMessage(pushType, extras);
+
+        Intent intent = null;
+
+        /*
+            Example:
+            {:
+                type=>0, :
+                title=>"Video is Ready!", :
+                remake_id=>"5415863ab8fef16bc5000012", :
+                story_id=>"53ce9bc405f0f6e8f2000655", :
+                text=>"Your Street Fighter Video is Ready!"
+            }
+         */
+
+        Context context = getApplicationContext();
+        Bundle moreInfo = new Bundle();
+
+        if (pushType == PushMessageTypeMovieReady || pushType == PushMessageTypeMovieFailed) {
+            String storyId = extras.getString("story_id", null);
+            String remakeId = extras.getString("remake_id", null);
+            intent = new Intent(context, SplashScreenActivity.class);
+
+
+            moreInfo.putString("story_id", storyId);
+            moreInfo.putString("remake_id", remakeId);
+            moreInfo.putString(MainActivity.SK_START_MAIN_WITH, "MyStories");
+
+
+            intent.putExtras(moreInfo);
+
+        } else if (pushType == PushMessageTypeNewStory) {
+            intent = new Intent(context, SplashScreenActivity.class);
+        } else {
+            // General message.
+            intent = new Intent(context, SplashScreenActivity.class);
+        }
 
         // What to do if the user clicks the notification.
         if (intent != null) {
             PendingIntent contentIntent = PendingIntent.getActivity(
-                    this,
+                    context,
                     0,
                     intent,
-                    0
+                    PendingIntent.FLAG_UPDATE_CURRENT
             );
             mBuilder.setContentIntent(contentIntent);
+
         }
 
         // Show the notification
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 
-    private Intent createIntentForTheMessage(int pushType, Bundle extras) {
-
-        Intent intent = null;
-
-        if (pushType == PushMessageTypeMovieReady || pushType == PushMessageTypeMovieFailed) {
-
-        } else if (pushType == PushMessageTypeNewStory) {
-
-        } else {
-            // General message.
-            intent = new Intent(this, SplashScreenActivity.class);
-        }
-
-//        ActivityManager mngr = (ActivityManager)getSystemService( ACTIVITY_SERVICE );
-//        List<ActivityManager.RunningTaskInfo> taskList = mngr.getRunningTasks(4);
-
-        return intent;
-    }
+//    private Intent createIntentForTheMessage(int pushType, Bundle extras) {
+//
+//
+//
+//        return intent;
+//    }
 }

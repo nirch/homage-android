@@ -291,6 +291,8 @@ public class RecorderActivity extends Activity
     @Override
     protected void onPause(){
         super.onPause();
+        mGLView.onPause();
+
         showCurtainsAnimated(false);
 
         final CameraManager cm = CameraManager.sh();
@@ -301,7 +303,6 @@ public class RecorderActivity extends Activity
                 mRenderer.notifyPausing();
             }
         });
-        mGLView.onPause();
         Log.d(TAG, "onPause complete");
 
     }
@@ -314,6 +315,8 @@ public class RecorderActivity extends Activity
 
         shouldReleaseCameraOnNavigation = true;
 
+        //mGLView.onResume();
+
         //if (stateMachine == null) return;
         //RecorderState currentState = stateMachine.currentState;
         //if (currentState != RecorderState.MAKING_A_SCENE) return;
@@ -322,7 +325,7 @@ public class RecorderActivity extends Activity
         cm.openCamera();
 
         // Reload Preview
-        reloadPreview();
+        Log.d(TAG, String.format("Reload preview..."));
 
     }
 
@@ -362,13 +365,13 @@ public class RecorderActivity extends Activity
         layout.requestLayout();
 
         if (mGLView != null) {
-            mGLView.onResume();
             mGLView.queueEvent(new Runnable() {
                 @Override
                 public void run() {
                     mRenderer.setCameraPreviewSize(cm.mCameraPreviewWidth, cm.mCameraPreviewHeight);
                 }
             });
+            mGLView.onResume();
         }
 
         showCurtainsAnimated(false);
@@ -394,7 +397,7 @@ public class RecorderActivity extends Activity
         }
 
         //region *** State initialization ***
-        try {
+
             if (stateMachine == null) {
                 stateMachine = new RecorderStateMachine();
 
@@ -405,13 +408,28 @@ public class RecorderActivity extends Activity
                     stateMachine.setState(RecorderState.MAKING_A_SCENE);
                     currentSceneID = sceneId;
                 }
-                stateMachine.handleCurrentState();
-
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            stateMachine.handleCurrentState();
+                        } catch (RecorderException ex) {
+                            Log.e(TAG, "Recorder state machine error.", ex);
+                        }
+                    }
+                }, 100);
             }
-        } catch (RecorderException ex) {
-            Log.e(TAG, "Recorder state machine error.", ex);
-        }
+
         //endregion
+
+        if (!hasFocus) return;
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                reloadPreview();
+            }
+        }, 0);
+
     }
 
     private void initViews() {
@@ -474,6 +492,7 @@ public class RecorderActivity extends Activity
 
         // After initialized, fade in the camera by fading out the "curtains" slowly
         hideCurtainsAnimated(true);
+        reloadPreview();
     }
     //endregion
 
@@ -1679,6 +1698,7 @@ public class RecorderActivity extends Activity
      * Connects the SurfaceTexture to the Camera preview output, and starts the preview.
      */
     public void handleSetSurfaceTexture(SurfaceTexture st) {
+        Log.d(TAG, ">>>> handleSetSurfaceTexture");
         st.setOnFrameAvailableListener(this);
         CameraManager.sh().setCameraPreviewTexture(st);
     }
@@ -1698,7 +1718,7 @@ public class RecorderActivity extends Activity
         // Since GLSurfaceView doesn't establish a Looper, this will *probably* execute on
         // the main UI thread.  Fortunately, requestRender() can be called from any thread,
         // so it doesn't really matter.
-        //if (VERBOSE) Log.d(TAG, "ST onFrameAvailable");
+        //Log.d(TAG, "ST onFrameAvailable");
         mGLView.requestRender();
     }
     //endregion

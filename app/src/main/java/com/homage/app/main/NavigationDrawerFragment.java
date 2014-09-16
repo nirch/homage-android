@@ -101,7 +101,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+        //selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -236,6 +236,10 @@ public class NavigationDrawerFragment extends Fragment {
      * @param drawerLayout The DrawerLayout containing this fragment's UI.
      */
     public void setUp(int fragmentId, DrawerLayout drawerLayout) {
+        setUp(fragmentId, drawerLayout, -1);
+    }
+
+    public void setUp(int fragmentId, DrawerLayout drawerLayout, int defaultSelection) {
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
         Drawable background = mFragmentContainerView
@@ -305,7 +309,12 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        selectItem(1);
+        if (defaultSelection > -1) {
+            selectItem(defaultSelection);
+        } else {
+            selectItem(mCurrentSelectedPosition);
+        }
+
     }
 
     private void selectItem(int position) {

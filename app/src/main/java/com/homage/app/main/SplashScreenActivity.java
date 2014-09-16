@@ -41,6 +41,9 @@ public class SplashScreenActivity extends Activity {
             Log.d(TAG, "Will not start crashlytics");
         }
 
+        Intent i = getIntent();
+        final String mainStartsWith = i.getStringExtra(MainActivity.SK_START_MAIN_WITH);
+
         setContentView(R.layout.activity_splash_screen);
         aq = new AQuery(this);
 
@@ -61,6 +64,7 @@ public class SplashScreenActivity extends Activity {
                 overridePendingTransition(0, 0);
             } else {
                 Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+                if (mainStartsWith != null) intent.putExtra(MainActivity.SK_START_MAIN_WITH, mainStartsWith);
                 SplashScreenActivity.this.startActivity(intent);
                 SplashScreenActivity.this.finish();
                 overridePendingTransition(0, 0);
