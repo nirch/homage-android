@@ -521,7 +521,6 @@ public class MainActivity extends ActionBarActivity
                 ((StoryDetailsFragment)f).updateRenderProgressState();
                 break;
         }
-
     }
 
     @Override
@@ -978,7 +977,7 @@ public class MainActivity extends ActionBarActivity
 
                         // Analytics homage
                         HomageServer.sh().reportRemakeShareForUser(
-                                sharedRemake.getOID(),sharedRemake.userID, packageName);
+                                sharedRemake.getOID(),sharedRemake.userID, shareMethod);
 
                         // Analytics mixpanel
                         HashMap props = new HashMap<String,String>();

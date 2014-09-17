@@ -39,6 +39,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.android.grafika.CameraUtils;
@@ -63,6 +66,7 @@ public class CameraManager {
     int defaultFrontHeight;
     int defaultOutputWidth;
     int defaultOutputBitRate;
+    private boolean cameraPreviewUsesGLSurfaceView;
     public int mCameraPreviewWidth;
     public int mCameraPreviewHeight;
     Camera mCamera;
@@ -72,6 +76,7 @@ public class CameraManager {
     boolean recorderUseMediaCodecWhenAvailable;
     GLSurfaceView mGLView;
     CameraSurfaceRenderer mRenderer;
+    public CameraPreview preview;
 
     //region *** singleton pattern ***
     private static CameraManager instance = new CameraManager();
@@ -104,6 +109,8 @@ public class CameraManager {
 
         defaultOutputWidth = res.getInteger(R.integer.recorderMediaCodecPreferredOutputWidth);
         defaultOutputBitRate = res.getInteger(R.integer.recorderMediaCodecPreferredOutputBitRate);
+
+        cameraPreviewUsesGLSurfaceView = res.getBoolean(R.bool.cameraPreviewUsesGLSurfaceView);
     }
 
     public int getOutputPreferredWidth() {
@@ -118,6 +125,17 @@ public class CameraManager {
         this.mGLView = glView;
         this.mRenderer = renderer;
     }
+
+    public boolean previewUsesGLSurfaceView() {
+        return cameraPreviewUsesGLSurfaceView;
+    }
+
+    public CameraPreview startCameraPreviewInView(Context context, FrameLayout previewContainer) {
+        CameraPreview cameraPreview = new CameraPreview(context);
+        cameraPreview.setZOrderOnTop(false);
+        preview = cameraPreview;
+        return cameraPreview;
+    }
     //endregion
 
     //region *** Camera & And preview ***
@@ -129,7 +147,8 @@ public class CameraManager {
 
     public void openCamera() {
         if (mCamera != null) {
-            throw new RuntimeException("camera already initialized");
+            //throw new RuntimeException("camera already initialized");
+            return;
         }
 
         Camera.CameraInfo info = new Camera.CameraInfo();
@@ -190,6 +209,7 @@ public class CameraManager {
         Camera.Size mCameraPreviewSize = parms.getPreviewSize();
         mCameraPreviewWidth = mCameraPreviewSize.width;
         mCameraPreviewHeight = mCameraPreviewSize.height;
+        Log.d(TAG, String.format("Selected camera with preview res: %dx%d", mCameraPreviewWidth, mCameraPreviewHeight));
     }
 
     public boolean isSelfie() {
@@ -240,7 +260,117 @@ public class CameraManager {
 
 
 
+    /** Camera preview class */
+    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+        private SurfaceHolder mHolder;
+        private Camera mCamera;
 
+        public CameraPreview(Context context) {
+            super(context);
+            mCamera = CameraManager.this.mCamera;
+
+            // Install a SurfaceHolder.Callback so we get notified when the
+            // underlying surface is created and destroyed.
+            mHolder = getHolder();
+            mHolder.addCallback(this);
+        }
+
+        public void surfaceCreated(SurfaceHolder holder) {
+            try {
+                mCamera.setPreviewDisplay(holder);
+                mCamera.startPreview();
+            } catch (IOException e) {
+                Log.d(TAG, "Error setting camera preview: " + e.getMessage());
+            }
+        }
+
+        public void hide() {
+            this.setVisibility(CameraPreview.INVISIBLE);
+        }
+
+        public void show() {
+            this.setVisibility(CameraPreview.VISIBLE);
+        }
+
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            // empty. Take care of releasing the Camera preview in your activity.
+        }
+
+        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+            // If your preview can change or rotate, take care of those events here.
+            // Make sure to stop the preview before resizing or reformatting it.
+
+            // set preview size and make any resize, rotate or
+            // reformatting changes here
+
+            // start preview with new settings
+            Log.d(TAG, String.format("Surface of the cam preview changed. %d %d", w, h));
+            fixPreviewAspectRatio(w, h);
+            restartPreview();
+        }
+
+        private void fixPreviewAspectRatio(int containerWidth, int containerHeight) {
+//            // Crop the video to get the correct aspect ratio + cropping effect
+//            // (Homage calls it the 16/9 wysiwyg feature)
+//            Camera.Parameters parameters = camera.getParameters();
+//
+//
+//            Camera.Size previewSize = parameters.getPreviewSize();
+//            int videoWidth = previewSize.width;
+//            int videoHeight = previewSize.height;
+//
+//            float dx = (float)containerWidth / (float)videoWidth;
+//            float dy = (float)containerHeight / (float)videoHeight;
+//
+//            int fixX = (int)((containerHeight/dx)*dy);
+//            int fixY = (int)((containerWidth/dy)*dx);
+//
+//            int paddingX = -(containerWidth - fixY) / 2;
+//            int paddingY = -(containerHeight - fixX) / 2;
+//
+//            Log.d(TAG, String.format("Padding X Y: %d %d", paddingX, paddingY));
+//
+//            if (paddingX<0) {
+//                previewContainer.setPadding(paddingX,0,paddingX,0);
+//            } else if (paddingY<0) {
+//                previewContainer.setPadding(0,paddingY,0,paddingY);
+//            } else {
+//                previewContainer.setPadding(0,0,0,0);
+//            }
+//
+        }
+
+        public void stop() {
+            if (mHolder.getSurface() == null){
+                // preview surface does not exist
+                return;
+            }
+
+            // stop preview before making changes
+            try {
+                mCamera.stopPreview();
+            } catch (Exception e){
+                // ignore: tried to stop a non-existent preview
+            }
+        }
+
+        public void restartPreview() {
+            if (mHolder.getSurface() == null){
+                // preview surface does not exist
+                return;
+            }
+
+            stop();
+
+            try {
+                mCamera.setPreviewDisplay(mHolder);
+                mCamera.startPreview();
+            } catch (Exception e){
+                Log.d(TAG, "Error starting camera preview: " + e.getMessage());
+            }
+        }
+
+    }
 
 
 
@@ -395,6 +525,17 @@ The Camera Manager will decide on which method to use based on API and app confi
         });
     }
 
+    public void sendErrorInRecordingMessageToMainThread() {
+        Context context = mGLView.getContext();
+        Handler mainHandler = new Handler(context.getMainLooper());
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                recordingListener.recordingInfo(RECORDING_FAILED, null, null);
+            }
+        });
+    }
+
     public void checkFinishedRecording(File outputFile) {
         try {
             isRecording = false;
@@ -441,7 +582,13 @@ The Camera Manager will decide on which method to use based on API and app confi
         final MediaRecorder.OnInfoListener onRecordingInfoListener = new MediaRecorder.OnInfoListener() {
             @Override
             public void onInfo(MediaRecorder mr, int what, int extra) {
+            if (what == MediaRecorder.MEDIA_ERROR_SERVER_DIED || what == MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN) {
+                sendErrorInRecordingMessageToMainThread();
+                return;
+            }
+
             if (what != MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) return;
+
             Log.d(TAG, String.format("finished (%d %d) recording duration %d", what, extra, duration));
             stopRecordingWithMediaRecorder();
             if (outputFile != null) {

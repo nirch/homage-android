@@ -62,15 +62,6 @@ public class MyStoriesFragment extends Fragment {
         return fragment;
     }
 
-    private void initialize() {
-        aq = new AQuery(rootView);
-
-        // Set the list adapter for the stories list view.
-        remakes = user.allAvailableRemakesLatestOnTop();
-        myStoriesListView = aq.id(R.id.myStoriesListView).getListView();
-        myStoriesListView.setAdapter(adapter);
-    }
-
     public void refresh() {
         if (remakes == null) {
             remakes = user.allAvailableRemakesLatestOnTop();
@@ -262,9 +253,13 @@ public class MyStoriesFragment extends Fragment {
 
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_my_stories, container, false);
-        initialize();
+        aq = new AQuery(rootView);
 
-        // Allow orientation change.
+        // Set the list adapter for the stories list view.
+        remakes = user.allAvailableRemakesLatestOnTop();
+        myStoriesListView = aq.id(R.id.myStoriesListView).getListView();
+
+        // Don't allow orientation change.
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // Show actionbar
@@ -279,13 +274,6 @@ public class MyStoriesFragment extends Fragment {
         ((MainActivity) activity).onSectionAttached(
                 getArguments().getInt(ARG_SECTION_NUMBER));
         UploadManager.sh().checkUploader();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                MainActivity main = (MainActivity) getActivity();
-                main.refetchRemakesForCurrentUser();
-            }
-        }, 500);
     }
 
     @Override
@@ -293,6 +281,18 @@ public class MyStoriesFragment extends Fragment {
     {
         super.onResume();
         HMixPanel.sh().track("MEEnterTab",null);
+
+        if (myStoriesListView.getAdapter() == null) {
+            myStoriesListView.setAdapter(adapter);
+        }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity main = (MainActivity) getActivity();
+                main.refetchRemakesForCurrentUser();
+            }
+        }, 500);
     }
 
 }

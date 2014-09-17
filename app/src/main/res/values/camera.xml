@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- video preview -->
+    <bool name="cameraPreviewUsesGLSurfaceView">true</bool> <!-- false not implemented yet in this version. Do not use!  -->
+
     <!-- Camera settings -->
     <integer name="cameraBackPreferredRecodingWidth">640</integer>
     <integer name="cameraBackPreferredRecodingHeight">480</integer>

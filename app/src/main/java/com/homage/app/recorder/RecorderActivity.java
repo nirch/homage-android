@@ -36,6 +36,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
@@ -161,7 +163,7 @@ public class RecorderActivity extends Activity
     public final static int DISMISS_REASON_USER_ABORTED_PRESSING_X = 500;
     public final static int DISMISS_REASON_FINISHED_REMAKE = 600;
 
-    // Preview & Renderer
+    // Preview & Renderer (GL Surface view or view, depending on app settings)
     private AspectFrameLayout previewContainer;
     private GLSurfaceView mGLView;
     private CameraSurfaceRenderer mRenderer;
@@ -291,13 +293,13 @@ public class RecorderActivity extends Activity
     @Override
     protected void onPause(){
         super.onPause();
-        mGLView.onPause();
+        if (mGLView != null) mGLView.onPause();
 
         showCurtainsAnimated(false);
 
         final CameraManager cm = CameraManager.sh();
         cm.releaseCamera();
-        mGLView.queueEvent(new Runnable() {
+        if (mGLView != null) mGLView.queueEvent(new Runnable() {
             @Override public void run() {
                 // Tell the renderer that it's about to be paused so it can clean up.
                 mRenderer.notifyPausing();
@@ -315,18 +317,11 @@ public class RecorderActivity extends Activity
 
         shouldReleaseCameraOnNavigation = true;
 
-        //mGLView.onResume();
-
-        //if (stateMachine == null) return;
-        //RecorderState currentState = stateMachine.currentState;
-        //if (currentState != RecorderState.MAKING_A_SCENE) return;
+        int orientation = getResources().getConfiguration().orientation;
+        Log.d(TAG, String.format("Current orientation: %d", orientation));
 
         final CameraManager cm = CameraManager.sh();
         cm.openCamera();
-
-        // Reload Preview
-        Log.d(TAG, String.format("Reload preview..."));
-
     }
 
     @Override
@@ -364,6 +359,7 @@ public class RecorderActivity extends Activity
         layout.setCroppingBarsViews(topBlackBar, bottomBlackBar);
         layout.requestLayout();
 
+
         if (mGLView != null) {
             mGLView.queueEvent(new Runnable() {
                 @Override
@@ -397,32 +393,33 @@ public class RecorderActivity extends Activity
         }
 
         //region *** State initialization ***
+        if (stateMachine == null) {
+            stateMachine = new RecorderStateMachine();
 
-            if (stateMachine == null) {
-                stateMachine = new RecorderStateMachine();
-
-                Bundle b = starterIntent.getExtras();
-                boolean isRecorderMakingAScene = b.getBoolean(K_SAVED_RECORDER_MAKING_A_SCENE_STATE, false);
-                if (isRecorderMakingAScene) {
-                    int sceneId = b.getInt(K_SAVED_CURRENT_SCENE_ID);
-                    stateMachine.setState(RecorderState.MAKING_A_SCENE);
-                    currentSceneID = sceneId;
-                }
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            stateMachine.handleCurrentState();
-                        } catch (RecorderException ex) {
-                            Log.e(TAG, "Recorder state machine error.", ex);
-                        }
-                    }
-                }, 100);
+            Bundle b = starterIntent.getExtras();
+            boolean isRecorderMakingAScene = b.getBoolean(K_SAVED_RECORDER_MAKING_A_SCENE_STATE, false);
+            if (isRecorderMakingAScene) {
+                int sceneId = b.getInt(K_SAVED_CURRENT_SCENE_ID);
+                stateMachine.setState(RecorderState.MAKING_A_SCENE);
+                currentSceneID = sceneId;
             }
-
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        stateMachine.handleCurrentState();
+                    } catch (RecorderException ex) {
+                        Log.e(TAG, "Recorder state machine error.", ex);
+                    }
+                }
+            }, 100);
+        }
         //endregion
 
-        if (!hasFocus) return;
+        if (!hasFocus) {
+            hideCurtainsAnimated(false);
+            return;
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -463,32 +460,39 @@ public class RecorderActivity extends Activity
         // Configure the GLSurfaceView.
         // This will start the Renderer thread, with an
         // appropriate EGL context.
-
-        // Create the GL View from code (doesn't exist in xml layout)
-        mGLView = new GLSurfaceView(this);
-
-        // Set the layout parameters for the glView and add it to the preview container.
-        FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT);
-        mGLView.setLayoutParams(lp);
-        previewContainer.addView(mGLView);
-
-        // Setup the gl view for rendering.
         CameraManager cm = CameraManager.sh();
-        mGLView.setEGLContextClientVersion(2);     // select GLES 2.0
 
-        mRenderer = new CameraSurfaceRenderer(getApplicationContext(), mCameraHandler, sHVideoEncoder);
-        mRenderer.setOutputSettings(
-                cm.getOutputPreferredWidth(),
-                0,                                  // Determined later depending on aspect ratio
-                cm.getOutputPreferredBitRate());
+        if (cm.previewUsesGLSurfaceView()) {
+            // Create the GL View from code (doesn't exist in xml layout)
+            mGLView = new GLSurfaceView(this);
 
-        mGLView.setRenderer(mRenderer);
-        mGLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+            // Set the layout parameters for the glView and add it to the preview container.
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT);
+            mGLView.setLayoutParams(lp);
+            previewContainer.addView(mGLView);
 
-        // Store GL view and renderer
-        cm.storeGLViewAndRenderer(mGLView, mRenderer);
+            // Setup the gl view for rendering.
+            mGLView.setEGLContextClientVersion(2);     // select GLES 2.0
+
+            mRenderer = new CameraSurfaceRenderer(getApplicationContext(), mCameraHandler, sHVideoEncoder);
+            mRenderer.setOutputSettings(
+                    cm.getOutputPreferredWidth(),
+                    0,                                  // Determined later depending on aspect ratio
+                    cm.getOutputPreferredBitRate());
+
+            mGLView.setRenderer(mRenderer);
+            mGLView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+
+            // Store GL view and renderer
+            cm.storeGLViewAndRenderer(mGLView, mRenderer);
+        }  else {
+            throw new UnsupportedOperationException("CameraPreview without GL Surfaceview not fully implemented");
+//            cm.openCamera();
+//            CameraManager.CameraPreview cp = cm.startCameraPreviewInView(this, previewContainer);
+//            previewContainer.addView(cp);
+        }
 
         // After initialized, fade in the camera by fading out the "curtains" slowly
         hideCurtainsAnimated(true);
@@ -783,7 +787,7 @@ public class RecorderActivity extends Activity
             @Override
             public void run() {
                 hideCurtainsAnimated(true);
-                mGLView.setVisibility(View.VISIBLE);
+                if (mGLView != null) mGLView.setVisibility(View.VISIBLE);
             }
         }, 400);
     }
@@ -803,7 +807,7 @@ public class RecorderActivity extends Activity
         videosAdapter.showSurfaces();
         hideOverlayButtons(false);
 
-        mGLView.setVisibility(View.INVISIBLE);
+        if (mGLView != null) mGLView.setVisibility(View.INVISIBLE);
         showCurtainsAnimated(true);
         updateScriptBar();
 
@@ -1067,6 +1071,7 @@ public class RecorderActivity extends Activity
             this.progressBar = progressBar;
             this.from = from;
             this.to = to;
+            this.setInterpolator(new LinearInterpolator());
         }
 
         @Override
@@ -1104,7 +1109,7 @@ public class RecorderActivity extends Activity
         progressBar.setVisibility(View.VISIBLE);
         progressBar.setAlpha(0.7f);
         ProgressBarAnimation anim = new ProgressBarAnimation(progressBar, 0, 100);
-        anim.setDuration(scene.duration);
+        anim.setDuration(scene.duration+300);
         progressBar.startAnimation(anim);
 
 
@@ -1520,7 +1525,7 @@ public class RecorderActivity extends Activity
     private View.OnClickListener onClickedSceneDescriptionButton = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlaySceneMessageDlgActivity.class);
+            final Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlaySceneMessageDlgActivity.class);
             myIntent.putExtra("remakeOID",remake.getOID());
             myIntent.putExtra("sceneID",currentSceneID);
 
@@ -1528,11 +1533,10 @@ public class RecorderActivity extends Activity
             props.put("story" , remake.getStory().name);
             props.put("remake_id" , remake.getOID());
             props.put("scene_id", Integer.toString(currentSceneID));
-            HMixPanel.sh().track("REMenuSceneDirection",props);
-
+            HMixPanel.sh().track("REMenuSceneDirection", props);
+            CameraManager.sh().releaseCamera();
             RecorderActivity.this.startActivityForResult(myIntent, ACTION_DO_NOTHING);
             overridePendingTransition(R.anim.animation_fadein_with_zoom, R.anim.animation_fadeout_with_zoom);
-
         }
     };
 
@@ -1595,7 +1599,7 @@ public class RecorderActivity extends Activity
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                mGLView.setVisibility(View.GONE);
+                if (mGLView != null) mGLView.setVisibility(View.GONE);
                 flip();
             }
         }, 400);
@@ -1719,7 +1723,7 @@ public class RecorderActivity extends Activity
         // the main UI thread.  Fortunately, requestRender() can be called from any thread,
         // so it doesn't really matter.
         //Log.d(TAG, "ST onFrameAvailable");
-        mGLView.requestRender();
+        if (mGLView != null) mGLView.requestRender();
     }
     //endregion
 }

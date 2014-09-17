@@ -506,7 +506,7 @@ public class HomageServer extends Server {
     //-(void)reportSession:(NSString *)sessionID endForUser:(NSString *)userID;
     //-(void)reportSession:(NSString *)sessionID updateForUser:(NSString *)userID;
 
-  public void reportRemakeShareForUser (String remakeID, String userID, String shareMethod)
+  public void reportRemakeShareForUser (String remakeID, String userID, int shareMethod)
   {
       if (shouldBlockServerAnalytics()) return;
       Log.v(TAG, String.format("Reporting remake: %s user: %s" , remakeID , userID));

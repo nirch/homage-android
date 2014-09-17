@@ -122,7 +122,6 @@ public class StoriesListFragment extends Fragment {
         // Set the list adapter for the stories list view.
         stories = Story.allActiveStories();
         storiesListView = aq.id(R.id.storiesListView).getListView();
-        storiesListView.setAdapter(adapter);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -171,6 +170,9 @@ public class StoriesListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (storiesListView.getAdapter() == null) {
+            storiesListView.setAdapter(adapter);
+        }
     }
 
     @Override

@@ -75,60 +75,64 @@ public class AspectFrameLayout extends FrameLayout {
                 " width=[" + MeasureSpec.toString(widthMeasureSpec) +
                 "] height=[" + View.MeasureSpec.toString(heightMeasureSpec) + "]");
 
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+
         // Target aspect ratio will be < 0 if it hasn't been set yet.  In that case,
         // we just use whatever we've been handed.
         if (mTargetAspect > 0) {
-            int initialWidth = MeasureSpec.getSize(widthMeasureSpec);
-            int initialHeight = MeasureSpec.getSize(heightMeasureSpec);
-
             // factor the padding out
             int horizPadding = getPaddingLeft() + getPaddingRight();
             int vertPadding = getPaddingTop() + getPaddingBottom();
-            initialWidth -= horizPadding;
-            initialHeight -= vertPadding;
+            width -= horizPadding;
+            height -= vertPadding;
 
-            double viewAspectRatio = (double) initialWidth / initialHeight;
+            double viewAspectRatio = (double) width / height;
             double aspectDiff = mTargetAspect / viewAspectRatio - 1;
 
             cropBarsSize = 0;
             if (aspectDiff > 0) {
                 // limited by narrow width; restrict height
-                initialHeight = (int) (initialWidth / mTargetAspect);
-
-                // Black bars determined by silhouette size.
-                if (topBlackBar != null && bottomBlackBar != null) {
-                    View parent = (View)getParent();
-                    int psize = parent.getMeasuredHeight();
-                    int size = (psize - initialHeight)/2;
-                    Log.d(TAG, String.format("cropping bars size:%d", size));
-                    if (size < 200) updateCroppingBlackBars(size);
-                }
-
-                // Add crop bars and fix height if original video height should be cropped
-                // to target aspect ratio
-                if (mTargetAspect > mOriginalAspectRatio) {
-                    int stretchedHeight = (int)((double)initialWidth/mOriginalAspectRatio);
-                    Log.v(TAG, String.format("Cropping is required. Stretch to height:%d and cropped.", stretchedHeight));
-                    initialHeight = stretchedHeight;
-                }
-
+                height = (int) (width / mTargetAspect);
             } else {
                 // limited by short height; restrict width
-                initialWidth = (int) (initialHeight * mTargetAspect);
+                width = (int) (height * mTargetAspect);
             }
-            Log.d(TAG, "new size=" + initialWidth + "x" + initialHeight + " + padding " +
-                    horizPadding + "x" + vertPadding);
+            Log.d(TAG, "new size=" + width + "x" + height + " + padding " + horizPadding + "x" + vertPadding);
 
-            initialWidth += horizPadding;
-            initialHeight += vertPadding;
+            width += horizPadding;
+            height += vertPadding;
 
-            widthMeasureSpec = MeasureSpec.makeMeasureSpec(initialWidth, MeasureSpec.EXACTLY);
-            heightMeasureSpec = MeasureSpec.makeMeasureSpec(initialHeight, MeasureSpec.EXACTLY);
-
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
         }
 
-        //Log.d(TAG, "set width=[" + MeasureSpec.toString(widthMeasureSpec) +
-        //        "] height=[" + View.MeasureSpec.toString(heightMeasureSpec) + "]");
+        // Stretch video vertically and crop it in case in need to maintain aspect ratio of the original video
+        Log.d(TAG, String.format("Original video aspect ratio:%f    requested aspect ration:%f", mOriginalAspectRatio, mTargetAspect));
+        if (!Double.isNaN(mOriginalAspectRatio) && mOriginalAspectRatio < mTargetAspect) {
+            Log.d(TAG, "Need to stretch video vertically to maintain aspect ratio of the original video");
+            int stretchedHeight = (int)((double)width/mOriginalAspectRatio);
+            Log.v(TAG, String.format("Cropping is required. Stretch to height:%d and cropped.", stretchedHeight));
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(stretchedHeight, MeasureSpec.EXACTLY);
+
+            // Crop if needed
+            if (topBlackBar != null && bottomBlackBar != null) {
+                View parent = (View)getParent();
+                int psize = parent.getMeasuredHeight();
+                int barsSize = (psize - height)/2;
+                Log.d(TAG, String.format("cropping bars size:%d", barsSize));
+                if (barsSize>10 && barsSize < 200) {
+                    updateCroppingBlackBars(barsSize);
+                    topBlackBar.setVisibility(View.VISIBLE);
+                    bottomBlackBar.setVisibility(View.VISIBLE);
+                } else {
+                    topBlackBar.setVisibility(View.GONE);
+                    bottomBlackBar.setVisibility(View.GONE);
+                }
+            }
+        }
+
+        Log.d(TAG, "set width=[" + MeasureSpec.toString(widthMeasureSpec) + "] height=[" + View.MeasureSpec.toString(heightMeasureSpec) + "]");
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
