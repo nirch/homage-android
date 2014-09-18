@@ -45,6 +45,7 @@ public class SettingsActivity extends PreferenceActivity {
     public static final String REMAKES_ARE_PUBLIC = "settings_remakes_are_public";
     public static final String UPLOADER_ACTIVE = "settings_uploader_active";
     public static final String SKIP_STORY_DETAILS = "settings_skip_story_details";
+    public static final String SETTINGS_VERSION_TITLE = "settings_version_title";
 
     protected ProgressDialog pd;
 
@@ -152,7 +153,11 @@ public class SettingsActivity extends PreferenceActivity {
                 e.putBoolean(SettingsActivity.REMAKES_ARE_PUBLIC, false);
                 publicPref.setChecked(false);
             }
+            String versionLabel = HomageApplication.getInstance().getVersionName();
+            e.putString(SettingsActivity.SETTINGS_VERSION_TITLE, versionLabel);
+            findPreference(SETTINGS_VERSION_TITLE).setTitle(String.format("Version: %s", versionLabel));
             e.commit();
+
         }
 
         //region *** UI event handlers ***

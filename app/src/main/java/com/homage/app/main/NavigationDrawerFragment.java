@@ -270,7 +270,9 @@ public class NavigationDrawerFragment extends Fragment {
                 if (!isAdded()) {
                     return;
                 }
-                getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                MainActivity activity = (MainActivity)getActivity();
+                activity.supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                activity.onDrawerClosed();
                 refresh();
             }
 

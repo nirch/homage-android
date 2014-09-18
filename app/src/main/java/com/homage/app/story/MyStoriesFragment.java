@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -121,110 +122,113 @@ public class MyStoriesFragment extends Fragment {
 
         @Override
         public View getView(int i, View rowView, ViewGroup viewGroup) {
-            if (rowView == null)
-                rowView = inflater.inflate(R.layout.list_row_my_story, myStoriesListView, false);
-            final Remake remake = (Remake) getItem(i);
-            final Story story = remake.getStory();
+            try {
+                if (rowView == null)
+                    rowView = inflater.inflate(R.layout.list_row_my_story, myStoriesListView, false);
+                final Remake remake = (Remake) getItem(i);
+                final Story story = remake.getStory();
 
-            final HashMap props = new HashMap<String,String>();
-            props.put("story" , story.name);
-            props.put("remake_id", remake.getOID());
+                final HashMap props = new HashMap<String, String>();
+                props.put("story", story.name);
+                props.put("remake_id", remake.getOID());
 
-            AQuery aq = new AQuery(rowView);
-            aq.id(R.id.storyName).text(story.name);
+                AQuery aq = new AQuery(rowView);
+                aq.id(R.id.storyName).text(story.name);
 
-            if (i > 3) {
-                aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
-            } else {
-                aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark);
-            }
-
-            if (remake.status == Remake.Status.DONE.getValue()) {
-                aq.id(R.id.myPlayButton).visibility(View.VISIBLE);
-                aq.id(R.id.myShareButton).visibility(View.VISIBLE);
-            } else {
-                aq.id(R.id.myPlayButton).visibility(View.INVISIBLE);
-                aq.id(R.id.myShareButton).visibility(View.INVISIBLE);
-            }
-
-            // Delete
-            aq.id(R.id.myDeleteButton).clicked(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, String.format("my story, clicked delete: %s", remake.getOID()));
-                    MainActivity mainActivity = (MainActivity) getActivity();
-                    mainActivity.askUserIfWantToDeleteRemake(remake);
+                if (i > 3) {
+                    aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
+                } else {
+                    aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark);
                 }
-            });
 
-            // Share
-            aq.id(R.id.myShareButton).clicked(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, String.format("my story, clicked share: %s", remake.getOID()));
-                    User user = User.getCurrent();
-                    if (user.isGuest()) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        AlertDialog alert = builder.setMessage(R.string.share_signed_in_only)
-                                .setTitle(R.string.join_us_title)
-                                .setNegativeButton(R.string.ok_got_it, null)
-                                .setPositiveButton(R.string.join_us_title, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        MainActivity activity = (MainActivity)getActivity();
-                                        activity.showLogin();
-                                    }
-                                })
-                                .create();
-                        alert.show();
-                        return;
+                if (remake.status == Remake.Status.DONE.getValue()) {
+                    aq.id(R.id.myPlayButton).visibility(View.VISIBLE);
+                    aq.id(R.id.myShareButton).visibility(View.VISIBLE);
+                } else {
+                    aq.id(R.id.myPlayButton).visibility(View.INVISIBLE);
+                    aq.id(R.id.myShareButton).visibility(View.INVISIBLE);
+                }
+
+                // Delete
+                aq.id(R.id.myDeleteButton).clicked(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, String.format("my story, clicked delete: %s", remake.getOID()));
+                        MainActivity mainActivity = (MainActivity) getActivity();
+                        mainActivity.askUserIfWantToDeleteRemake(remake);
                     }
-                    shareRemake(remake);
-                }
-            });
+                });
 
-            // Remake
-            aq.id(R.id.myResetButton).clicked(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, String.format("my story, clicked remake: %s", remake.getOID()));
-                    MainActivity mainActivity = (MainActivity) getActivity();
-
-                    switch (remake.status) {
-                        case 1: // IN PROGRESS
-                            // Open recorder with this remake.
-                            mainActivity.askUserIfWantToContinueRemake(remake);
-                            break;
-
-                        case 4: // TIMEOUT
-                            // Open recorder with this remake.
-                            mainActivity.askUserIfWantToContinueRemake(remake);
-                            break;
-
-                        case 3: // DONE
-                            // Open recorder with a new remake.
-                            openRecorderForNewRemake(story);
-                            props.put("remake_id", remake.getOID());
-                            HMixPanel.sh().track("MEDoRemake",props);
-                            break;
-
-                        default:
-                            Log.e(TAG, String.format("Wrong status for remake in my stories. %s", remake.getOID()));
+                // Share
+                aq.id(R.id.myShareButton).clicked(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, String.format("my story, clicked share: %s", remake.getOID()));
+                        User user = User.getCurrent();
+                        if (user.isGuest()) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            AlertDialog alert = builder.setMessage(R.string.share_signed_in_only)
+                                    .setTitle(R.string.join_us_title)
+                                    .setNegativeButton(R.string.ok_got_it, null)
+                                    .setPositiveButton(R.string.join_us_title, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            MainActivity activity = (MainActivity) getActivity();
+                                            activity.showLogin();
+                                        }
+                                    })
+                                    .create();
+                            alert.show();
+                            return;
+                        }
+                        shareRemake(remake);
                     }
-                }
-            });
+                });
 
-            // Play
-            aq.id(R.id.myPlayButton).clicked(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, String.format("my story, clicked play: %s", remake.getOID()));
-                    HMixPanel.sh().track("MEPlayRemake",props);
-                    FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, HEvents.H_REMAKE , remake.getOID().toString(), HomageApplication.HM_ME_TAB, true);
-                }
-            });
+                // Remake
+                aq.id(R.id.myResetButton).clicked(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, String.format("my story, clicked remake: %s", remake.getOID()));
+                        MainActivity mainActivity = (MainActivity) getActivity();
 
+                        switch (remake.status) {
+                            case 1: // IN PROGRESS
+                                // Open recorder with this remake.
+                                mainActivity.askUserIfWantToContinueRemake(remake);
+                                break;
 
+                            case 4: // TIMEOUT
+                                // Open recorder with this remake.
+                                mainActivity.askUserIfWantToContinueRemake(remake);
+                                break;
+
+                            case 3: // DONE
+                                // Open recorder with a new remake.
+                                openRecorderForNewRemake(story);
+                                props.put("remake_id", remake.getOID());
+                                HMixPanel.sh().track("MEDoRemake", props);
+                                break;
+
+                            default:
+                                Log.e(TAG, String.format("Wrong status for remake in my stories. %s", remake.getOID()));
+                        }
+                    }
+                });
+
+                // Play
+                aq.id(R.id.myPlayButton).clicked(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, String.format("my story, clicked play: %s", remake.getOID()));
+                        HMixPanel.sh().track("MEPlayRemake", props);
+                        FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, HEvents.H_REMAKE, remake.getOID().toString(), HomageApplication.HM_ME_TAB, true);
+                    }
+                });
+
+            } catch (InflateException ex) {
+                Log.e(TAG, "Inflate exception in row of my stories", ex);
+            }
             return rowView;
         }
 

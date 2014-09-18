@@ -78,7 +78,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements
+            NavigationDrawerFragment.NavigationDrawerCallbacks {
+
     String TAG = "TAG_MainActivity";
 
     public static final String SK_START_MAIN_WITH = "startMainWith";
@@ -108,6 +110,8 @@ public class MainActivity extends ActionBarActivity
     static final String FRAGMENT_TAG_MY_STORIES = "fragment my stories";
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    int mPositionClicked;
+    boolean mNavigationItemClicked = false;
     private StoryDetailsFragment storyDetailsFragment;
     private CharSequence mTitle;
 
@@ -154,15 +158,22 @@ public class MainActivity extends ActionBarActivity
         // Navigate to another default section if requested
         Intent i = getIntent();
         final String mainStartsWith = i.getStringExtra(SK_START_MAIN_WITH);
-        int defaultSelection = -1;
+        int defaultSelection = 1;
         if (mainStartsWith != null && mainStartsWith.equals("MyStories")) defaultSelection = 2;
 
-            // Set up the drawer.
+        if (defaultSelection == 2) {
+            Log.d(TAG, "Starts with the my stories section.");
+        } else if (defaultSelection == 1) {
+            Log.d(TAG, "Starts with stories section");
+        }
+
+        // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout)findViewById(R.id.drawer_layout),
                 defaultSelection
                 );
+        handleDrawerSectionSelection(defaultSelection);
 
         // Custom actionbar layout
         ActionBar actionBar = getSupportActionBar();
@@ -262,12 +273,15 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onNavigationDrawerItemSelected(final int position) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                handleDrawerSectionSelection(position);
-            }
-        }, 200);
+        mPositionClicked = position;
+        mNavigationItemClicked = true;
+    }
+
+    public void onDrawerClosed() {
+        if (mNavigationItemClicked) {
+            mNavigationItemClicked = false;
+            handleDrawerSectionSelection(mPositionClicked);
+        }
     }
     //endregion
 

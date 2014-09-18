@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,7 @@ public class StoriesListFragment extends Fragment {
     ListView storiesListView;
     AQuery aq;
     ProgressDialog pd;
-    boolean allowAppearAnimations = false;
+    boolean allowAppearAnimations = true;
 
     static boolean createdOnce = false;
 
@@ -76,16 +77,21 @@ public class StoriesListFragment extends Fragment {
 
         @Override
         public View getView(int i, View rowView, ViewGroup viewGroup) {
-            if (rowView == null) rowView = inflater.inflate(R.layout.list_row_story, storiesListView, false);
-            Story story = (Story)getItem(i);
-            AQuery aq = new AQuery(rowView);
-            aq.id(R.id.storyName).text(story.name);
-            aq.id(R.id.storyRemakesCount).text(String.format("#%d", story.remakesNum));
+            try {
+                if (rowView == null)
+                    rowView = inflater.inflate(R.layout.list_row_story, storiesListView, false);
+                Story story = (Story) getItem(i);
+                AQuery aq = new AQuery(rowView);
+                aq.id(R.id.storyName).text(story.name);
+                aq.id(R.id.storyRemakesCount).text(String.format("#%d", story.remakesNum));
 
-            if (allowAppearAnimations) {
-                aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
-            } else {
-                aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
+                if (allowAppearAnimations) {
+                    aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
+                } else {
+                    aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
+                }
+            } catch (InflateException ex) {
+                Log.e(TAG, "Inflate exception in row of stories", ex);
             }
 
             return rowView;

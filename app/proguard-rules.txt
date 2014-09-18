@@ -1,8 +1,8 @@
 # Add project specific ProGuard rules here.
 # By default, the flags in this file are appended to flags specified
 # in /Applications/Android Studio.app/sdk/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the ProGuard
-# include property in project.properties.
+# You can edit the include path and order by changing the proguardFiles
+# directive in build.gradle.
 #
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
@@ -15,3 +15,44 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** e(...);
+}
+
+# --------------------------------
+# Keeping stuff.
+-keep public class com.homage.networking.** { *; }
+-keep public class com.homage.main.** { *; }
+-keep public class com.homage.model.** { *; }
+
+
+-keep public class org.apache.commons.** { *; }
+-keep class com.homage.matting.** { *; }
+-keep class com.fasterxml.** { *; }
+-keep class com.androidquery.** { *; }
+-keep class com.amazonaws.** { *; }
+-keep class org.bson.** { *; }
+-keep class com.mongodb.** { *; }
+
+# Amazon
+-keep class org.apache.commons.logging.**               { *; }
+-keep class com.amazonaws.services.sqs.QueueUrlHandler  { *; }
+-keep class com.amazonaws.javax.xml.transform.sax.*     { public *; }
+-keep class com.amazonaws.javax.xml.stream.**           { *; }
+-keep class com.amazonaws.services.**.model.*Exception* { *; }
+-keep class org.codehaus.**                             { *; }
+-keepattributes Signature,*Annotation*
+
+# Facebook
+-keep class com.facebook.** { *; }
+
+-dontwarn com.homage.matting.**
+-dontwarn com.fasterxml.**
+-dontwarn com.androidquery.**
+-dontwarn com.amazonaws.**
+-dontwarn org.bson.**
+-dontwarn com.mongodb.**
+# --------------------------------

@@ -22,13 +22,27 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 18
-        versionCode 904
-        versionName "0.9.4"
+        versionCode 905
+        versionName "0.9.5"
     }
+
     buildTypes {
         release {
-            runProguard false
+            runProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+        debug {
+            runProguard false
+        }
+    }
+
+    productFlavors {
+        flavorProduction {
+
+        }
+
+        flavorDev {
+
         }
     }
 }
