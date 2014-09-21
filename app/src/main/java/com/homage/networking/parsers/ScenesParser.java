@@ -51,7 +51,12 @@ public class ScenesParser extends Parser {
         scene.duration = parseInt(sceneInfo, "duration",0);
         scene.videoURL = parseString(sceneInfo, "video",null);
         scene.thumbnailURL = parseString(sceneInfo, "thumbnail",null);
-        scene.silhouetteURL = parseString(sceneInfo, "silhouette",null);
+
+        JSONObject silhouettes = parseJSONObject(sceneInfo, "silhouettes", null);
+        if (silhouettes != null) {
+            scene.silhouetteURL = parseString(silhouettes, "360", null);
+        }
+
         scene.focusPointX = parseDouble(sceneInfo, "focus_point_x",0.5f);
         scene.focusPointY = parseDouble(sceneInfo, "focus_point_y",0.5f);
 

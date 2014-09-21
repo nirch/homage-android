@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,7 @@ public class StoryDetailsFragment extends Fragment {
     static boolean createdOnce = false;
     public Story story;
     boolean shouldFetchMoreRemakes = false;
+    VideoPlayerFragment videoPlayerFragment;
 
     RemakesAdapter adapter;
 
@@ -115,23 +117,28 @@ public class StoryDetailsFragment extends Fragment {
 
         @Override
         public View getView(int i, View rowView, ViewGroup viewGroup) {
-            if (rowView == null) rowView = inflater.inflate(R.layout.list_row_remake, remakesGridView, false);
-            final Remake remake = (Remake) getItem(i);
-            AQuery aq = new AQuery(rowView);
-            aq.id(R.id.remakeImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark);
-            aq.id(R.id.reportButton).clicked(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showReportDialogForRemake(remake.getOID().toString());
-                }
-            });
-            aq.id(R.id.watchRemakeButton).clicked(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, String.format("remakeOID: %s", remake.getOID()));
-                    playRemakeMovie(remake.getOID());
-                }
-            });
+            try {
+                if (rowView == null)
+                    rowView = inflater.inflate(R.layout.list_row_remake, remakesGridView, false);
+                final Remake remake = (Remake) getItem(i);
+                AQuery aq = new AQuery(rowView);
+                aq.id(R.id.remakeImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark);
+                aq.id(R.id.reportButton).clicked(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showReportDialogForRemake(remake.getOID().toString());
+                    }
+                });
+                aq.id(R.id.watchRemakeButton).clicked(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, String.format("remakeOID: %s", remake.getOID()));
+                        playRemakeMovie(remake.getOID());
+                    }
+                });
+            } catch (InflateException ex) {
+                Log.e(TAG, "Inflate exception on grid of story details", ex);
+            }
             return rowView;
         }
 
@@ -189,7 +196,7 @@ public class StoryDetailsFragment extends Fragment {
 
         // Ensure fragment created only once!
         FragmentManager childFM = getChildFragmentManager();
-        VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment)childFM.findFragmentByTag(VIDEO_FRAGMENT_TAG);
+        videoPlayerFragment = (VideoPlayerFragment)childFM.findFragmentByTag(VIDEO_FRAGMENT_TAG);
         if (videoPlayerFragment == null) {
             FragmentManager fm = getFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
@@ -246,14 +253,14 @@ public class StoryDetailsFragment extends Fragment {
                 getArguments().getInt(ARG_SECTION_NUMBER));
 
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                MainActivity main = (MainActivity)getActivity();
-                main.refetchTopRemakesForStory(story);
-                shouldFetchMoreRemakes = true;
-            }
-        }, 500);
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+        MainActivity main = (MainActivity)getActivity();
+        main.refetchTopRemakesForStory(story);
+        shouldFetchMoreRemakes = true;
+//            }
+//        }, 500);
     }
 
     @Override
@@ -270,7 +277,7 @@ public class StoryDetailsFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
+        stopStoryVideo();
     }
 
     public void refreshData() {
@@ -282,21 +289,28 @@ public class StoryDetailsFragment extends Fragment {
     }
     //endregion
 
-
+    private void stopStoryVideo() {
+        // Stop the video
+        if (videoPlayerFragment != null) {
+            try {
+                videoPlayerFragment.fullStop();
+            } catch (Exception ex) {}
+        }
+    }
 
     //region *** UI event handlers ***
     // -------------------
     // UI handlers.
     // -------------------
-    private AdapterView.OnItemClickListener onItemClicked = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            //Remake remake = remakes.get(i);
-            //if (remake == null) return;
-            //Log.d(TAG, String.format("remakeOID: %s", remake.getOID()));
-            //playRemakeMovie(remake.getOID());
-        }
-    };
+//    private AdapterView.OnItemClickListener onItemClicked = new AdapterView.OnItemClickListener() {
+//        @Override
+//        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//            //Remake remake = remakes.get(i);
+//            //if (remake == null) return;
+//            //Log.d(TAG, String.format("remakeOID: %s", remake.getOID()));
+//            //playRemakeMovie(remake.getOID());
+//        }
+//    };
 
     private AbsListView.OnScrollListener onGridViewScrollListener= new AbsListView.OnScrollListener() {
         @Override
@@ -440,6 +454,8 @@ public class StoryDetailsFragment extends Fragment {
 
     private void createNewRemake() {
         if (story == null) return;
+
+        stopStoryVideo();
 
         User user = User.getCurrent();
         if (user == null) return;

@@ -383,7 +383,7 @@ public class VideoPlayerFragment
     //endregion
 
     //region *** video commands ***
-    void fullStop() {
+    public void fullStop() {
         HashMap<String, Object> eInfo = new HashMap<String, Object>(info);
         eInfo.put(HEvents.HK_VIDEO_PLAYBACK_TIME, videoView.getCurrentPosition());
         eInfo.put(HEvents.HK_VIDEO_TOTAL_DURATION, videoView.getDuration());

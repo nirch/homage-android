@@ -27,6 +27,7 @@
     <color name="homage_recorder_close_drawer2">#999999</color>
 
     <color name="homage_black">#ff000000</color>
+    <color name="homage_almost_black">#ff282828</color>
     <color name="homage_dark_void_1">#ff000000</color>
     <color name="homage_dark_void_2">#ff341a1a</color>
 

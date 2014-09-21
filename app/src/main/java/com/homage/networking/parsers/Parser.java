@@ -124,9 +124,19 @@ public class Parser {
         return defaultValue;
     }
 
+    protected JSONObject parseJSONObject(String key, JSONObject defaultValue) throws JSONException {
+        return parseJSONObject((JSONObject)objectToParse, key, defaultValue);
+    }
+
+    protected JSONObject parseJSONObject(JSONObject obj, String key, JSONObject defaultValue) throws JSONException {
+        if (obj.has(key)) return obj.getJSONObject(key);
+        return defaultValue;
+    }
+
     protected long parseDateAsTimestamp(String key, long defaultValue) throws JSONException {
         return parseDateAsTimestamp((JSONObject)objectToParse, key, defaultValue);
     }
+
 
     protected long parseDateAsTimestamp(JSONObject obj, String key, long defaultValue) throws JSONException {
         if (!obj.has(key)) return defaultValue;

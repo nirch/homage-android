@@ -19,6 +19,13 @@
         android:background="@null"
         />
 
+    <ImageView android:id="@+id/videoThumbnailImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        />
+
     <LinearLayout android:id="@+id/videoControls"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -44,12 +51,7 @@
 
     </LinearLayout>
 
-    <ImageView android:id="@+id/videoThumbnailImage"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter"
-        android:visibility="gone"
-        />
+
 
     <ProgressBar android:id="@+id/videoFragmentLoading"
         android:layout_width="40dp"

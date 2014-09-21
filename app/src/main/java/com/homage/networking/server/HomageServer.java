@@ -498,13 +498,6 @@ public class HomageServer extends Server {
     //endregion
 
     // *** Analytics ***
-    //-(NSString *)generateBSONID;
-    //-(void)reportRemakeShare:(NSString *)remakeID forUserID:(NSString *)userID shareMethod:(NSNumber *)shareMethod;
-    //-(void)reportVideoStartWithViewID:(NSString *)viewID forEntity:(NSInteger)entityType withID:(NSString *)entityID forUserID:(NSString *)userID;
-    //-(void)reportVideoStopWithViewID:(NSString *)viewID forEntity:(NSInteger)entityType withID:(NSString *)entityID forUserID:(NSString *)userID forDuration:(NSNumber *)playbackTime outOfTotalDuration:(NSNumber *)videoDuration;
-    //-(void)reportSession:(NSString *)sessionID beginForUser:(NSString *)userID;
-    //-(void)reportSession:(NSString *)sessionID endForUser:(NSString *)userID;
-    //-(void)reportSession:(NSString *)sessionID updateForUser:(NSString *)userID;
 
   public void reportRemakeShareForUser (String remakeID, String userID, int shareMethod)
   {
@@ -516,7 +509,6 @@ public class HomageServer extends Server {
       params.put("share_method", String.format("%d" ,shareMethod));
 
       super.POST(R.string.url_share_remake, params, INTENT_REMAKE_SHARE, null, null);
-
   }
 
   public void reportVideoViewStart(String viewID, int entityType, String entityID, String userID, int originatingScreen)

@@ -92,8 +92,9 @@ public class StoriesListFragment extends Fragment {
                 }
             } catch (InflateException ex) {
                 Log.e(TAG, "Inflate exception in row of stories", ex);
+            } catch (Exception ex) {
+                Log.e(TAG, "Unexpected critical exception in row of stories", ex);
             }
-
             return rowView;
         }
 

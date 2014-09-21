@@ -17,10 +17,13 @@
 package com.homage.app.recorder;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
+
+import com.homage.app.main.HomageApplication;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -170,27 +173,29 @@ public class CameraHelper {
             return  null;
         }
 
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_MOVIES), "CameraSample");
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
+//        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+//                Environment.DIRECTORY_MOVIES), "CameraSample");
 
-        // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()) {
-                Log.d("CameraSample", "failed to create directory");
-                return null;
-            }
-        }
+//        // Create the storage directory if it does not exist
+//        if (! mediaStorageDir.exists()){
+//            if (! mediaStorageDir.mkdirs()) {
+//                Log.d("CameraSample", "failed to create directory");
+//                return null;
+//            }
+//        }
+
+        Context context = HomageApplication.getContext();
 
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile;
         if (type == MEDIA_TYPE_IMAGE){
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+            mediaFile = new File(context.getFilesDir() + File.separator +
                     "IMG_"+ timeStamp + ".jpg");
         } else if(type == MEDIA_TYPE_VIDEO) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+            mediaFile = new File(context.getFilesDir() + File.separator +
                     "VID_"+ timeStamp + ".mp4");
         } else {
             return null;

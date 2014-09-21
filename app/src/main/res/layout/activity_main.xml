@@ -12,8 +12,9 @@
     <RelativeLayout android:id="@+id/bigContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="45dp"
         >
+
+        <!--        android:paddingTop="?attr/actionBarSize"-->
 
         <RelativeLayout
             android:id="@+id/container"
@@ -42,11 +43,13 @@
     <!-- The drawer is given a fixed width in dp and extends the full height of
          the container. -->
     <fragment android:id="@+id/navigation_drawer"
-        android:layout_marginTop="45dp"
         android:layout_width="@dimen/navigation_drawer_width"
         android:layout_height="1000dp"
         android:layout_gravity="start"
-        android:name="com.homage.app.main.NavigationDrawerFragment"
+        class="com.homage.app.main.NavigationDrawerFragment"
         tools:layout="@layout/fragment_navigation_drawer" />
+
+    <!--android:layout_marginTop="?attr/actionBarSize"-->
+
 
 </android.support.v4.widget.DrawerLayout>

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="108dp"
     android:orientation="vertical"
-    android:background="@drawable/selector_story_bg"
+    android:background="@color/homage_almost_black"
     >
 
     <ImageView android:id="@+id/remakeImage"

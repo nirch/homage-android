@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- the theme applied to the application or activity -->
-    <style name="HomageTheme"
-        parent="@android:style/Theme.Holo">
-        <item name="android:actionBarStyle">@style/HomageActionBar</item>
-    </style>
 
-    <!-- ActionBar styles -->
-    <style name="HomageActionBar"
-        parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@drawable/actionbar_bg</item>
-    </style>
 </resources>

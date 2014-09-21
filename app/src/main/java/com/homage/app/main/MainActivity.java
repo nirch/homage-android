@@ -143,8 +143,8 @@ public class MainActivity extends ActionBarActivity
         context = getApplicationContext();
 
         View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-        decorView.setSystemUiVisibility(uiOptions);
+        //int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+        //decorView.setSystemUiVisibility(uiOptions);
 
         aq = new AQuery(this);
 
@@ -494,14 +494,17 @@ public class MainActivity extends ActionBarActivity
         getActionBar().show();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        /*
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
         View container = findViewById(R.id.bigContainer);
         android.support.v4.widget.DrawerLayout.LayoutParams params2 = (android.support.v4.widget.DrawerLayout.LayoutParams)container.getLayoutParams();
-        int m = (int)(45.0f*metrics.density);
+        //int m = (int)(45.0f*metrics.density);
+        int m = 0;
         params2.setMargins(0, m, 0, 0);
         container.setLayoutParams(params2);
+        */
     }
 
     public void updateLoginState() {
