@@ -114,10 +114,6 @@ public class StoriesListFragment extends Fragment {
         return fragment;
     }
 
-    public void updateRenderProgressState() {
-
-    }
-
     public StoriesListFragment() {
         super();
     }

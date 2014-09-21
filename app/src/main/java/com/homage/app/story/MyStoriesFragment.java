@@ -80,10 +80,6 @@ public class MyStoriesFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-    public void updateRenderProgressState() {
-
-    }
-
     private void openRecorderForExistingRemake(Remake remake) {
         Log.d(TAG, "continue remake");
         Intent myIntent = new Intent(getActivity(), RecorderActivity.class);
@@ -293,8 +289,8 @@ public class MyStoriesFragment extends Fragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                MainActivity main = (MainActivity) getActivity();
-                main.refetchRemakesForCurrentUser();
+            MainActivity main = (MainActivity)getActivity();
+            if (main != null) main.refetchRemakesForCurrentUser();
             }
         }, 500);
     }

@@ -64,7 +64,7 @@ public class SplashScreenActivity extends Activity {
                 overridePendingTransition(0, 0);
             } else {
                 Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
-                if (mainStartsWith != null) intent.putExtra(MainActivity.SK_START_MAIN_WITH, mainStartsWith);
+                HomageApplication.getInstance().preferStartingNavigationOn(mainStartsWith);
                 SplashScreenActivity.this.startActivity(intent);
                 SplashScreenActivity.this.finish();
                 overridePendingTransition(0, 0);

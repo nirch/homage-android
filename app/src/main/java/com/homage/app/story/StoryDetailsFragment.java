@@ -433,10 +433,6 @@ public class StoryDetailsFragment extends Fragment {
         startActivity(myIntent);
     }
 
-    public void updateRenderProgressState() {
-
-    }
-
     //
     final View.OnClickListener onClickedMakeYourOwnButton = new View.OnClickListener() {
         @Override

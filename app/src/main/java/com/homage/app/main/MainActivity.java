@@ -110,7 +110,9 @@ public class MainActivity extends ActionBarActivity
     static final String FRAGMENT_TAG_MY_STORIES = "fragment my stories";
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    int defaultSelection;
     int mPositionClicked;
+    int mOnResumeChangeToSection = -1;
     boolean mNavigationItemClicked = false;
     private StoryDetailsFragment storyDetailsFragment;
     private CharSequence mTitle;
@@ -156,16 +158,7 @@ public class MainActivity extends ActionBarActivity
         lastRemakeSentToRender = null;
 
         // Navigate to another default section if requested
-        Intent i = getIntent();
-        final String mainStartsWith = i.getStringExtra(SK_START_MAIN_WITH);
-        int defaultSelection = 1;
-        if (mainStartsWith != null && mainStartsWith.equals("MyStories")) defaultSelection = 2;
-
-        if (defaultSelection == 2) {
-            Log.d(TAG, "Starts with the my stories section.");
-        } else if (defaultSelection == 1) {
-            Log.d(TAG, "Starts with stories section");
-        }
+        navigateToSectionIfRequested();
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -220,10 +213,14 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onResume() {
         super.onResume();
+        navigateToSectionIfRequested();
         initObservers();
         updateLoginState();
         updateRenderProgressState();
         hideRefreshProgress();
+
+        // If requested to change section on resume. navigate to that section.
+        if (mOnResumeChangeToSection > -1) handleDrawerSectionSelection(mOnResumeChangeToSection);
     }
 
     @Override
@@ -232,6 +229,12 @@ public class MainActivity extends ActionBarActivity
         removeObservers();
         HMixPanel mp = HMixPanel.sh();
         if (mp != null) mp.flush();
+    }
+
+    @Override
+    public void onNewIntent (Intent intent) {
+        setIntent(intent);
+        super.onNewIntent(intent);
     }
 
     @Override
@@ -258,7 +261,7 @@ public class MainActivity extends ActionBarActivity
                 }
                 Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
                 movieProgressFragment.showProgressForRemake(renderedRemake);
-                showStories();
+                mOnResumeChangeToSection = SECTION_STORIES;
                 break;
 
             case RecorderActivity.DISMISS_REASON_USER_ABORTED_PRESSING_X:
@@ -283,10 +286,24 @@ public class MainActivity extends ActionBarActivity
             handleDrawerSectionSelection(mPositionClicked);
         }
     }
+
+    private void navigateToSectionIfRequested() {
+        HomageApplication app = HomageApplication.getInstance();
+        final String mainStartsWith = app.getStartingNavigationOn();
+        defaultSelection = SECTION_STORIES;
+        if (mainStartsWith != null && mainStartsWith.equals("MyStories")) {
+            mOnResumeChangeToSection = SECTION_ME;
+            defaultSelection = SECTION_ME;
+        }
+        app.clearStartingNavigationOn();
+    }
+
     //endregion
 
     public void handleDrawerSectionSelection(int position) {
         // update the main content by replacing fragments
+        if (mOnResumeChangeToSection > -1) mOnResumeChangeToSection = -1;
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
             case SECTION_LOGIN:
@@ -518,26 +535,8 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void updateRenderProgressState() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment f = null;
-
-        switch (currentSection) {
-            case SECTION_STORIES:
-                f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
-                if (f==null) break;
-                ((StoriesListFragment)f).updateRenderProgressState();
-                break;
-            case SECTION_ME:
-                f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
-                if (f==null) break;
-                ((MyStoriesFragment)f).updateRenderProgressState();
-                break;
-            case SECTION_STORY_DETAILS:
-                f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
-                if (f==null) break;
-                ((StoryDetailsFragment)f).updateRenderProgressState();
-                break;
-        }
+        //deprecated
+        //Log.d(TAG, "Need to update movie creation progress state");
     }
 
     @Override

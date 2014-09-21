@@ -79,6 +79,7 @@ public class HomageApplication extends SugarApp {
     private String deviceId;
 
     private UploadManager uploadManager;
+    private String startingNavigationOn;
 
     static public final String GCM_SENDER_ID = "414832899241";
 
@@ -495,4 +496,16 @@ public class HomageApplication extends SugarApp {
         return registrationId;
     }
 
+
+    public void preferStartingNavigationOn(String startingNavigationOn) {
+        this.startingNavigationOn = startingNavigationOn;
+    }
+
+    public String getStartingNavigationOn() {
+        return startingNavigationOn;
+    }
+
+    public void clearStartingNavigationOn() {
+        startingNavigationOn = null;
+    }
 }

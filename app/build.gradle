@@ -23,7 +23,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 18
         versionCode 1000
-        versionName "1.0.0"
+        versionName "1.0.1RC"
     }
 
     buildTypes {

@@ -19,6 +19,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.homage.app.R;
 import com.homage.app.main.MainActivity;
 import com.homage.app.main.SplashScreenActivity;
+import com.homage.networking.server.HomageServer;
 
 import android.app.ActivityManager;
 import android.app.IntentService;
@@ -146,6 +147,10 @@ public class GcmIntentService extends IntentService {
             moreInfo.putString("remake_id", remakeId);
             moreInfo.putString(MainActivity.SK_START_MAIN_WITH, "MyStories");
 
+            // Update the remake info.
+            if (remakeId != null) {
+                HomageServer.sh().refetchRemake(remakeId, null);
+            }
 
             intent.putExtras(moreInfo);
 
