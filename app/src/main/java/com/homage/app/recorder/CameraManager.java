@@ -425,6 +425,10 @@ The Camera Manager will decide on which method to use based on API and app confi
         void recordingInfo(int what, File outputFile, HashMap<String, Object> info);
     }
 
+    public boolean isRecording() {
+        return isRecording;
+    }
+
     /**
      * chooses recording method and initialize required resources.
      */
@@ -465,7 +469,7 @@ The Camera Manager will decide on which method to use based on API and app confi
         Log.d(TAG, "Release the recorder used.");
     }
 
-    // Start recording
+    //  Recording
     public void startRecording(int duration, RecordingListener recordingListener) {
         if (isRecording) {
             Log.e(TAG, "startRecording called in wrong state. Already recording. Ignored.");
@@ -485,6 +489,7 @@ The Camera Manager will decide on which method to use based on API and app confi
             recordingListener.recordingInfo(RECORDING_FAILED_TO_START, null, null);
         }
     }
+
 
     public void sendStopRecordingMessageToMainThread() {
         Context context = mGLView.getContext();
@@ -510,6 +515,22 @@ The Camera Manager will decide on which method to use based on API and app confi
             stopRecordingWithMediaCodec();
         } else {
             recordingListener.recordingInfo(RECORDING_FAILED_TO_START, null, null);
+        }
+    }
+
+    public void cancelRecording() {
+        if (!isRecording) {
+            Log.e(TAG, "cancelRecording called in wrong state. Not currently recording. Ignored.");
+            return;
+        }
+
+        // Stop recording with the chosen method.
+        if (chosenRecordingMethod == RECORDING_METHOD_MEDIA_RECORDER) {
+            cancelRecordingWithMediaRecorder();
+        } else if (chosenRecordingMethod == RECORDING_METHOD_MEDIA_CODEC) {
+            throw new UnsupportedOperationException("Unimplemented: cancel recording with media codec");
+        } else {
+            recordingListener.recordingInfo(RECORDING_FAILED, null, null);
         }
     }
 
@@ -606,11 +627,13 @@ The Camera Manager will decide on which method to use based on API and app confi
         new AsyncTask<Void, Integer, Void>(){
             @Override
             protected Void doInBackground(Void... arg0) {
-                outputFile = mediaRecorderRecordToOutputFile(duration, onRecordingInfoListener);
-                if (outputFile == null) {
-                    return null;
-                }
-                Log.d(TAG, String.format("Started recording to local file: %s", outputFile));
+                try {
+                    outputFile = mediaRecorderRecordToOutputFile(duration, onRecordingInfoListener);
+                    if (outputFile == null) {
+                        return null;
+                    }
+                    Log.d(TAG, String.format("Started recording to local file: %s", outputFile));
+                } catch (Exception ex) {sendErrorInRecordingMessageToMainThread();}
                 return null;
             }
             @Override
@@ -714,6 +737,25 @@ The Camera Manager will decide on which method to use based on API and app confi
         Camera.Parameters parameters = mCamera.getParameters();
         whileUserInteractionCameraSettings(parameters);
         mCamera.setParameters(parameters);
+    }
+
+    private void cancelRecordingWithMediaRecorder() {
+        if (mediaRecorder == null) return;
+
+        try {
+            mediaRecorder.stop();
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "IllegalStateException stopping MediaRecorder", e);
+        }
+        releaseMediaRecorder();
+        mCamera.lock();
+        isRecording = false;
+
+        Camera.Parameters parameters = mCamera.getParameters();
+        whileUserInteractionCameraSettings(parameters);
+        mCamera.setParameters(parameters);
+
+        recordingListener.recordingInfo(RECORDING_CANCELED, null, null);
     }
 
     private void whileUserInteractionCameraSettings(Camera.Parameters parameters) {

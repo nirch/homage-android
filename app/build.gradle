@@ -22,8 +22,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 18
-        versionCode 1000
-        versionName "1.0.1RC"
+        versionCode 1003
+        versionName "1.0.3"
     }
 
     buildTypes {

@@ -103,7 +103,7 @@ public class MainActivity extends ActionBarActivity
     static final int SHARE_METHOD_WEIBO     = 5;
     static final int SHARE_METHOD_TWITTER   = 6;
 
-    static final int REQUEST_CODE_RECORDER = 10001;
+    public static final int REQUEST_CODE_RECORDER = 10001;
 
     static final String FRAGMENT_TAG_ME = "fragment me";
     static final String FRAGMENT_TAG_STORIES = "fragment stories";
@@ -213,6 +213,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onResume() {
         super.onResume();
+        sillyOnResumeHackDetectingFinishedRemake();
         navigateToSectionIfRequested();
         initObservers();
         updateLoginState();
@@ -221,6 +222,28 @@ public class MainActivity extends ActionBarActivity
 
         // If requested to change section on resume. navigate to that section.
         if (mOnResumeChangeToSection > -1) handleDrawerSectionSelection(mOnResumeChangeToSection);
+    }
+
+    // TODO: remove this ugly hack after implementing camera flip correctly in recorder
+    // Reason for this ugly hack - Recorder starts new instances of itself when flipping camera.
+    // that was done to solve another silly problem with glview. Will need to fix camera preview
+    // remove the recreation of recorder activities from within the recorder and then remove this hack
+    // because onActivityResult will always be called properly when the recorder is dismissed.
+    private void sillyOnResumeHackDetectingFinishedRemake() {
+        if (RecorderActivity.hackFinishedRemakeOID != null && RecorderActivity.hackDismissReason == RecorderActivity.DISMISS_REASON_FINISHED_REMAKE) {
+            String remakeOID = RecorderActivity.hackFinishedRemakeOID;
+            Remake renderedRemake = Remake.findByOID(remakeOID);
+            if (renderedRemake == null) {
+                Log.e(TAG, "Critical error. Recorder sent remake to rendering, but not found in local storage.");
+                return;
+            }
+            Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
+            movieProgressFragment.showProgressForRemake(renderedRemake);
+            mOnResumeChangeToSection = SECTION_STORIES;
+
+            RecorderActivity.hackDismissReason = -1;
+            RecorderActivity.hackFinishedRemakeOID = null;
+        }
     }
 
     @Override
@@ -244,16 +267,25 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        super.onActivityResult(requestCode, resultCode, resultData);
+
         if (requestCode != REQUEST_CODE_RECORDER) return;
 
         Log.d(TAG, String.format("Returned from recorder with result code: %d", resultCode));
+
+        String remakeOID;
+        int currentSceneID;
 
         switch (resultCode) {
             case RecorderActivity.DISMISS_REASON_FINISHED_REMAKE:
                 // User sent a remake to rendering. Show the create movie progress bar
                 // To keep track of the rendering.
-                String remakeOID = resultData.getStringExtra("remakeOID");
-                if (remakeOID == null) return;
+                remakeOID = resultData.getStringExtra("remakeOID");
+                if (remakeOID == null) {
+                    Log.e(TAG, "Critical error. Why no remake ID if recorder dismissed because user finished remake?");
+                    return;
+                }
+                // Show progress
                 Remake renderedRemake = Remake.findByOID(remakeOID);
                 if (renderedRemake == null) {
                     Log.e(TAG, "Critical error. Recorder sent remake to rendering, but not found in local storage.");
@@ -262,6 +294,11 @@ public class MainActivity extends ActionBarActivity
                 Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
                 movieProgressFragment.showProgressForRemake(renderedRemake);
                 mOnResumeChangeToSection = SECTION_STORIES;
+
+                // TODO: remove this hack
+                RecorderActivity.hackFinishedRemakeOID = null;
+                RecorderActivity.hackDismissReason = -1;
+
                 break;
 
             case RecorderActivity.DISMISS_REASON_USER_ABORTED_PRESSING_X:
@@ -436,7 +473,7 @@ public class MainActivity extends ActionBarActivity
                 Bundle b = new Bundle();
                 b.putString("remakeOID", remakeOID);
                 myIntent.putExtras(b);
-                MainActivity.this.startActivityForResult(myIntent, REQUEST_CODE_RECORDER);
+                MainActivity.this.startActivityForResult(myIntent, MainActivity.REQUEST_CODE_RECORDER);
             }
         }
     };

@@ -51,6 +51,7 @@ import com.android.grafika.AspectFrameLayout;
 import com.android.grafika.HVideoEncoder;
 import com.androidquery.AQuery;
 import com.homage.app.R;
+import com.homage.app.main.MainActivity;
 import com.homage.model.Footage;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
@@ -103,6 +104,9 @@ public class RecorderActivity extends Activity
     public final static String K_SAVED_CURRENT_SCENE_ID = "savedCurrentSceneId";
 
     final public static int RECORDER_CLOSED = 666;
+
+    public static String hackFinishedRemakeOID = null;
+    public static int hackDismissReason = -1;
 
     // Camera handler (handles messages from other threads)
     private CameraHandler mCameraHandler;
@@ -298,6 +302,13 @@ public class RecorderActivity extends Activity
         showCurtainsAnimated(false);
 
         final CameraManager cm = CameraManager.sh();
+
+        // Cancel recording if currently recording.
+        if (cm.isRecording()) {
+            cm.cancelRecording();
+        }
+
+
         cm.releaseCamera();
         if (mGLView != null) mGLView.queueEvent(new Runnable() {
             @Override public void run() {
@@ -305,6 +316,7 @@ public class RecorderActivity extends Activity
                 mRenderer.notifyPausing();
             }
         });
+
         Log.d(TAG, "onPause complete");
 
     }
@@ -975,9 +987,16 @@ public class RecorderActivity extends Activity
          */
         Intent result = new Intent();
         result.putExtra("remakeOID", remake.getOID());
+        result.putExtra("currentSceneId", currentSceneID);
         setResult(dismissReason, result);
+
+        // TODO: remove this hack after implementing camera flipping correctly.
+        RecorderActivity.hackDismissReason = dismissReason;
+        RecorderActivity.hackFinishedRemakeOID = remake.getOID();
+
+        // Done
         finish();
-        overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout);
+        overridePendingTransition(R.anim.animation_fadein, R.anim.animation_fadeout_with_zoom);
     }
 
     private boolean isCountingDownToRecording() {
@@ -1611,7 +1630,6 @@ public class RecorderActivity extends Activity
         CameraManager cm = CameraManager.sh();
         cm.flipCamera();
         cm.toastSelectedCamera(this);
-
         shouldReleaseCameraOnNavigation = false;
         RecorderState currentRecorderState = stateMachine.currentState;
         starterIntent.putExtra(K_SAVED_RECORDER_MAKING_A_SCENE_STATE, true);
@@ -1627,7 +1645,6 @@ public class RecorderActivity extends Activity
             if (!remake.allScenesTaken()) return;
             //stateMachine.setState(RecorderState.FINISHED_ALL_SCENES_MESSAGE);
             try {
-
                 HashMap props = new HashMap<String,String>();
                 props.put("story" , remake.getStory().name);
                 props.put("remake_id" , remake.getOID());
