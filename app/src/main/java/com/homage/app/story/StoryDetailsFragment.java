@@ -122,7 +122,7 @@ public class StoryDetailsFragment extends Fragment {
                     rowView = inflater.inflate(R.layout.list_row_remake, remakesGridView, false);
                 final Remake remake = (Remake) getItem(i);
                 AQuery aq = new AQuery(rowView);
-                aq.id(R.id.remakeImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark);
+                aq.id(R.id.remakeImage).image(remake.thumbnailURL, true, true, 256, R.drawable.glass_dark);
                 aq.id(R.id.reportButton).clicked(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

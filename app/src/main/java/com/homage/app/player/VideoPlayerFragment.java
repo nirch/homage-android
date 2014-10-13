@@ -133,7 +133,9 @@ public class VideoPlayerFragment
     @Override
     public void onPause() {
         super.onPause();
-        fullStop();
+        try {
+            fullStop();
+        } catch(Exception ex) {}
     }
 
 //    @Override

@@ -58,7 +58,7 @@ public class RecorderVideosPagerAdapter
             AQuery aq = new AQuery(videoSceneContainer);
             //VideoView videoView = (VideoView)aq.id(R.id.videoView).getView();
             //videoView.setVideoURI(Uri.parse(scene.videoURL));
-            aq.id(R.id.videoThumbnailImage).image(scene.thumbnailURL, true, true, 200, R.drawable.glass_dark);
+            aq.id(R.id.videoThumbnailImage).image(scene.thumbnailURL, true, true, 256, R.drawable.glass_dark);
         }
     }
 
@@ -130,12 +130,12 @@ public class RecorderVideosPagerAdapter
         if (position == 0) {
             aq.id(R.id.videoTitle).text(R.string.video_title_scene);
             //videoView.setVideoURI(Uri.parse(scene.videoURL));
-            aq.id(R.id.videoThumbnailImage).image(scene.thumbnailURL, true, true, 200, R.drawable.glass_dark);
+            aq.id(R.id.videoThumbnailImage).image(scene.thumbnailURL, true, true, 256, R.drawable.glass_dark);
             videoSceneContainer = videoContainer;
         } else {
             aq.id(R.id.videoTitle).text(R.string.video_title_story);
             //videoView.setVideoURI(Uri.parse(story.video));
-            aq.id(R.id.videoThumbnailImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
+            aq.id(R.id.videoThumbnailImage).image(story.thumbnail, true, true, 256, R.drawable.glass_dark);
             videoStoryContainer = videoContainer;
         }
 

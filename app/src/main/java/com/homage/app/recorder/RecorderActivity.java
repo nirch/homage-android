@@ -50,6 +50,7 @@ import android.widget.Toast;
 import com.android.grafika.AspectFrameLayout;
 import com.android.grafika.HVideoEncoder;
 import com.androidquery.AQuery;
+import com.crashlytics.android.Crashlytics;
 import com.homage.app.R;
 import com.homage.app.main.MainActivity;
 import com.homage.model.Footage;
@@ -207,6 +208,12 @@ public class RecorderActivity extends Activity
         remake = Remake.findByOID(remakeOID);
         story = remake.getStory();
         isRecording = false;
+
+        // Crashlytics logging
+        Crashlytics.setString("remakeID", remakeOID);
+        Crashlytics.setString("storyID", story.getOID());
+        Crashlytics.setString("storyName", story.name);
+        Crashlytics.log("RecorderActivity onCreate");
 
         //region *** Layout initializations ***
         Log.d(TAG, String.format("Started recorder for remake: %s", remake.getOID()));
@@ -860,6 +867,7 @@ public class RecorderActivity extends Activity
                 case FINISHED_A_SCENE_MESSAGE: finishedASceneMessage(); break;
                 case FINISHED_ALL_SCENES_MESSAGE: finishedAllScenesMessage(); break;
                 default:
+                    Crashlytics.log(String.format("Unimplemented recorder state %s", currentState));
                     throw new RecorderException(String.format("Unimplemented recorder state %s", currentState));
             }
         }
@@ -870,12 +878,14 @@ public class RecorderActivity extends Activity
                     // User got the "just starting" message.
                     // Now we can get to business.
                     // NEXT, we will show a message about the next scene to shoot.
+                    Crashlytics.log("Recorder advance state: JUST_STARTED --> SCENE_MESSAGE");
                     currentState = RecorderState.SCENE_MESSAGE;
                     break;
                 case SCENE_MESSAGE:
                     // User dismissed the scene message.
                     // Enter the "making a scene" state.
                     // (gives the user control of the recorder)
+                    Crashlytics.log("Recorder advance state: SCENE_MESSAGE --> MAKING_A_SCENE");
                     currentState = RecorderState.MAKING_A_SCENE;
                     showControlsDrawer(false);
                     break;
@@ -884,16 +894,20 @@ public class RecorderActivity extends Activity
                     // Advance state to next scene message or finished movie message
                     if (remake.allScenesTaken()) {
                         Log.d(TAG, "All scenes taken");
+                        Crashlytics.log("Recorder advance state: MAKING_A_SCENE --> FINISHED_ALL_SCENES_MESSAGE");
                         currentState = RecorderState.FINISHED_ALL_SCENES_MESSAGE;
                     } else {
                         int nextSceneID = remake.nextReadyForFirstRetakeSceneID();
                         Log.d(TAG, String.format("Will advance to next scene: %d", nextSceneID));
+                        Crashlytics.log("Recorder advance state: MAKING_A_SCENE --> FINISHED_A_SCENE_MESSAGE");
                         currentState = RecorderState.FINISHED_A_SCENE_MESSAGE;
                     }
                     break;
                 case FINISHED_A_SCENE_MESSAGE:
                     // User chosen to continue to next scene, after a finished scene message.
+                    Crashlytics.log("Recorder advance state: FINISHED_A_SCENE_MESSAGE --> MAKING_A_SCENE");
                     currentSceneID = remake.nextReadyForFirstRetakeSceneID();
+                    Crashlytics.setInt("currentSceneID", currentSceneID);
                     currentState = RecorderState.MAKING_A_SCENE;
                     break;
                 default:
@@ -902,6 +916,8 @@ public class RecorderActivity extends Activity
         }
 
         private void justStarted() throws RecorderException {
+            Crashlytics.log("Recorder justStarted");
+
             User user = User.getCurrent();
 
             //
@@ -931,6 +947,8 @@ public class RecorderActivity extends Activity
         }
 
         private void sceneMessage()  {
+            Crashlytics.log("Recorder sceneMessage");
+
             Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlaySceneMessageDlgActivity.class);
             myIntent.putExtra("remakeOID", remake.getOID());
             myIntent.putExtra("sceneID",currentSceneID);
@@ -942,12 +960,16 @@ public class RecorderActivity extends Activity
         }
 
         private void makingAScene() {
+            Crashlytics.log("Recorder makingAScene");
+
             showControlsDrawer(false);
             updateScenesList();
             updateUIForSceneID(currentSceneID);
         }
 
         private void finishedASceneMessage() {
+            Crashlytics.log("Recorder finishedASceneMessage");
+
             Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlayFinishedSceneMessageDlgActivity.class);
             myIntent.putExtra("remakeOID", remake.getOID());
             myIntent.putExtra("sceneID",currentSceneID);
@@ -958,6 +980,8 @@ public class RecorderActivity extends Activity
         }
 
         private void finishedAllScenesMessage() {
+            Crashlytics.log("Recorder finishedAllScenesMessage");
+
             Intent myIntent = new Intent(RecorderActivity.this, RecorderOverlayFinishedAllSceneMessageDlgActivity.class);
             myIntent.putExtra("remakeOID", remake.getOID());
             myIntent.putExtra("sceneID",currentSceneID);
@@ -1197,6 +1221,7 @@ public class RecorderActivity extends Activity
     private void handleSuccessfulTake(String outputFile) {
         try {
             // All is well, update the footage object
+            Crashlytics.log(String.format("Successful take: %s", outputFile));
             Footage footage = remake.findFootage(currentSceneID);
             if (footage == null) {
                 Log.e(TAG, "Error. why footage not found after finishing recording?");
@@ -1219,6 +1244,7 @@ public class RecorderActivity extends Activity
 
             // Inform server about availability of new take.
             String remakeID = remake.getOID();
+
             int sceneID = footage.sceneID;
             String takeID = footage.getTakeID();
             HomageServer.sh().putFootage(
@@ -1310,6 +1336,8 @@ public class RecorderActivity extends Activity
 
     private void askUserIfWantToCloseRecorder()
     {
+        Crashlytics.log("Asking user if want to close recorder");
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.recorder_dismiss_title);
         builder.setMessage(R.string.recorder_dismiss_message);
@@ -1322,6 +1350,7 @@ public class RecorderActivity extends Activity
                 props.put("remake_id" , remake.getOID());
                 HMixPanel.sh().track("UserClosedRecorder",props);
 
+                Crashlytics.log("User requested to abort recorder");
                 recorderDoneWithReason(DISMISS_REASON_USER_ABORTED_PRESSING_X);
 
             }

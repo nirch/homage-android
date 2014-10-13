@@ -132,9 +132,9 @@ public class MyStoriesFragment extends Fragment {
                 aq.id(R.id.storyName).text(story.name);
 
                 if (i > 3) {
-                    aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
+                    aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 256, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
                 } else {
-                    aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 200, R.drawable.glass_dark);
+                    aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 256, R.drawable.glass_dark);
                 }
 
                 if (remake.status == Remake.Status.DONE.getValue()) {

@@ -5,7 +5,7 @@
     <!-- prefetch_top_remakes: experimental. not implemented yet. Leave as false for now -->
     <bool name="prefetch_top_remakes">false</bool>
 
-    <!-- top_remakes_count: Limits the number of remakes to fetch when entering a stort details screen -->
+    <!-- top_remakes_count: Limits the number of remakes to fetch when entering a story details screen -->
     <integer name="top_remakes_count">10</integer>
 
     <!-- Analytics -->

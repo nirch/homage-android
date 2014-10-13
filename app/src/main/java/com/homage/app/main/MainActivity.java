@@ -50,6 +50,7 @@ import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -141,6 +142,8 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Crashlytics.log("onCreate MainActivity. Loaded content view.");
 
         context = getApplicationContext();
 
@@ -271,7 +274,10 @@ public class MainActivity extends ActionBarActivity
 
         if (requestCode != REQUEST_CODE_RECORDER) return;
 
-        Log.d(TAG, String.format("Returned from recorder with result code: %d", resultCode));
+
+        String logString = String.format("Returned from recorder with result code: %d", resultCode);
+        Log.d(TAG, logString);
+        Crashlytics.log(logString);
 
         String remakeOID;
         int currentSceneID;
@@ -344,6 +350,8 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
             case SECTION_LOGIN:
+                Crashlytics.log("handleDrawerSectionSelection --> Login");
+
                 User user = User.getCurrent();
                 if (user.isGuest()) {
                     // User is guest. Will show the join login screen.
@@ -359,24 +367,34 @@ public class MainActivity extends ActionBarActivity
                 break;
 
             case SECTION_STORIES:
+                Crashlytics.log("handleDrawerSectionSelection --> Stories");
+
                 currentSection = position;
                 showStories();
                 break;
 
             case SECTION_ME:
+                Crashlytics.log("handleDrawerSectionSelection --> My Stories");
+
                 currentSection = position;
                 showMyStories();
                 break;
 
             case SECTION_SETTINGS:
+                Crashlytics.log("handleDrawerSectionSelection --> Settings");
+
                 showSettings();
                 break;
 
             case SECTION_HOWTO:
+                Crashlytics.log("handleDrawerSectionSelection --> Howto");
+
                 showHowTo();
                 break;
 
             default:
+                Crashlytics.log("handleDrawerSectionSelection --> Unimplemented!");
+
                 // Not implemented yet. Just put a place holder fragment for now.
                 currentSection = position;
                 fragmentManager.beginTransaction()
@@ -441,6 +459,8 @@ public class MainActivity extends ActionBarActivity
     private BroadcastReceiver onStoriesUpdated = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Crashlytics.log("onStoriesUpdated");
+
             Bundle b = intent.getExtras();
             boolean success = b.getBoolean("success", false);
             hideRefreshProgress();
@@ -459,6 +479,8 @@ public class MainActivity extends ActionBarActivity
     private BroadcastReceiver onRemakeCreation = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Crashlytics.log("onRemakeCreation");
+
             pd.dismiss();
             boolean success = intent.getBooleanExtra(Server.SR_SUCCESS, false);
             HashMap<String, Object> responseInfo = (HashMap<String, Object>)intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
@@ -482,6 +504,8 @@ public class MainActivity extends ActionBarActivity
     private BroadcastReceiver onRemakesForStoryUpdated = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Crashlytics.log("onRemakesForStoryUpdated");
+
             HashMap<String, Object> requestInfo = Server.requestInfoFromIntent(intent);
             String storyOID = (String)requestInfo.get("storyOID");
             if (storyDetailsFragment.story.getOID().equals(storyOID)) {
@@ -494,6 +518,8 @@ public class MainActivity extends ActionBarActivity
     private BroadcastReceiver onRemakesForUserUpdated = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Crashlytics.log("onRemakesForUserUpdated");
+
             refreshMyStoriesIfCurrentSection();
         }
     };
@@ -501,6 +527,8 @@ public class MainActivity extends ActionBarActivity
     private BroadcastReceiver onRemakeDeletion = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Crashlytics.log("onRemakeDeletion");
+
             if (pd != null) pd.dismiss();
             boolean success = intent.getBooleanExtra(Server.SR_SUCCESS, false);
             HashMap<String, Object> responseInfo = (HashMap<String, Object>) intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
@@ -514,6 +542,8 @@ public class MainActivity extends ActionBarActivity
     private BroadcastReceiver onUserLogin = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Crashlytics.log("onUserLogin");
+
             updateLoginState();
         }
     };
@@ -562,11 +592,17 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void updateLoginState() {
+        Crashlytics.log("updateLoginState");
+
         User user = User.getCurrent();
         if (user==null) {
             Log.d(TAG, "No logged in user.");
+            Crashlytics.log("updateLoginState: No user");
         } else {
-            Log.d(TAG, String.format("Current user:%s", user.getTag()));
+            String userString = String.format("Current user:%s", user.getTag());
+            Log.d(TAG, userString);
+            Crashlytics.log(String.format("updateLoginState: %s %s", userString, user.getOID()));
+            Crashlytics.setString("userID", user.getOID());
         }
         mNavigationDrawerFragment.refresh();
     }
@@ -1041,7 +1077,7 @@ public class MainActivity extends ActionBarActivity
 
                         // start the selected activity
                         i.setPackage(info.activityInfo.packageName);
-                        startActivity(i);
+                        startActivityForResult(i, 555);
                     }
                 }).show();
 

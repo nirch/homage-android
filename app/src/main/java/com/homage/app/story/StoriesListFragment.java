@@ -18,10 +18,12 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Display;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import com.androidquery.AQuery;
+import com.crashlytics.android.Crashlytics;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
@@ -37,6 +40,7 @@ import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.analytics.HMixPanel;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -80,19 +84,23 @@ public class StoriesListFragment extends Fragment {
             try {
                 if (rowView == null)
                     rowView = inflater.inflate(R.layout.list_row_story, storiesListView, false);
-                Story story = (Story) getItem(i);
+
+                Story story = (Story)getItem(i);
                 AQuery aq = new AQuery(rowView);
                 aq.id(R.id.storyName).text(story.name);
                 aq.id(R.id.storyRemakesCount).text(String.format("#%d", story.remakesNum));
 
                 if (allowAppearAnimations) {
-                    aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
+                    aq.id(R.id.storyImage).image(story.thumbnail, true, true, 256, R.drawable.glass_dark, null, R.anim.animation_fadein);
                 } else {
-                    aq.id(R.id.storyImage).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
+                    aq.id(R.id.storyImage).image(story.thumbnail, true, true, 256, R.drawable.glass_dark);
                 }
+
             } catch (InflateException ex) {
+                Crashlytics.log(Log.ERROR, TAG, "Inflate exception in row of stories");
                 Log.e(TAG, "Inflate exception in row of stories", ex);
             } catch (Exception ex) {
+                Crashlytics.log(Log.ERROR, TAG, "Unexpected critical exception in row of stories.");
                 Log.e(TAG, "Unexpected critical exception in row of stories", ex);
             }
             return rowView;

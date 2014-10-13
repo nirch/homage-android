@@ -45,6 +45,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.android.grafika.CameraUtils;
+import com.crashlytics.android.Crashlytics;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 
@@ -146,6 +147,8 @@ public class CameraManager {
      */
 
     public void openCamera() {
+        Crashlytics.log("openCamera");
+
         if (mCamera != null) {
             //throw new RuntimeException("camera already initialized");
             return;
@@ -163,11 +166,13 @@ public class CameraManager {
             desiredHeight = defaultBackHeight;
         }
 
+        Crashlytics.setInt("Num of cameras", numCameras);
+
         for (int i = 0; i < numCameras; i++) {
             Camera.getCameraInfo(i, info);
+
             if (!selfie && info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
                 mCamera = Camera.open(i);
-
                 break;
             }
             if (selfie && info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
@@ -176,13 +181,21 @@ public class CameraManager {
             }
         }
 
+        // Try default camera if single camera device (Nexus 7 1st gen fix)
+        if (numCameras == 1 && mCamera == null) {
+            Crashlytics.log("Last resort: attempting default Camera.open()");
+            mCamera = Camera.open(0);
+        }
+
+        // Last try if none opened.
         if (mCamera == null) {
-            // Open some camera if none opened.
+            Crashlytics.log("Last resort: attempting default Camera.open()");
             mCamera = Camera.open();
         }
 
         if (mCamera == null) {
             // Camera should have opened. If not, this is a critical error.
+            Crashlytics.log("Failed to open camera :-(");
             throw new RuntimeException("Unable to open camera");
         }
 
@@ -209,7 +222,9 @@ public class CameraManager {
         Camera.Size mCameraPreviewSize = parms.getPreviewSize();
         mCameraPreviewWidth = mCameraPreviewSize.width;
         mCameraPreviewHeight = mCameraPreviewSize.height;
-        Log.d(TAG, String.format("Selected camera with preview res: %dx%d", mCameraPreviewWidth, mCameraPreviewHeight));
+        String resLog = String.format("Selected camera with preview res: %dx%d", mCameraPreviewWidth, mCameraPreviewHeight);
+        Log.d(TAG, resLog);
+        Crashlytics.log(resLog);
     }
 
     public boolean isSelfie() {

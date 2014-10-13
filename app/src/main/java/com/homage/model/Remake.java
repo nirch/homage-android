@@ -6,6 +6,7 @@ package com.homage.model;
 import android.content.Context;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
@@ -116,6 +117,13 @@ public class Remake extends SugarRecord<Remake> {
     //region *** Logic ***
     public int nextReadyForFirstRetakeSceneID() {
         List<Footage.ReadyState> readyStates = footagesReadyStates();
+        if (readyStates == null) {
+            Crashlytics.setString("readyStates", "null");
+        } else {
+            String readyStatesString = readyStates.toString();
+            Crashlytics.setString("readyStates", readyStatesString);
+        }
+
         for (int i=0;i<readyStates.size();i++) {
             Footage.ReadyState state = readyStates.get(i);
             if (state == Footage.ReadyState.READY_FOR_FIRST_RETAKE) {
