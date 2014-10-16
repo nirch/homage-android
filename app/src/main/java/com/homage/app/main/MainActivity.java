@@ -71,6 +71,8 @@ import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import com.vim.vimapi.vTool;
 
+import org.bson.types.ObjectId;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -185,6 +187,7 @@ public class MainActivity extends ActionBarActivity
         // Refresh stories
         showRefreshProgress();
         HomageServer.sh().refetchStories();
+        HomageServer.sh().LoadAdditionalConfig();
 
         // Force portrait
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -434,6 +437,7 @@ public class MainActivity extends ActionBarActivity
         lbm.registerReceiver(onRemakesForStoryUpdated, new IntentFilter(HomageServer.INTENT_REMAKES_FOR_STORY));
         lbm.registerReceiver(onRemakesForUserUpdated, new IntentFilter(HomageServer.INTENT_USER_REMAKES));
         lbm.registerReceiver(onRemakeDeletion, new IntentFilter((HomageServer.INTENT_REMAKE_DELETION)));
+        lbm.registerReceiver(onConfigurationDataAvailable, new IntentFilter((HomageServer.INTENT_APP_CONFIG_FROM_SERVER)));
     }
 
     private void removeObservers() {
@@ -444,6 +448,7 @@ public class MainActivity extends ActionBarActivity
         lbm.unregisterReceiver(onRemakesForStoryUpdated);
         lbm.unregisterReceiver(onRemakesForUserUpdated);
         lbm.unregisterReceiver(onRemakeDeletion);
+        lbm.unregisterReceiver(onConfigurationDataAvailable);
     }
 
     private void refreshMyStoriesIfCurrentSection() {
@@ -536,6 +541,19 @@ public class MainActivity extends ActionBarActivity
             if (success && currentSection == SECTION_ME) {
                 refreshMyStoriesIfCurrentSection();
             }
+        }
+    };
+
+    private BroadcastReceiver onConfigurationDataAvailable = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Crashlytics.log("onConfigurationDataAvailable");
+
+            if (pd != null) pd.dismiss();
+            boolean success = intent.getBooleanExtra(Server.SR_SUCCESS, false);
+            HashMap<String, Object> responseInfo = (HashMap<String, Object>) intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
+
+            HomageServer.sh().updateAppConfiguration(responseInfo);
         }
     };
 
@@ -1022,7 +1040,9 @@ public class MainActivity extends ActionBarActivity
 
         final Story story = sharedRemake.getStory();
         final String downloadLink = "https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8";
-
+        String shareLinkPrefix = HomageServer.sh().getShareLinkPrefix();
+        final String shareID = new ObjectId().toString();
+        final String remakeShareURL = shareLinkPrefix.concat("/").concat(shareID);
 
         final List<ResolveInfo> activities = getSupportedActivitiesForSharing();
         List<String> appNames = new ArrayList<String>();
@@ -1054,19 +1074,19 @@ public class MainActivity extends ActionBarActivity
                                 i.putExtra(Intent.EXTRA_TEXT,
                                         String.format(
                                                 "%s \n\n keep calm and get Homage at: \n\n %s" ,
-                                                sharedRemake.shareURL , downloadLink));
+                                                remakeShareURL , downloadLink));
                                 break;
                             default:
                                 i.putExtra(Intent.EXTRA_TEXT,
                                         String.format(
                                                 "%s: \n %s \n keep calm and get Homage at: \n %s" ,
-                                                story.shareMessage , sharedRemake.shareURL , downloadLink));
+                                                story.shareMessage , remakeShareURL , downloadLink));
                         }
 
 
                         // Analytics homage
                         HomageServer.sh().reportRemakeShareForUser(
-                                sharedRemake.getOID(),sharedRemake.userID, shareMethod);
+                                shareID, sharedRemake.getOID(), sharedRemake.userID, shareMethod , remakeShareURL);
 
                         // Analytics mixpanel
                         HashMap props = new HashMap<String,String>();

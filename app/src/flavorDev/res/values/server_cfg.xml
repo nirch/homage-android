@@ -9,9 +9,11 @@
     <integer name="top_remakes_count">10</integer>
 
     <!-- Analytics -->
-    <bool name="server_analytics_on_debug">false</bool>
+    <bool name="server_analytics_on_debug">true</bool>
 
     <!-- DEV Server -->
+   <!-- <string name="server_dev_host">192.168.0.103</string>
+    <integer name="server_dev_port">9292</integer>-->
     <string name="server_dev_host">homage-server-app-dev.elasticbeanstalk.com</string>
     <integer name="server_dev_port">80</integer>
     <string name="server_dev_protocol">http</string>
@@ -43,5 +45,5 @@
     <string name="url_android_pause">user/session_pause</string>
     <string name="url_android_resume">user/session_resume</string>
     <string name="url_update_push_token">user/push_token</string>
-
+    <string name="url_additional_config">config</string>
 </resources>

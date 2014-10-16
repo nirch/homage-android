@@ -26,19 +26,16 @@
  */
 package com.homage.networking.server;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.res.Resources;
-import android.provider.Settings;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.homage.app.BuildConfig;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.device.Device;
-import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.parsers.AppConfigParser;
 import com.homage.networking.parsers.RemakeParser;
 import com.homage.networking.parsers.RemakesParser;
 import com.homage.networking.parsers.StoriesParser;
@@ -46,7 +43,6 @@ import com.homage.networking.parsers.UserParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 public class HomageServer extends Server {
     //region *** Intent names ***
@@ -70,6 +66,7 @@ public class HomageServer extends Server {
     final static public String INTENT_USER_END_SESSION          = "intent user begin session";
     final static public String INTENT_USER_UPDATE_SESSION       = "intent user begin session";
     final static public String INTENT_USER_UPDATE_PUSH_TOKEN    = "intent update push token";
+    final static public String INTENT_APP_CONFIG_FROM_SERVER    = "intent app config from server";
 
     //region *** info keys ***
     final static public String IK_STORY_OID         = "storyOID";
@@ -91,6 +88,7 @@ public class HomageServer extends Server {
     public int topRemakesCount = 10;
     private boolean serverAnalyticsOnDebug;
     private boolean isDebug;
+    private HashMap<String, Object> AppConfigInfo;
     //endregion
 
     //region *** singleton pattern ***
@@ -130,6 +128,7 @@ public class HomageServer extends Server {
         urlIDs.add(R.string.url_view_story);
         urlIDs.add(R.string.url_share_remake);
         urlIDs.add(R.string.url_update_push_token);
+        urlIDs.add(R.string.url_additional_config);
 
         super.initURLSCache(urlIDs);
 
@@ -499,14 +498,16 @@ public class HomageServer extends Server {
 
     // *** Analytics ***
 
-  public void reportRemakeShareForUser (String remakeID, String userID, int shareMethod)
+  public void reportRemakeShareForUser (String shareID, String remakeID, String userID, int shareMethod , String shareLink)
   {
       if (shouldBlockServerAnalytics()) return;
       Log.v(TAG, String.format("Reporting remake: %s user: %s" , remakeID , userID));
       HashMap<String,String> params = new HashMap<String, String>();
+      params.put("share_id", shareID);
       params.put("user_id", userID);
       params.put("remake_id", remakeID);
       params.put("share_method", String.format("%d" ,shareMethod));
+      params.put("share_link" , shareLink);
 
       super.POST(R.string.url_share_remake, params, INTENT_REMAKE_SHARE, null, null);
   }
@@ -582,7 +583,47 @@ public class HomageServer extends Server {
         HashMap<String,String> params = new HashMap<String, String>();
         params.put("session_id", sessionID);
         params.put("user_id", userID);
-        super.POST(R.string.url_session_update, params, INTENT_USER_UPDATE_SESSION, null, null);
+        super.POST(R.string.url_session_update,
+                params, INTENT_USER_UPDATE_SESSION, null, null);
     }
     // end region
+
+    // *** - Region get app configuration from the server
+    public void LoadAdditionalConfig() {
+        Log.v(TAG, String.format("Getting app configuration from server"));
+
+        /*super.GET(
+                R.string.url_existing_remake,
+                suffix,
+                null,
+                INTENT_REMAKE,
+                null,
+                new RemakeParser()
+        );*/
+
+
+        super.GET(
+                R.string.url_additional_config,
+                null,
+                null,
+                INTENT_APP_CONFIG_FROM_SERVER,
+                null,
+                new AppConfigParser()
+        );
+
+    }
+
+    public void updateAppConfiguration(HashMap<String, Object> info)
+    {
+        AppConfigInfo = info;
+    }
+
+    public String getShareLinkPrefix()
+    {
+        String shareLinkPrefix = AppConfigInfo.get("share_link_prefix").toString();
+        return shareLinkPrefix;
+    }
+
+    //end region
 }
+

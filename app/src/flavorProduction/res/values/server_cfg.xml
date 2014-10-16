@@ -43,5 +43,6 @@
     <string name="url_android_pause">user/session_pause</string>
     <string name="url_android_resume">user/session_resume</string>
     <string name="url_update_push_token">user/push_token</string>
+    <string name="url_additional_config">config</string>
 
 </resources>
