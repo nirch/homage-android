@@ -107,7 +107,6 @@ public class SettingsActivity extends PreferenceActivity {
         AQuery aq = new AQuery(actionBar.getCustomView());
         aq.id(R.id.navButton).visibility(View.GONE);
         aq.id(R.id.appTitle).text(R.string.settings_title);
-        aq.id(R.id.appTitleIcon).image(R.drawable.settings_icon);
         actionBar.setHomeButtonEnabled(false);
     }
 

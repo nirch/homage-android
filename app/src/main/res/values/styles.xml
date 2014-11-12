@@ -1,9 +1,15 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo">
+    <style name="AppTheme" parent="Theme.Base.AppCompat">
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
         <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
+        <item name="android:actionBarStyle">@style/HomageActionBar</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="HomageActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
     <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
@@ -170,6 +176,14 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@null</item>
         <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="storiesCellText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">17dp</item>
     </style>
 
 </resources>

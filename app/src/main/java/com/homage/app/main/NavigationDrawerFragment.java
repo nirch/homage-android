@@ -169,7 +169,7 @@ public class NavigationDrawerFragment extends Fragment {
                     configureLoginRow(rowView);
                     break;
                 default:
-                    rowView = inflater.inflate(R.layout.list_row_option, mDrawerListView, false);
+                    rowView = inflater.inflate(R.layout.list_row_nav, mDrawerListView, false);
             }
             return rowView;
         }
@@ -183,6 +183,7 @@ public class NavigationDrawerFragment extends Fragment {
                     String option = (String)getItem(i);
                     AQuery aq = new AQuery(rowView);
                     aq.id(R.id.textView).text(option);
+                    aq.id(R.id.navOptionIcon).image(navIconIDByIndex(i));
             }
         }
 
@@ -191,6 +192,21 @@ public class NavigationDrawerFragment extends Fragment {
             return false;
         }
     };
+
+    private int navIconIDByIndex(int i) {
+        switch (i) {
+            case 1:
+                return R.drawable.nav_icon_stories;
+            case 2:
+                return R.drawable.nav_icon_my_stories;
+            case 3:
+                return R.drawable.nav_icon_settings;
+            case 4:
+                return R.drawable.nav_icon_howto;
+            default:
+                return R.drawable.nav_icon_stories;
+        }
+    }
 
     public void configureLoginRow(View rowView) {
         User user = User.getCurrent();

@@ -127,6 +127,13 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
                         ResultCode.MOVIE_MARKED_BY_USER_FOR_CREATION.getValue()
                 );
 
+                // Create movie
+                HashMap props = new HashMap<String,String>();
+                props.put("story" , remake.getStory().name);
+                props.put("remake_id" , remake.getOID());
+                HMixPanel.sh().track("RECreateMovie",props);
+
+                // Dismiss
                 finish();
 
                 activity.overridePendingTransition(

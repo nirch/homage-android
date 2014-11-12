@@ -28,12 +28,10 @@ package com.homage.app.recorder;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaRecorder;
-import android.opengl.GLSurfaceView;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
@@ -51,7 +49,6 @@ import com.homage.app.main.HomageApplication;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 public class CameraManager {
@@ -75,9 +72,13 @@ public class CameraManager {
     // Recording
     MediaRecorder mediaRecorder;
     boolean recorderUseMediaCodecWhenAvailable;
-    GLSurfaceView mGLView;
-    CameraSurfaceRenderer mRenderer;
+
+
+    // Preview
+    FrameLayout previewContainer;
     public CameraPreview preview;
+    boolean previewInitialized;
+    boolean previewPaused;
 
     //region *** singleton pattern ***
     private static CameraManager instance = new CameraManager();
@@ -111,7 +112,14 @@ public class CameraManager {
         defaultOutputWidth = res.getInteger(R.integer.recorderMediaCodecPreferredOutputWidth);
         defaultOutputBitRate = res.getInteger(R.integer.recorderMediaCodecPreferredOutputBitRate);
 
+        // Currently only false is supported. GL Surface view support deprecated.
         cameraPreviewUsesGLSurfaceView = res.getBoolean(R.bool.cameraPreviewUsesGLSurfaceView);
+        if (cameraPreviewUsesGLSurfaceView) {
+            throw new RuntimeException("cameraPreviewUsesGLSurfaceView support deprecated");
+        }
+
+        previewInitialized = false;
+        previewPaused = false;
     }
 
     public int getOutputPreferredWidth() {
@@ -122,20 +130,52 @@ public class CameraManager {
         return defaultOutputBitRate;
     }
 
-    public void storeGLViewAndRenderer(GLSurfaceView glView, CameraSurfaceRenderer renderer) {
-        this.mGLView = glView;
-        this.mRenderer = renderer;
-    }
-
     public boolean previewUsesGLSurfaceView() {
         return cameraPreviewUsesGLSurfaceView;
     }
 
     public CameraPreview startCameraPreviewInView(Context context, FrameLayout previewContainer) {
+        // The preview container
+        this.previewContainer = previewContainer;
+
+        // Create a new CameraPreview
         CameraPreview cameraPreview = new CameraPreview(context);
         cameraPreview.setZOrderOnTop(false);
         preview = cameraPreview;
+
+        // Add the preview as a subview of the preview container and return it.
+        previewContainer.addView(preview);
+        previewInitialized = true;
         return cameraPreview;
+    }
+
+    public void cleanCameraPreview() {
+        try {
+            preview.stop();
+        } catch (Exception e) {}
+
+        try {
+            previewContainer.removeAllViewsInLayout();
+        } catch (Exception e) {}
+
+        preview = null;
+        previewContainer = null;
+        previewInitialized = false;
+        previewPaused = false;
+    }
+
+    public void pauseCameraPreviewIfInitialized() {
+        if (preview == null || !previewInitialized || previewPaused) return;
+        preview.stop();
+        previewContainer.removeAllViewsInLayout();
+        previewPaused = true;
+    }
+
+    public void resumeCameraPreviewIfInitialized() {
+        if (preview == null || !previewInitialized || !previewPaused) return;
+        previewPaused = false;
+        openCamera();
+        startCameraPreviewInView(preview.getContext(), previewContainer);
     }
     //endregion
 
@@ -150,7 +190,6 @@ public class CameraManager {
         Crashlytics.log("openCamera");
 
         if (mCamera != null) {
-            //throw new RuntimeException("camera already initialized");
             return;
         }
 
@@ -261,16 +300,6 @@ public class CameraManager {
         t.setGravity(Gravity.TOP, 0,0);
         t.show();
     }
-
-    public void setCameraPreviewTexture(SurfaceTexture st) {
-        if (mCamera == null) return;
-        try {
-            mCamera.setPreviewTexture(st);
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
-        mCamera.startPreview();
-    }
     //endregion
 
 
@@ -291,12 +320,21 @@ public class CameraManager {
         }
 
         public void surfaceCreated(SurfaceHolder holder) {
-            try {
-                mCamera.setPreviewDisplay(holder);
-                mCamera.startPreview();
-            } catch (IOException e) {
-                Log.d(TAG, "Error setting camera preview: " + e.getMessage());
-            }
+//            Log.d(TAG, "Surface created");
+//            if (mCamera == null) {
+//                // No opened camera.
+//                Log.d(TAG, "Needs to open camera after surface created.");
+//                openCamera();
+//            }
+//            try {
+//                if (mCamera == null) {
+//                    return;
+//                }
+//                mCamera.setPreviewDisplay(holder);
+//                mCamera.startPreview();
+//            } catch (IOException e) {
+//                Log.d(TAG, "Error setting camera preview: " + e.getMessage());
+//            }
         }
 
         public void hide() {
@@ -325,34 +363,34 @@ public class CameraManager {
         }
 
         private void fixPreviewAspectRatio(int containerWidth, int containerHeight) {
-//            // Crop the video to get the correct aspect ratio + cropping effect
-//            // (Homage calls it the 16/9 wysiwyg feature)
-//            Camera.Parameters parameters = camera.getParameters();
-//
-//
-//            Camera.Size previewSize = parameters.getPreviewSize();
-//            int videoWidth = previewSize.width;
-//            int videoHeight = previewSize.height;
-//
-//            float dx = (float)containerWidth / (float)videoWidth;
-//            float dy = (float)containerHeight / (float)videoHeight;
-//
-//            int fixX = (int)((containerHeight/dx)*dy);
-//            int fixY = (int)((containerWidth/dy)*dx);
-//
-//            int paddingX = -(containerWidth - fixY) / 2;
-//            int paddingY = -(containerHeight - fixX) / 2;
-//
-//            Log.d(TAG, String.format("Padding X Y: %d %d", paddingX, paddingY));
-//
-//            if (paddingX<0) {
-//                previewContainer.setPadding(paddingX,0,paddingX,0);
-//            } else if (paddingY<0) {
-//                previewContainer.setPadding(0,paddingY,0,paddingY);
-//            } else {
-//                previewContainer.setPadding(0,0,0,0);
-//            }
-//
+            // Crop the video to get the correct aspect ratio + cropping effect
+            // (Homage calls it the 16/9 wysiwyg feature)
+            Camera.Parameters parameters = mCamera.getParameters();
+
+
+            Camera.Size previewSize = parameters.getPreviewSize();
+            int videoWidth = previewSize.width;
+            int videoHeight = previewSize.height;
+
+            float dx = (float)containerWidth / (float)videoWidth;
+            float dy = (float)containerHeight / (float)videoHeight;
+
+            int fixX = (int)((containerHeight/dx)*dy);
+            int fixY = (int)((containerWidth/dy)*dx);
+
+            int paddingX = -(containerWidth - fixY) / 2;
+            int paddingY = -(containerHeight - fixX) / 2;
+
+            Log.d(TAG, String.format("Padding X Y: %d %d", paddingX, paddingY));
+
+            if (paddingX<0) {
+                previewContainer.setPadding(paddingX,0,paddingX,0);
+            } else if (paddingY<0) {
+                previewContainer.setPadding(0,paddingY,0,paddingY);
+            } else {
+                previewContainer.setPadding(0,0,0,0);
+            }
+
         }
 
         public void stop() {
@@ -499,7 +537,7 @@ The Camera Manager will decide on which method to use based on API and app confi
         if (chosenRecordingMethod == RECORDING_METHOD_MEDIA_RECORDER) {
             startRecordingWithMediaRecorder();
         } else if (chosenRecordingMethod == RECORDING_METHOD_MEDIA_CODEC) {
-            startRecordingWithMediaCodec();
+            throw new RuntimeException("Unimplemented recording method");
         } else {
             recordingListener.recordingInfo(RECORDING_FAILED_TO_START, null, null);
         }
@@ -507,7 +545,7 @@ The Camera Manager will decide on which method to use based on API and app confi
 
 
     public void sendStopRecordingMessageToMainThread() {
-        Context context = mGLView.getContext();
+        Context context = preview.getContext();
         Handler mainHandler = new Handler(context.getMainLooper());
         mainHandler.post(new Runnable() {
             @Override
@@ -527,7 +565,7 @@ The Camera Manager will decide on which method to use based on API and app confi
         if (chosenRecordingMethod == RECORDING_METHOD_MEDIA_RECORDER) {
             stopRecordingWithMediaRecorder();
         } else if (chosenRecordingMethod == RECORDING_METHOD_MEDIA_CODEC) {
-            stopRecordingWithMediaCodec();
+            throw new RuntimeException("Unimplemented recording method");
         } else {
             recordingListener.recordingInfo(RECORDING_FAILED_TO_START, null, null);
         }
@@ -550,7 +588,7 @@ The Camera Manager will decide on which method to use based on API and app confi
     }
 
     public void sendFinishedRecordingMessageToMainThread(final File outputFile) {
-        Context context = mGLView.getContext();
+        Context context = preview.getContext();
         Handler mainHandler = new Handler(context.getMainLooper());
         mainHandler.post(new Runnable() {
             @Override
@@ -562,7 +600,7 @@ The Camera Manager will decide on which method to use based on API and app confi
     }
 
     public void sendErrorInRecordingMessageToMainThread() {
-        Context context = mGLView.getContext();
+        Context context = preview.getContext();
         Handler mainHandler = new Handler(context.getMainLooper());
         mainHandler.post(new Runnable() {
             @Override
@@ -744,6 +782,8 @@ The Camera Manager will decide on which method to use based on API and app confi
             mediaRecorder.stop();
         } catch (IllegalStateException e) {
             Log.e(TAG, "IllegalStateException stopping MediaRecorder", e);
+        } catch (RuntimeException e) {
+            Log.e(TAG, "failed stopping recording with media recorder.");
         }
         releaseMediaRecorder();
         mCamera.lock();
@@ -761,14 +801,20 @@ The Camera Manager will decide on which method to use based on API and app confi
             mediaRecorder.stop();
         } catch (IllegalStateException e) {
             Log.e(TAG, "IllegalStateException stopping MediaRecorder", e);
+        } catch (RuntimeException e) {
+            Log.e(TAG, "failed to cancel recording with media recorder.");
         }
         releaseMediaRecorder();
         mCamera.lock();
         isRecording = false;
 
-        Camera.Parameters parameters = mCamera.getParameters();
-        whileUserInteractionCameraSettings(parameters);
-        mCamera.setParameters(parameters);
+        try {
+            Camera.Parameters parameters = mCamera.getParameters();
+            whileUserInteractionCameraSettings(parameters);
+            mCamera.setParameters(parameters);
+        } catch (Exception e) {
+            Log.e(TAG, "failed releasing camera");
+        }
 
         recordingListener.recordingInfo(RECORDING_CANCELED, null, null);
     }
@@ -794,6 +840,10 @@ The Camera Manager will decide on which method to use based on API and app confi
     public void releaseMediaRecorder(){
         if (mediaRecorder != null) {
             // clear recorder configuration
+            try {
+                mediaRecorder.stop();
+            } catch (Exception e) {}
+
             mediaRecorder.reset();
             // release the recorder object
             mediaRecorder.release();
@@ -807,40 +857,4 @@ The Camera Manager will decide on which method to use based on API and app confi
         }
     }
     //endregion
-
-    //region *** MediaCodec + Muxer recording ***
-    private void startRecordingWithMediaCodec() {
-        if (isRecording) {
-            Log.e(TAG, "startRecordingWithMediaCodec called in wrong state. Already recording. Ignored.");
-            return;
-        }
-
-        Log.d(TAG, "Will start recording using MediaCodec");
-        isRecording = true;
-        recordingListener.recordingInfo(RECORDING_STARTED, null, null);
-        mRenderer.setMaxDuration(duration);
-        mGLView.queueEvent(new Runnable() {
-            @Override public void run() {
-                // notify the renderer that we want to change the encoder's state
-                mRenderer.changeRecordingState(isRecording);
-            }
-        });
-    }
-
-    private void stopRecordingWithMediaCodec() {
-        if (!isRecording) {
-            Log.e(TAG, "stopRecordingWithMediaCodec called in wrong state. Not currently recording. Ignored.");
-            return;
-        }
-
-        isRecording = false;
-        mGLView.queueEvent(new Runnable() {
-            @Override public void run() {
-            // notify the renderer that we want to change the encoder's state
-            mRenderer.changeRecordingState(isRecording);
-            }
-        });
-    }
-    //endregion
-
 }

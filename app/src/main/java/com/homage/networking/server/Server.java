@@ -35,7 +35,9 @@ import android.util.Log;
 
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
+import com.homage.model.User;
 import com.homage.networking.parsers.Parser;
+import com.homage.networking.uploader.NetworkStateReceiver;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -336,7 +338,13 @@ abstract public class Server {
 
             URI uri = new URI(url);
             request.setURI(uri);
-            request.setHeader("User-Agent", Server.this.userAgent);;
+            request.setHeader("User-Agent", Server.this.userAgent);
+
+            // Add more headers with info about app.
+            HomageApplication app = HomageApplication.getInstance();
+            request.setHeader("APP_CLIENT_TYPE", "Android");
+            request.setHeader("APP_VERSION_INFO", app.getVersionName());
+            request.setHeader("USER_ID", app.getCurrentUserID());
             return request;
         }
 

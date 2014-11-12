@@ -7,12 +7,11 @@
     android:layout_height="fill_parent">
 
     <!-- Background dark overlay glass image -->
-    <ImageView
+    <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:scaleType="fitXY"
-        android:src="@drawable/blurring_glass"
-        android:alpha="0.8" />
+        android:background="@color/homage_dark_transparent_overlay"
+        android:alpha="0.9"></FrameLayout>
 
     <!-- An icon at the top -->
     <ImageView
@@ -59,6 +58,7 @@
             android:id="@+id/overlaySeeOopsNoRetakeButton"
             style="@style/HomageImpactButton"
             android:drawableStart="@drawable/icon_small_x_black"
+            android:drawableLeft="@drawable/icon_small_x_black"
             android:text="@string/button_oops_nope"
             />
         <View android:layout_width="1dp" android:layout_height="fill_parent" android:layout_weight="0" />
@@ -66,6 +66,7 @@
             android:id="@+id/overlayConfirmRetakeSceneButton"
             style="@style/HomageImpactButton"
             android:drawableStart="@drawable/icon_small_retake_scene_black"
+            android:drawableLeft="@drawable/icon_small_retake_scene_black"
             android:text="@string/button_yeah_start_rolling"
             />
         <View android:layout_width="1dp" android:layout_height="fill_parent" android:layout_weight="0" />
@@ -73,6 +74,7 @@
             android:id="@+id/overlaySeePreview2Button"
             style="@style/HomageImpactButton"
             android:drawableStart="@drawable/icon_small_preview_black"
+            android:drawableLeft="@drawable/icon_small_preview_black"
             android:text="@string/button_can_i_see_a_preview"
             />
     </LinearLayout>

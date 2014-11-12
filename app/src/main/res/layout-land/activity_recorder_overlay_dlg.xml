@@ -10,8 +10,8 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:scaleType="fitXY"
-        android:src="@drawable/blurring_glass"
-        android:alpha="0.8" />
+        android:background="@color/homage_darkest_transparent_overlay"
+        android:alpha="0.75" />
 
     <!-- An icon at the top -->
     <ImageView

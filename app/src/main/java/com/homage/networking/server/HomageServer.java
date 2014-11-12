@@ -90,7 +90,9 @@ public class HomageServer extends Server {
     public boolean prefetchTopRemakes = false;
     public int topRemakesCount = 10;
     private boolean serverAnalyticsOnDebug;
+    private boolean mpAnalyticsOnDebug;
     private boolean isDebug;
+    private boolean isProductionServer;
     //endregion
 
     //region *** singleton pattern ***
@@ -143,15 +145,23 @@ public class HomageServer extends Server {
         // More settings
         Resources res = context.getResources();
         prefetchTopRemakes = res.getBoolean(R.bool.prefetch_top_remakes);
-        serverAnalyticsOnDebug = res.getBoolean(R.bool.server_analytics_on_debug);
+        serverAnalyticsOnDebug = res.getBoolean(R.bool.homage_server_analytics_on_debug);
+        mpAnalyticsOnDebug = res.getBoolean(R.bool.mp_analytics_on_debug);
+        isProductionServer = res.getBoolean(R.bool.is_production_server);
         topRemakesCount = res.getInteger(R.integer.top_remakes_count);
         isDebug = BuildConfig.DEBUG;
     }
     //endregion
 
-    private boolean shouldBlockServerAnalytics() {
+    public boolean shouldBlockServerAnalytics() {
         if (isDebug && !serverAnalyticsOnDebug) return true;
         return false;
+    }
+
+    public boolean shouldBlockMPAnalytics() {
+        if (isProductionServer) return false;
+        if (mpAnalyticsOnDebug) return false;
+        return true;
     }
 
     //region *** Stories ***

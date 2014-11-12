@@ -28,8 +28,10 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
@@ -57,6 +59,8 @@ public class StoriesListFragment extends Fragment {
     boolean allowAppearAnimations = true;
 
     static boolean createdOnce = false;
+
+    int rowHeight;
 
     BaseAdapter adapter = new BaseAdapter() {
         @Override
@@ -88,8 +92,14 @@ public class StoriesListFragment extends Fragment {
                 Story story = (Story)getItem(i);
                 AQuery aq = new AQuery(rowView);
                 aq.id(R.id.storyName).text(story.name);
-                aq.id(R.id.storyRemakesCount).text(String.format("#%d", story.remakesNum));
+                aq.id(R.id.storyRemakesCount).text(String.format("%d", story.remakesNum));
 
+                // Maintain 16/9 aspect ratio
+                AbsListView.LayoutParams p = (AbsListView.LayoutParams)rowView.getLayoutParams();
+                p.height = rowHeight;
+                rowView.setLayoutParams(p);
+
+                // Animations
                 if (allowAppearAnimations) {
                     aq.id(R.id.storyImage).image(story.thumbnail, true, true, 256, R.drawable.glass_dark, null, R.anim.animation_fadein);
                 } else {
@@ -127,6 +137,10 @@ public class StoriesListFragment extends Fragment {
     }
 
     private void initialize() {
+        // Aspect Ratio
+        MainActivity activity = (MainActivity)getActivity();
+        rowHeight = (activity.screenWidth * 9) / 16;
+
         // AQeury
         aq = new AQuery(rootView);
 

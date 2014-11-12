@@ -54,7 +54,6 @@ public class TextReaderActivity extends Activity {
         actionBar.setCustomView(R.layout.actionbar_view);
         AQuery aq = new AQuery(actionBar.getCustomView());
         aq.id(R.id.navButton).visibility(View.GONE);
-        aq.id(R.id.appTitleIcon).visibility(View.GONE);
         actionBar.setHomeButtonEnabled(false);
 
         if (titleID>0)

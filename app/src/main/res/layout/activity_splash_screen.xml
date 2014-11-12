@@ -6,43 +6,8 @@
     <ImageView android:id="@+id/splashImage"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:src="@drawable/background"
         android:scaleType="centerCrop"
-        />
-
-    <ImageView
-        android:layout_width="170dp"
-        android:layout_height="wrap_content"
-        android:src="@drawable/homage"
-        android:layout_margin="35dp"
-        />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:background="@color/homage_darkest_transparent_overlay"
-        android:textColor="@color/homage_text"
-        android:textSize="35dp"
-        android:gravity="center"
-        android:text="What's YOUR"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginBottom="20dp"
-        android:layout_above="@+id/storyTitleText"
-        />
-
-    <TextView android:id="@+id/storyTitleText"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:background="@color/homage_darkest_transparent_overlay"
-        android:textColor="@color/homage_text"
-        android:textSize="35dp"
-        android:gravity="center"
-        android:text="Story?"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginBottom="30dp"
-        android:layout_alignParentBottom="true"
+        android:src="@drawable/splash"
         />
 
 </RelativeLayout>

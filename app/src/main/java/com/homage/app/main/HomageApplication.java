@@ -274,6 +274,15 @@ public class HomageApplication extends SugarApp {
         return versionName;
     }
 
+    public String getCurrentUserID() {
+        String userID;
+        try {
+            userID = User.getCurrent().getOID();
+        } catch (Exception e) {
+            userID = "";
+        }
+        return userID;
+    }
 
     private class HomageUnhandledExceptionHandler implements Thread.UncaughtExceptionHandler {
         /*

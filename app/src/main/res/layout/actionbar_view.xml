@@ -2,9 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/action_bar_layout"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:background="@drawable/actionbar_bg"
+    android:layout_height="?android:attr/actionBarSize"
     android:orientation="vertical" >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="@color/homage_borders"
+        android:layout_alignParentBottom="true"
+        />
 
     <ImageButton android:id="@+id/navButton"
         android:layout_width="60dp"
@@ -21,18 +27,9 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:gravity="center"
-        android:text="@string/app_main_title"
-        android:textColor="#ffffff"
-        android:textSize="23dp" />
-
-    <ImageView android:id="@+id/appTitleIcon"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_centerVertical="true"
-        android:layout_alignLeft="@+id/appTitle"
-        android:layout_marginLeft="-35dp"
-        android:src="@drawable/icon_scene_description"
-        />
+        android:text="@string/nav_item_1_stories"
+        android:textColor="@color/homage_impact"
+        android:textSize="18dp" />
 
 
     <ImageButton android:id="@+id/refreshButton"
@@ -41,7 +38,7 @@
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:background="@android:color/transparent"
-        android:src="@drawable/selector_refresh_white"
+        android:src="@drawable/selector_refresh"
         android:visibility="gone"
         />
 

@@ -208,8 +208,6 @@ public class LoginActivity extends Activity {
         if (user.getOID().equals(User.getCurrent().getOID().toString())) {
             HashMap props = new HashMap<String,String>();
             props.put("login_method" , Integer.toString(HMSameConnect));
-            HMixPanel.sh().track("UserLogin",props);
-            return;
         }
 
         HashMap props = new HashMap<String,String>();

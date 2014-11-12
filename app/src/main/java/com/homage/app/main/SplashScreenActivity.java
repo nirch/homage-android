@@ -35,9 +35,19 @@ public class SplashScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         if (!BuildConfig.DEBUG) {
+
+            //
+            // Production application
+            //
             Log.d(TAG, "Will start crashlytics");
             Crashlytics.start(this);
+
         } else {
+
+            //
+            // Debug application
+            //
+
             Log.d(TAG, "Will not start crashlytics");
         }
 

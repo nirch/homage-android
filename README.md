@@ -22,8 +22,11 @@ How to start working with this project, using android studio:
 
 2) download facebook.zip dependency and unzip it under homage-android.
 
-3) start android studio and choose "open project" (choose path).
+3) start android studio and choose "import project" (choose path).
 
 4) Sync gradle files. Be patient while syncing+building.
+Important remark: project currently uses gradle 1.12
+Download required gradle version from http://www.gradle.org/downloads
 
 5) Build and run.
+

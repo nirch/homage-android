@@ -6,7 +6,7 @@
     android:choiceMode="singleChoice"
     android:divider="@color/homage_option_sep"
     android:dividerHeight="1dp"
-    android:background="@drawable/drawer_bg"
+    android:background="@color/homage_impact"
     tools:context="com.homage.app.main.NavigationDrawerFragment"
     >
 

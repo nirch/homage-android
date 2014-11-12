@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +59,7 @@ public class StoryDetailsFragment extends Fragment {
     public Story story;
     boolean shouldFetchMoreRemakes = false;
     VideoPlayerFragment videoPlayerFragment;
+    int rowHeight;
 
     RemakesAdapter adapter;
 
@@ -121,6 +124,13 @@ public class StoryDetailsFragment extends Fragment {
                 if (rowView == null)
                     rowView = inflater.inflate(R.layout.list_row_remake, remakesGridView, false);
                 final Remake remake = (Remake) getItem(i);
+
+                // Maintain 16/9 aspect ratio
+                AbsListView.LayoutParams p = (AbsListView.LayoutParams)rowView.getLayoutParams();
+                p.height = rowHeight / 2;
+                rowView.setLayoutParams(p);
+
+                // Configure
                 AQuery aq = new AQuery(rowView);
                 aq.id(R.id.remakeImage).image(remake.thumbnailURL, true, true, 256, R.drawable.glass_dark);
                 aq.id(R.id.reportButton).clicked(new View.OnClickListener() {
@@ -161,11 +171,15 @@ public class StoryDetailsFragment extends Fragment {
 
     private void initialize() {
         aq = new AQuery(rootView);
-        //aq.id(R.id.storyImageView).image(story.thumbnail, true, true, 200, R.drawable.glass_dark);
         aq.id(R.id.storyDescription).text(story.description);
 
         User excludedUser = User.getCurrent();
 
+        // Aspect Ratio
+        MainActivity activity = (MainActivity)getActivity();
+        rowHeight = (activity.screenWidth * 9) / 16;
+
+        // Adapter
         adapter = new RemakesAdapter(getActivity(), story.getRemakes(excludedUser));
         remakesGridView = aq.id(R.id.remakesGridView).getGridView();
         remakesGridView.setAdapter(adapter);

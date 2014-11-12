@@ -79,10 +79,11 @@
     <string name="welcome_2_message">USE A SOLID COLOR WALL AS BACKGROUND</string>
 
     <!-- Navigation drawer -->
-    <string name="nav_item_1_stories">stories</string>
-    <string name="nav_item_2_me">me</string>
-    <string name="nav_item_3_settings">settings</string>
-    <string name="nav_item_4_howto">how to</string>
+    <string name="nav_item_1_stories">STORIES</string>
+    <string name="nav_item_2_me">MY STORIES</string>
+    <string name="nav_item_3_settings">SETTINGS</string>
+    <string name="nav_item_4_howto">HOW TO</string>
+    <string name="nav_item_5_share_app">SHARE APP</string>
     <string name="nav_title_hello_user">Hello Guest</string>
     <string name="nav_join_button">join now</string>
 

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="60dp"
     android:orientation="vertical"
-    android:background="@drawable/selector_option_bg"
+    android:background="@color/homage_black"
     >
 
     <TextView android:id="@+id/loggedInUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/homage_impact"
-        android:textSize="20dp"
+        android:textSize="17dp"
         android:paddingLeft="10dp"
         android:layout_margin="10dp"
         android:text="@string/placeholder_hello_guest"
@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/homage_text"
-        android:textSize="17dp"
+        android:textSize="14dp"
         android:paddingLeft="10dp"
         android:layout_margin="10dp"
         android:text="@string/placeholder_join_now"
@@ -35,8 +35,8 @@
         />
 
     <ImageView android:id="@+id/profilePicture"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"

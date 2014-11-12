@@ -7,7 +7,7 @@
     </item>
     <item>
         <bitmap
-            android:src="@drawable/nav_button"
+            android:src="@drawable/nav_bar_nav"
             android:gravity="center" />
     </item>
 </selector>

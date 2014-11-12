@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,10 +15,12 @@ import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
+import android.view.Display;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -51,6 +54,8 @@ public class MyStoriesFragment extends Fragment {
     AQuery aq;
 
     private User user;
+
+    int rowHeight;
 
     public static MyStoriesFragment newInstance(int sectionNumber, User user) {
         MyStoriesFragment fragment;
@@ -130,6 +135,11 @@ public class MyStoriesFragment extends Fragment {
 
                 AQuery aq = new AQuery(rowView);
                 aq.id(R.id.storyName).text(story.name);
+
+                // Maintain 16/9 aspect ratio
+                AbsListView.LayoutParams p = (AbsListView.LayoutParams)rowView.getLayoutParams();
+                p.height = rowHeight;
+                rowView.setLayoutParams(p);
 
                 if (i > 3) {
                     aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 256, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
@@ -251,6 +261,11 @@ public class MyStoriesFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
+        // Aspect Ratio
+        MainActivity activity = (MainActivity)getActivity();
+        rowHeight = (activity.screenWidth * 9) / 16;
+
+        // Inflate layout
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_my_stories, container, false);
         aq = new AQuery(rootView);

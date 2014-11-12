@@ -27,6 +27,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -40,6 +41,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -133,6 +135,9 @@ public class MainActivity extends ActionBarActivity
     AtomicInteger msgId = new AtomicInteger();
     Context context;
 
+    public int screenWidth;
+    public int screenHeight;
+
     // Sharing
     HashMap<String, String> shareMimeTypes = new HashMap<String, String>();
     HashMap<String, Integer> shareMethods = new HashMap<String, Integer>();
@@ -146,6 +151,13 @@ public class MainActivity extends ActionBarActivity
         Crashlytics.log("onCreate MainActivity. Loaded content view.");
 
         context = getApplicationContext();
+
+        // Screen info (portrait assumed)
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        screenWidth = Math.min(size.x, size.y);
+        screenHeight = Math.max(size.x, size.y);
 
         View decorView = getWindow().getDecorView();
         //int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
@@ -695,7 +707,7 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         storyDetailsFragment = StoryDetailsFragment.newInstance(SECTION_STORY_DETAILS, story);
         fragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout)
+                .setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out)
                 .replace(R.id.container, storyDetailsFragment)
                 .commitAllowingStateLoss();
     }
@@ -737,7 +749,7 @@ public class MainActivity extends ActionBarActivity
 
     public void showHowTo() {
         Intent myIntent = new Intent(this, FullScreenVideoPlayerActivity.class);
-        Uri videoURL = Uri.parse("android.resource://com.homage.app/raw/intro_video");
+        Uri videoURL = Uri.parse("android.resource://com.homage.app/raw/howto_video");
         myIntent.putExtra(VideoPlayerFragment.K_FILE_URL, videoURL.toString());
         myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
         myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, true);

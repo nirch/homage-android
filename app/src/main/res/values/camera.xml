@@ -2,7 +2,7 @@
 <resources>
 
     <!-- video preview -->
-    <bool name="cameraPreviewUsesGLSurfaceView">true</bool> <!-- false not implemented yet in this version. Do not use!  -->
+    <bool name="cameraPreviewUsesGLSurfaceView">false</bool> <!-- true is deprecated. Do not use!  -->
 
     <!-- Camera settings -->
     <integer name="cameraBackPreferredRecodingWidth">640</integer>
@@ -14,7 +14,7 @@
     <bool name="cameraFrontAllowed">true</bool>
 
     <!-- Video capture -->
-    <bool name="recorderUseMediaCodecWhenAvailable">false</bool>
+    <bool name="recorderUseMediaCodecWhenAvailable">false</bool> <!-- currently only false is supported -->
     <bool name="recorderMediaCodecRecordsAudio">true</bool>
     <integer name="recorderMediaCodecPreferredOutputBitRate">3000000</integer>
     <integer name="recorderMediaCodecPreferredFPS">25000</integer>

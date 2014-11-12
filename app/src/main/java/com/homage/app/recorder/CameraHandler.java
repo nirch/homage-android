@@ -48,9 +48,6 @@ class CameraHandler extends Handler {
         }
 
         switch (what) {
-            case MSG_SET_SURFACE_TEXTURE:
-                activity.handleSetSurfaceTexture((SurfaceTexture) inputMessage.obj);
-                break;
             case MSG_OUTPUTFILE_SET:
                 //String outputFileName = (String)inputMessage.obj;
                 //activity.showOutputFileName(outputFileName);
