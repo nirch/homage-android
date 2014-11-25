@@ -120,6 +120,7 @@ public class RecorderActivity extends Activity
     private AQuery aq;
     private View controlsDrawer;
     private View recordButton;
+    private View warningButton;
     private View recorderFullDetailsContainer;
     private View recorderShortDetailsContainer;
     private ListView scenesListView;
@@ -136,12 +137,15 @@ public class RecorderActivity extends Activity
     protected String outputFile;
 
     // Actions & State
-    private boolean isRecording;
+    public boolean isRecording;
+    public boolean dontShowAgain;
+//    public final static String DONT_SHOW_AGAIN_STRING = "dontshowthisagain";
     private final static int ACTION_DO_NOTHING = 1;
     private final static int ACTION_HANDLE_STATE = 2;
     private final static int ACTION_ADVANCE_STATE = 3;
     private final static int ACTION_ADVANCE_AND_HANDLE_STATE = 4;
     private final static int ACTION_BY_RESULT_CODE = 5;
+    public final static int DONT_SHOW_THIS_AGAIN = 6;
     private RecorderStateMachine stateMachine;
     private Handler counterDown;
     protected int countDown;
@@ -183,6 +187,7 @@ public class RecorderActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CameraManager.sh().SetContext(this);
         viewsInitialized = false;
         inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -204,6 +209,7 @@ public class RecorderActivity extends Activity
         remake = Remake.findByOID(remakeOID);
         story = remake.getStory();
         isRecording = false;
+        dontShowAgain = false;
 
         // Crashlytics logging
         Crashlytics.setString("remakeID", remakeOID);
@@ -228,6 +234,7 @@ public class RecorderActivity extends Activity
         aq = new AQuery(this);
         controlsDrawer = aq.id(R.id.recorderControlsDrawer).getView();
         recordButton = aq.id(R.id.recorderRecordButton).getView();
+        warningButton = aq.id(R.id.warningRecordButton).getView();
         recorderFullDetailsContainer = aq.id(R.id.recorderFullDetailsContainer).getView();
         recorderShortDetailsContainer = aq.id(R.id.recorderShortDetailsContainer).getView();
         scenesListView = aq.id(R.id.scenesListView).getListView();
@@ -253,6 +260,8 @@ public class RecorderActivity extends Activity
 
         // Pushed THE button! (Clicked on the record button)
         aq.id(R.id.recorderRecordButton).clicked(onClickedRecordButton);
+        // Pushed THE button! (Clicked on the record button)
+        aq.id(R.id.warningRecordButton).clicked(onClickedWarningButton);
 
         // Dragging the drawer up and down.
         aq.id(R.id.recorderControlsDrawer).getView().setOnTouchListener(new OnDraggingControlsDrawerListener(this));
@@ -729,6 +738,7 @@ public class RecorderActivity extends Activity
     private void controlsDrawerClosed() {
         if (recordButton.isClickable()) return;
 
+        HideWarningButton();
         recordButton.startAnimation(fadeInAnimation);
         recordButton.setClickable(true);
         recorderFullDetailsContainer.startAnimation(fadeOutAnimation);
@@ -759,6 +769,7 @@ public class RecorderActivity extends Activity
         if (!recordButton.isClickable()) return;
 
         cancelCountingDownToRecording();
+        HideWarningButton();
         recordButton.startAnimation(fadeOutAnimation);
         recordButton.setVisibility(View.GONE);
         recordButton.setClickable(false);
@@ -1538,6 +1549,34 @@ public class RecorderActivity extends Activity
         }
     };
 
+    //Warning stuff
+    private View.OnClickListener onClickedWarningButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (isRecording || dontShowAgain) return;
+            //TODO fixup so when clicked opens fragment of warning
+            Intent i = new Intent(RecorderActivity.this,WarningOverlayDlgActivity.class);
+            startActivityForResult(i, DONT_SHOW_THIS_AGAIN);
+        }
+    };
+
+    public void ShowWarningButton(){
+        if(!warningButton.isShown() && !dontShowAgain) {
+            warningButton.startAnimation(fadeInAnimation);
+            warningButton.setClickable(true);
+        }
+    }
+
+    public void HideWarningButton(){
+        if(warningButton.isShown()) {
+            warningButton.startAnimation(fadeOutAnimation);
+            warningButton.setVisibility(View.GONE);
+            warningButton.setClickable(false);
+        }
+    }
+
+    //end of warning stuff
+
     private View.OnClickListener onClickedRecorderDismissButton = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -1690,6 +1729,13 @@ public class RecorderActivity extends Activity
                         throw new RecorderException(String.format("Unimplemented result code for recorder %d", resultCode));
                     }
                     break;
+                case (DONT_SHOW_THIS_AGAIN) : {
+                    if (resultCode == Activity.RESULT_CANCELED) {
+                            dontShowAgain = true;
+                            HideWarningButton();
+                    }
+                    break;
+                }
                 default:
                     throw new RecorderException(String.format("Unimplemented request code for recorder %d", requestCode));
             }

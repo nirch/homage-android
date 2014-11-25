@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 
     <!-- GCM -->
@@ -144,6 +145,13 @@
         -->
         <activity
             android:name=".recorder.RecorderOverlayDlgActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.Transparent"
+            >
+        </activity>
+
+        <activity
+            android:name=".recorder.WarningOverlayDlgActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.Transparent"
             >

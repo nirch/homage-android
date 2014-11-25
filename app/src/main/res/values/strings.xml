@@ -32,6 +32,8 @@
     <string name="button_yeah_start_rolling">YEAH, START ROLLING</string>
 
     <string name="title_great_job">GREAT JOB!</string>
+    <string name="title_improper_background">IMPROPER BACKGROUND</string>
+    <string name="title_improper_msg">For optimal results, use a solid color wall</string>
 
     <string name="back_camera_title">Back Camera</string>
     <string name="front_camera_title">Selfie</string>
@@ -90,6 +92,8 @@
     <!-- Action buttons -->
     <string name="action_button_lets_shot">LETS SHOOT!</string>
     <string name="action_button_lets_create">LETS CREATE</string>
+    <string name="action_button_ok">Ok, got it</string>
+    <string name="action_button_dont_show_again">Don\'t show this again</string>
 
     <!-- Rendering -->
     <string name="rendering_progress_preparing">Preparing your movie: %s</string>

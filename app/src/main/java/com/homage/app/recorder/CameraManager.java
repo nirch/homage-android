@@ -67,11 +67,16 @@ public class CameraManager {
     private boolean cameraPreviewUsesGLSurfaceView;
     public int mCameraPreviewWidth;
     public int mCameraPreviewHeight;
+    int defaultEveryNthPreviewFrame = 10;
+    int everyNthPreviewFrame = 10;
     Camera mCamera;
-
+    BackgroundDetection backgroundDetection;
+    Context context;
     // Recording
     MediaRecorder mediaRecorder;
     boolean recorderUseMediaCodecWhenAvailable;
+    Context recorderContext;
+    RecorderActivity recorderActivity;
 
 
     // Preview
@@ -79,6 +84,11 @@ public class CameraManager {
     public CameraPreview preview;
     boolean previewInitialized;
     boolean previewPaused;
+
+    public void SetContext(Context context){
+        recorderContext = context;
+        recorderActivity = ((RecorderActivity)context);
+    }
 
     //region *** singleton pattern ***
     private static CameraManager instance = new CameraManager();
@@ -100,7 +110,6 @@ public class CameraManager {
     //region *** initializations ***
     private void init() {
         Resources res = HomageApplication.getContext().getResources();
-
         // Get defaults set in camera.xml
         defaultBackWidth = res.getInteger(R.integer.cameraBackPreferredRecodingWidth);
         defaultBackHeight = res.getInteger(R.integer.cameraBackPreferredRecodingHeight);
@@ -305,7 +314,7 @@ public class CameraManager {
 
 
     /** Camera preview class */
-    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
         private SurfaceHolder mHolder;
         private Camera mCamera;
 
@@ -320,6 +329,11 @@ public class CameraManager {
         }
 
         public void surfaceCreated(SurfaceHolder holder) {
+            //Start Background Detection
+
+            if(!recorderActivity.isRecording) {
+                backgroundDetection = new BackgroundDetection(recorderContext, mCamera);
+            }
 //            Log.d(TAG, "Surface created");
 //            if (mCamera == null) {
 //                // No opened camera.
@@ -360,6 +374,23 @@ public class CameraManager {
             Log.d(TAG, String.format("Surface of the cam preview changed. %d %d", w, h));
             fixPreviewAspectRatio(w, h);
             restartPreview();
+        }
+
+        @Override
+        public void onPreviewFrame(byte[] data, Camera camera) {
+            //catch only tenth frame
+            if(!recorderActivity.isRecording) {
+                if (everyNthPreviewFrame != 0) {
+                    everyNthPreviewFrame--;
+                } else {
+                                 backgroundDetection.RunTestOnFrame(data, camera);
+                    everyNthPreviewFrame = defaultEveryNthPreviewFrame;
+                }
+            }
+            else{
+                recorderActivity.HideWarningButton();
+            }
+
         }
 
         private void fixPreviewAspectRatio(int containerWidth, int containerHeight) {
@@ -417,6 +448,7 @@ public class CameraManager {
 
             try {
                 mCamera.setPreviewDisplay(mHolder);
+                mCamera.setPreviewCallback(this);
                 mCamera.startPreview();
             } catch (Exception e){
                 Log.d(TAG, "Error starting camera preview: " + e.getMessage());

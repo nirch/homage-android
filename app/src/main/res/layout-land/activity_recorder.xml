@@ -342,6 +342,7 @@
             tools:ignore="ContentDescription" />
 
 
+
         <!-- Recording button -->
         <ImageButton android:id="@+id/recorderRecordButton"
             android:layout_width="80dp"
@@ -349,6 +350,17 @@
             android:background="@android:color/transparent"
             android:src="@drawable/selector_recorder_record_button"
             android:layout_centerHorizontal="true"
+            />
+
+        <!-- Warning button -->
+        <ImageButton android:id="@+id/warningRecordButton"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_toRightOf="@id/recorderRecordButton"
+            android:background="@android:color/transparent"
+            android:src="@drawable/selector_warning_button"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="-27dp"
             />
 
         <!-- Label for counting down on the recording button -->
