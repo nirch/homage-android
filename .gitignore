@@ -30,17 +30,6 @@
 .idea/scopes/scope_settings.xml
 .idea/vcs.xml
 .idea/workspace.xml
-app/app.iml
-app/libs/matting.jar
-app/libs/vimapi.jar
-app/src/main/java/com/homage/app/recorder/BackgroundDetection.java
-app/src/main/java/com/homage/app/recorder/WarningOverlayDlgActivity.java
-app/src/main/res/drawable-xhdpi/selector_warning_button.xml
-app/src/main/res/drawable-xhdpi/small_close_icon.png
-app/src/main/res/drawable-xhdpi/warning_button_icon.png
-app/src/main/res/drawable-xhdpi/warning_button_icon_pressed.png
-app/src/main/res/drawable-xhdpi/warning_explanation.png
-app/src/main/res/layout-land/activity_warning_overlay_dlg.xml
 build/intermediates/dex-cache/cache.xml
 build/intermediates/model_data.bin
 facebook/.classpath

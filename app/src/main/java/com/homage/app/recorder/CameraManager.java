@@ -28,6 +28,7 @@ package com.homage.app.recorder;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaMetadataRetriever;
@@ -67,8 +68,8 @@ public class CameraManager {
     private boolean cameraPreviewUsesGLSurfaceView;
     public int mCameraPreviewWidth;
     public int mCameraPreviewHeight;
-    int defaultEveryNthPreviewFrame = 10;
-    int everyNthPreviewFrame = 10;
+    int defaultEveryNthPreviewFrame = 25;
+    int everyNthPreviewFrame = 25;
     Camera mCamera;
     BackgroundDetection backgroundDetection;
     Context context;
@@ -262,7 +263,7 @@ public class CameraManager {
         // impact on frame rate.
         parms.setRecordingHint(true);
 
-
+//        parms.setPreviewFormat(ImageFormat.NV21);
         // leave the frame rate set to default
         mCamera.setParameters(parms);
 
@@ -321,6 +322,9 @@ public class CameraManager {
         public CameraPreview(Context context) {
             super(context);
             mCamera = CameraManager.this.mCamera;
+//            Camera.Parameters cameraparams = mCamera.getParameters(); // WORKS OK
+//            cameraparams.setPreviewFormat(ImageFormat.NV21); // WORKS OK
+//            mCamera.setParameters(cameraparams); // WORKS OK
 
             // Install a SurfaceHolder.Callback so we get notified when the
             // underlying surface is created and destroyed.
@@ -330,25 +334,9 @@ public class CameraManager {
 
         public void surfaceCreated(SurfaceHolder holder) {
             //Start Background Detection
-
             if(!recorderActivity.isRecording) {
                 backgroundDetection = new BackgroundDetection(recorderContext, mCamera);
             }
-//            Log.d(TAG, "Surface created");
-//            if (mCamera == null) {
-//                // No opened camera.
-//                Log.d(TAG, "Needs to open camera after surface created.");
-//                openCamera();
-//            }
-//            try {
-//                if (mCamera == null) {
-//                    return;
-//                }
-//                mCamera.setPreviewDisplay(holder);
-//                mCamera.startPreview();
-//            } catch (IOException e) {
-//                Log.d(TAG, "Error setting camera preview: " + e.getMessage());
-//            }
         }
 
         public void hide() {
@@ -380,11 +368,14 @@ public class CameraManager {
         public void onPreviewFrame(byte[] data, Camera camera) {
             //catch only tenth frame
             if(!recorderActivity.isRecording) {
-                if (everyNthPreviewFrame != 0) {
-                    everyNthPreviewFrame--;
-                } else {
-                                 backgroundDetection.RunTestOnFrame(data, camera);
-                    everyNthPreviewFrame = defaultEveryNthPreviewFrame;
+                if (!recorderActivity.isBackgroundDetectionRunning) {
+                    if (everyNthPreviewFrame != 0) {
+                        everyNthPreviewFrame--;
+                    } else {
+                        recorderActivity.isBackgroundDetectionRunning = true;
+                        everyNthPreviewFrame = defaultEveryNthPreviewFrame;
+                        backgroundDetection.RunTestOnFrame(data, camera);
+                    }
                 }
             }
             else{
@@ -752,6 +743,7 @@ The Camera Manager will decide on which method to use based on API and app confi
         profile.videoBitRate = defaultOutputBitRate;
 
         //whileRecordingCameraSettings(parameters);
+        //parameters.setPreviewFormat(ImageFormat.NV21);
         mCamera.setParameters(parameters);
 
         //
@@ -823,6 +815,7 @@ The Camera Manager will decide on which method to use based on API and app confi
 
         Camera.Parameters parameters = mCamera.getParameters();
         whileUserInteractionCameraSettings(parameters);
+//        parameters.setPreviewFormat(ImageFormat.NV21);
         mCamera.setParameters(parameters);
     }
 
@@ -843,6 +836,7 @@ The Camera Manager will decide on which method to use based on API and app confi
         try {
             Camera.Parameters parameters = mCamera.getParameters();
             whileUserInteractionCameraSettings(parameters);
+//            parameters.setPreviewFormat(ImageFormat.NV21);
             mCamera.setParameters(parameters);
         } catch (Exception e) {
             Log.e(TAG, "failed releasing camera");

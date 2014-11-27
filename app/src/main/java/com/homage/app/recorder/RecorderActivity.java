@@ -52,6 +52,7 @@ import android.widget.Toast;
 import com.android.grafika.AspectFrameLayout;
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
+import com.homage.FileHandler.ContourHandler;
 import com.homage.app.R;
 import com.homage.model.Footage;
 import com.homage.model.Remake;
@@ -139,6 +140,12 @@ public class RecorderActivity extends Activity
     // Actions & State
     public boolean isRecording;
     public boolean dontShowAgain;
+    public boolean isBackgroundDetectionRunning;
+
+
+    //Contour
+    public String contourLocalUrl;
+
 //    public final static String DONT_SHOW_AGAIN_STRING = "dontshowthisagain";
     private final static int ACTION_DO_NOTHING = 1;
     private final static int ACTION_HANDLE_STATE = 2;
@@ -151,6 +158,8 @@ public class RecorderActivity extends Activity
     protected int countDown;
     protected boolean canceledCountDown;
     protected final static int countDownFrom = 3;
+    protected final static int warningCountDownFrom = 5;
+    private int warningCountDown = warningCountDownFrom;
 
     // The possible states of the recorder, handled by the state machine.
     static private enum RecorderState {
@@ -210,6 +219,9 @@ public class RecorderActivity extends Activity
         story = remake.getStory();
         isRecording = false;
         dontShowAgain = false;
+        isBackgroundDetectionRunning = false;
+        ContourHandler ch = new ContourHandler();
+        ch.DownloadContour(this, remake, "/homage/contours/");
 
         // Crashlytics logging
         Crashlytics.setString("remakeID", remakeOID);
@@ -292,7 +304,7 @@ public class RecorderActivity extends Activity
         // Clicked on a scene number in the list of scenes.
         // User tries to select a scene in the list.
         // aq.id(R.id.scenesListView).itemClicked(onClickedSceneItem);
-
+        HideWarningButton();
         //endregion
     }
 
@@ -737,8 +749,6 @@ public class RecorderActivity extends Activity
 
     private void controlsDrawerClosed() {
         if (recordButton.isClickable()) return;
-
-        HideWarningButton();
         recordButton.startAnimation(fadeInAnimation);
         recordButton.setClickable(true);
         recorderFullDetailsContainer.startAnimation(fadeOutAnimation);
@@ -763,13 +773,13 @@ public class RecorderActivity extends Activity
                 cm.resumeCameraPreviewIfInitialized();
             }
         }, 200);
+        HideWarningButton();
     }
 
     private void controlsDrawerOpened() {
         if (!recordButton.isClickable()) return;
 
         cancelCountingDownToRecording();
-        HideWarningButton();
         recordButton.startAnimation(fadeOutAnimation);
         recordButton.setVisibility(View.GONE);
         recordButton.setClickable(false);
@@ -795,6 +805,7 @@ public class RecorderActivity extends Activity
         } else {
             aq.id(R.id.createMovieButton).visibility(View.GONE);
         }
+        HideWarningButton();
     }
 
 
@@ -1561,14 +1572,23 @@ public class RecorderActivity extends Activity
     };
 
     public void ShowWarningButton(){
-        if(!warningButton.isShown() && !dontShowAgain) {
+        warningCountDown--;
+        if(warningCountDown == 0) {
+            warningButton.performClick();
+            warningCountDown = warningCountDownFrom * 2;
+        }
+        isBackgroundDetectionRunning = false;
+        if(warningButton.getVisibility() != View.VISIBLE && !dontShowAgain) {
             warningButton.startAnimation(fadeInAnimation);
+            warningButton.setVisibility(View.VISIBLE);
             warningButton.setClickable(true);
+
         }
     }
 
     public void HideWarningButton(){
-        if(warningButton.isShown()) {
+        isBackgroundDetectionRunning = false;
+        if(warningButton.getVisibility() == View.VISIBLE) {
             warningButton.startAnimation(fadeOutAnimation);
             warningButton.setVisibility(View.GONE);
             warningButton.setClickable(false);
