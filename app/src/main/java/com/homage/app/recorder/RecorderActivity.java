@@ -1564,7 +1564,7 @@ public class RecorderActivity extends Activity
     private View.OnClickListener onClickedWarningButton = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (isRecording || dontShowAgain) return;
+            if (isRecording) return;
             //TODO fixup so when clicked opens fragment of warning
             Intent i = new Intent(RecorderActivity.this,WarningOverlayDlgActivity.class);
             startActivityForResult(i, DONT_SHOW_THIS_AGAIN);
@@ -1573,9 +1573,9 @@ public class RecorderActivity extends Activity
 
     public void ShowWarningButton(){
         warningCountDown--;
-        if(warningCountDown == 0) {
+        if(!dontShowAgain && warningCountDown == 0) {
             warningButton.performClick();
-            warningCountDown = warningCountDownFrom * 2;
+            warningCountDown = warningCountDownFrom;
         }
         isBackgroundDetectionRunning = false;
         if(warningButton.getVisibility() != View.VISIBLE && !dontShowAgain) {
@@ -1752,7 +1752,6 @@ public class RecorderActivity extends Activity
                 case (DONT_SHOW_THIS_AGAIN) : {
                     if (resultCode == Activity.RESULT_CANCELED) {
                             dontShowAgain = true;
-                            HideWarningButton();
                     }
                     break;
                 }
