@@ -17,7 +17,7 @@
     <ImageView
         android:id="@+id/overlayIcon"
         android:layout_width="300dp"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:scaleType="fitXY"
