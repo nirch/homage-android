@@ -58,7 +58,14 @@
     </style>
 
     <style name="HomageMediumTitle">
-        <item name="android:textSize">30dp</item>
+        <item name="android:textSize">26dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/homage_text</item>
+    </style>
+
+    <style name="HomageSmallTitle">
+        <item name="android:textSize">17dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/homage_text</item>

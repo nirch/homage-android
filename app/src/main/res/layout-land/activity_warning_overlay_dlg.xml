@@ -20,7 +20,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:layout_marginTop="22dp"
         android:src="@drawable/warning_explanation"
         android:contentDescription="icon" />
 
@@ -28,7 +30,7 @@
     <RelativeLayout
         android:id="@+id/descriptionContainer"
         android:layout_width="430dp"
-        android:layout_height="170dp"
+        android:layout_height="130dp"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         >
@@ -37,6 +39,7 @@
         <TextView
             android:id="@+id/bigImpactTitle"
             style="@style/HomageMediumTitle"
+            android:layout_width="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
@@ -52,7 +55,7 @@
             android:textColor="@color/homage_text"
             android:gravity="center"
             android:text="@string/title_improper_msg"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="@style/HomageSmallTitle"
             />
 
         <Button android:id="@+id/OkButton"
@@ -68,24 +71,22 @@
         <!-- main action button for this dialogue -->
 
 
-    </RelativeLayout>
+    </RelativeLayout>-->
 
     <!-- More action buttons at the bottom of the screen -->
-    <RelativeLayout android:id="@+id/retakeAndPreviewButtonsContainer"
-        style="@style/HomageImpactButtonsContainer"
-        android:weightSum="2"
-        >
-        <Button android:id="@+id/dontShowAgainButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/action_button_dont_show_again"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            style="@style/actionButtonWhite"
-            android:drawableLeft="@drawable/small_close_icon"
-            android:drawablePadding="20dp" />
 
-    </RelativeLayout>
+    <Button android:id="@+id/dontShowAgainButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/action_button_dont_show_again"
+        android:layout_below="@id/descriptionContainer"
+        android:layout_centerHorizontal="true"
+        style="@style/actionButtonWhite"
+        android:drawableLeft="@drawable/small_close_icon"
+        android:layout_margin="@dimen/abc_action_bar_title_text_size"
+        android:drawablePadding="20dp" />
+
+
 
     <!-- Overlay with the "Are you sure you want to retake scene?" message -->
     <include

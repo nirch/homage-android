@@ -133,6 +133,7 @@
 
     <string name="settings_category_developer">Developer</string>
     <string name="settings_category_privacy">Privacy</string>
+    <string name="settings_category_options">Options</string>
     <string name="settings_category_support">Support</string>
 
     <string name="settings_uploader_title">Uploader</string>
@@ -144,7 +145,9 @@
     <string name="settings_export_db_title">Export model db.</string>
 
     <string name="settings_remakes_are_public_title">Remakes are public</string>
+    <string name="settings_options_warning_title">No Bad Background Warning</string>
     <string name="settings_remakes_are_public_summary">Share your remakes with others.</string>
+    <string name="settings_options_warning_summary">Don\'t get warned when shooting on a bad background</string>
 
     <string name="settings_feedback_title">Feedback us</string>
     <string name="settings_terms_of_service_title">Terms of service</string>

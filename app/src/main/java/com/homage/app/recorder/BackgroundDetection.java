@@ -113,11 +113,6 @@ public class BackgroundDetection {
                         int aa = mat.init(null, contourLocalUrl, HardCodedWidth, HardCodedHeight);
                         cc = mat.processBackground(HardCodedWidth, HardCodedHeight, croppedData);
 
-                        HashMap props = new HashMap<String,String>();
-                        props.put("contourLocalUrl", contourLocalUrl);
-                        props.put("cc", Integer.toString(cc));
-                        HMixPanel.sh().track("MattingResult",props);
-
                         if(!isProductionServer) {
 //                      DEBUG--------------------------------------------------------------------------
                             YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
@@ -157,6 +152,7 @@ public class BackgroundDetection {
         protected void onPostExecute(String result) {
             //TODO update UI elements using res
             int intresult = Integer.parseInt(result);
+            recorderActivity.lastcc = intresult;
             if(intresult >= 0){
                 //Success to UI using res Recorder activity has boolean of let user take movie
                 recorderActivity.HideWarningButton();

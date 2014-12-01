@@ -20,6 +20,16 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/settings_category_options">
+
+        <CheckBoxPreference
+            android:key="dont_show_warning_again"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:title="@string/settings_options_warning_title"
+            android:summary="@string/settings_options_warning_summary" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/settings_category_support">
 
         <Preference android:key="settings_feedback"

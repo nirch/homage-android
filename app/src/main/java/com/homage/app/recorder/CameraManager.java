@@ -28,7 +28,6 @@ package com.homage.app.recorder;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaMetadataRetriever;
@@ -68,8 +67,8 @@ public class CameraManager {
     private boolean cameraPreviewUsesGLSurfaceView;
     public int mCameraPreviewWidth;
     public int mCameraPreviewHeight;
-    int defaultEveryNthPreviewFrame = 25;
-    int everyNthPreviewFrame = 25;
+    int defaultEveryNthPreviewFrame = 10;
+    int everyNthPreviewFrame = 10;
     Camera mCamera;
     BackgroundDetection backgroundDetection;
     Context context;
@@ -82,7 +81,7 @@ public class CameraManager {
 
     // Preview
     FrameLayout previewContainer;
-    public CameraPreview preview;
+    public CameraPreview mPreview;
     boolean previewInitialized;
     boolean previewPaused;
 
@@ -151,49 +150,49 @@ public class CameraManager {
         // Create a new CameraPreview
         CameraPreview cameraPreview = new CameraPreview(context);
         cameraPreview.setZOrderOnTop(false);
-        preview = cameraPreview;
+        mPreview = cameraPreview;
 
-        // Add the preview as a subview of the preview container and return it.
-        previewContainer.addView(preview);
+        // Add the Preview as a subview of the Preview container and return it.
+        previewContainer.addView(mPreview);
         previewInitialized = true;
         return cameraPreview;
     }
 
     public void cleanCameraPreview() {
         try {
-            preview.stop();
+            mPreview.stop();
         } catch (Exception e) {}
 
         try {
             previewContainer.removeAllViewsInLayout();
         } catch (Exception e) {}
 
-        preview = null;
+        mPreview = null;
         previewContainer = null;
         previewInitialized = false;
         previewPaused = false;
     }
 
     public void pauseCameraPreviewIfInitialized() {
-        if (preview == null || !previewInitialized || previewPaused) return;
-        preview.stop();
+        if (mPreview == null || !previewInitialized || previewPaused) return;
+        mPreview.stop();
         previewContainer.removeAllViewsInLayout();
         previewPaused = true;
     }
 
     public void resumeCameraPreviewIfInitialized() {
-        if (preview == null || !previewInitialized || !previewPaused) return;
+        if (mPreview == null || !previewInitialized || !previewPaused) return;
         previewPaused = false;
         openCamera();
-        startCameraPreviewInView(preview.getContext(), previewContainer);
+        startCameraPreviewInView(mPreview.getContext(), previewContainer);
     }
     //endregion
 
-    //region *** Camera & And preview ***
+    //region *** Camera & And Preview ***
     /**
-     * Opens a camera, and attempts to establish preview mode at the specified width and height.
+     * Opens a camera, and attempts to establish Preview mode at the specified width and height.
      * <p>
-     * Sets mCameraPreviewWidth and mCameraPreviewHeight to the actual width/height of the preview.
+     * Sets mCameraPreviewWidth and mCameraPreviewHeight to the actual width/height of the Preview.
      */
 
     public void openCamera() {
@@ -285,6 +284,10 @@ public class CameraManager {
      */
     public void releaseCamera() {
         if (mCamera != null) {
+            mCamera.setPreviewCallback(null);
+            if(mPreview != null){
+                mPreview.getHolder().removeCallback(mPreview);
+            }
             mCamera.stopPreview();
             mCamera.release();
             mCamera = null;
@@ -568,7 +571,7 @@ The Camera Manager will decide on which method to use based on API and app confi
 
 
     public void sendStopRecordingMessageToMainThread() {
-        Context context = preview.getContext();
+        Context context = mPreview.getContext();
         Handler mainHandler = new Handler(context.getMainLooper());
         mainHandler.post(new Runnable() {
             @Override
@@ -611,7 +614,7 @@ The Camera Manager will decide on which method to use based on API and app confi
     }
 
     public void sendFinishedRecordingMessageToMainThread(final File outputFile) {
-        Context context = preview.getContext();
+        Context context = mPreview.getContext();
         Handler mainHandler = new Handler(context.getMainLooper());
         mainHandler.post(new Runnable() {
             @Override
@@ -623,7 +626,7 @@ The Camera Manager will decide on which method to use based on API and app confi
     }
 
     public void sendErrorInRecordingMessageToMainThread() {
-        Context context = preview.getContext();
+        Context context = mPreview.getContext();
         Handler mainHandler = new Handler(context.getMainLooper());
         mainHandler.post(new Runnable() {
             @Override
@@ -774,7 +777,7 @@ The Camera Manager will decide on which method to use based on API and app confi
         //
         outputFile = CameraHelper.getOutputMediaFile(CameraHelper.MEDIA_TYPE_VIDEO);
         mediaRecorder.setOutputFile(outputFile.toString());
-        // mediaRecorder.setPreviewDisplay(preview.mHolder.getSurface());
+        // mediaRecorder.setPreviewDisplay(mPreview.mHolder.getSurface());
 
         //
         // Set the duration of the captured video

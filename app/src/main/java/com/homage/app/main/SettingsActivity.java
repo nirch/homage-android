@@ -46,6 +46,7 @@ public class SettingsActivity extends PreferenceActivity {
     public static final String UPLOADER_ACTIVE = "settings_uploader_active";
     public static final String SKIP_STORY_DETAILS = "settings_skip_story_details";
     public static final String SETTINGS_VERSION_TITLE = "settings_version_title";
+    public static final String DONT_SHOW_WARNING_AGAIN = "dont_show_warning_again";
 
     protected ProgressDialog pd;
 

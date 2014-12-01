@@ -21,6 +21,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.media.MediaMetadataRetriever;
@@ -52,8 +53,11 @@ import android.widget.Toast;
 import com.android.grafika.AspectFrameLayout;
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
+import com.facebook.Settings;
 import com.homage.FileHandler.ContourHandler;
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
+import com.homage.app.main.SettingsActivity;
 import com.homage.model.Footage;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
@@ -139,14 +143,17 @@ public class RecorderActivity extends Activity
 
     // Actions & State
     public boolean isRecording;
-    public boolean dontShowAgain;
+//    public boolean dontShowAgain;
     public boolean isBackgroundDetectionRunning;
 
 
     //Contour
     public String contourLocalUrl;
 
-//    public final static String DONT_SHOW_AGAIN_STRING = "dontshowthisagain";
+//    preferences;
+    SharedPreferences prefs;
+    SharedPreferences.Editor prefsEditor;
+    //Constants
     private final static int ACTION_DO_NOTHING = 1;
     private final static int ACTION_HANDLE_STATE = 2;
     private final static int ACTION_ADVANCE_STATE = 3;
@@ -157,9 +164,12 @@ public class RecorderActivity extends Activity
     private Handler counterDown;
     protected int countDown;
     protected boolean canceledCountDown;
+
+//    Warning section
     protected final static int countDownFrom = 3;
     protected final static int warningCountDownFrom = 5;
     private int warningCountDown = warningCountDownFrom;
+    public int lastcc = 0;
 
     // The possible states of the recorder, handled by the state machine.
     static private enum RecorderState {
@@ -201,7 +211,8 @@ public class RecorderActivity extends Activity
         inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         starterIntent = getIntent();
-
+        prefs = HomageApplication.getSettings(this);
+        prefsEditor = prefs.edit();
         // Define a handler that receives camera-control messages from other threads.  All calls
         // to Camera must be made on the same thread.  Note we create this before the renderer
         // thread, so we know the fully-constructed object will be visible.
@@ -218,7 +229,7 @@ public class RecorderActivity extends Activity
         remake = Remake.findByOID(remakeOID);
         story = remake.getStory();
         isRecording = false;
-        dontShowAgain = false;
+//        dontShowAgain = false;
         isBackgroundDetectionRunning = false;
         ContourHandler ch = new ContourHandler();
         ch.DownloadContour(this, remake, "/homage/contours/");
@@ -1131,6 +1142,13 @@ public class RecorderActivity extends Activity
         props.put("scene_id", Integer.toString(currentSceneID));
         HMixPanel.sh().track("REStartRecording",props);
 
+        if(!contourLocalUrl.isEmpty()) {
+            HashMap mattingprops = new HashMap<String, String>();
+            props.put("contourLocalUrl", contourLocalUrl);
+            props.put("cc", Integer.toString(lastcc));
+            HMixPanel.sh().track("MattingResult", mattingprops);
+        }
+
         // Update the script bar.
         updateScriptBar();
 
@@ -1565,20 +1583,20 @@ public class RecorderActivity extends Activity
         @Override
         public void onClick(View view) {
             if (isRecording) return;
-            //TODO fixup so when clicked opens fragment of warning
+            // Open warning dialogue
             Intent i = new Intent(RecorderActivity.this,WarningOverlayDlgActivity.class);
             startActivityForResult(i, DONT_SHOW_THIS_AGAIN);
         }
     };
 
     public void ShowWarningButton(){
-        warningCountDown--;
-        if(!dontShowAgain && warningCountDown == 0) {
+       warningCountDown--;
+        if(!prefs.getBoolean(SettingsActivity.DONT_SHOW_WARNING_AGAIN,false) && warningCountDown == 0) {
             warningButton.performClick();
-            warningCountDown = warningCountDownFrom;
+//            warningCountDown = warningCountDownFrom;
         }
         isBackgroundDetectionRunning = false;
-        if(warningButton.getVisibility() != View.VISIBLE && !dontShowAgain) {
+        if(warningButton.getVisibility() != View.VISIBLE) {
             warningButton.startAnimation(fadeInAnimation);
             warningButton.setVisibility(View.VISIBLE);
             warningButton.setClickable(true);
@@ -1753,7 +1771,8 @@ public class RecorderActivity extends Activity
                     break;
                 case (DONT_SHOW_THIS_AGAIN) : {
                     if (resultCode == Activity.RESULT_CANCELED) {
-                            dontShowAgain = true;
+                        prefsEditor.putBoolean(SettingsActivity.DONT_SHOW_WARNING_AGAIN, true);
+                        prefsEditor.commit();
                     }
                     break;
                 }
