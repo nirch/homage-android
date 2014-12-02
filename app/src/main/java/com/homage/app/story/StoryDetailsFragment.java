@@ -62,19 +62,8 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
 
     RemakesAdapter adapter;
 
-    @Override
-    public void onOverScrolled(ObservableScrollView scrollView, int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
-        if(clampedY){
-            // End has been reached
-            if (shouldFetchMoreRemakes) {
-                Log.d(TAG, "Will fetch more remakes.");
-                showFetchMoreRemakesProgress();
-                shouldFetchMoreRemakes = false;
-                MainActivity activity = (MainActivity)getActivity();
-                activity.refetchMoreRemakesForStory(story);
-            }
-        }
-    }
+
+
 
     class RemakesAdapter extends BaseAdapter {
         private Activity mContext;
@@ -200,7 +189,7 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
         remakesGridView.setExpanded(true);
 
         remakesScrollView = (ObservableScrollView) aq.id(R.id.remakesScrollview).getView();
-        remakesScrollView.setOnOverScrolledListener(mOnOverScrolledListener);
+        remakesScrollView.setOnOverScrolledListener(this);
 
         //region *** Bind to UI event handlers ***
         /**********************************/
@@ -210,6 +199,20 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
         aq.id(R.id.makeYourOwnButton).clicked(onClickedMakeYourOwnButton);
         //aq.id(R.id.storyDetailsPlayButton).clicked(onClickedPlayStoryVideo);
         //endregion
+    }
+
+    @Override
+    public void onOverScrolled(ObservableScrollView scrollView, int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
+        if(clampedY) {
+            // End has been reached
+            if (shouldFetchMoreRemakes) {
+                Log.d(TAG, "Will fetch more remakes.");
+                showFetchMoreRemakesProgress();
+                shouldFetchMoreRemakes = false;
+                MainActivity activity = (MainActivity)getActivity();
+                activity.refetchMoreRemakesForStory(story);
+            }
+        }
     }
 
     //region *** fragment life cycle related
