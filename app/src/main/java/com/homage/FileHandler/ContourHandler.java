@@ -53,7 +53,7 @@ public class ContourHandler {
             File storagePath = Environment.getExternalStorageDirectory();
             String[] splitURL = scene.contourURL.split("/");
             String endOfContourURL = splitURL[splitURL.length - 1];
-            String contourLocalUrl = storagePath + folderName + story.getOID() + scene.getSceneID() + endOfContourURL;
+            String contourLocalUrl = storagePath + folderName + endOfContourURL;
             File contourFile = new File(contourLocalUrl);
             if (!contourFile.exists()) {
 

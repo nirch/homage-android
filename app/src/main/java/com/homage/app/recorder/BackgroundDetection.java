@@ -113,28 +113,28 @@ public class BackgroundDetection {
                         int aa = mat.init(null, contourLocalUrl, HardCodedWidth, HardCodedHeight);
                         cc = mat.processBackground(HardCodedWidth, HardCodedHeight, croppedData);
 
-                        if(!isProductionServer) {
-//                      DEBUG--------------------------------------------------------------------------
-                            YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            yuvimage.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), 80, baos);
-                            byte[] jdata = baos.toByteArray();
-
-
-                            // DEBUG Convert to Bitmap
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(jdata, 0, jdata.length);
-                            Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 60, HardCodedWidth, HardCodedHeight);
-//                      For testing if bitmap is good
-
-
-//                      DEBUG  save pictures to disk to see the grading
-                            imageCounter++;
-//                        vTool.writeJpeg(jdata,HardCodedWidth,HardCodedHeight,folderPath+Integer.toString(imageCounter) + "_cc_" + Integer.toString(cc) + ".jpg");
-//                        DEBUG download jpegs so we can see output
-                            String folderPath = contourLocalUrl.split("\\.")[0].split("storage/sdcard0")[1];
-                            Download.WriteBitmapToDisk(cropped, folderPath, Integer.toString(imageCounter) + "_cc_" + Integer.toString(cc) + ".jpg");
-//                    DEBUG------------------------------------------------------------------------------------
-                        }
+//                        if(!isProductionServer) {
+////                      DEBUG--------------------------------------------------------------------------
+////                            YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
+////                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+////                            yuvimage.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), 80, baos);
+////                            byte[] jdata = baos.toByteArray();
+////
+////
+////                            // DEBUG Convert to Bitmap
+////                            Bitmap bitmap = BitmapFactory.decodeByteArray(jdata, 0, jdata.length);
+////                            Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 60, HardCodedWidth, HardCodedHeight);
+//////                      For testing if bitmap is good
+////
+////
+//////                      DEBUG  save pictures to disk to see the grading
+////                            imageCounter++;
+//////                        vTool.writeJpeg(jdata,HardCodedWidth,HardCodedHeight,folderPath+Integer.toString(imageCounter) + "_cc_" + Integer.toString(cc) + ".jpg");
+//////                        DEBUG download jpegs so we can see output
+////                            String folderPath = contourLocalUrl.split("\\.")[0].split("storage/sdcard0")[1];
+////                            Download.WriteBitmapToDisk(cropped, folderPath, Integer.toString(imageCounter) + "_cc_" + Integer.toString(cc) + ".jpg");
+////                    DEBUG------------------------------------------------------------------------------------
+//                        }
                     }
                     catch(Exception e){
                         Log.d(TAG, e.toString());
