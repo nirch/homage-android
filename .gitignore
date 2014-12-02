@@ -244,3 +244,5 @@ facebook/src/com/facebook/widget/UserSettingsFragment.java
 facebook/src/com/facebook/widget/WebDialog.java
 gradle/wrapper/gradle-wrapper.jar
 gradle/wrapper/gradle-wrapper.properties
+app/app.iml
+app/src/main/res/values/com_crashlytics_export_strings.xml
