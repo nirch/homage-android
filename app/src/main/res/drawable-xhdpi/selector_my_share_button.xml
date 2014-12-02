@@ -2,12 +2,12 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
         <bitmap
-            android:src="@drawable/share_pressed"
+            android:src="@drawable/me_share_button_pressed"
             android:gravity="center" />
     </item>
     <item>
         <bitmap
-            android:src="@drawable/share"
+            android:src="@drawable/me_share_button"
             android:gravity="center" />
     </item>
 </selector>

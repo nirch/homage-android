@@ -12,7 +12,7 @@
 
 
     <!-- List messages -->
-    <string name="no_remakes">( No remakes )</string>
+    <string name="no_remakes">CREATE YOUR FIRST STORY!</string>
 
     <!-- Buttons and overlay messages -->
     <string name="button_retake_last_scene">RETAKE LAST SCENE</string>
@@ -41,6 +41,9 @@
     <string name="recording_failed">Recording failed.</string>
     <string name="recording_failed_to_start">Recording failed to start.</string>
     <string name="recording_scene_recorded_successfully">Scene recorded successfully</string>
+
+    <!-- My Stories -->
+    <string name="remake_a_story_button">REMAKE A STORY!</string>
 
     <!-- Videos -->
     <string name="video_title_scene">WATCH OUR SCENE</string>

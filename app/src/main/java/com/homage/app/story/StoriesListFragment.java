@@ -22,6 +22,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.InflateException;
@@ -56,11 +57,11 @@ public class StoriesListFragment extends Fragment {
     ListView storiesListView;
     AQuery aq;
     ProgressDialog pd;
-    boolean allowAppearAnimations = true;
 
     static boolean createdOnce = false;
 
     int rowHeight;
+    int desnityDPI;
 
     BaseAdapter adapter = new BaseAdapter() {
         @Override
@@ -99,12 +100,8 @@ public class StoriesListFragment extends Fragment {
                 p.height = rowHeight;
                 rowView.setLayoutParams(p);
 
-                // Animations
-                if (allowAppearAnimations) {
-                    aq.id(R.id.storyImage).image(story.thumbnail, true, true, 256, R.drawable.glass_dark, null, R.anim.animation_fadein);
-                } else {
-                    aq.id(R.id.storyImage).image(story.thumbnail, true, true, 256, R.drawable.glass_dark);
-                }
+                // Thumbnail
+                aq.id(R.id.storyImage).image(story.thumbnail, true, true, desnityDPI, R.drawable.glass_dark);
 
             } catch (InflateException ex) {
                 Crashlytics.log(Log.ERROR, TAG, "Inflate exception in row of stories");
@@ -137,6 +134,10 @@ public class StoriesListFragment extends Fragment {
     }
 
     private void initialize() {
+        // Pixel density
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        desnityDPI = metrics.densityDpi;
+
         // Aspect Ratio
         MainActivity activity = (MainActivity)getActivity();
         rowHeight = (activity.screenWidth * 9) / 16;
@@ -147,17 +148,7 @@ public class StoriesListFragment extends Fragment {
         // Set the list adapter for the stories list view.
         stories = Story.allActiveStories();
         storiesListView = aq.id(R.id.storiesListView).getListView();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                allowAppearAnimations = true;
-            }
-        }, 500);
         createdOnce = true;
-
-        if (stories.size() > 0) {
-            //aq.id(R.id.loadingStoriesProgress).visibility(View.GONE);
-        }
 
         //region *** Bind to UI event handlers ***
         /**********************************/
@@ -227,7 +218,6 @@ public class StoriesListFragment extends Fragment {
 
 
     public void refresh() {
-        allowAppearAnimations = false;
         if (stories == null) {
             stories = Story.allActiveStories();
         } else {
@@ -238,12 +228,6 @@ public class StoriesListFragment extends Fragment {
         HMixPanel.sh().track("UserRefreshStories",null);
 
         adapter.notifyDataSetChanged();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                allowAppearAnimations = true;
-            }
-        }, 500);
     }
 
     //region *** UI event handlers ***

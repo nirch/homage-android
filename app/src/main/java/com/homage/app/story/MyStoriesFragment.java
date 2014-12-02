@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.InflateException;
@@ -22,7 +23,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
@@ -55,7 +59,7 @@ public class MyStoriesFragment extends Fragment {
 
     private User user;
 
-    int rowHeight;
+    int desnityDPI;
 
     public static MyStoriesFragment newInstance(int sectionNumber, User user) {
         MyStoriesFragment fragment;
@@ -136,23 +140,14 @@ public class MyStoriesFragment extends Fragment {
                 AQuery aq = new AQuery(rowView);
                 aq.id(R.id.storyName).text(story.name);
 
-                // Maintain 16/9 aspect ratio
-                AbsListView.LayoutParams p = (AbsListView.LayoutParams)rowView.getLayoutParams();
-                p.height = rowHeight;
-                rowView.setLayoutParams(p);
-
-                if (i > 3) {
-                    aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 256, R.drawable.glass_dark, null, R.anim.animation_fadein_with_zoom);
-                } else {
-                    aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, 256, R.drawable.glass_dark);
-                }
+                aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, desnityDPI/3, R.drawable.glass_dark);
 
                 if (remake.status == Remake.Status.DONE.getValue()) {
                     aq.id(R.id.myPlayButton).visibility(View.VISIBLE);
-                    aq.id(R.id.myShareButton).visibility(View.VISIBLE);
+                    aq.id(R.id.myShareButtonContainer).visibility(View.VISIBLE);
                 } else {
-                    aq.id(R.id.myPlayButton).visibility(View.INVISIBLE);
-                    aq.id(R.id.myShareButton).visibility(View.INVISIBLE);
+                    aq.id(R.id.myPlayButton).visibility(View.GONE);
+                    aq.id(R.id.myShareButtonContainer).visibility(View.GONE);
                 }
 
                 // Delete
@@ -245,13 +240,11 @@ public class MyStoriesFragment extends Fragment {
     };
 
     //region *** Share ***
-    private void shareRemake(final Remake sharedRemake) {
-
+    private void shareRemake(final Remake sharedRemake)
+    {
         MainActivity mainActivity = (MainActivity) getActivity();
         mainActivity.shareRemake(sharedRemake);
-
     }
-
     //endregion
 
 
@@ -261,9 +254,9 @@ public class MyStoriesFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        // Aspect Ratio
-        MainActivity activity = (MainActivity)getActivity();
-        rowHeight = (activity.screenWidth * 9) / 16;
+        // Pixel density
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        desnityDPI = metrics.densityDpi;
 
         // Inflate layout
         this.inflater = inflater;
@@ -277,9 +270,11 @@ public class MyStoriesFragment extends Fragment {
         // Don't allow orientation change.
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        //
+        aq.id(R.id.remakeAStoryButton).clicked(onClickedRemakeStories);
+
         // Show actionbar
         getActivity().getActionBar().show();
-
         return rootView;
     }
 
@@ -308,6 +303,22 @@ public class MyStoriesFragment extends Fragment {
             if (main != null) main.refetchRemakesForCurrentUser();
             }
         }, 500);
+
     }
 
+
+    //region *** UI event handlers ***
+    /**
+     *  ==========================
+     *      UI event handlers.
+     *  ==========================
+     */
+    private View.OnClickListener onClickedRemakeStories = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            MainActivity mainActivity = (MainActivity)getActivity();
+            mainActivity.showStories();
+        }
+    };
+    //endregion
 }

@@ -6,19 +6,41 @@
     android:id="@+id/myStoriesScreen"
     >
 
+    <!-- The camera preview container -->
+    <ImageView android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background_void"
+        android:scaleType="fitXY"
+        />
+
+    <ListView android:id="@+id/myStoriesListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="60dp"
+        android:visibility="gone"
+        />
+
     <TextView android:id="@+id/noRemakesMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/homage_impact"
         android:text="@string/no_remakes"
         android:textSize="22dp"
-        android:layout_centerInParent="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="130dp"
         android:visibility="gone"
         />
 
-    <ListView android:id="@+id/myStoriesListView"
+    <Button android:id="@+id/remakeAStoryButton"
+        android:layout_height="60dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:background="@color/homage_impact"
+        android:textColor="@color/homage_button_text"
+        android:text="@string/remake_a_story_button"
+        android:textStyle="bold"
+        android:layout_alignParentBottom="true"
         />
 
  </RelativeLayout>

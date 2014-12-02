@@ -1,42 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="216dp"
+    android:layout_height="90dp"
     android:orientation="vertical"
     android:background="@color/homage_black"
     >
 
-    <ImageView android:id="@+id/storyImage"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:scaleType="fitXY"
-        android:layout_alignParentStart="true" />
+    <RelativeLayout  android:id="@+id/thumbContainer"
+        android:layout_width="159dp"
+        android:layout_height="89dp"
+        android:layout_centerVertical="true"
+        >
+        <ImageView android:id="@+id/storyImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            />
+        <ImageButton android:id="@+id/myPlayButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:src="@drawable/selector_my_play"
+            />
+    </RelativeLayout>
 
-    <ImageView android:id="@+id/storyImageHighlight"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:alpha="0.2"
-        android:background="@drawable/selector_story_fg"
-        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="160dp"
+        >
+        <RelativeLayout android:id="@+id/myResetButtonContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            >
+            <ImageButton android:id="@+id/myResetButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="fitCenter"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@android:color/transparent"
+                android:src="@drawable/selector_my_reset_button"
+                />
+        </RelativeLayout>
+        <RelativeLayout android:id="@+id/myDeleteButtonContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            >
+            <ImageButton android:id="@+id/myDeleteButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="fitCenter"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@android:color/transparent"
+                android:src="@drawable/selector_my_delete_button"
+                />
+        </RelativeLayout>
+        <RelativeLayout android:id="@+id/myShareButtonContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="visible"
+            >
+            <ImageButton android:id="@+id/myShareButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="fitCenter"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@android:color/transparent"
+                android:src="@drawable/selector_my_share_button"
+                />
+        </RelativeLayout>
+    </LinearLayout>
 
+    <TextView android:id="@+id/storyName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/homage_text"
+        android:textSize="17dp"
+        android:gravity="center"
+        android:paddingTop="10dp"
+        android:layout_toRightOf="@+id/thumbContainer"
+        android:text="@string/placeholder_story_title"
+        android:layout_alignParentTop="true" />
+
+    <!--<ImageView android:id="@+id/storyImageHighlight"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:alpha="0.2"-->
+        <!--android:background="@drawable/selector_story_fg"-->
+        <!--/>-->
+
+
+    <!--
     <TextView android:id="@+id/storyName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/homage_text"
-        android:background="@color/homage_darker_transparent_overlay"
         android:textSize="18dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:layout_margin="10dp"
+        android:layout_toRightOf="@+id/storyImage"
         android:text="@string/placeholder_story_title"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 
     <ImageButton android:id="@+id/myDeleteButton"
         android:layout_width="wrap_content"
@@ -67,13 +140,7 @@
         android:background="@color/homage_dark_transparent_overlay"
         android:padding="10dp"
         />
+        -->
 
-    <ImageButton android:id="@+id/myPlayButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/selector_my_play"
-        android:background="@color/homage_dark_transparent_overlay"
-        android:layout_centerInParent="true"
-        />
 
 </RelativeLayout>
