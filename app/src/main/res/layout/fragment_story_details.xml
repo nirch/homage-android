@@ -2,27 +2,11 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/homage_black"
-    android:weightSum="1">
-
-    <RelativeLayout android:id="@+id/storyDetailsVideoContainer"
-        android:layout_width="match_parent"
-        android:layout_height="216dp"
-        >
-    </RelativeLayout>
-
-
-    <Button android:id="@+id/makeYourOwnButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/make_your_own"
-        android:drawableLeft="@drawable/icon_create_movie"
-        android:drawablePadding="10dp"
-        android:layout_gravity="center_horizontal"
-        android:background="@android:color/transparent"
-        style="@style/actionButton" />
+    android:weightSum="3">
 
     <TextView android:id="@+id/storyDescription"
         android:layout_width="match_parent"
@@ -33,11 +17,32 @@
         android:gravity="center"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:layout_weight="0.1"
         />
+
+
+<com.homage.CustomAdapters.ObservableScrollView
+    android:id="@+id/remakesScrollview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="2.5">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/mainlayout">
+
+    <RelativeLayout android:id="@+id/storyDetailsVideoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="216dp"
+        android:layout_above="@+id/remakesGridView"
+        >
+    </RelativeLayout>
 
     <RelativeLayout android:id="@+id/remakesContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         >
 
         <LinearLayout
@@ -65,14 +70,17 @@
 
         </LinearLayout>
 
-        <GridView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <com.homage.CustomAdapters.ExpandableHeightGridView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:id="@+id/remakesGridView"
             tools:listitem="@android:layout/simple_list_item_2"
             android:numColumns="2"
             android:verticalSpacing="2dp"
             android:horizontalSpacing="2dp"
+            android:isScrollContainer="false"
+            android:stretchMode="columnWidth"
             android:clickable="true"
             android:visibility="visible"
             android:descendantFocusability="beforeDescendants"
@@ -104,6 +112,28 @@
         </RelativeLayout>
 
     </RelativeLayout>
+
+
+</LinearLayout>
+</com.homage.CustomAdapters.ObservableScrollView>
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/holo_red_dark"
+    android:textAlignment="center"
+    android:layout_weight="0.6"
+    >
+    <Button android:id="@+id/makeYourOwnButton"
+        android:layout_width="300dp"
+        android:layout_height="70dp"
+        android:text="@string/make_your_own"
+        android:drawableLeft="@drawable/icon_create_movie"
+        android:drawablePadding="10dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        style="@style/actionButton" />
+</RelativeLayout>
 
 
 

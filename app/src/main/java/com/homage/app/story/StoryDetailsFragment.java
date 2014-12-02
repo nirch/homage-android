@@ -6,28 +6,26 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
-import android.widget.GridView;
 import android.widget.BaseAdapter;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
+import com.homage.CustomAdapters.ExpandableHeightGridView;
+import com.homage.CustomAdapters.ObservableScrollView;
+import com.homage.CustomAdapters.OnOverScrolledListener;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
@@ -39,12 +37,11 @@ import com.homage.networking.analytics.HEvents;
 import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
-import com.homage.views.ActivityHelper;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class StoryDetailsFragment extends Fragment {
+public class StoryDetailsFragment extends Fragment implements OnOverScrolledListener {
     public String TAG = "TAG_StoryDetailsFragment";
 
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -53,7 +50,9 @@ public class StoryDetailsFragment extends Fragment {
     View rootView;
     LayoutInflater inflater;
     AQuery aq;
-    GridView remakesGridView;
+    ExpandableHeightGridView remakesGridView;
+    ObservableScrollView remakesScrollView;
+    private OnOverScrolledListener mOnOverScrolledListener;
 
     static boolean createdOnce = false;
     public Story story;
@@ -62,6 +61,20 @@ public class StoryDetailsFragment extends Fragment {
     int rowHeight;
 
     RemakesAdapter adapter;
+
+    @Override
+    public void onOverScrolled(ObservableScrollView scrollView, int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
+        if(clampedY){
+            // End has been reached
+            if (shouldFetchMoreRemakes) {
+                Log.d(TAG, "Will fetch more remakes.");
+                showFetchMoreRemakesProgress();
+                shouldFetchMoreRemakes = false;
+                MainActivity activity = (MainActivity)getActivity();
+                activity.refetchMoreRemakesForStory(story);
+            }
+        }
+    }
 
     class RemakesAdapter extends BaseAdapter {
         private Activity mContext;
@@ -181,9 +194,13 @@ public class StoryDetailsFragment extends Fragment {
 
         // Adapter
         adapter = new RemakesAdapter(getActivity(), story.getRemakes(excludedUser));
-        remakesGridView = aq.id(R.id.remakesGridView).getGridView();
+        remakesGridView = (ExpandableHeightGridView)aq.id(R.id.remakesGridView).getGridView();
         remakesGridView.setAdapter(adapter);
         remakesGridView.setOnScrollListener(onGridViewScrollListener);
+        remakesGridView.setExpanded(true);
+
+        remakesScrollView = (ObservableScrollView) aq.id(R.id.remakesScrollview).getView();
+        remakesScrollView.setOnOverScrolledListener(mOnOverScrolledListener);
 
         //region *** Bind to UI event handlers ***
         /**********************************/
