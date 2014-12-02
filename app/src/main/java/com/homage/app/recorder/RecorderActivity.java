@@ -1606,7 +1606,7 @@ public class RecorderActivity extends Activity
 
     public void HideWarningButton(){
         //Reset warning
-        warningCountDown = warningCountDownFrom;
+//        warningCountDown = warningCountDownFrom;
         isBackgroundDetectionRunning = false;
         if(warningButton.getVisibility() == View.VISIBLE) {
             warningButton.startAnimation(fadeOutAnimation);
