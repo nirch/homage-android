@@ -60,6 +60,10 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
     VideoPlayerFragment videoPlayerFragment;
     int rowHeight;
 
+    //Fetching remakes area
+    final int fetchRemakes = 16;
+    int skipRemakes = 16;
+
     RemakesAdapter adapter;
 
 
@@ -185,7 +189,7 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
         adapter = new RemakesAdapter(getActivity(), story.getRemakes(excludedUser));
         remakesGridView = (ExpandableHeightGridView)aq.id(R.id.remakesGridView).getGridView();
         remakesGridView.setAdapter(adapter);
-        remakesGridView.setOnScrollListener(onGridViewScrollListener);
+//        remakesGridView.setOnScrollListener(onGridViewScrollListener);
         remakesGridView.setExpanded(true);
 
         remakesScrollView = (ObservableScrollView) aq.id(R.id.remakesScrollview).getView();
@@ -203,15 +207,16 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
 
     @Override
     public void onOverScrolled(ObservableScrollView scrollView, int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
-        if(clampedY) {
+        if(clampedY && scrollY > 10) {
             // End has been reached
-            if (shouldFetchMoreRemakes) {
+//            if (shouldFetchMoreRemakes) {
                 Log.d(TAG, "Will fetch more remakes.");
                 showFetchMoreRemakesProgress();
-                shouldFetchMoreRemakes = false;
+//                shouldFetchMoreRemakes = false;
                 MainActivity activity = (MainActivity)getActivity();
-                activity.refetchMoreRemakesForStory(story);
-            }
+                activity.refetchMoreRemakesForStory(story, fetchRemakes, skipRemakes);
+                skipRemakes += fetchRemakes;
+//            }
         }
     }
 
@@ -346,26 +351,26 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
 //        }
 //    };
 
-    private AbsListView.OnScrollListener onGridViewScrollListener= new AbsListView.OnScrollListener() {
-        @Override
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-        }
-
-        @Override
-        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-            if(firstVisibleItem + visibleItemCount >= 10){
-                // End has been reached
-                if (shouldFetchMoreRemakes) {
-                    Log.d(TAG, "Will fetch more remakes.");
-                    showFetchMoreRemakesProgress();
-                    shouldFetchMoreRemakes = false;
-                    MainActivity activity = (MainActivity)getActivity();
-                    activity.refetchMoreRemakesForStory(story);
-                }
-            }
-        }
-    };
+//    private AbsListView.OnScrollListener onGridViewScrollListener= new AbsListView.OnScrollListener() {
+//        @Override
+//        public void onScrollStateChanged(AbsListView view, int scrollState) {
+//
+//        }
+//
+//        @Override
+//        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+//            if(firstVisibleItem + visibleItemCount >= 10){
+//                // End has been reached
+//                if (shouldFetchMoreRemakes) {
+//                    Log.d(TAG, "Will fetch more remakes.");
+//                    showFetchMoreRemakesProgress();
+//                    shouldFetchMoreRemakes = false;
+//                    MainActivity activity = (MainActivity)getActivity();
+//                    activity.refetchMoreRemakesForStory(story);
+//                }
+//            }
+//        }
+//    };
 
     private void showFetchMoreRemakesProgress() {
         aq.id(R.id.fetchMoreRemakesProgress).visibility(View.VISIBLE);
