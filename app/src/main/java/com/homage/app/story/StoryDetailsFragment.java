@@ -66,9 +66,6 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
 
     RemakesAdapter adapter;
 
-
-
-
     class RemakesAdapter extends BaseAdapter {
         private Activity mContext;
         private List<Remake> remakes;
@@ -185,7 +182,7 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
         MainActivity activity = (MainActivity)getActivity();
         rowHeight = (activity.screenWidth * 9) / 16;
 
-        // Adapter
+        // Adapters
         adapter = new RemakesAdapter(getActivity(), story.getRemakes(excludedUser));
         remakesGridView = (ExpandableHeightGridView)aq.id(R.id.remakesGridView).getGridView();
         remakesGridView.setAdapter(adapter);
@@ -193,7 +190,7 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
         remakesGridView.setExpanded(true);
 
         remakesScrollView = (ObservableScrollView) aq.id(R.id.remakesScrollview).getView();
-        remakesScrollView.setOnOverScrolledListener(this);
+        remakesScrollView.setOnOverScrolledListener(getActivity(), this);
 
         //region *** Bind to UI event handlers ***
         /**********************************/

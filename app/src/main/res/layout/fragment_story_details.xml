@@ -25,6 +25,8 @@
     android:id="@+id/remakesScrollview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:overScrollHeader="@null"
+    android:overScrollFooter="@null"
     android:layout_weight="2.5">
 
 <LinearLayout
@@ -86,38 +88,29 @@
             android:descendantFocusability="beforeDescendants"
             />
 
-        <RelativeLayout android:id="@+id/fetchMoreRemakesProgress"
-            android:layout_width="match_parent"
-            android:layout_height="15dp"
-            android:background="@color/homage_darker_transparent_overlay"
-            android:layout_alignParentBottom="true"
-            android:visibility="gone"
-            >
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:orientation="horizontal"
-                >
-                <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fetching more..."
-                    />
-                </LinearLayout>
-        </RelativeLayout>
-
     </RelativeLayout>
 
 
 </LinearLayout>
 </com.homage.CustomAdapters.ObservableScrollView>
 
+<RelativeLayout android:id="@+id/fetchMoreRemakesProgress"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:background="@color/homage_darker_transparent_overlay"
+    android:layout_alignParentBottom="true"
+    android:visibility="gone"
+    >
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
+</RelativeLayout>
+
 <RelativeLayout
+    android:id="@+id/makebuttonlayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/holo_red_dark"
