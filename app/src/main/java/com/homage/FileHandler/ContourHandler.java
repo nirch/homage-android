@@ -51,25 +51,32 @@ public class ContourHandler {
             Story story = remake.getStory();
             Scene scene = story.findScene(remake.lastSceneID());
             File storagePath = Environment.getExternalStorageDirectory();
-            String[] splitURL = scene.contourURL.split("/");
-            String endOfContourURL = splitURL[splitURL.length - 1];
-            String contourLocalUrl = storagePath + folderName + endOfContourURL;
-            File contourFile = new File(contourLocalUrl);
-            if (!contourFile.exists()) {
+            if(scene.contourURL != null) {
+                String[] splitURL = scene.contourURL.split("/");
+                String endOfContourURL = splitURL[splitURL.length - 1];
 
-                URL url = null;
+                String contourLocalUrl = storagePath + folderName + endOfContourURL;
+                File contourFile = new File(contourLocalUrl);
+                if (!contourFile.exists()) {
 
-                try {
-                    url = new URL(scene.contourURL);
-                    Download.CreateFolderInLocalStorage(folderName);
-                    Download.WriteFileToStorage(contourLocalUrl, url);
-                } catch (MalformedURLException e) {
-                    Log.d("MalformedURLException: ", e.toString());
-                    return null;
+                    URL url = null;
+
+                    try {
+                        url = new URL(scene.contourURL);
+                        Download.CreateFolderInLocalStorage(folderName);
+                        Download.WriteFileToStorage(contourLocalUrl, url);
+                    } catch (MalformedURLException e) {
+                        Log.d("MalformedURLException: ", e.toString());
+                        return null;
+                    }
+
                 }
-
+                return contourLocalUrl;
             }
-            return contourLocalUrl;
+            else
+            {
+                return null;
+            }
         }
 
         @Override
