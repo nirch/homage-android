@@ -28,6 +28,7 @@ public class Footage extends SugarRecord<Remake> {
     //region *** Fields ***
     public String processedVideoS3Key;
     public String rawLocalFile;
+    public int selfie;
     public long rawLocalFileTime;
     public String rawVideoS3Key;
     public int sceneID;
@@ -116,5 +117,10 @@ public class Footage extends SugarRecord<Remake> {
         return footages;
     }
     //endregion
+
+    public boolean isSelfie() {
+        if (this.selfie == 1) return true;
+        return false;
+    }
 }
 

@@ -319,7 +319,7 @@ public class HomageServer extends Server {
     //endregion
 
     //region *** Footages ***
-    public void putFootage(String remakeID, int sceneID, String takeID, HashMap<String, Object> userInfo) {
+    public void putFootage(String remakeID, int sceneID, String takeID, boolean isSelfie, HashMap<String, Object> userInfo) {
         Log.v(TAG, String.format("Update server about upload start, take id:%s", takeID));
 
         // Request parameters
@@ -327,13 +327,23 @@ public class HomageServer extends Server {
         parameters.put("remake_id", remakeID);
         parameters.put("scene_id", String.valueOf(sceneID));
         parameters.put("take_id", takeID);
+        parameters.put("is_selfie", String.valueOf(isSelfie));
+
+        // User info
+        if (userInfo==null) {
+            userInfo = new HashMap<String,Object>();
+        }
+        userInfo.put("remakeID", remakeID);
+        userInfo.put("sceneID", sceneID);
+        userInfo.put("takeID", takeID);
+        userInfo.put("isSelfie", isSelfie);
 
         super.PUT(R.string.url_footage, parameters,
                 INTENT_FOOTAGE_UPLOAD_START, userInfo, new RemakeParser()
                 );
     }
 
-    public void updateFootageUploadSuccess(String remakeID, int sceneID, String takeID, HashMap<String,Object> userInfo) {
+    public void updateFootageUploadSuccess(String remakeID, int sceneID, String takeID, boolean isSelfie, HashMap<String,Object> userInfo) {
         Log.v(TAG, String.format("Update server about upload success, take id:%s", takeID));
 
         // Request parameters
@@ -341,6 +351,7 @@ public class HomageServer extends Server {
         parameters.put("remake_id", remakeID);
         parameters.put("scene_id", String.valueOf(sceneID));
         parameters.put("take_id", takeID);
+        parameters.put("is_selfie", String.valueOf(isSelfie));
 
         // TODO: get this from actual video size / camera settings
         parameters.put("resolution_width", "1280");
@@ -350,10 +361,10 @@ public class HomageServer extends Server {
         if (userInfo==null) {
             userInfo = new HashMap<String,Object>();
         }
-
         userInfo.put("remakeID", remakeID);
         userInfo.put("sceneID", sceneID);
         userInfo.put("takeID", takeID);
+        userInfo.put("isSelfie", isSelfie);
         if (!userInfo.containsKey("attemptCount")) userInfo.put("attemptCount",1);
 
         super.POST(R.string.url_footage, parameters,

@@ -1212,6 +1212,10 @@ public class RecorderActivity extends Activity
                 footage.rawLocalFileTime = System.currentTimeMillis();
             }
 
+            // Mark if was selfie or not.
+            CameraManager cm = CameraManager.sh();
+            footage.selfie = cm.isSelfie() ? 1 : 0;
+
             // Inform server about availability of new take.
             String remakeID = remake.getOID();
 
@@ -1221,6 +1225,7 @@ public class RecorderActivity extends Activity
                     remakeID,
                     sceneID,
                     takeID,
+                    footage.isSelfie(),
                     null
             );
 
@@ -1281,6 +1286,7 @@ public class RecorderActivity extends Activity
                     remakeID,
                     sceneID,
                     takeID,
+                    footage.isSelfie(),
                     null
             );
 

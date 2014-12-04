@@ -135,6 +135,7 @@ public class UploadManager {
                 remake.getOID(),
                 footage.sceneID,
                 footage.getTakeID(),
+                footage.isSelfie(),
                 null
         );
     }

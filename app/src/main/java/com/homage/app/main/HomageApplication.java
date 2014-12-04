@@ -139,6 +139,7 @@ public class HomageApplication extends SugarApp {
                 final String takeID = (String)requestInfo.get("takeID");
                 final String remakeID = (String)requestInfo.get("remakeID");
                 final Integer sceneID = (Integer)requestInfo.get("sceneID");
+                final Boolean isSelfie = (Boolean)requestInfo.get("isSelfie");
 
                 attemptCount++;
 
@@ -153,7 +154,7 @@ public class HomageApplication extends SugarApp {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        HomageServer.sh().updateFootageUploadSuccess(remakeID, sceneID, takeID, userInfo);
+                        HomageServer.sh().updateFootageUploadSuccess(remakeID, sceneID, takeID, isSelfie, userInfo);
                     }
                 }, 15000);
 
