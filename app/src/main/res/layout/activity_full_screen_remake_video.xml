@@ -1,46 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="108dp"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:background="@color/homage_almost_black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/homage_black"
     >
 
-    <ImageView android:id="@+id/remakeImage"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:scaleType="fitXY"
-        android:layout_alignParentStart="true" />
-
-    <ImageView android:id="@+id/remakeImageHighlight"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="false"
-        android:alpha="0.2"
-        android:background="@drawable/selector_story_fg"
-        />
-
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:text=""
-        android:id="@+id/watchRemakeButton"
-        android:background="@android:color/transparent"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+    <fragment android:name="com.homage.app.player.VideoPlayerFragment"
+        android:id="@+id/video_player_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.homage.app.player.VideoPlayerFragment"
+        tools:layout="@layout/fragment_homage_video_view" />
 
     <TextView
         android:id="@+id/views_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/homage_text"
-        android:layout_toRightOf="@+id/viewsButton"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -49,8 +29,7 @@
         android:src="@drawable/icon_views"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_toRightOf="@+id/likes_count"
-        android:layout_marginLeft="60dp"
+        android:layout_toLeftOf="@+id/views_count"
         android:layout_marginBottom="4dp"
         android:focusable="false"
         android:focusableInTouchMode="false"

@@ -30,9 +30,9 @@ public class Remake extends SugarRecord<Remake> {
     public boolean stillPublic;
     public String userID;
 
-    public int shares;
-    public int likes;
-    public int views;
+    public int sharesCount;
+    public int likesCount;
+    public int viewsCount;
     //endregion
 
     //region *** Relationships ***
@@ -180,30 +180,6 @@ public class Remake extends SugarRecord<Remake> {
         int nextReadySceneID = nextReadyForFirstRetakeSceneID();
         if (nextReadySceneID == Footage.NOT_FOUND) return true;
         return false;
-    }
-
-    public int getShares() {
-        return shares;
-    }
-
-    public void setShares(int shares) {
-        this.shares = shares;
-    }
-
-    public int getLikes() {
-        return likes;
-    }
-
-    public void setLikes(int likes) {
-        this.likes = likes;
-    }
-
-    public int getViews() {
-        return views;
-    }
-
-    public void setViews(int views) {
-        this.views = views;
     }
      //endregion
 }

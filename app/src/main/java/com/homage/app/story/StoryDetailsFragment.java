@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +23,11 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.androidquery.AQuery;
 import com.homage.CustomAdapters.ExpandableHeightGridView;
@@ -29,6 +36,7 @@ import com.homage.CustomAdapters.OnOverScrolledListener;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
+import com.homage.app.player.FullScreenRemakePlayerActivity;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
@@ -59,6 +67,9 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
     boolean shouldFetchMoreRemakes = false;
     VideoPlayerFragment videoPlayerFragment;
     int rowHeight;
+
+    TextView likesCount;
+    TextView viewsCount;
 
     //Fetching remakes area
     final int fetchRemakes = 16;
@@ -136,12 +147,24 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
                 // Configure
                 AQuery aq = new AQuery(rowView);
                 aq.id(R.id.remakeImage).image(remake.thumbnailURL, true, true, 256, R.drawable.glass_dark);
-                aq.id(R.id.reportButton).clicked(new View.OnClickListener() {
+                aq.id(R.id.likesButton).clicked(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        showReportDialogForRemake(remake.getOID().toString());
+                        updateLikes(remake.getOID().toString());
                     }
                 });
+
+                likesCount = aq.id(R.id.likes_count).getTextView();
+                int likesCountdb = remake.likesCount;
+                if(likesCountdb < 0)
+                    likesCountdb = 0;
+                likesCount.setText(Integer.toString(likesCountdb));
+                viewsCount = aq.id(R.id.views_count).getTextView();
+                int viewsCountdb = remake.viewsCount;
+                if(viewsCountdb < 0)
+                    viewsCountdb = 0;
+                viewsCount.setText(Integer.toString(viewsCountdb));
+
                 aq.id(R.id.watchRemakeButton).clicked(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -449,7 +472,9 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
 
     //region video player calls
     private void playRemakeMovie(String remakeID) {
-        Intent myIntent = new Intent(this.getActivity(), FullScreenVideoPlayerActivity.class);
+//        TODO change this to my new movie player screen
+
+        Intent myIntent = new Intent(this.getActivity(), FullScreenRemakePlayerActivity.class);
         Remake remake = Remake.findByOID(remakeID);
         if (remake.videoURL == null) {
             Toast.makeText(getActivity(), "Video unavailable", Toast.LENGTH_SHORT).show();
@@ -510,6 +535,16 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
         }
     }
 
+    private void updateLikes(final String remakeID)
+    {
+//        TODO create updatelikes
+    }
+
+    private void updateViews(final String remakeID)
+    {
+//        TODO create updateViews
+    }
+
     private void showReportDialogForRemake(final String remakeID)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
@@ -530,6 +565,8 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
                 });
         builder.create().show();
     }
+
+
 
     private void reportAsInappropriate(String remakeID)
     {

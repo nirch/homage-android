@@ -72,6 +72,10 @@ public class RemakeParser extends Parser {
         remake.stillPublic =    true;
         remake.userID      =    Parser.parseOID(remakeInfo.getJSONObject("user_id"));
 
+        remake.likesCount =         parseInt("like_count",0);
+        remake.sharesCount =         parseInt("share_count",0);
+        remake.viewsCount =         parseInt("views",0);
+
         remake.save();
 
         responseInfo.put("remakeOID", remake.getOID());
