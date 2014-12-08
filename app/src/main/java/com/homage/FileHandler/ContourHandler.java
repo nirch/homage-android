@@ -47,36 +47,40 @@ public class ContourHandler {
         @Override
         protected String doInBackground(Void... params) {
 
-            //Get contour url from scene and download contour
-            Story story = remake.getStory();
-            Scene scene = story.findScene(remake.lastSceneID());
-            File storagePath = Environment.getExternalStorageDirectory();
-            if(scene.contourURL != null) {
-                String[] splitURL = scene.contourURL.split("/");
-                String endOfContourURL = splitURL[splitURL.length - 1];
+            try {
+                //Get contour url from scene and download contour
+                Story story = remake.getStory();
+                Scene scene = story.findScene(remake.lastSceneID());
 
-                String contourLocalUrl = storagePath + folderName + endOfContourURL;
-                File contourFile = new File(contourLocalUrl);
-                if (!contourFile.exists()) {
+                if (scene.contourURL != null) {
+                    String[] splitURL = scene.contourURL.split("/");
+                    String endOfContourURL = splitURL[splitURL.length - 1];
+                    File storagePath = new File(recorderActivity.getFilesDir(), endOfContourURL);
+                    String contourLocalUrl = storagePath + folderName + endOfContourURL;
+                    File contourFile = new File(contourLocalUrl);
+                    if (!contourFile.exists()) {
 
-                    URL url = null;
+                        URL url = null;
 
-                    try {
-                        url = new URL(scene.contourURL);
-                        Download.CreateFolderInLocalStorage(folderName);
-                        Download.WriteFileToStorage(contourLocalUrl, url);
-                    } catch (MalformedURLException e) {
-                        Log.d("MalformedURLException: ", e.toString());
-                        return null;
+                        try {
+                            url = new URL(scene.contourURL);
+                            Download.CreateFolderInLocalStorage(storagePath+folderName);
+                            Download.WriteFileToStorage(contourLocalUrl, url);
+                        } catch (MalformedURLException e) {
+                            Log.d("MalformedURLException: ", e.toString());
+                            return null;
+                        }
+
                     }
-
+                    return contourLocalUrl;
+                } else {
+                    return null;
                 }
-                return contourLocalUrl;
             }
-            else
-            {
-                return null;
+            catch(Exception ex){
+                Log.d("Contour Handler exception: ",  ex.getMessage().toString());
             }
+            return null;
         }
 
         @Override

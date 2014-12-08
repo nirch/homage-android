@@ -67,7 +67,7 @@ public class Download {
     }
 
     public static void CreateFolderInLocalStorage(String foldername){
-        File folder = new File(Environment.getExternalStorageDirectory() + foldername);
+        File folder = new File(foldername);
         boolean success = true;
         if (!folder.exists()) {
             success = folder.mkdirs();

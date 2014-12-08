@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
 
 
     <!-- GCM -->
@@ -70,7 +70,7 @@
             No need to update model version unless the model has changed.
             If model changed, change the version of the model according to the version of the app.
         -->
-        <meta-data android:name="VERSION" android:value="1002" />
+        <meta-data android:name="VERSION" android:value="1008" />
         <meta-data android:name="QUERY_LOG" android:value="false" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.homage.model" />
 

@@ -23,7 +23,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -33,18 +32,14 @@ import android.util.Log;
 
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.BounceInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -53,7 +48,6 @@ import android.widget.Toast;
 import com.android.grafika.AspectFrameLayout;
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
-import com.facebook.Settings;
 import com.homage.FileHandler.ContourHandler;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
@@ -143,6 +137,7 @@ public class RecorderActivity extends Activity
 
     // Actions & State
     public boolean isRecording;
+    public boolean itsPreviewTime = true;
 //    public boolean dontShowAgain;
     public boolean isBackgroundDetectionRunning;
 
@@ -761,6 +756,7 @@ public class RecorderActivity extends Activity
     private void controlsDrawerClosed() {
         if (recordButton.isClickable()) return;
         recordButton.startAnimation(fadeInAnimation);
+        recordButton.setVisibility(View.VISIBLE);
         recordButton.setClickable(true);
         recorderFullDetailsContainer.startAnimation(fadeOutAnimation);
         recorderShortDetailsContainer.startAnimation(fadeInAnimation);
@@ -769,6 +765,7 @@ public class RecorderActivity extends Activity
         videosPager.setVisibility(View.GONE);
         videosAdapter.hideSurfaces();
         showOverlayButtons(false);
+
 
 //        final CameraManager cm = CameraManager.sh();
         videosAdapter.done();
@@ -784,12 +781,12 @@ public class RecorderActivity extends Activity
                 cm.resumeCameraPreviewIfInitialized();
             }
         }, 200);
-        HideWarningButton();
+//        HideWarningButton();
     }
 
     private void controlsDrawerOpened() {
         if (!recordButton.isClickable()) return;
-
+        HideWarningButton();
         cancelCountingDownToRecording();
         recordButton.startAnimation(fadeOutAnimation);
         recordButton.setVisibility(View.GONE);
@@ -816,7 +813,7 @@ public class RecorderActivity extends Activity
         } else {
             aq.id(R.id.createMovieButton).visibility(View.GONE);
         }
-        HideWarningButton();
+//        HideWarningButton();
     }
 
 
@@ -1027,6 +1024,7 @@ public class RecorderActivity extends Activity
         HMixPanel.sh().track("RECancelRecord",props);
 
         isRecording = false;
+
         canceledCountDown = true;
         counterDown = null;
         aq.id(R.id.recorderCountDownText).visibility(View.INVISIBLE);
@@ -1431,6 +1429,7 @@ public class RecorderActivity extends Activity
             aq.id(R.id.recorderOverlayFlipCameraButton).visibility(View.GONE);
             aq.id(R.id.recorderOverlaySceneDescriptionButton).visibility(View.GONE);
         }
+        itsPreviewTime = false;
     }
 
     private void showOverlayButtons(boolean animated) {
@@ -1441,6 +1440,7 @@ public class RecorderActivity extends Activity
             aq.id(R.id.recorderOverlayFlipCameraButton).visibility(View.VISIBLE);
             aq.id(R.id.recorderOverlaySceneDescriptionButton).visibility(View.VISIBLE);
         }
+        itsPreviewTime = true;
     }
 
     private void hideSilhouette(boolean animated) {
@@ -1596,11 +1596,9 @@ public class RecorderActivity extends Activity
 //            warningCountDown = warningCountDownFrom;
         }
         isBackgroundDetectionRunning = false;
-        if(warningButton.getVisibility() != View.VISIBLE) {
-            warningButton.startAnimation(fadeInAnimation);
+        if(recordButton.isClickable() && warningButton.getVisibility() != View.VISIBLE) {
             warningButton.setVisibility(View.VISIBLE);
             warningButton.setClickable(true);
-
         }
     }
 
@@ -1609,7 +1607,6 @@ public class RecorderActivity extends Activity
 //        warningCountDown = warningCountDownFrom;
         isBackgroundDetectionRunning = false;
         if(warningButton.getVisibility() == View.VISIBLE) {
-            warningButton.startAnimation(fadeOutAnimation);
             warningButton.setVisibility(View.GONE);
             warningButton.setClickable(false);
         }

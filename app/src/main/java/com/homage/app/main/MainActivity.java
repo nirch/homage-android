@@ -765,8 +765,10 @@ public class MainActivity extends ActionBarActivity
     //endregion
 
     public void refetchTopRemakesForStory(Story story) {
-        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, 10, null); // Implement partial fetch
-        showRefreshProgress();
+        if(story != null) {
+            HomageServer.sh().refetchRemakesForStory(story.getOID(), null, 10, null); // Implement partial fetch
+            showRefreshProgress();
+        }
     }
 
     public void refetchAllRemakesForStory(Story story) {

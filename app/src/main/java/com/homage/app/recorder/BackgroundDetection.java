@@ -30,6 +30,7 @@ public class BackgroundDetection {
     Resources res;
     Matting mat;
     String TAG = "TAG_BackgroundDetection";
+    boolean matInitialized = false;
 
     String folderPath;
     String contourLocalUrl;
@@ -52,15 +53,15 @@ public class BackgroundDetection {
 
     private class StartMatting extends AsyncTask<Void, Void, Void> {
 
-        Camera camera;
+//        Camera camera;
         int width, height;
 
         public StartMatting(Camera pcamera) {
             super();
             // do stuff
-            camera = pcamera;
+//            camera = pcamera;
 
-            Camera.Parameters parameters = camera.getParameters();
+            Camera.Parameters parameters = pcamera.getParameters();
             width = parameters.getPreviewSize().width;
             height = parameters.getPreviewSize().height;
         }
@@ -71,6 +72,7 @@ public class BackgroundDetection {
             try {
                 mat = new Matting();
                 mat.logopen(vTool.getExtrnalPath("Notes", "mapping.log"));
+
             }catch(Exception e){
                 Log.d("Matting: ",e.toString());
             }
@@ -81,16 +83,16 @@ public class BackgroundDetection {
     private class TestFrameWithMatting extends AsyncTask<String, Void, String> {
 
         byte[] data;
-        Camera camera;
+//        Camera camera;
         int width, height;
 
         public TestFrameWithMatting(byte[] pdata, Camera pcamera) {
             super();
             // do stuff
             data = pdata;
-            camera = pcamera;
+//            camera = pcamera;
 
-            Camera.Parameters parameters = camera.getParameters();
+            Camera.Parameters parameters = pcamera.getParameters();
             width = parameters.getPreviewSize().width;
             height = parameters.getPreviewSize().height;
         }
@@ -98,49 +100,42 @@ public class BackgroundDetection {
         @Override
         protected String doInBackground(String... params) {
             int cc = 1;
+            contourLocalUrl = recorderActivity.contourLocalUrl;
 
-                //String ctrFile = vTool.getExtrnalPath("Notes", contourLocalUrl);
-                contourLocalUrl = recorderActivity.contourLocalUrl;
-                if (!contourLocalUrl.isEmpty()) {
-                    try{
-                        // Convert to JPG
+            if(contourLocalUrl != null) {
+                if(!matInitialized) {
+                    int aa = mat.init(null, contourLocalUrl, HardCodedWidth, HardCodedHeight);
+                    matInitialized = true;
+                }
+
+                try {
+                    // Convert to JPG
 //                        int x = camera.getParameters().getPreviewFormat();
-                        Camera.Size previewSize = camera.getParameters().getPreviewSize();
+//                    Camera.Size previewSize = camera.getParameters().getPreviewSize();
 
-                        byte[] croppedData = new byte[data.length];
-                        Matting.imageNV21to640X360(width, height, data, croppedData);
+                    byte[] croppedData = new byte[(int) ((width * height * 3) / 2)];
+//                      DEBUG Save image to phone
+//                    imageCounter++;
+//                    byte[] rgbaData = new byte[width * height * 4];
+//                    Matting.imageNV21toRGB4(width, height, data, rgbaData);
+//                    String filepath = vTool.getExtrnalPath("/homage/images/", Integer.toString(imageCounter) + "_before_crop_.jpg");
+//                    vTool.writeJpeg(rgbaData, width, height, filepath);
+//                    vTool.write(data, "/homage/images/", Integer.toString(imageCounter) + "_data.txt");
+//                      ------------------------------------------
+                    Matting.imageNV21to640X360(width, height, data, croppedData);
+                    cc = mat.processBackground(HardCodedWidth, HardCodedHeight, croppedData);
 
-                        int aa = mat.init(null, contourLocalUrl, HardCodedWidth, HardCodedHeight);
-                        cc = mat.processBackground(HardCodedWidth, HardCodedHeight, croppedData);
-
-//                        if(!isProductionServer) {
-////                      DEBUG--------------------------------------------------------------------------
-////                            YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, width, height, null);
-////                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-////                            yuvimage.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), 80, baos);
-////                            byte[] jdata = baos.toByteArray();
-////
-////
-////                            // DEBUG Convert to Bitmap
-////                            Bitmap bitmap = BitmapFactory.decodeByteArray(jdata, 0, jdata.length);
-////                            Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 60, HardCodedWidth, HardCodedHeight);
-//////                      For testing if bitmap is good
-////
-////
-//////                      DEBUG  save pictures to disk to see the grading
-////                            imageCounter++;
-//////                        vTool.writeJpeg(jdata,HardCodedWidth,HardCodedHeight,folderPath+Integer.toString(imageCounter) + "_cc_" + Integer.toString(cc) + ".jpg");
-//////                        DEBUG download jpegs so we can see output
-////                            String folderPath = contourLocalUrl.split("\\.")[0].split("storage/sdcard0")[1];
-////                            Download.WriteBitmapToDisk(cropped, folderPath, Integer.toString(imageCounter) + "_cc_" + Integer.toString(cc) + ".jpg");
-////                    DEBUG------------------------------------------------------------------------------------
-//                        }
-                    }
-                    catch(Exception e){
-                        Log.d(TAG, e.toString());
-                    }
-
+//                      DEBUG Save image to phone
+//                    byte[] rgbaData2 = new byte[HardCodedWidth * HardCodedHeight * 4];
+//                    Matting.imageNV21toRGB4(HardCodedWidth, HardCodedHeight, croppedData, rgbaData2);
+//                    String filepath2 = vTool.getExtrnalPath("/homage/images/", Integer.toString(imageCounter) + "_cc_" + Integer.toString(cc) + ".jpg");
+//                    vTool.writeJpeg(rgbaData2, HardCodedWidth, HardCodedHeight, filepath2);
+//                      ------------------------------------------------
+                } catch (Exception e) {
+                    Log.d(TAG, e.toString());
+                }
             }
+
             String ccs = Integer.toString(cc);
             Log.d("cc",ccs);
             return ccs;

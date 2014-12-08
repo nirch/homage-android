@@ -370,14 +370,14 @@ public class CameraManager {
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
             //catch only tenth frame
-            if(!recorderActivity.isRecording) {
+            if(!recorderActivity.isRecording && recorderActivity.itsPreviewTime) {
                 if (!recorderActivity.isBackgroundDetectionRunning) {
-                    if (everyNthPreviewFrame != 0) {
+                    if (everyNthPreviewFrame > 0) {
                         everyNthPreviewFrame--;
                     } else {
-                        recorderActivity.isBackgroundDetectionRunning = true;
                         everyNthPreviewFrame = defaultEveryNthPreviewFrame;
                         backgroundDetection.RunTestOnFrame(data, camera);
+                        recorderActivity.isBackgroundDetectionRunning = true;
                     }
                 }
             }
