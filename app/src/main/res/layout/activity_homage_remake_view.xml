@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    >
+
+    <VideoView android:id="@+id/videoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        />
+
+    <TextView
+        android:id="@+id/views_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/homage_text"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_toRightOf="@+id/viewsButton"
+        />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/viewsButton"
+        android:src="@drawable/icon_views"
+        android:layout_marginBottom="4dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:background="@android:color/transparent"
+        android:adjustViewBounds="true"
+        android:layout_marginRight="5dp" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/likesButton"
+        android:src="@drawable/selector_my_like_button"
+        android:layout_toLeftOf="@+id/viewsButton"
+        android:layout_marginBottom="4dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:adjustViewBounds="true"
+        android:layout_marginRight="5dp" />
+
+    <Button android:id="@+id/touchVideoButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        />
+
+    <ImageView android:id="@+id/videoThumbnailImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:background="@null"
+        android:visibility="gone"
+        />
+
+    <LinearLayout android:id="@+id/videoControls"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/transparent"
+        android:weightSum="3"
+        >
+
+        <ImageButton android:id="@+id/videoStopButton"
+            style="@style/videoPlayerButton"
+            android:src="@drawable/selector_video_button_stop"
+            />
+
+        <ImageButton android:id="@+id/videoPlayPauseButton"
+            style="@style/videoPlayerButton"
+            android:src="@drawable/selector_video_button_play"
+            />
+
+        <ImageButton android:id="@+id/videoFullScreenButton"
+            style="@style/videoPlayerButton"
+            android:src="@drawable/selector_video_button_fullscreen"
+            />
+
+    </LinearLayout>
+
+
+
+    <ProgressBar android:id="@+id/videoFragmentLoading"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerInParent="true"
+        />
+
+    <ImageButton android:id="@+id/videoBigPlayButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/selector_my_play"
+        android:layout_centerInParent="true"
+        android:background="@android:color/transparent"
+        android:padding="10dp"
+        android:visibility="gone"
+        />
+
+
+
+</RelativeLayout>

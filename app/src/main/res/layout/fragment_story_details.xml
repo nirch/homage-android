@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:background="@color/homage_black"
+    android:layout_gravity="center"
     android:weightSum="3">
 
     <TextView android:id="@+id/storyDescription"
@@ -20,14 +26,20 @@
         android:layout_weight="0.1"
         />
 
+<com.homage.CustomAdapters.SwipeRefreshLayoutBottom
+    android:id="@+id/swipe_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="2.5"
+    >
 
-<com.homage.CustomAdapters.ObservableScrollView
+<ScrollView
     android:id="@+id/remakesScrollview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:overScrollHeader="@null"
     android:overScrollFooter="@null"
-    android:layout_weight="2.5">
+    >
 
 <LinearLayout
     android:layout_width="match_parent"
@@ -90,24 +102,10 @@
 
     </RelativeLayout>
 
-
 </LinearLayout>
-</com.homage.CustomAdapters.ObservableScrollView>
+</ScrollView>
 
-<RelativeLayout android:id="@+id/fetchMoreRemakesProgress"
-    android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:background="@color/homage_darker_transparent_overlay"
-    android:layout_alignParentBottom="true"
-    android:visibility="gone"
-    >
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"/>
-</RelativeLayout>
+</com.homage.CustomAdapters.SwipeRefreshLayoutBottom>
 
 <RelativeLayout
     android:id="@+id/makebuttonlayout"
@@ -127,6 +125,14 @@
         android:layout_centerHorizontal="true"
         style="@style/actionButton" />
 </RelativeLayout>
-
-
 </LinearLayout>
+
+<FrameLayout android:id="@+id/greyscreen"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/homage_darker_transparent_overlay"
+    android:visibility="gone"
+    >
+</FrameLayout>
+
+</FrameLayout>

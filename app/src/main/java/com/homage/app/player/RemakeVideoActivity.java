@@ -1,42 +1,43 @@
 package com.homage.app.player;
 
 import android.app.Activity;
-import android.content.res.Configuration;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
-import android.support.v4.app.Fragment;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
+import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.androidquery.AQuery;
+import com.homage.CustomAdapters.GestureListener;
 import com.homage.app.R;
+import com.homage.app.main.MainActivity;
 import com.homage.networking.analytics.HEvents;
-import com.homage.networking.server.HomageServer;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 
-public class VideoPlayerFragment
-        extends
-            Fragment
+public class RemakeVideoActivity extends
+        Activity
         implements
-            MediaPlayer.OnErrorListener,
-            MediaPlayer.OnPreparedListener,
-            MediaPlayer.OnCompletionListener,
-            MediaPlayer.OnInfoListener
-{
-    static final String TAG = "TAG_VideoPlayerFragment";
+        MediaPlayer.OnErrorListener,
+        MediaPlayer.OnPreparedListener,
+        MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnInfoListener, View.OnTouchListener{
+    static final String TAG = "TAG_RemakeVideoFragment";
 
     // Settings
     public static final String K_FILE_PATH = "videoFilePath";
@@ -47,6 +48,9 @@ public class VideoPlayerFragment
     public static final String K_IS_EMBEDDED = "isEmbedded";
     public static final String K_THUMB_URL = "thumbURL";
     public static final String K_THUMB_DRAWABLE_ID = "thumbDrawableId";
+
+    //    Gesture stuff
+    private GestureDetector mGestureDetector;
 
     private Runnable onFinishedPlayback;
     private Runnable onStartedPlayback;
@@ -72,7 +76,7 @@ public class VideoPlayerFragment
     boolean allowToggleFullscreen = false;
     boolean finishOnCompletion = false;
     boolean autoHideControls = true;
-    boolean autoStartPlaying = false;
+    boolean autoStartPlaying = true;
     boolean isEmbedded = false;
 
     // Info
@@ -86,68 +90,40 @@ public class VideoPlayerFragment
     LayoutInflater inflater;
     boolean alreadyGotSettings = false;
 
-
     //region *** lifecycle ***
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        this.inflater = inflater;
-        rootView = inflater.inflate(R.layout.fragment_homage_video_view, container, false);
-        aq = new AQuery(rootView);
-        videoView = (VideoView)aq.id(R.id.videoView).getView();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_homage_remake_view);
+        aq = new AQuery(this);
 
+        // Bind the gestureDetector to GestureListener
+        mGestureDetector = new GestureDetector(this, new GestureListener());
+
+//      <-- VideoView Stuff-->
+        videoView = (VideoView) aq.id(R.id.videoView).getView();
+        videoView.setOnTouchListener(this);
         // Get the the file path / url of the video.
         if (alreadyGotSettings) {
             // Settings already set. Initalize.
             initialize();
-            return rootView;
+//            return rootView;
+        }
+        else
+        {
+            initializeWithArguments();
         }
 
         // Try to get settings arguments from activity intent extras.
-        Bundle b = getActivity().getIntent().getExtras();
-        if (b == null) return rootView;
+//        Activity parent = this;
+//        Bundle b = this.getIntent().getExtras();
+//        if (b == null) return rootView;
 
         // We have the arguments. Initialize.
-        initializeWithArguments(b);
-        return rootView;
-    }
 
-    public void setArguments(Bundle b) {
-        initializePlayerSettings(b);
-    }
+//        return rootView;
 
-    public void initializeWithArguments(Bundle b) {
-        initializePlayerSettings(b);
-        initializeUIState();
-        initializePlayingVideo();
-        bindUIHandlers();
     }
-
-    public void initialize() {
-        initializeUIState();
-        initializePlayingVideo();
-        bindUIHandlers();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        try {
-            fullStop();
-        } catch(Exception ex) {}
-    }
-
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//        if (isEmbedded) handleEmbeddedVideoConfiguration(newConfig);
-//    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-    //endregion
 
     //region *** initializations ***
     private void initializeUIState() {
@@ -178,6 +154,38 @@ public class VideoPlayerFragment
         showControls();
     }
 
+//    public void setArguments() {
+//        initializePlayerSettings();
+//    }
+
+    public void initializeWithArguments() {
+        initializePlayerSettings();
+        initializeUIState();
+        initializePlayingVideo();
+        bindUIHandlers();
+    }
+
+    public void initialize() {
+        initializeUIState();
+        initializePlayingVideo();
+        bindUIHandlers();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            fullStop();
+        } catch (Exception ex) {
+        }
+    }
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        if (isEmbedded) handleEmbeddedVideoConfiguration(newConfig);
+//    }
+
     private void initializePlayingVideo() {
         // Initialize playing the video
         pause();
@@ -186,7 +194,7 @@ public class VideoPlayerFragment
 
 
     private void disableButton(int buttonId) {
-        ImageButton ib = (ImageButton)aq.id(buttonId).getView();
+        ImageButton ib = (ImageButton) aq.id(buttonId).getView();
         ib.setAlpha(0.2f);
         ib.setImageResource(R.drawable.icon_small_player_disabled);
     }
@@ -217,20 +225,21 @@ public class VideoPlayerFragment
     //endregion
 
     //region *** Media player ***
-    private void initializePlayerSettings(Bundle b) {
+    private void initializePlayerSettings() {
+        Intent b = getIntent();
         info = new HashMap<String, Object>();
         initTime = System.currentTimeMillis();
-        filePath = b.getString(K_FILE_PATH);
-        entityType = b.getInt(HEvents.HK_VIDEO_ENTITY_TYPE);
-        entityID = b.getString(HEvents.HK_VIDEO_ENTITY_ID);
-        originatingScreen = b.getInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN);
+        filePath = b.getStringExtra(K_FILE_PATH);
+        entityType = b.getIntExtra(HEvents.HK_VIDEO_ENTITY_TYPE, 0);
+        entityID = b.getStringExtra(HEvents.HK_VIDEO_ENTITY_ID);
+        originatingScreen = b.getIntExtra(HEvents.HK_VIDEO_ORIGINATING_SCREEN, 0);
 
         if (filePath == null) {
-            fileURL = b.getString(K_FILE_URL);
+            fileURL = b.getStringExtra(K_FILE_URL);
             if (fileURL == null) return;
             info.put(HEvents.HK_VIDEO_FILE_URL, fileURL);
         } else {
-            info.put(HEvents.HK_VIDEO_FILE_PATH,filePath);
+            info.put(HEvents.HK_VIDEO_FILE_PATH, filePath);
         }
         info.put(HEvents.HK_VIDEO_INIT_TIME, initTime);
         info.put(HEvents.HK_VIDEO_ENTITY_TYPE, entityType);
@@ -238,12 +247,12 @@ public class VideoPlayerFragment
         info.put(HEvents.HK_VIDEO_ORIGINATING_SCREEN, originatingScreen);
 
         // More settings
-        allowToggleFullscreen = b.getBoolean(K_ALLOW_TOGGLE_FULLSCREEN, true);
-        finishOnCompletion = b.getBoolean(K_FINISH_ON_COMPLETION, false);
-        autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, true);
-        isEmbedded = b.getBoolean(K_IS_EMBEDDED, false);
-        thumbURL = b.getString(K_THUMB_URL, null);
-        thumbDrawableId = b.getInt(K_THUMB_DRAWABLE_ID, 0);
+        allowToggleFullscreen = b.getBooleanExtra(K_ALLOW_TOGGLE_FULLSCREEN, true);
+        finishOnCompletion = b.getBooleanExtra(K_FINISH_ON_COMPLETION, false);
+        autoStartPlaying = b.getBooleanExtra(K_AUTO_START_PLAYING, true);
+        isEmbedded = b.getBooleanExtra(K_IS_EMBEDDED, false);
+        thumbURL = b.getStringExtra(K_THUMB_URL);
+        thumbDrawableId = b.getIntExtra(K_THUMB_DRAWABLE_ID, 0);
 
         Log.d(TAG, String.format("Will play video in fragment: %s %s", filePath, fileURL));
         alreadyGotSettings = true;
@@ -253,14 +262,17 @@ public class VideoPlayerFragment
         }
     }
 
+
+
     // Bind to UI events
     private void bindUIHandlers() {
+//        TODO create new touch handler
         aq.id(R.id.touchVideoButton).clicked(onClickedToggleControlsButton);
         aq.id(R.id.videoStopButton).clicked(onClickedStopButton);
         aq.id(R.id.videoPlayPauseButton).clicked(onClickedPlayPauseButton);
         aq.id(R.id.videoFullScreenButton).clicked(onClickedFullScreenButton);
         aq.id(R.id.videoBigPlayButton).clicked(onClickedBigPlayButton);
-
+        aq.id(R.id.likesButton).clicked(onClickedLikeButton);
     }
 
     @Override
@@ -275,7 +287,7 @@ public class VideoPlayerFragment
 
         }
         if (finishOnCompletion) {
-            getActivity().finish();
+            this.finish();
         } else {
             showThumbState();
         }
@@ -286,7 +298,7 @@ public class VideoPlayerFragment
         Log.d(TAG, String.format("Error playing video: %d %d %s %s", i, i2, filePath, fileURL));
 
         Toast.makeText(
-                getActivity(),
+                this,
                 String.format("Video playing error %d %d", i, i2),
                 Toast.LENGTH_SHORT).show();
 
@@ -297,18 +309,13 @@ public class VideoPlayerFragment
     public void onPrepared(MediaPlayer mediaPlayer) {
         Log.d(TAG, String.format("Video is prepared for playing: %s %s", filePath, fileURL));
         aq.id(R.id.videoCurtain).visibility(View.GONE);
-        aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
         if (autoStartPlaying) {
-            HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_WILL_PLAY , info);
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_WILL_PLAY, info);
             aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
             aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
             start();
         }
-
-
     }
-
-
     //endregion
 
     //region *** Controls ***
@@ -347,23 +354,27 @@ public class VideoPlayerFragment
     }
 
     void pause() {
-        ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
+        ImageButton ib = (ImageButton) aq.id(R.id.videoPlayPauseButton).getView();
         ib.setImageResource(R.drawable.selector_video_button_play);
         if (videoView != null) videoView.pause();
     }
 
     void start() {
-        ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
+        ImageButton ib = (ImageButton) aq.id(R.id.videoPlayPauseButton).getView();
         ib.setImageResource(R.drawable.selector_video_button_pause);
         aq.id(R.id.videoView).visibility(View.VISIBLE);
         if (videoView != null) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYING, info);
+            videoView.seekTo(1);
             videoView.start();
+            aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
         }
         if (onStartedPlayback != null) {
             new Handler().post(onStartedPlayback);
         }
     }
+
+
 
     void showThumbState() {
         if (videoView != null) videoView.seekTo(0);
@@ -398,7 +409,7 @@ public class VideoPlayerFragment
             new Handler().post(onFinishedPlayback);
         }
         if (finishOnCompletion) {
-            VideoPlayerFragment.this.getActivity().finish();
+            RemakeVideoActivity.this.finish();
             return;
         }
         showThumbState();
@@ -407,15 +418,15 @@ public class VideoPlayerFragment
 
     //region *** UI event handlers ***
     /**
-     *  ==========================
-     *      UI event handlers.
-     *  ==========================
+     * ==========================
+     * UI event handlers.
+     * ==========================
      */
 
     View.OnClickListener onClickedToggleControlsButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            VideoPlayerFragment.this.toggleControls();
+            RemakeVideoActivity.this.toggleControls();
         }
     };
 
@@ -450,6 +461,16 @@ public class VideoPlayerFragment
         }
     };
 
+    View.OnClickListener onClickedLikeButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+//            hideThumb();
+//            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
+//            aq.id(R.id.loadingVideoPprogress).visibility(View.VISIBLE);
+//            videoView.seekTo(0);
+//            start();
+        }
+    };
 
 
     View.OnClickListener onClickedFullScreenButton = new View.OnClickListener() {
@@ -504,5 +525,19 @@ public class VideoPlayerFragment
         }
         return true;
     }
-    //endregion
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+//        TODO catch gestures
+        boolean result = mGestureDetector.onTouchEvent(event);
+        if (!result) {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+//                        stopScrolling();
+                return result;
+            }
+        }
+        return result;
+    }
+
+//endregion
 }

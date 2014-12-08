@@ -6,37 +6,30 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.PixelFormat;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.InflateException;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.VideoView;
-
 import com.androidquery.AQuery;
 import com.homage.CustomAdapters.ExpandableHeightGridView;
-import com.homage.CustomAdapters.ObservableScrollView;
-import com.homage.CustomAdapters.OnOverScrolledListener;
+import com.homage.CustomAdapters.SwipeRefreshLayoutBottom;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
-import com.homage.app.player.FullScreenRemakePlayerActivity;
+import com.homage.app.player.RemakeVideoActivity;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
@@ -49,7 +42,7 @@ import com.homage.app.player.FullScreenVideoPlayerActivity;
 import java.util.HashMap;
 import java.util.List;
 
-public class StoryDetailsFragment extends Fragment implements OnOverScrolledListener {
+public class StoryDetailsFragment extends Fragment implements com.homage.CustomAdapters.SwipeRefreshLayoutBottom.OnRefreshListener {
     public String TAG = "TAG_StoryDetailsFragment";
 
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -59,10 +52,9 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
     LayoutInflater inflater;
     AQuery aq;
     ExpandableHeightGridView remakesGridView;
-    ObservableScrollView remakesScrollView;
-    private OnOverScrolledListener mOnOverScrolledListener;
+    ScrollView remakesScrollView;
 
-    static boolean createdOnce = false;
+//    static boolean createdOnce = false;
     public Story story;
     boolean shouldFetchMoreRemakes = false;
     VideoPlayerFragment videoPlayerFragment;
@@ -76,6 +68,31 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
     int skipRemakes = 16;
 
     RemakesAdapter adapter;
+
+    SwipeRefreshLayoutBottom swipeLayout;
+
+
+
+    @Override
+    public void onRefresh() {
+
+        new Handler().postDelayed(new Runnable() {
+            @Override public void run() {
+                //        TODO put getting remake code here
+                if (shouldFetchMoreRemakes) {
+                Log.d(TAG, "Will fetch more remakes.");
+                showFetchMoreRemakesProgress();
+//                shouldFetchMoreRemakes = false;
+                MainActivity activity = (MainActivity)getActivity();
+                    if(story != null) {
+                        activity.refetchMoreRemakesForStory(story, fetchRemakes, skipRemakes);
+                        skipRemakes += fetchRemakes;
+                    }
+                }
+
+            }
+        }, 5000);
+    }
 
     class RemakesAdapter extends BaseAdapter {
         private Activity mContext;
@@ -212,8 +229,8 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
 //        remakesGridView.setOnScrollListener(onGridViewScrollListener);
         remakesGridView.setExpanded(true);
 
-        remakesScrollView = (ObservableScrollView) aq.id(R.id.remakesScrollview).getView();
-        remakesScrollView.setOnOverScrolledListener(getActivity(), this);
+        remakesScrollView = (ScrollView) aq.id(R.id.remakesScrollview).getView();
+//        remakesScrollView.setOnOverScrolledListener(getActivity(), this);
 
         //region *** Bind to UI event handlers ***
         /**********************************/
@@ -225,20 +242,20 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
         //endregion
     }
 
-    @Override
-    public void onOverScrolled(ObservableScrollView scrollView, int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
-        if(clampedY && scrollY > 10) {
-            // End has been reached
-//            if (shouldFetchMoreRemakes) {
-                Log.d(TAG, "Will fetch more remakes.");
-                showFetchMoreRemakesProgress();
-//                shouldFetchMoreRemakes = false;
-                MainActivity activity = (MainActivity)getActivity();
-                activity.refetchMoreRemakesForStory(story, fetchRemakes, skipRemakes);
-                skipRemakes += fetchRemakes;
-//            }
-        }
-    }
+//    @Override
+//    public void onOverScrolled(ObservableScrollView scrollView, int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
+//        if(clampedY && scrollY > 10) {
+//            // End has been reached
+////            if (shouldFetchMoreRemakes) {
+//                Log.d(TAG, "Will fetch more remakes.");
+//                showFetchMoreRemakesProgress();
+////                shouldFetchMoreRemakes = false;
+//                MainActivity activity = (MainActivity)getActivity();
+//                activity.refetchMoreRemakesForStory(story, fetchRemakes, skipRemakes);
+//                skipRemakes += fetchRemakes;
+////            }
+//        }
+//    }
 
     //region *** fragment life cycle related
     @Override
@@ -264,6 +281,9 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
             ft.add(R.id.storyDetailsVideoContainer, videoPlayerFragment, VIDEO_FRAGMENT_TAG);
             ft.commit();
         }
+
+//        remakeVideoContainer = (FrameLayout)aq.id(R.id.remakeVideoContainer).getView();
+
 
         // Allow orientation change.
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
@@ -302,6 +322,11 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
             }
         });
 
+        swipeLayout = (SwipeRefreshLayoutBottom)aq.id(R.id.swipe_container).getView();
+        swipeLayout.setOnRefreshListener(this);
+        swipeLayout.setColorScheme(android.R.color.holo_blue_bright, android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
+
+
         return rootView;
     }
 
@@ -331,13 +356,18 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
     @Override
     public void onResume() {
         super.onResume();
+        aq.id(R.id.greyscreen).visibility(View.GONE);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         stopStoryVideo();
+        aq.id(R.id.greyscreen).visibility(View.VISIBLE);
+//        stopRemakeVideo();
     }
+
+
 
     public void refreshData() {
         // Just an example of refreshing the data from local storage,
@@ -393,11 +423,12 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
 //    };
 
     private void showFetchMoreRemakesProgress() {
-        aq.id(R.id.fetchMoreRemakesProgress).visibility(View.VISIBLE);
+//        aq.id(R.id.fetchMoreRemakesProgress).visibility(View.VISIBLE);
     }
 
     private void hideFetchMoreRemakesProgress() {
-        aq.id(R.id.fetchMoreRemakesProgress).visibility(View.GONE);
+        swipeLayout.setRefreshing(false);
+//        aq.id(R.id.fetchMoreRemakesProgress).visibility(View.GONE);
     }
     //endregion
 
@@ -469,29 +500,48 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
 
     //endregion
 
-
     //region video player calls
     private void playRemakeMovie(String remakeID) {
 //        TODO change this to my new movie player screen
 
-        Intent myIntent = new Intent(this.getActivity(), FullScreenRemakePlayerActivity.class);
-        Remake remake = Remake.findByOID(remakeID);
-        if (remake.videoURL == null) {
-            Toast.makeText(getActivity(), "Video unavailable", Toast.LENGTH_SHORT).show();
-            return;
+        stopStoryVideo();
+
+        if(remakeID != null && !remakeID.isEmpty()) {
+//            remakeVideoContainer.setVisibility(View.VISIBLE);
+            Remake remake = Remake.findByOID(remakeID);
+//
+//            // Create new fragment and transaction
+//            Fragment remakeVideoFragment = new RemakeVideoFragment();
+//            // set Fragmentclass Arguments
+//            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//// Replace whatever is in the fragment_container view with this fragment,
+//// and add the transaction to the back stack
+//            transaction.replace(R.id.remakeVideoContainer, remakeVideoFragment);
+////            transaction.addToBackStack(null);
+//// Commit the transaction
+//            transaction.commit();
+            aq.id(R.id.greyscreen).visibility(View.VISIBLE);
+            Intent intent = new Intent(this.getActivity(), RemakeVideoActivity.class);
+            // Initialize the video of the story we need to show in the fragment.
+            intent.putExtra(VideoPlayerFragment.K_FILE_URL, remake.videoURL);
+            intent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
+            intent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
+            intent.putExtra(VideoPlayerFragment.K_IS_EMBEDDED, true);
+            intent.putExtra(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
+
+            intent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
+            intent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
+            intent.putExtra(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
+
+            startActivity(intent);
+
+
         }
+    }
 
-        Uri videoURL = Uri.parse(remake.videoURL);
-        myIntent.putExtra(VideoPlayerFragment.K_FILE_URL, videoURL.toString());
-        myIntent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
-        myIntent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, true);
-        myIntent.putExtra(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
+    private void touchRemakeVideo(View v, MotionEvent event)
+    {
 
-        myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
-        myIntent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
-        myIntent.putExtra(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
-
-        startActivity(myIntent);
     }
 
     //
@@ -572,8 +622,6 @@ public class StoryDetailsFragment extends Fragment implements OnOverScrolledList
     {
         HomageServer.sh().reportRemakeAsInappropriate(remakeID);
     }
-
-
 }
 //endregion
 

@@ -1,42 +1,37 @@
 package com.homage.app.player;
 
 import android.app.Activity;
-import android.content.res.Configuration;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
-import android.support.v4.app.Fragment;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.androidquery.AQuery;
+import com.homage.CustomAdapters.GestureListener;
 import com.homage.app.R;
 import com.homage.networking.analytics.HEvents;
-import com.homage.networking.server.HomageServer;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 
-public class VideoPlayerFragment
-        extends
-            Fragment
+public class RemakeVideoFragment       extends
+        Fragment
         implements
-            MediaPlayer.OnErrorListener,
-            MediaPlayer.OnPreparedListener,
-            MediaPlayer.OnCompletionListener,
-            MediaPlayer.OnInfoListener
-{
-    static final String TAG = "TAG_VideoPlayerFragment";
+        MediaPlayer.OnErrorListener,
+        MediaPlayer.OnPreparedListener,
+        MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnInfoListener{
+    static final String TAG = "TAG_RemakeVideoFragment";
 
     // Settings
     public static final String K_FILE_PATH = "videoFilePath";
@@ -47,6 +42,9 @@ public class VideoPlayerFragment
     public static final String K_IS_EMBEDDED = "isEmbedded";
     public static final String K_THUMB_URL = "thumbURL";
     public static final String K_THUMB_DRAWABLE_ID = "thumbDrawableId";
+
+    //    Gesture stuff
+    private GestureDetector mGestureDetector;
 
     private Runnable onFinishedPlayback;
     private Runnable onStartedPlayback;
@@ -72,7 +70,7 @@ public class VideoPlayerFragment
     boolean allowToggleFullscreen = false;
     boolean finishOnCompletion = false;
     boolean autoHideControls = true;
-    boolean autoStartPlaying = false;
+    boolean autoStartPlaying = true;
     boolean isEmbedded = false;
 
     // Info
@@ -92,9 +90,27 @@ public class VideoPlayerFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.inflater = inflater;
-        rootView = inflater.inflate(R.layout.fragment_homage_video_view, container, false);
+        rootView = inflater.inflate(R.layout.activity_homage_remake_view, container, false);
         aq = new AQuery(rootView);
-        videoView = (VideoView)aq.id(R.id.videoView).getView();
+
+        // Bind the gestureDetector to GestureListener
+        mGestureDetector = new GestureDetector(this.getActivity(), new GestureListener());
+
+//      <-- VideoView Stuff-->
+        videoView = (VideoView) aq.id(R.id.videoView).getView();
+        ((VideoView) aq.id(R.id.videoView).getView()).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                boolean result = mGestureDetector.onTouchEvent(event);
+                if (!result) {
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+//                        stopScrolling();
+                        result = true;
+                    }
+                }
+                return result;
+            }
+        });
 
         // Get the the file path / url of the video.
         if (alreadyGotSettings) {
@@ -104,6 +120,7 @@ public class VideoPlayerFragment
         }
 
         // Try to get settings arguments from activity intent extras.
+        Activity parent = getActivity();
         Bundle b = getActivity().getIntent().getExtras();
         if (b == null) return rootView;
 
@@ -134,7 +151,8 @@ public class VideoPlayerFragment
         super.onPause();
         try {
             fullStop();
-        } catch(Exception ex) {}
+        } catch (Exception ex) {
+        }
     }
 
 //    @Override
@@ -186,7 +204,7 @@ public class VideoPlayerFragment
 
 
     private void disableButton(int buttonId) {
-        ImageButton ib = (ImageButton)aq.id(buttonId).getView();
+        ImageButton ib = (ImageButton) aq.id(buttonId).getView();
         ib.setAlpha(0.2f);
         ib.setImageResource(R.drawable.icon_small_player_disabled);
     }
@@ -230,7 +248,7 @@ public class VideoPlayerFragment
             if (fileURL == null) return;
             info.put(HEvents.HK_VIDEO_FILE_URL, fileURL);
         } else {
-            info.put(HEvents.HK_VIDEO_FILE_PATH,filePath);
+            info.put(HEvents.HK_VIDEO_FILE_PATH, filePath);
         }
         info.put(HEvents.HK_VIDEO_INIT_TIME, initTime);
         info.put(HEvents.HK_VIDEO_ENTITY_TYPE, entityType);
@@ -252,6 +270,8 @@ public class VideoPlayerFragment
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_WILL_AUTO_PLAY, info);
         }
     }
+
+
 
     // Bind to UI events
     private void bindUIHandlers() {
@@ -299,13 +319,11 @@ public class VideoPlayerFragment
         aq.id(R.id.videoCurtain).visibility(View.GONE);
         aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
         if (autoStartPlaying) {
-            HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_WILL_PLAY , info);
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_WILL_PLAY, info);
             aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
             aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
             start();
         }
-
-
     }
 
 
@@ -347,13 +365,13 @@ public class VideoPlayerFragment
     }
 
     void pause() {
-        ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
+        ImageButton ib = (ImageButton) aq.id(R.id.videoPlayPauseButton).getView();
         ib.setImageResource(R.drawable.selector_video_button_play);
         if (videoView != null) videoView.pause();
     }
 
     void start() {
-        ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
+        ImageButton ib = (ImageButton) aq.id(R.id.videoPlayPauseButton).getView();
         ib.setImageResource(R.drawable.selector_video_button_pause);
         aq.id(R.id.videoView).visibility(View.VISIBLE);
         if (videoView != null) {
@@ -398,7 +416,7 @@ public class VideoPlayerFragment
             new Handler().post(onFinishedPlayback);
         }
         if (finishOnCompletion) {
-            VideoPlayerFragment.this.getActivity().finish();
+            RemakeVideoFragment.this.getActivity().finish();
             return;
         }
         showThumbState();
@@ -407,15 +425,15 @@ public class VideoPlayerFragment
 
     //region *** UI event handlers ***
     /**
-     *  ==========================
-     *      UI event handlers.
-     *  ==========================
+     * ==========================
+     * UI event handlers.
+     * ==========================
      */
 
     View.OnClickListener onClickedToggleControlsButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            VideoPlayerFragment.this.toggleControls();
+            RemakeVideoFragment.this.toggleControls();
         }
     };
 
@@ -449,7 +467,6 @@ public class VideoPlayerFragment
             start();
         }
     };
-
 
 
     View.OnClickListener onClickedFullScreenButton = new View.OnClickListener() {
@@ -504,5 +521,5 @@ public class VideoPlayerFragment
         }
         return true;
     }
-    //endregion
+//endregion
 }

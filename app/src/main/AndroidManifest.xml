@@ -69,7 +69,7 @@
             No need to update model version unless the model has changed.
             If model changed, change the version of the model according to the version of the app.
         -->
-        <meta-data android:name="VERSION" android:value="1003" />
+        <meta-data android:name="VERSION" android:value="1009" />
         <meta-data android:name="QUERY_LOG" android:value="false" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.homage.model" />
 
@@ -210,6 +210,13 @@
         <activity android:name=".player.FullScreenVideoPlayerActivity"
             android:screenOrientation="sensor"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
+            >
+        </activity>
+
+        <activity android:name=".player.RemakeVideoActivity"
+            android:screenOrientation="sensor"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
+            android:theme="@style/Theme.Transparent"
             >
         </activity>
 
