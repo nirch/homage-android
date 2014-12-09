@@ -56,6 +56,7 @@ public class HomageServer extends Server {
     final static public String INTENT_REMAKE                    = "intent remake";
     final static public String INTENT_USER_REMAKES              = "intent user remakes";
     final static public String INTENT_REMAKE_DELETION           = "intent remake deletion";
+    final static public String INTENT_REMAKE_LIKED           = "intent remake liked";
     final static public String INTENT_REMAKES_FOR_STORY         = "intent remake for stories";
     final static public String INTENT_FOOTAGE_UPLOAD_SUCCESS    = "intent footage upload success";
     final static public String INTENT_FOOTAGE_UPLOAD_START      = "intent footage upload start";
@@ -118,6 +119,8 @@ public class HomageServer extends Server {
         urlIDs.add(R.string.url_existing_remake);
         urlIDs.add(R.string.url_footage);
         urlIDs.add(R.string.url_new_remake);
+        urlIDs.add(R.string.url_like_remake);
+        urlIDs.add(R.string.url_unlike_remake);
         urlIDs.add(R.string.url_new_user);
         urlIDs.add(R.string.url_render);
         urlIDs.add(R.string.url_story_remakes);
@@ -250,7 +253,8 @@ public class HomageServer extends Server {
      * @param limit Optional Integer indicating the max number of results.
      * @param userInfo Optional HashMap<String,Object> containing user info about the request.
      */
-    public void refetchRemakesForStory(String storyOID, HashMap<String,Object> userInfo, Integer limit, Integer skip) {
+
+    public void refetchRemakesForStory(String storyOID, HashMap<String,Object> userInfo, Integer limit, Integer skip, String userID) {
         Log.v(TAG, String.format("Refetching remakes for story OID: %s", storyOID));
 
         // Request info
@@ -263,6 +267,8 @@ public class HomageServer extends Server {
             parameters = new HashMap<String, String>();
             if (limit != null) parameters.put("limit", String.valueOf(limit));
             if (skip != null) parameters.put("skip", String.valueOf(skip));
+            //   Send USer info
+            if(userID != null) parameters.put("user_id", userID);
         }
 
         // User Info
@@ -279,7 +285,7 @@ public class HomageServer extends Server {
     }
 
     public void refetchRemakesForStory(String storyOID, HashMap<String,Object> userInfo) {
-        refetchRemakesForStory(storyOID, userInfo, null, null);
+        refetchRemakesForStory(storyOID, userInfo, null, null,null);
     }
 
     /**
@@ -487,6 +493,25 @@ public class HomageServer extends Server {
         String userId = User.getCurrent().getOID();
         parameters.put("user_id",userId);
         super.POST(R.string.url_report_inappropriate, parameters, null, null, null);
+    }
+
+    public void reportUserLikedRemake(String remakeID, boolean isLiked)
+    {
+        Log.v(TAG, String.format("user liked remake: %s" , remakeID));
+        HashMap<String, String> parameters = new HashMap<String, String>();
+
+        parameters.put("remake_id",remakeID);
+        String userId = User.getCurrent().getOID();
+        parameters.put("user_id",userId);
+        parameters.put("liked_remake", String.valueOf(isLiked));
+        int urlid = 0;
+        if(isLiked){
+            urlid = R.string.url_like_remake;
+        }
+        else {
+            urlid = R.string.url_unlike_remake;
+        }
+        super.POST(urlid, parameters, INTENT_REMAKE_LIKED, null, new RemakeParser());
     }
 
 

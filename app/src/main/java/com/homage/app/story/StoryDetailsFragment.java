@@ -42,6 +42,8 @@ import com.homage.app.player.FullScreenVideoPlayerActivity;
 import java.util.HashMap;
 import java.util.List;
 
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+
 public class StoryDetailsFragment extends Fragment implements com.homage.CustomAdapters.SwipeRefreshLayoutBottom.OnRefreshListener {
     public String TAG = "TAG_StoryDetailsFragment";
 
@@ -75,20 +77,20 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
 
     @Override
     public void onRefresh() {
-
+        showFetchMoreRemakesProgress();
         new Handler().postDelayed(new Runnable() {
             @Override public void run() {
-                //        TODO put getting remake code here
-                if (shouldFetchMoreRemakes) {
+                //        getting remake code here
+//                if (shouldFetchMoreRemakes) {
                 Log.d(TAG, "Will fetch more remakes.");
-                showFetchMoreRemakesProgress();
+
 //                shouldFetchMoreRemakes = false;
                 MainActivity activity = (MainActivity)getActivity();
-                    if(story != null) {
-                        activity.refetchMoreRemakesForStory(story, fetchRemakes, skipRemakes);
+                    if(activity != null && story != null) {
+                        activity.refetchMoreRemakesForStory(story, fetchRemakes, skipRemakes, User.getCurrent().getOID());
                         skipRemakes += fetchRemakes;
                     }
-                }
+//                }
 
             }
         }, 5000);
@@ -164,7 +166,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
                 // Configure
                 AQuery aq = new AQuery(rowView);
                 aq.id(R.id.remakeImage).image(remake.thumbnailURL, true, true, 256, R.drawable.glass_dark);
-                aq.id(R.id.likesButton).clicked(new View.OnClickListener() {
+                aq.id(R.id.likedButton).clicked(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         updateLikes(remake.getOID().toString());
@@ -241,21 +243,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
         //aq.id(R.id.storyDetailsPlayButton).clicked(onClickedPlayStoryVideo);
         //endregion
     }
-
-//    @Override
-//    public void onOverScrolled(ObservableScrollView scrollView, int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
-//        if(clampedY && scrollY > 10) {
-//            // End has been reached
-////            if (shouldFetchMoreRemakes) {
-//                Log.d(TAG, "Will fetch more remakes.");
-//                showFetchMoreRemakesProgress();
-////                shouldFetchMoreRemakes = false;
-//                MainActivity activity = (MainActivity)getActivity();
-//                activity.refetchMoreRemakesForStory(story, fetchRemakes, skipRemakes);
-//                skipRemakes += fetchRemakes;
-////            }
-//        }
-//    }
 
     //region *** fragment life cycle related
     @Override
@@ -341,7 +328,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
 //            @Override
 //            public void run() {
         MainActivity main = (MainActivity)getActivity();
-        main.refetchTopRemakesForStory(story);
+        main.refetchTopRemakesForStory(story, User.getCurrent().getOID());
         shouldFetchMoreRemakes = true;
 //            }
 //        }, 500);
@@ -421,14 +408,16 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
 //            }
 //        }
 //    };
-
+// fetchmoreremakesprogress
     private void showFetchMoreRemakesProgress() {
-//        aq.id(R.id.fetchMoreRemakesProgress).visibility(View.VISIBLE);
+        aq.id(R.id.fetchmoreremakeswrap).getView().setVisibility(View.VISIBLE);
+        ((SmoothProgressBar)aq.id(R.id.fetchMoreRemakesProgress).getView()).progressiveStart();
     }
 
     private void hideFetchMoreRemakesProgress() {
         swipeLayout.setRefreshing(false);
-//        aq.id(R.id.fetchMoreRemakesProgress).visibility(View.GONE);
+        aq.id(R.id.fetchmoreremakeswrap).getView().setVisibility(View.GONE);
+        ((SmoothProgressBar)aq.id(R.id.fetchMoreRemakesProgress).getView()).progressiveStop();
     }
     //endregion
 

@@ -64,13 +64,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/homage_text"
-        android:layout_toRightOf="@+id/likesButton"
+        android:layout_toRightOf="@+id/likedButton"
         android:layout_alignParentBottom="true"/>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/likesButton"
+        android:id="@+id/likedButton"
         android:src="@drawable/icon_likes"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"

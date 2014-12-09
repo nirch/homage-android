@@ -764,19 +764,19 @@ public class MainActivity extends ActionBarActivity
     }
     //endregion
 
-    public void refetchTopRemakesForStory(Story story) {
-        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, 16, null); // Implement partial fetch
+    public void refetchTopRemakesForStory(Story story,String userID) {
+        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, 16, null,userID); // Implement partial fetch
         showRefreshProgress();
     }
 
     public void refetchAllRemakesForStory(Story story) {
-        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, null, null); // Implement partial fetch
+        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, null, null,null); // Implement partial fetch
         showRefreshProgress();
     }
 
-    public void refetchMoreRemakesForStory(Story story, Integer limit, Integer skip )
+    public void refetchMoreRemakesForStory(Story story, Integer limit, Integer skip, String userID )
     {                                                          //user limit skip
-        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, limit, skip); // Implement partial fetch
+        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, limit, skip,userID ); // Implement partial fetch
         showRefreshProgress();
     }
 

@@ -71,10 +71,10 @@ public class RemakeParser extends Parser {
         remake.createdAt =      parseDateAsTimestamp("created_at",-1);
         remake.stillPublic =    true;
         remake.userID      =    Parser.parseOID(remakeInfo.getJSONObject("user_id"));
-
-        remake.likesCount =         parseInt("like_count",0);
-        remake.sharesCount =         parseInt("share_count",0);
-        remake.viewsCount =         parseInt("views",0);
+        remake.isLiked =        parseBool("is_liked",false);
+        remake.likesCount =     parseInt("like_count",0);
+        remake.sharesCount =    parseInt("share_count",0);
+        remake.viewsCount =     parseInt("views",0);
 
         remake.save();
 

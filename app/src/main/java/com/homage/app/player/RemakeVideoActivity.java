@@ -1,32 +1,38 @@
 package com.homage.app.player;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.androidquery.AQuery;
+import com.crashlytics.android.Crashlytics;
 import com.homage.CustomAdapters.GestureListener;
 import com.homage.app.R;
-import com.homage.app.main.MainActivity;
+import com.homage.app.recorder.RecorderActivity;
+import com.homage.app.story.StoriesListFragment;
+import com.homage.model.Remake;
 import com.homage.networking.analytics.HEvents;
+import com.homage.networking.server.HomageServer;
+import com.homage.networking.server.Server;
 
 import java.util.HashMap;
 
@@ -71,6 +77,9 @@ public class RemakeVideoActivity extends
     int entityType;
     int originatingScreen;
     int thumbDrawableId;
+    Remake remake;
+    ImageButton isLiked;
+    TextView viewsCount;
 
     // More settings
     boolean allowToggleFullscreen = false;
@@ -103,6 +112,9 @@ public class RemakeVideoActivity extends
 //      <-- VideoView Stuff-->
         videoView = (VideoView) aq.id(R.id.videoView).getView();
         videoView.setOnTouchListener(this);
+        isLiked = (ImageButton)aq.id(R.id.likedButton).getView();
+
+
         // Get the the file path / url of the video.
         if (alreadyGotSettings) {
             // Settings already set. Initalize.
@@ -113,6 +125,12 @@ public class RemakeVideoActivity extends
         {
             initializeWithArguments();
         }
+
+        //        <--Liked&Views-->
+
+        isLiked.setSelected(remake.isLiked);
+        aq.id(R.id.views_count).getTextView().setText(String.valueOf(remake.viewsCount));
+
 
         // Try to get settings arguments from activity intent extras.
 //        Activity parent = this;
@@ -159,6 +177,7 @@ public class RemakeVideoActivity extends
 //    }
 
     public void initializeWithArguments() {
+        initObservers();
         initializePlayerSettings();
         initializeUIState();
         initializePlayingVideo();
@@ -176,8 +195,14 @@ public class RemakeVideoActivity extends
         super.onPause();
         try {
             fullStop();
+            removeObservers();
         } catch (Exception ex) {
         }
+    }
+
+    private void removeObservers() {
+        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
+        lbm.unregisterReceiver(onRemakeLiked);
     }
 
 //    @Override
@@ -185,6 +210,11 @@ public class RemakeVideoActivity extends
 //        super.onConfigurationChanged(newConfig);
 //        if (isEmbedded) handleEmbeddedVideoConfiguration(newConfig);
 //    }
+
+    private void initObservers() {
+        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
+        lbm.registerReceiver(onRemakeLiked, new IntentFilter((HomageServer.INTENT_REMAKE_LIKED)));
+    }
 
     private void initializePlayingVideo() {
         // Initialize playing the video
@@ -232,6 +262,7 @@ public class RemakeVideoActivity extends
         filePath = b.getStringExtra(K_FILE_PATH);
         entityType = b.getIntExtra(HEvents.HK_VIDEO_ENTITY_TYPE, 0);
         entityID = b.getStringExtra(HEvents.HK_VIDEO_ENTITY_ID);
+        remake = Remake.findByOID(entityID);
         originatingScreen = b.getIntExtra(HEvents.HK_VIDEO_ORIGINATING_SCREEN, 0);
 
         if (filePath == null) {
@@ -244,6 +275,7 @@ public class RemakeVideoActivity extends
         info.put(HEvents.HK_VIDEO_INIT_TIME, initTime);
         info.put(HEvents.HK_VIDEO_ENTITY_TYPE, entityType);
         info.put(HEvents.HK_VIDEO_ENTITY_ID, entityID);
+
         info.put(HEvents.HK_VIDEO_ORIGINATING_SCREEN, originatingScreen);
 
         // More settings
@@ -272,8 +304,33 @@ public class RemakeVideoActivity extends
         aq.id(R.id.videoPlayPauseButton).clicked(onClickedPlayPauseButton);
         aq.id(R.id.videoFullScreenButton).clicked(onClickedFullScreenButton);
         aq.id(R.id.videoBigPlayButton).clicked(onClickedBigPlayButton);
-        aq.id(R.id.likesButton).clicked(onClickedLikeButton);
+        aq.id(R.id.likedButton).clicked(onClickedLikeButton);
     }
+
+    // get Like refresh
+    private BroadcastReceiver onRemakeLiked = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Crashlytics.log("onRemakeLiked");
+
+            Bundle b = intent.getExtras();
+            boolean success = b.getBoolean("success", false);
+            if(success) {
+                HashMap<String, Object> responseInfo = (HashMap<String, Object>) intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
+
+                if (responseInfo != null) {
+                    String remakeOID = (String) responseInfo.get("remakeOID");
+                    String statuscode = responseInfo.get("status_code").toString();
+                    if (remakeOID.equals(remake.getOID()) && statuscode.equals("200")) {
+                        if (remakeOID == null) return;
+                        isLiked.setSelected(!isLiked.isSelected());
+                        remake.isLiked = !remake.isLiked;
+                        remake.save();
+                    }
+                }
+            }
+        }
+    };
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
@@ -464,13 +521,11 @@ public class RemakeVideoActivity extends
     View.OnClickListener onClickedLikeButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-//            hideThumb();
-//            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
-//            aq.id(R.id.loadingVideoPprogress).visibility(View.VISIBLE);
-//            videoView.seekTo(0);
-//            start();
+            HomageServer.sh().reportUserLikedRemake(remake.getOID(),!remake.isLiked);
         }
     };
+
+
 
 
     View.OnClickListener onClickedFullScreenButton = new View.OnClickListener() {
@@ -528,16 +583,9 @@ public class RemakeVideoActivity extends
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-//        TODO catch gestures
-        boolean result = mGestureDetector.onTouchEvent(event);
-        if (!result) {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-//                        stopScrolling();
-                return result;
-            }
-        }
-        return result;
+        return false;
     }
+
 
 //endregion
 }

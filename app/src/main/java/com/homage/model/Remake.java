@@ -34,7 +34,7 @@ public class Remake extends SugarRecord<Remake> {
     public int likesCount;
     public int viewsCount;
 //TODO add liked
-//    public boolean liked;
+    public boolean isLiked;
     //endregion
 
     //region *** Relationships ***
