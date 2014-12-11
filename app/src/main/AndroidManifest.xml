@@ -26,8 +26,9 @@
     <!-- GCM -->
 <!--
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
     -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
 
     <permission
         android:name="com.homage.app.permission.C2D_MESSAGE"

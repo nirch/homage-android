@@ -28,11 +28,11 @@ android {
 
     buildTypes {
         release {
-            runProguard true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
         debug {
-            runProguard false
+            minifyEnabled false
         }
     }
 
@@ -45,7 +45,15 @@ android {
 
         }
     }
+
+    sourceSets.main {
+        jniLibs.srcDir 'src/main/libs'
+        jni.srcDirs = [] //disable automatic ndk-build call
+    }
+
 }
+
+
 
 dependencies {
     compile files('libs/aws-android-sdk-1.7.1.1-core.jar')

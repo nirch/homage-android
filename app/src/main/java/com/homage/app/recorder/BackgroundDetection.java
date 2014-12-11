@@ -38,6 +38,7 @@ public class BackgroundDetection {
     int HardCodedHeight = 360;
     int imageCounter = 0;
     boolean isProductionServer;
+    byte[] croppedData;
 
     public BackgroundDetection(Context pcontext, Camera pcamera) {
         res = HomageApplication.getContext().getResources();
@@ -73,6 +74,7 @@ public class BackgroundDetection {
                 mat = new Matting();
                 mat.logopen(vTool.getExtrnalPath("Notes", "mapping.log"));
 
+
             }catch(Exception e){
                 Log.d("Matting: ",e.toString());
             }
@@ -105,6 +107,7 @@ public class BackgroundDetection {
             if(contourLocalUrl != null) {
                 if(!matInitialized) {
                     int aa = mat.init(null, contourLocalUrl, HardCodedWidth, HardCodedHeight);
+                    croppedData = new byte[(int) ((width * height * 3) / 2)];
                     matInitialized = true;
                 }
 
@@ -113,7 +116,7 @@ public class BackgroundDetection {
 //                        int x = camera.getParameters().getPreviewFormat();
 //                    Camera.Size previewSize = camera.getParameters().getPreviewSize();
 
-                    byte[] croppedData = new byte[(int) ((width * height * 3) / 2)];
+//                    byte[] croppedData = new byte[(int) ((width * height * 3) / 2)];
 //                      DEBUG Save image to phone
 //                    imageCounter++;
 //                    byte[] rgbaData = new byte[width * height * 4];
