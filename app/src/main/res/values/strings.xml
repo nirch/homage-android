@@ -32,6 +32,8 @@
     <string name="button_yeah_start_rolling">YEAH, START ROLLING</string>
 
     <string name="title_great_job">GREAT JOB!</string>
+    <string name="title_improper_background">IMPROPER BACKGROUND</string>
+    <string name="title_improper_msg">For optimal results, use a solid color wall</string>
 
     <string name="back_camera_title">Back Camera</string>
     <string name="front_camera_title">Selfie</string>
@@ -93,6 +95,8 @@
     <!-- Action buttons -->
     <string name="action_button_lets_shot">LETS SHOOT!</string>
     <string name="action_button_lets_create">LETS CREATE</string>
+    <string name="action_button_ok">Ok, got it</string>
+    <string name="action_button_dont_show_again">Don\'t show this again</string>
 
     <!-- Rendering -->
     <string name="rendering_progress_preparing">Preparing your movie: %s</string>
@@ -132,6 +136,7 @@
 
     <string name="settings_category_developer">Developer</string>
     <string name="settings_category_privacy">Privacy</string>
+    <string name="settings_category_options">Options</string>
     <string name="settings_category_support">Support</string>
 
     <string name="settings_uploader_title">Uploader</string>
@@ -143,7 +148,9 @@
     <string name="settings_export_db_title">Export model db.</string>
 
     <string name="settings_remakes_are_public_title">Remakes are public</string>
+    <string name="settings_options_warning_title">No Bad Background Warning</string>
     <string name="settings_remakes_are_public_summary">Share your remakes with others.</string>
+    <string name="settings_options_warning_summary">Don\'t get warned when shooting on a bad background</string>
 
     <string name="settings_feedback_title">Feedback us</string>
     <string name="settings_terms_of_service_title">Terms of service</string>

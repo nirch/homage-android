@@ -24,6 +24,7 @@ public class Scene extends SugarRecord<Scene> {
     public boolean isSelfie;
     public String script;
     public String silhouetteURL;
+    public String contourURL;
     public String thumbnailURL;
     public String videoURL;
     public double focusPointX;

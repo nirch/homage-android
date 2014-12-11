@@ -21,8 +21,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -32,18 +32,14 @@ import android.util.Log;
 
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.BounceInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -52,7 +48,10 @@ import android.widget.Toast;
 import com.android.grafika.AspectFrameLayout;
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
+import com.homage.FileHandler.ContourHandler;
 import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
+import com.homage.app.main.SettingsActivity;
 import com.homage.model.Footage;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
@@ -120,6 +119,7 @@ public class RecorderActivity extends Activity
     private AQuery aq;
     private View controlsDrawer;
     private View recordButton;
+    private View warningButton;
     private View recorderFullDetailsContainer;
     private View recorderShortDetailsContainer;
     private ListView scenesListView;
@@ -136,17 +136,35 @@ public class RecorderActivity extends Activity
     protected String outputFile;
 
     // Actions & State
-    private boolean isRecording;
+    public boolean isRecording;
+    public boolean itsPreviewTime = true;
+//    public boolean dontShowAgain;
+    public boolean isBackgroundDetectionRunning;
+
+
+    //Contour
+    public String contourLocalUrl;
+
+//    preferences;
+    SharedPreferences prefs;
+    SharedPreferences.Editor prefsEditor;
+    //Constants
     private final static int ACTION_DO_NOTHING = 1;
     private final static int ACTION_HANDLE_STATE = 2;
     private final static int ACTION_ADVANCE_STATE = 3;
     private final static int ACTION_ADVANCE_AND_HANDLE_STATE = 4;
     private final static int ACTION_BY_RESULT_CODE = 5;
+    public final static int DONT_SHOW_THIS_AGAIN = 6;
     private RecorderStateMachine stateMachine;
     private Handler counterDown;
     protected int countDown;
     protected boolean canceledCountDown;
+
+//    Warning section
     protected final static int countDownFrom = 3;
+    protected final static int warningCountDownFrom = 5;
+    private int warningCountDown = warningCountDownFrom;
+    public int lastcc = 0;
 
     // The possible states of the recorder, handled by the state machine.
     static private enum RecorderState {
@@ -183,11 +201,13 @@ public class RecorderActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CameraManager.sh().SetContext(this);
         viewsInitialized = false;
         inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         starterIntent = getIntent();
-
+        prefs = HomageApplication.getSettings(this);
+        prefsEditor = prefs.edit();
         // Define a handler that receives camera-control messages from other threads.  All calls
         // to Camera must be made on the same thread.  Note we create this before the renderer
         // thread, so we know the fully-constructed object will be visible.
@@ -204,6 +224,10 @@ public class RecorderActivity extends Activity
         remake = Remake.findByOID(remakeOID);
         story = remake.getStory();
         isRecording = false;
+//        dontShowAgain = false;
+        isBackgroundDetectionRunning = false;
+        ContourHandler ch = new ContourHandler();
+        ch.DownloadContour(this, remake, "/homage/contours/");
 
         // Crashlytics logging
         Crashlytics.setString("remakeID", remakeOID);
@@ -228,6 +252,7 @@ public class RecorderActivity extends Activity
         aq = new AQuery(this);
         controlsDrawer = aq.id(R.id.recorderControlsDrawer).getView();
         recordButton = aq.id(R.id.recorderRecordButton).getView();
+        warningButton = aq.id(R.id.warningRecordButton).getView();
         recorderFullDetailsContainer = aq.id(R.id.recorderFullDetailsContainer).getView();
         recorderShortDetailsContainer = aq.id(R.id.recorderShortDetailsContainer).getView();
         scenesListView = aq.id(R.id.scenesListView).getListView();
@@ -253,6 +278,8 @@ public class RecorderActivity extends Activity
 
         // Pushed THE button! (Clicked on the record button)
         aq.id(R.id.recorderRecordButton).clicked(onClickedRecordButton);
+        // Pushed THE button! (Clicked on the record button)
+        aq.id(R.id.warningRecordButton).clicked(onClickedWarningButton);
 
         // Dragging the drawer up and down.
         aq.id(R.id.recorderControlsDrawer).getView().setOnTouchListener(new OnDraggingControlsDrawerListener(this));
@@ -283,7 +310,7 @@ public class RecorderActivity extends Activity
         // Clicked on a scene number in the list of scenes.
         // User tries to select a scene in the list.
         // aq.id(R.id.scenesListView).itemClicked(onClickedSceneItem);
-
+        HideWarningButton();
         //endregion
     }
 
@@ -728,8 +755,8 @@ public class RecorderActivity extends Activity
 
     private void controlsDrawerClosed() {
         if (recordButton.isClickable()) return;
-
         recordButton.startAnimation(fadeInAnimation);
+        recordButton.setVisibility(View.VISIBLE);
         recordButton.setClickable(true);
         recorderFullDetailsContainer.startAnimation(fadeOutAnimation);
         recorderShortDetailsContainer.startAnimation(fadeInAnimation);
@@ -738,6 +765,7 @@ public class RecorderActivity extends Activity
         videosPager.setVisibility(View.GONE);
         videosAdapter.hideSurfaces();
         showOverlayButtons(false);
+
 
 //        final CameraManager cm = CameraManager.sh();
         videosAdapter.done();
@@ -753,11 +781,12 @@ public class RecorderActivity extends Activity
                 cm.resumeCameraPreviewIfInitialized();
             }
         }, 200);
+//        HideWarningButton();
     }
 
     private void controlsDrawerOpened() {
         if (!recordButton.isClickable()) return;
-
+        HideWarningButton();
         cancelCountingDownToRecording();
         recordButton.startAnimation(fadeOutAnimation);
         recordButton.setVisibility(View.GONE);
@@ -784,6 +813,7 @@ public class RecorderActivity extends Activity
         } else {
             aq.id(R.id.createMovieButton).visibility(View.GONE);
         }
+//        HideWarningButton();
     }
 
 
@@ -994,6 +1024,7 @@ public class RecorderActivity extends Activity
         HMixPanel.sh().track("RECancelRecord",props);
 
         isRecording = false;
+
         canceledCountDown = true;
         counterDown = null;
         aq.id(R.id.recorderCountDownText).visibility(View.INVISIBLE);
@@ -1108,6 +1139,13 @@ public class RecorderActivity extends Activity
         props.put("remake_id" , remake.getOID());
         props.put("scene_id", Integer.toString(currentSceneID));
         HMixPanel.sh().track("REStartRecording",props);
+
+        if(!contourLocalUrl.isEmpty()) {
+            HashMap mattingprops = new HashMap<String, String>();
+            props.put("contourLocalUrl", contourLocalUrl);
+            props.put("cc", Integer.toString(lastcc));
+            HMixPanel.sh().track("MattingResult", mattingprops);
+        }
 
         // Update the script bar.
         updateScriptBar();
@@ -1397,6 +1435,7 @@ public class RecorderActivity extends Activity
             aq.id(R.id.recorderOverlayFlipCameraButton).visibility(View.GONE);
             aq.id(R.id.recorderOverlaySceneDescriptionButton).visibility(View.GONE);
         }
+        itsPreviewTime = false;
     }
 
     private void showOverlayButtons(boolean animated) {
@@ -1407,6 +1446,7 @@ public class RecorderActivity extends Activity
             aq.id(R.id.recorderOverlayFlipCameraButton).visibility(View.VISIBLE);
             aq.id(R.id.recorderOverlaySceneDescriptionButton).visibility(View.VISIBLE);
         }
+        itsPreviewTime = true;
     }
 
     private void hideSilhouette(boolean animated) {
@@ -1543,6 +1583,42 @@ public class RecorderActivity extends Activity
             }
         }
     };
+
+    //Warning stuff
+    private View.OnClickListener onClickedWarningButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (isRecording) return;
+            // Open warning dialogue
+            Intent i = new Intent(RecorderActivity.this,WarningOverlayDlgActivity.class);
+            startActivityForResult(i, DONT_SHOW_THIS_AGAIN);
+        }
+    };
+
+    public void ShowWarningButton(){
+       warningCountDown--;
+        if(!prefs.getBoolean(SettingsActivity.DONT_SHOW_WARNING_AGAIN,false) && warningCountDown == 0) {
+            warningButton.performClick();
+//            warningCountDown = warningCountDownFrom;
+        }
+        isBackgroundDetectionRunning = false;
+        if(recordButton.isClickable() && warningButton.getVisibility() != View.VISIBLE) {
+            warningButton.setVisibility(View.VISIBLE);
+            warningButton.setClickable(true);
+        }
+    }
+
+    public void HideWarningButton(){
+        //Reset warning
+//        warningCountDown = warningCountDownFrom;
+        isBackgroundDetectionRunning = false;
+        if(warningButton.getVisibility() == View.VISIBLE) {
+            warningButton.setVisibility(View.GONE);
+            warningButton.setClickable(false);
+        }
+    }
+
+    //end of warning stuff
 
     private View.OnClickListener onClickedRecorderDismissButton = new View.OnClickListener() {
         @Override
@@ -1696,6 +1772,13 @@ public class RecorderActivity extends Activity
                         throw new RecorderException(String.format("Unimplemented result code for recorder %d", resultCode));
                     }
                     break;
+                case (DONT_SHOW_THIS_AGAIN) : {
+                    if (resultCode == Activity.RESULT_CANCELED) {
+                        prefsEditor.putBoolean(SettingsActivity.DONT_SHOW_WARNING_AGAIN, true);
+                        prefsEditor.commit();
+                    }
+                    break;
+                }
                 default:
                     throw new RecorderException(String.format("Unimplemented request code for recorder %d", requestCode));
             }

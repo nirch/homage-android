@@ -57,6 +57,20 @@
         <item name="android:textColor">@color/homage_text</item>
     </style>
 
+    <style name="HomageMediumTitle">
+        <item name="android:textSize">26dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/homage_text</item>
+    </style>
+
+    <style name="HomageSmallTitle">
+        <item name="android:textSize">17dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/homage_text</item>
+    </style>
+
     <style name="HomageSmallVideoTitleImpact">
         <item name="android:textSize">25dp</item>
         <item name="android:layout_width">wrap_content</item>
@@ -149,6 +163,19 @@
         <item name="android:background">@drawable/selector_action_button_bg</item>
         <item name="android:textColor">@color/homage_record_button</item>
         <item name="android:textSize">23dp</item>
+        <item name="android:shadowColor">@color/homage_dark_void_2</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+
+    <style name="actionButtonWhite">
+        <item name="android:layout_width">240dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:background">@drawable/selector_action_button_bg</item>
+        <item name="android:textColor">@color/homage_record_button_stroke</item>
+        <item name="android:textSize">20dp</item>
         <item name="android:shadowColor">@color/homage_dark_void_2</item>
         <item name="android:shadowDx">2</item>
         <item name="android:shadowDy">2</item>

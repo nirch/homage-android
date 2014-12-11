@@ -67,18 +67,28 @@ public class CameraManager {
     private boolean cameraPreviewUsesGLSurfaceView;
     public int mCameraPreviewWidth;
     public int mCameraPreviewHeight;
+    int defaultEveryNthPreviewFrame = 10;
+    int everyNthPreviewFrame = 10;
     Camera mCamera;
-
+    BackgroundDetection backgroundDetection;
+    Context context;
     // Recording
     MediaRecorder mediaRecorder;
     boolean recorderUseMediaCodecWhenAvailable;
+    Context recorderContext;
+    RecorderActivity recorderActivity;
 
 
     // Preview
     FrameLayout previewContainer;
-    public CameraPreview preview;
+    public CameraPreview mPreview;
     boolean previewInitialized;
     boolean previewPaused;
+
+    public void SetContext(Context context){
+        recorderContext = context;
+        recorderActivity = ((RecorderActivity)context);
+    }
 
     //region *** singleton pattern ***
     private static CameraManager instance = new CameraManager();
@@ -100,7 +110,6 @@ public class CameraManager {
     //region *** initializations ***
     private void init() {
         Resources res = HomageApplication.getContext().getResources();
-
         // Get defaults set in camera.xml
         defaultBackWidth = res.getInteger(R.integer.cameraBackPreferredRecodingWidth);
         defaultBackHeight = res.getInteger(R.integer.cameraBackPreferredRecodingHeight);
@@ -141,49 +150,49 @@ public class CameraManager {
         // Create a new CameraPreview
         CameraPreview cameraPreview = new CameraPreview(context);
         cameraPreview.setZOrderOnTop(false);
-        preview = cameraPreview;
+        mPreview = cameraPreview;
 
-        // Add the preview as a subview of the preview container and return it.
-        previewContainer.addView(preview);
+        // Add the Preview as a subview of the Preview container and return it.
+        previewContainer.addView(mPreview);
         previewInitialized = true;
         return cameraPreview;
     }
 
     public void cleanCameraPreview() {
         try {
-            preview.stop();
+            mPreview.stop();
         } catch (Exception e) {}
 
         try {
             previewContainer.removeAllViewsInLayout();
         } catch (Exception e) {}
 
-        preview = null;
+        mPreview = null;
         previewContainer = null;
         previewInitialized = false;
         previewPaused = false;
     }
 
     public void pauseCameraPreviewIfInitialized() {
-        if (preview == null || !previewInitialized || previewPaused) return;
-        preview.stop();
+        if (mPreview == null || !previewInitialized || previewPaused) return;
+        mPreview.stop();
         previewContainer.removeAllViewsInLayout();
         previewPaused = true;
     }
 
     public void resumeCameraPreviewIfInitialized() {
-        if (preview == null || !previewInitialized || !previewPaused) return;
+        if (mPreview == null || !previewInitialized || !previewPaused) return;
         previewPaused = false;
         openCamera();
-        startCameraPreviewInView(preview.getContext(), previewContainer);
+        startCameraPreviewInView(mPreview.getContext(), previewContainer);
     }
     //endregion
 
-    //region *** Camera & And preview ***
+    //region *** Camera & And Preview ***
     /**
-     * Opens a camera, and attempts to establish preview mode at the specified width and height.
+     * Opens a camera, and attempts to establish Preview mode at the specified width and height.
      * <p>
-     * Sets mCameraPreviewWidth and mCameraPreviewHeight to the actual width/height of the preview.
+     * Sets mCameraPreviewWidth and mCameraPreviewHeight to the actual width/height of the Preview.
      */
 
     public void openCamera() {
@@ -253,7 +262,7 @@ public class CameraManager {
         // impact on frame rate.
         parms.setRecordingHint(true);
 
-
+//        parms.setPreviewFormat(ImageFormat.NV21);
         // leave the frame rate set to default
         mCamera.setParameters(parms);
 
@@ -275,6 +284,10 @@ public class CameraManager {
      */
     public void releaseCamera() {
         if (mCamera != null) {
+            mCamera.setPreviewCallback(null);
+            if(mPreview != null){
+                mPreview.getHolder().removeCallback(mPreview);
+            }
             mCamera.stopPreview();
             mCamera.release();
             mCamera = null;
@@ -305,13 +318,16 @@ public class CameraManager {
 
 
     /** Camera preview class */
-    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
         private SurfaceHolder mHolder;
         private Camera mCamera;
 
         public CameraPreview(Context context) {
             super(context);
             mCamera = CameraManager.this.mCamera;
+//            Camera.Parameters cameraparams = mCamera.getParameters(); // WORKS OK
+//            cameraparams.setPreviewFormat(ImageFormat.NV21); // WORKS OK
+//            mCamera.setParameters(cameraparams); // WORKS OK
 
             // Install a SurfaceHolder.Callback so we get notified when the
             // underlying surface is created and destroyed.
@@ -320,21 +336,10 @@ public class CameraManager {
         }
 
         public void surfaceCreated(SurfaceHolder holder) {
-//            Log.d(TAG, "Surface created");
-//            if (mCamera == null) {
-//                // No opened camera.
-//                Log.d(TAG, "Needs to open camera after surface created.");
-//                openCamera();
-//            }
-//            try {
-//                if (mCamera == null) {
-//                    return;
-//                }
-//                mCamera.setPreviewDisplay(holder);
-//                mCamera.startPreview();
-//            } catch (IOException e) {
-//                Log.d(TAG, "Error setting camera preview: " + e.getMessage());
-//            }
+            //Start Background Detection
+            if(!recorderActivity.isRecording) {
+                backgroundDetection = new BackgroundDetection(recorderContext, mCamera);
+            }
         }
 
         public void hide() {
@@ -360,6 +365,26 @@ public class CameraManager {
             Log.d(TAG, String.format("Surface of the cam preview changed. %d %d", w, h));
             fixPreviewAspectRatio(w, h);
             restartPreview();
+        }
+
+        @Override
+        public void onPreviewFrame(byte[] data, Camera camera) {
+            //catch only tenth frame
+            if(!recorderActivity.isRecording && recorderActivity.itsPreviewTime) {
+                if (!recorderActivity.isBackgroundDetectionRunning) {
+                    if (everyNthPreviewFrame > 0) {
+                        everyNthPreviewFrame--;
+                    } else {
+                        everyNthPreviewFrame = defaultEveryNthPreviewFrame;
+                        backgroundDetection.RunTestOnFrame(data, camera);
+                        recorderActivity.isBackgroundDetectionRunning = true;
+                    }
+                }
+            }
+            else{
+                recorderActivity.HideWarningButton();
+            }
+
         }
 
         private void fixPreviewAspectRatio(int containerWidth, int containerHeight) {
@@ -417,6 +442,7 @@ public class CameraManager {
 
             try {
                 mCamera.setPreviewDisplay(mHolder);
+                mCamera.setPreviewCallback(this);
                 mCamera.startPreview();
             } catch (Exception e){
                 Log.d(TAG, "Error starting camera preview: " + e.getMessage());
@@ -545,7 +571,7 @@ The Camera Manager will decide on which method to use based on API and app confi
 
 
     public void sendStopRecordingMessageToMainThread() {
-        Context context = preview.getContext();
+        Context context = mPreview.getContext();
         Handler mainHandler = new Handler(context.getMainLooper());
         mainHandler.post(new Runnable() {
             @Override
@@ -588,7 +614,7 @@ The Camera Manager will decide on which method to use based on API and app confi
     }
 
     public void sendFinishedRecordingMessageToMainThread(final File outputFile) {
-        Context context = preview.getContext();
+        Context context = mPreview.getContext();
         Handler mainHandler = new Handler(context.getMainLooper());
         mainHandler.post(new Runnable() {
             @Override
@@ -600,7 +626,7 @@ The Camera Manager will decide on which method to use based on API and app confi
     }
 
     public void sendErrorInRecordingMessageToMainThread() {
-        Context context = preview.getContext();
+        Context context = mPreview.getContext();
         Handler mainHandler = new Handler(context.getMainLooper());
         mainHandler.post(new Runnable() {
             @Override
@@ -720,6 +746,7 @@ The Camera Manager will decide on which method to use based on API and app confi
         profile.videoBitRate = defaultOutputBitRate;
 
         //whileRecordingCameraSettings(parameters);
+        //parameters.setPreviewFormat(ImageFormat.NV21);
         mCamera.setParameters(parameters);
 
         //
@@ -750,7 +777,7 @@ The Camera Manager will decide on which method to use based on API and app confi
         //
         outputFile = CameraHelper.getOutputMediaFile(CameraHelper.MEDIA_TYPE_VIDEO);
         mediaRecorder.setOutputFile(outputFile.toString());
-        // mediaRecorder.setPreviewDisplay(preview.mHolder.getSurface());
+        // mediaRecorder.setPreviewDisplay(mPreview.mHolder.getSurface());
 
         //
         // Set the duration of the captured video
@@ -791,6 +818,7 @@ The Camera Manager will decide on which method to use based on API and app confi
 
         Camera.Parameters parameters = mCamera.getParameters();
         whileUserInteractionCameraSettings(parameters);
+//        parameters.setPreviewFormat(ImageFormat.NV21);
         mCamera.setParameters(parameters);
     }
 
@@ -811,6 +839,7 @@ The Camera Manager will decide on which method to use based on API and app confi
         try {
             Camera.Parameters parameters = mCamera.getParameters();
             whileUserInteractionCameraSettings(parameters);
+//            parameters.setPreviewFormat(ImageFormat.NV21);
             mCamera.setParameters(parameters);
         } catch (Exception e) {
             Log.e(TAG, "failed releasing camera");
