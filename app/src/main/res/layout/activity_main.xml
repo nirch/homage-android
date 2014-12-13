@@ -23,6 +23,14 @@
             >
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/remakecontainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/homage_darkest_transparent_overlay"
+            >
+        </RelativeLayout>
+
         <fragment android:id="@+id/movieProgressBar"
             android:layout_width="match_parent"
             android:layout_height="26dp"

@@ -7,7 +7,7 @@
     </item>
     <item android:state_selected="false">
         <bitmap
-            android:src="@drawable/icon_likes"
+            android:src="@drawable/icon_unlike"
             android:gravity="center" />
     </item>
 </selector>

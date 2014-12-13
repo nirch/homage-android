@@ -94,6 +94,15 @@ public class MyStoriesFragment extends Fragment {
         getActivity().startActivity(myIntent);
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser) {
+            Activity a = getActivity();
+            if(a != null) a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+    }
+
     private void openRecorderForNewRemake(Story story) {
         Log.d(TAG, "new remake");
         MainActivity mainActivity = (MainActivity) getActivity();

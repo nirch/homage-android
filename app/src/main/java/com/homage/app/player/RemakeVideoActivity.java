@@ -10,8 +10,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -27,8 +25,6 @@ import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
 import com.homage.CustomAdapters.GestureListener;
 import com.homage.app.R;
-import com.homage.app.recorder.RecorderActivity;
-import com.homage.app.story.StoriesListFragment;
 import com.homage.model.Remake;
 import com.homage.networking.analytics.HEvents;
 import com.homage.networking.server.HomageServer;
@@ -103,7 +99,7 @@ public class RemakeVideoActivity extends
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_homage_remake_view);
+        setContentView(R.layout.fragment_remake_video_view);
         aq = new AQuery(this);
 
         // Bind the gestureDetector to GestureListener
@@ -385,7 +381,7 @@ public class RemakeVideoActivity extends
                 public void run() {
                     hideControls();
                 }
-            }, 2000);
+            }, 5000);
         }
     }
 

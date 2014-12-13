@@ -1,12 +1,16 @@
 package com.homage.app.player;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -14,13 +18,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.androidquery.AQuery;
 import com.homage.CustomAdapters.GestureListener;
 import com.homage.app.R;
+import com.homage.app.main.MainActivity;
+import com.homage.model.Remake;
+import com.homage.model.Story;
+import com.homage.model.User;
 import com.homage.networking.analytics.HEvents;
+import com.homage.networking.server.HomageServer;
 
 import java.util.HashMap;
 
@@ -31,7 +41,8 @@ public class RemakeVideoFragment       extends
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnCompletionListener,
         MediaPlayer.OnInfoListener{
-    static final String TAG = "TAG_RemakeVideoFragment";
+
+    static final String TAG = MainActivity.FRAGMENT_TAG_REMAKE_VIDEO;
 
     // Settings
     public static final String K_FILE_PATH = "videoFilePath";
@@ -73,6 +84,11 @@ public class RemakeVideoFragment       extends
     boolean autoStartPlaying = true;
     boolean isEmbedded = false;
 
+    Remake remake;
+    Story story;
+    User user;
+    ImageButton isLiked;
+
     // Info
     HashMap<String, Object> info;
     long initTime;
@@ -82,23 +98,43 @@ public class RemakeVideoFragment       extends
     View rootView;
     VideoView videoView;
     LayoutInflater inflater;
-    boolean alreadyGotSettings = false;
-
+//    boolean alreadyGotSettings = false;
 
     //region *** lifecycle ***
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         this.inflater = inflater;
-        rootView = inflater.inflate(R.layout.activity_homage_remake_view, container, false);
+        rootView = inflater.inflate(R.layout.fragment_remake_video_view, container, false);
+
         aq = new AQuery(rootView);
 
         // Bind the gestureDetector to GestureListener
-        mGestureDetector = new GestureDetector(this.getActivity(), new GestureListener());
+        mGestureDetector = new GestureDetector(this.getActivity(), new GestureListener(){
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                flingRemake();
+                return super.onFling(e1, e2, velocityX, velocityY);
+            }
+
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                doubletapRemake();
+                return super.onDoubleTap(e);
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent ev) {
+                toggleControls();
+                return super.onSingleTapUp(ev);
+            }
+        });
 
 //      <-- VideoView Stuff-->
         videoView = (VideoView) aq.id(R.id.videoView).getView();
-        ((VideoView) aq.id(R.id.videoView).getView()).setOnTouchListener(new View.OnTouchListener() {
+        videoView.setVisibility(View.VISIBLE);
+        aq.id(R.id.videoView).getView().setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 boolean result = mGestureDetector.onTouchEvent(event);
@@ -112,32 +148,49 @@ public class RemakeVideoFragment       extends
             }
         });
 
-        // Get the the file path / url of the video.
-        if (alreadyGotSettings) {
-            // Settings already set. Initalize.
-            initialize();
-            return rootView;
-        }
+        isLiked = (ImageButton)aq.id(R.id.likedButton).getView();
 
         // Try to get settings arguments from activity intent extras.
-        Activity parent = getActivity();
-        Bundle b = getActivity().getIntent().getExtras();
-        if (b == null) return rootView;
+//        Bundle b = getActivity().getIntent().getExtras();
+//        if (b == null) return rootView;
 
         // We have the arguments. Initialize.
-        initializeWithArguments(b);
+        initialize();
+
         return rootView;
+    }
+
+    public void flingRemake()
+    {
+
+    }
+
+    public void doubletapRemake()
+    {
+
+    }
+
+    public void refresh(String remakeOID) {
+
+        if (remakeOID.equals(remake.getOID())) {
+            if (remakeOID == null) return;
+            isLiked.setSelected(!isLiked.isSelected());
+            remake.isLiked = !remake.isLiked;
+            remake.save();
+        }
+
+    }
+
+    public static RemakeVideoFragment newInstance(Bundle args, Remake remake) {
+        RemakeVideoFragment fragment;
+        fragment = new RemakeVideoFragment();
+        fragment.setArguments(args);
+        Log.d(fragment.TAG, String.format("Showing remake: %s", remake.getOID()));
+        return fragment;
     }
 
     public void setArguments(Bundle b) {
         initializePlayerSettings(b);
-    }
-
-    public void initializeWithArguments(Bundle b) {
-        initializePlayerSettings(b);
-        initializeUIState();
-        initializePlayingVideo();
-        bindUIHandlers();
     }
 
     public void initialize() {
@@ -155,11 +208,14 @@ public class RemakeVideoFragment       extends
         }
     }
 
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//        if (isEmbedded) handleEmbeddedVideoConfiguration(newConfig);
-//    }
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser) {
+            Activity a = getActivity();
+            if(a != null) a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
+        }
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -174,12 +230,12 @@ public class RemakeVideoFragment       extends
         }
 
         if (autoStartPlaying) {
-            aq.id(R.id.videoThumbnailImage).visibility(View.GONE);
-            aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+            aq.id(R.id.remakeThumbnailImage).visibility(View.GONE);
+//            aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
         }
 
         if (thumbURL != null) {
-            aq.id(R.id.videoThumbnailImage).image(
+            aq.id(R.id.remakeThumbnailImage).image(
                     thumbURL,
                     true,
                     true,
@@ -187,13 +243,16 @@ public class RemakeVideoFragment       extends
                     R.drawable.glass_dark,
                     null, AQuery.FADE_IN);
         } else if (thumbDrawableId > 0) {
-            aq.id(R.id.videoThumbnailImage).image(thumbDrawableId);
+            aq.id(R.id.remakeThumbnailImage).image(thumbDrawableId);
         } else {
-            aq.id(R.id.videoThumbnailImage).visibility(View.GONE);
+            aq.id(R.id.remakeThumbnailImage).visibility(View.GONE);
         }
 
+        isLiked.setSelected(remake.isLiked);
+        String viewsCount = String.valueOf(remake.viewsCount);
+        aq.id(R.id.views_count).getTextView().setText(viewsCount);
+
         showThumbWhileLoading();
-        showControls();
     }
 
     private void initializePlayingVideo() {
@@ -212,12 +271,9 @@ public class RemakeVideoFragment       extends
     private void initializeVideoPlayer() {
 
         if (filePath != null) {
-
             // A local video file.
             videoView.setVideoPath(filePath);
-
         } else if (fileURL != null) {
-
             // A remote video with a given URL.
             videoView.setVideoURI(Uri.parse(fileURL));
             videoView.start();
@@ -241,6 +297,9 @@ public class RemakeVideoFragment       extends
         filePath = b.getString(K_FILE_PATH);
         entityType = b.getInt(HEvents.HK_VIDEO_ENTITY_TYPE);
         entityID = b.getString(HEvents.HK_VIDEO_ENTITY_ID);
+        remake = Remake.findByOID(entityID);
+        story = remake.getStory();
+        user = User.findByOID(remake.userID);
         originatingScreen = b.getInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN);
 
         if (filePath == null) {
@@ -264,7 +323,7 @@ public class RemakeVideoFragment       extends
         thumbDrawableId = b.getInt(K_THUMB_DRAWABLE_ID, 0);
 
         Log.d(TAG, String.format("Will play video in fragment: %s %s", filePath, fileURL));
-        alreadyGotSettings = true;
+//        alreadyGotSettings = true;
 
         if (autoStartPlaying) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_WILL_AUTO_PLAY, info);
@@ -275,12 +334,14 @@ public class RemakeVideoFragment       extends
 
     // Bind to UI events
     private void bindUIHandlers() {
-        aq.id(R.id.touchVideoButton).clicked(onClickedToggleControlsButton);
+//        aq.id(R.id.touchVideoButton).clicked(onClickedToggleControlsButton);
         aq.id(R.id.videoStopButton).clicked(onClickedStopButton);
+        aq.id(R.id.shareButton).clicked(onClickedShareButton);
         aq.id(R.id.videoPlayPauseButton).clicked(onClickedPlayPauseButton);
         aq.id(R.id.videoFullScreenButton).clicked(onClickedFullScreenButton);
-        aq.id(R.id.videoBigPlayButton).clicked(onClickedBigPlayButton);
-
+//        aq.id(R.id.videoBigPlayButton).clicked(onClickedBigPlayButton);
+        aq.id(R.id.likedButton).clicked(onClickedLikeButton);
+        aq.id(R.id.remake_video_top_layout).clicked(onClickedTopLayout);
     }
 
     @Override
@@ -316,12 +377,12 @@ public class RemakeVideoFragment       extends
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         Log.d(TAG, String.format("Video is prepared for playing: %s %s", filePath, fileURL));
-        aq.id(R.id.videoCurtain).visibility(View.GONE);
-        aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
+        aq.id(R.id.remakeThumbnailImage).visibility(View.GONE);
         if (autoStartPlaying) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_WILL_PLAY, info);
             aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
             aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
+            videoView.setZOrderOnTop(false);
             start();
         }
     }
@@ -332,6 +393,9 @@ public class RemakeVideoFragment       extends
     //region *** Controls ***
     void showControls() {
         aq.id(R.id.videoControls).visibility(View.VISIBLE);
+        aq.id(R.id.views_count).visibility(View.VISIBLE);
+        aq.id(R.id.viewsButton).visibility(View.VISIBLE);
+        aq.id(R.id.shareButton).visibility(View.VISIBLE);
 
         if (autoHideControls) {
             new Handler().postDelayed(new Runnable() {
@@ -339,12 +403,15 @@ public class RemakeVideoFragment       extends
                 public void run() {
                     hideControls();
                 }
-            }, 2000);
+            }, 5000);
         }
     }
 
     void hideControls() {
         aq.id(R.id.videoControls).visibility(View.GONE);
+        aq.id(R.id.views_count).visibility(View.GONE);
+        aq.id(R.id.viewsButton).visibility(View.GONE);
+        aq.id(R.id.shareButton).visibility(View.GONE);
     }
 
     void toggleControls() {
@@ -373,7 +440,7 @@ public class RemakeVideoFragment       extends
     void start() {
         ImageButton ib = (ImageButton) aq.id(R.id.videoPlayPauseButton).getView();
         ib.setImageResource(R.drawable.selector_video_button_pause);
-        aq.id(R.id.videoView).visibility(View.VISIBLE);
+//        aq.id(R.id.videoView).visibility(View.VISIBLE);
         if (videoView != null) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYING, info);
             videoView.start();
@@ -384,21 +451,22 @@ public class RemakeVideoFragment       extends
     }
 
     void showThumbState() {
-        if (videoView != null) videoView.seekTo(0);
+        if (videoView != null) videoView.seekTo(100);
         pause();
-        aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
-        aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
-        aq.id(R.id.videoView).visibility(View.INVISIBLE);
+//        aq.id(R.id.remakeThumbnailImage).visibility(View.VISIBLE);
+//        aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
         aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
     }
 
     void showThumbWhileLoading() {
-        aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
+        aq.id(R.id.remakeThumbnailImage).visibility(View.VISIBLE);
+        aq.id(R.id.videoFragmentLoading).visibility(View.VISIBLE);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
     }
 
     void hideThumb() {
-        aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
-        aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+        aq.id(R.id.remakeThumbnailImage).visibility(View.INVISIBLE);
+//        aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
     }
     //endregion
 
@@ -450,6 +518,34 @@ public class RemakeVideoFragment       extends
         }
     };
 
+    View.OnClickListener onClickedShareButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            fullStop();
+            startShareIntent();
+        }
+    };
+
+    private void startShareIntent(){
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        if(user != null && story != null) {
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Remake of " + story.name);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out " + user.firstName + "'s Remake of " + story.name + "\n" +
+                    remake.videoURL + "\n\n" +"Check out Homage " + "\n" + "http://www.homage.it");
+        }else if(user == null && story != null) {
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Remake of " + story.name);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out this Remake of " + story.name + "\n" +
+                    remake.videoURL + "\n\n" +"Check out Homage " + "\n" + "http://www.homage.it");
+        }else {
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Remake from Homage");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out this Remake\n" +
+                    remake.videoURL + "\n\n" +"Check out Homage " + "\n" + "http://www.homage.it");
+        }
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+    }
+
     View.OnClickListener onClickedPlayPauseButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -468,10 +564,26 @@ public class RemakeVideoFragment       extends
         }
     };
 
+    View.OnClickListener onClickedLikeButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            HomageServer.sh().reportUserLikedRemake(remake.getOID(),!remake.isLiked);
+        }
+    };
+
+
+    View.OnClickListener onClickedTopLayout = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
+    };
+
 
     View.OnClickListener onClickedFullScreenButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
         }
     };
 

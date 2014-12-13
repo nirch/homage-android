@@ -10,6 +10,8 @@
     <!-- Facebook -->
     <string name="app_id">447743458659084</string>
 
+    <!-- Sharing Remake -->
+    <string name="send_to">Send Remake To...</string>
 
     <!-- List messages -->
     <string name="no_remakes">( No remakes )</string>

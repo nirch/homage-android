@@ -30,6 +30,7 @@ import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.player.RemakeVideoActivity;
+import com.homage.app.player.RemakeVideoFragment;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
@@ -73,7 +74,14 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
 
     SwipeRefreshLayoutBottom swipeLayout;
 
-
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser) {
+            Activity a = getActivity();
+            if(a != null) a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+    }
 
     @Override
     public void onRefresh() {
@@ -498,31 +506,46 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
         if(remakeID != null && !remakeID.isEmpty()) {
 //            remakeVideoContainer.setVisibility(View.VISIBLE);
             Remake remake = Remake.findByOID(remakeID);
+            Bundle bundle = new Bundle();
+
+//            Initialize the video of the story we need to show in the fragment.
+            bundle.putString(VideoPlayerFragment.K_FILE_URL, remake.videoURL);
+            bundle.putBoolean(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
+            bundle.putBoolean(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
+            bundle.putBoolean(VideoPlayerFragment.K_IS_EMBEDDED, true);
+            bundle.putString(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
+
+            bundle.putString(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
+            bundle.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
+            bundle.putInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
 //
-//            // Create new fragment and transaction
+            ((MainActivity)getActivity()).showRemakeVideo(bundle,remake);
+            // Create new fragment and transaction
 //            Fragment remakeVideoFragment = new RemakeVideoFragment();
 //            // set Fragmentclass Arguments
+//            remakeVideoFragment.setArguments(bundle);
 //            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 //// Replace whatever is in the fragment_container view with this fragment,
 //// and add the transaction to the back stack
-//            transaction.replace(R.id.remakeVideoContainer, remakeVideoFragment);
-////            transaction.addToBackStack(null);
+//            transaction.replace(R.id.remakecontainer, remakeVideoFragment);
+//            transaction.addToBackStack(null);
 //// Commit the transaction
 //            transaction.commit();
-            aq.id(R.id.greyscreen).visibility(View.VISIBLE);
-            Intent intent = new Intent(this.getActivity(), RemakeVideoActivity.class);
-            // Initialize the video of the story we need to show in the fragment.
-            intent.putExtra(VideoPlayerFragment.K_FILE_URL, remake.videoURL);
-            intent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
-            intent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
-            intent.putExtra(VideoPlayerFragment.K_IS_EMBEDDED, true);
-            intent.putExtra(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
 
-            intent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
-            intent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
-            intent.putExtra(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
-
-            startActivity(intent);
+//            aq.id(R.id.greyscreen).visibility(View.VISIBLE);
+//            Intent intent = new Intent(this.getActivity(), RemakeVideoActivity.class);
+//            // Initialize the video of the story we need to show in the fragment.
+//            intent.putExtra(VideoPlayerFragment.K_FILE_URL, remake.videoURL);
+//            intent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
+//            intent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
+//            intent.putExtra(VideoPlayerFragment.K_IS_EMBEDDED, true);
+//            intent.putExtra(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
+//
+//            intent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
+//            intent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
+//            intent.putExtra(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
+//
+//            startActivity(intent);
 
 
         }
