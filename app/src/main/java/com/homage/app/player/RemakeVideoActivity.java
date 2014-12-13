@@ -108,7 +108,7 @@ public class RemakeVideoActivity extends
 //      <-- VideoView Stuff-->
         videoView = (VideoView) aq.id(R.id.videoView).getView();
         videoView.setOnTouchListener(this);
-        isLiked = (ImageButton)aq.id(R.id.likedButton).getView();
+        isLiked = (ImageButton)aq.id(R.id.liked_button).getView();
 
 
         // Get the the file path / url of the video.
@@ -300,7 +300,7 @@ public class RemakeVideoActivity extends
         aq.id(R.id.videoPlayPauseButton).clicked(onClickedPlayPauseButton);
         aq.id(R.id.videoFullScreenButton).clicked(onClickedFullScreenButton);
         aq.id(R.id.videoBigPlayButton).clicked(onClickedBigPlayButton);
-        aq.id(R.id.likedButton).clicked(onClickedLikeButton);
+        aq.id(R.id.liked_button).clicked(onClickedLikeButton);
     }
 
     // get Like refresh

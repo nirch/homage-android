@@ -3,22 +3,20 @@ package com.homage.app.player;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -83,6 +81,7 @@ public class RemakeVideoFragment       extends
     boolean autoHideControls = true;
     boolean autoStartPlaying = true;
     boolean isEmbedded = false;
+    boolean isPlayerReady = false;
 
     Remake remake;
     Story story;
@@ -131,6 +130,8 @@ public class RemakeVideoFragment       extends
             }
         });
 
+        isPlayerReady = false;
+
 //      <-- VideoView Stuff-->
         videoView = (VideoView) aq.id(R.id.videoView).getView();
         videoView.setVisibility(View.VISIBLE);
@@ -148,7 +149,7 @@ public class RemakeVideoFragment       extends
             }
         });
 
-        isLiked = (ImageButton)aq.id(R.id.likedButton).getView();
+        isLiked = (ImageButton)aq.id(R.id.liked_button).getView();
 
         // Try to get settings arguments from activity intent extras.
 //        Bundle b = getActivity().getIntent().getExtras();
@@ -177,6 +178,12 @@ public class RemakeVideoFragment       extends
             isLiked.setSelected(!isLiked.isSelected());
             remake.isLiked = !remake.isLiked;
             remake.save();
+            if(remake.isLiked) {
+                aq.id(R.id.liked_text).getTextView().setText("Unlike");
+            }
+            else{
+                aq.id(R.id.liked_text).getTextView().setText("Like");
+            }
         }
 
     }
@@ -251,6 +258,32 @@ public class RemakeVideoFragment       extends
         isLiked.setSelected(remake.isLiked);
         String viewsCount = String.valueOf(remake.viewsCount);
         aq.id(R.id.views_count).getTextView().setText(viewsCount);
+        if(remake.isLiked) {
+            aq.id(R.id.liked_text).getTextView().setText("Unlike");
+        }
+        else{
+            aq.id(R.id.liked_text).getTextView().setText("Like");
+        }
+
+        if(user != null) {
+            if (user.isFacebookUser()) {
+                aq.id(R.id.user_name).getTextView().setText(user.firstName + " " + user.lastName);
+                // Facebook profile picture
+                aq.id(R.id.user_image).image(
+                        user.getFacebookProfilePictureURL(),
+                        true,
+                        false,
+                        100,
+                        R.drawable.com_facebook_profile_picture_blank_portrait);
+            } else {
+                aq.id(R.id.user_image).image(R.drawable.guest);
+                aq.id(R.id.user_name).getTextView().setText("Guest");
+            }
+        }
+        else{
+            aq.id(R.id.user_image).image(R.drawable.guest);
+            aq.id(R.id.user_name).getTextView().setText("Guest");
+        }
 
         showThumbWhileLoading();
     }
@@ -340,7 +373,8 @@ public class RemakeVideoFragment       extends
         aq.id(R.id.videoPlayPauseButton).clicked(onClickedPlayPauseButton);
         aq.id(R.id.videoFullScreenButton).clicked(onClickedFullScreenButton);
 //        aq.id(R.id.videoBigPlayButton).clicked(onClickedBigPlayButton);
-        aq.id(R.id.likedButton).clicked(onClickedLikeButton);
+        aq.id(R.id.liked_button).clicked(onClickedLikeButton);
+        aq.id(R.id.liked_text).clicked(onClickedLikeButton);
         aq.id(R.id.remake_video_top_layout).clicked(onClickedTopLayout);
     }
 
@@ -383,6 +417,7 @@ public class RemakeVideoFragment       extends
             aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
             aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
             videoView.setZOrderOnTop(false);
+            isPlayerReady = true;
             start();
         }
     }
@@ -392,30 +427,41 @@ public class RemakeVideoFragment       extends
 
     //region *** Controls ***
     void showControls() {
-        aq.id(R.id.videoControls).visibility(View.VISIBLE);
-        aq.id(R.id.views_count).visibility(View.VISIBLE);
-        aq.id(R.id.viewsButton).visibility(View.VISIBLE);
-        aq.id(R.id.shareButton).visibility(View.VISIBLE);
-
-        if (autoHideControls) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    hideControls();
-                }
-            }, 5000);
+        if(isPlayerReady) {
+            aq.id(R.id.user_pic).visibility(View.VISIBLE);
+            aq.id(R.id.user_name).visibility(View.VISIBLE);
+            aq.id(R.id.views_count).visibility(View.VISIBLE);
+            aq.id(R.id.viewsButton).visibility(View.VISIBLE);
+            aq.id(R.id.shareButton).visibility(View.VISIBLE);
+            aq.id(R.id.liked_button).visibility(View.VISIBLE);
+            aq.id(R.id.liked_text).visibility(View.VISIBLE);
+            aq.id(R.id.videoStopButton).visibility(View.VISIBLE);
+            aq.id(R.id.videoPlayPauseButton).visibility(View.VISIBLE);
+            if (autoHideControls) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideControls();
+                    }
+                }, 5000);
+            }
         }
     }
 
     void hideControls() {
-        aq.id(R.id.videoControls).visibility(View.GONE);
+        aq.id(R.id.user_name).visibility(View.GONE);
+        aq.id(R.id.user_pic).visibility(View.GONE);
         aq.id(R.id.views_count).visibility(View.GONE);
         aq.id(R.id.viewsButton).visibility(View.GONE);
         aq.id(R.id.shareButton).visibility(View.GONE);
+        aq.id(R.id.liked_text).visibility(View.GONE);
+        aq.id(R.id.liked_button).visibility(View.GONE);
+        aq.id(R.id.videoStopButton).visibility(View.GONE);
+        aq.id(R.id.videoPlayPauseButton).visibility(View.GONE);
     }
 
     void toggleControls() {
-        if (aq.id(R.id.videoControls).getView().getVisibility() == View.VISIBLE) {
+        if (aq.id(R.id.videoPlayPauseButton).getView().getVisibility() == View.VISIBLE) {
             hideControls();
         } else {
             showControls();
@@ -532,15 +578,15 @@ public class RemakeVideoFragment       extends
         if(user != null && story != null) {
             sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Remake of " + story.name);
             sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out " + user.firstName + "'s Remake of " + story.name + "\n" +
-                    remake.videoURL + "\n\n" +"Check out Homage " + "\n" + "http://www.homage.it");
+                    "http://play.homage.it/" + remake.getOID());
         }else if(user == null && story != null) {
             sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Remake of " + story.name);
             sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out this Remake of " + story.name + "\n" +
-                    remake.videoURL + "\n\n" +"Check out Homage " + "\n" + "http://www.homage.it");
+                    "http://play.homage.it/" + remake.getOID());
         }else {
             sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Remake from Homage");
             sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out this Remake\n" +
-                    remake.videoURL + "\n\n" +"Check out Homage " + "\n" + "http://www.homage.it");
+                    "http://play.homage.it/" + remake.getOID());
         }
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
@@ -553,29 +599,28 @@ public class RemakeVideoFragment       extends
         }
     };
 
-    View.OnClickListener onClickedBigPlayButton = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            hideThumb();
-            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
-            aq.id(R.id.loadingVideoPprogress).visibility(View.VISIBLE);
-            videoView.seekTo(0);
-            start();
-        }
-    };
+//    View.OnClickListener onClickedBigPlayButton = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//            hideThumb();
+//            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
+//            aq.id(R.id.loadingVideoPprogress).visibility(View.VISIBLE);
+//            videoView.seekTo(0);
+//            start();
+//        }
+//    };
 
     View.OnClickListener onClickedLikeButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            HomageServer.sh().reportUserLikedRemake(remake.getOID(),!remake.isLiked);
+            HomageServer.sh().reportUserLikedRemake(remake.getOID(), !remake.isLiked);
         }
     };
-
 
     View.OnClickListener onClickedTopLayout = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            getActivity().getSupportFragmentManager().popBackStack();
+            toggleControls();
         }
     };
 

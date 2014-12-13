@@ -3,7 +3,6 @@ package com.homage.app.story;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -29,8 +28,6 @@ import com.homage.CustomAdapters.SwipeRefreshLayoutBottom;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
-import com.homage.app.player.RemakeVideoActivity;
-import com.homage.app.player.RemakeVideoFragment;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
@@ -174,7 +171,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
                 // Configure
                 AQuery aq = new AQuery(rowView);
                 aq.id(R.id.remakeImage).image(remake.thumbnailURL, true, true, 256, R.drawable.glass_dark);
-                aq.id(R.id.likedButton).clicked(new View.OnClickListener() {
+                aq.id(R.id.liked_button).clicked(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         updateLikes(remake.getOID().toString());

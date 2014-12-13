@@ -24,12 +24,12 @@
         android:focusableInTouchMode="false"
         android:background="@android:color/transparent"
         android:adjustViewBounds="true"
-        android:layout_marginTop="4dp"
-        android:layout_alignStart="@+id/videoView"
-        android:layout_alignLeft="@+id/videoView"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_alignTop="@+id/videoView"
+        android:layout_marginBottom="4dp"
+        android:layout_alignEnd="@+id/videoView"
+        android:layout_alignRight="@+id/videoView"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_alignBottom="@+id/videoView"
         android:clickable="true"
         android:visibility="gone"/>
 
@@ -41,8 +41,8 @@
         android:layout_alignTop="@+id/videoView"
         android:layout_alignEnd="@+id/videoView"
         android:layout_alignRight="@+id/videoView"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
         android:visibility="gone"
         />
 
@@ -63,18 +63,47 @@
         android:layout_toStartOf="@+id/views_count"
         android:visibility="gone"/>
 
-    <!--<Button android:id="@+id/touchVideoButton"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_alignStart="@+id/videoView"-->
-        <!--android:layout_alignEnd="@+id/videoView"-->
-        <!--android:layout_alignLeft="@+id/videoView"-->
-        <!--android:layout_alignRight="@+id/videoView"-->
-        <!--android:layout_alignTop="@+id/videoView"-->
-        <!--android:layout_alignBottom="@+id/videoView"-->
-        <!--android:layout_margin="20dp"-->
-        <!--android:background="@null"-->
-        <!--/>-->
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/homage_text"
+        android:layout_alignTop="@+id/videoView"
+        android:layout_toRightOf="@+id/user_pic"
+        android:layout_toEndOf="@+id/user_pic"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:visibility="gone"
+        />
+
+    <FrameLayout
+        android:id="@+id/user_pic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_alignStart="@+id/videoView"
+        android:layout_alignLeft="@+id/videoView"
+        android:layout_alignTop="@+id/videoView">
+
+        <ImageButton
+            android:id="@+id/user_image"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/guest"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:background="@android:color/transparent"
+            android:adjustViewBounds="true"
+            />
+
+        <ImageView
+            android:src="@drawable/rounded_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
 
     <!--<ImageButton android:id="@+id/videoBigPlayButton"-->
         <!--android:layout_width="wrap_content"-->
@@ -92,9 +121,8 @@
         <!--/>-->
 
     <ImageView android:id="@+id/remakeThumbnailImage"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:scaleType="centerInside"
         android:layout_centerInParent="true"
         android:background="@null"
         android:visibility="gone"
@@ -107,35 +135,74 @@
         android:visibility="gone"
         />
 
-    <LinearLayout android:id="@+id/videoControls"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@+id/videoView"
+
+    <ImageButton
+        android:id="@+id/liked_button"
+        style="@style/videoPlayerButton"
+        android:src="@drawable/selector_my_like_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:background="@android:color/transparent"
-        android:weightSum="3"
+        android:adjustViewBounds="true"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_alignBottom="@+id/videoView"
+        android:clickable="true"
         android:visibility="gone"
-        >
+        />
 
-        <ImageButton
-            android:id="@+id/likedButton"
-            style="@style/videoPlayerButton"
-            android:src="@drawable/selector_my_like_button"
-            />
+    <TextView
+        android:id="@+id/liked_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:textColor="@color/homage_text"
+        android:layout_alignBottom="@+id/videoView"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/liked_button"
+        android:layout_toEndOf="@+id/liked_button"
+        android:clickable="true"
+        android:visibility="gone"
+        />
 
-        <ImageButton android:id="@+id/videoStopButton"
-            style="@style/videoPlayerButton"
-            android:src="@drawable/selector_video_button_stop"
-            />
+    <ImageButton android:id="@+id/videoStopButton"
+        style="@style/videoPlayerButton"
+        android:src="@drawable/selector_video_button_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:background="@android:color/transparent"
+        android:adjustViewBounds="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_alignBottom="@+id/videoView"
+        android:layout_toRightOf="@+id/videoPlayPauseButton"
+        android:layout_toEndOf="@+id/videoPlayPauseButton"
+        android:clickable="true"
+        android:visibility="gone"
+        />
 
-        <ImageButton android:id="@+id/videoPlayPauseButton"
-            style="@style/videoPlayerButton"
-            android:src="@drawable/selector_video_button_play"
-            />
+    <ImageButton android:id="@+id/videoPlayPauseButton"
+        style="@style/videoPlayerButton"
+        android:src="@drawable/selector_video_button_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:background="@android:color/transparent"
+        android:adjustViewBounds="true"
+        android:layout_centerHorizontal="true"
+        android:layout_alignBottom="@+id/videoView"
+        android:layout_marginStart="-10dp"
+        android:layout_marginLeft="-10dp"
+        android:clickable="true"
+        android:visibility="gone"
+        />
 
-        <ImageButton android:id="@+id/videoFullScreenButton"
-            style="@style/videoPlayerButton"
-            android:src="@drawable/selector_video_button_fullscreen"
-            />
-
-    </LinearLayout>
 </RelativeLayout>
