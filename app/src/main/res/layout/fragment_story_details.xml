@@ -162,10 +162,11 @@
     >
     <Button android:id="@+id/makeYourOwnButton"
         android:layout_width="300dp"
-        android:layout_height="70dp"
+        android:layout_height="90dp"
         android:text="@string/make_your_own"
         android:drawableLeft="@drawable/icon_remake_black"
         android:drawablePadding="3dp"
+        android:textStyle="bold"
         android:layout_gravity="center_horizontal"
         android:layout_centerHorizontal="true"
         style="@style/HomageImpactButtonBigTextBlack" />
