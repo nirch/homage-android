@@ -447,7 +447,6 @@ public class MainActivity extends ActionBarActivity
         lbm.registerReceiver(onRemakesForStoryUpdated, new IntentFilter(HomageServer.INTENT_REMAKES_FOR_STORY));
         lbm.registerReceiver(onRemakesForUserUpdated, new IntentFilter(HomageServer.INTENT_USER_REMAKES));
         lbm.registerReceiver(onRemakeDeletion, new IntentFilter((HomageServer.INTENT_REMAKE_DELETION)));
-        lbm.registerReceiver(onRemakeLiked, new IntentFilter((HomageServer.INTENT_REMAKE_LIKED)));
     }
 
     private void removeObservers() {
@@ -458,7 +457,6 @@ public class MainActivity extends ActionBarActivity
         lbm.unregisterReceiver(onRemakesForStoryUpdated);
         lbm.unregisterReceiver(onRemakesForUserUpdated);
         lbm.unregisterReceiver(onRemakeDeletion);
-        lbm.unregisterReceiver(onRemakeLiked);
     }
 
     private void refreshMyStoriesIfCurrentSection() {
@@ -731,18 +729,17 @@ public class MainActivity extends ActionBarActivity
         finish();
     }
 
-    public void showRemakeVideo(Bundle args, Remake remake) {
-        showActionBar();
-
-        currentSection = SECTION_REMAKE_VIDEO;
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        remakeVideoFragment = RemakeVideoFragment.newInstance(args, remake);
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setCustomAnimations(R.anim.open_from_center, R.anim.close_from_center);
-        transaction.replace(R.id.remakecontainer, remakeVideoFragment, FRAGMENT_TAG_REMAKE_VIDEO);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
+//    public void showRemakeVideo(Bundle args, Remake remake) {
+//        showActionBar();
+//        currentSection = SECTION_REMAKE_VIDEO;
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        remakeVideoFragment = RemakeVideoFragment.newInstance(args, remake);
+//        FragmentTransaction transaction = fragmentManager.beginTransaction();
+//        transaction.setCustomAnimations(R.anim.open_from_center, R.anim.close_from_center,R.anim.open_from_center, R.anim.close_from_center);
+//        transaction.replace(R.id.remakecontainer, remakeVideoFragment, FRAGMENT_TAG_REMAKE_VIDEO);
+//        transaction.addToBackStack(null);
+//        transaction.commit();
+//    }
 
     public void showStoryDetails(Story story) {
         showActionBar();
@@ -752,7 +749,7 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         storyDetailsFragment = StoryDetailsFragment.newInstance(SECTION_STORY_DETAILS, story);
         fragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out)
+                .setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out,R.anim.animation_slide_in, R.anim.animation_slide_out)
                 .replace(R.id.container, storyDetailsFragment,FRAGMENT_TAG_STORY_DETAILS)
                 .addToBackStack(null)
                 .commitAllowingStateLoss();
@@ -780,7 +777,7 @@ public class MainActivity extends ActionBarActivity
         currentSection = SECTION_ME;
         currentStory = null;
         fragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout)
+                .setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout,R.anim.animation_fadein, R.anim.animation_fadeout)
                 .replace(R.id.container, MyStoriesFragment.newInstance(currentSection, user), FRAGMENT_TAG_ME)
                 .addToBackStack(null)
                 .commitAllowingStateLoss();
@@ -1012,7 +1009,7 @@ public class MainActivity extends ActionBarActivity
     public void onBackPressed() {
         Log.d(TAG, "Pressed back button");
 
-        int count = getFragmentManager().getBackStackEntryCount();
+        int count = getSupportFragmentManager().getBackStackEntryCount();
 
         if (count == 0) {
             super.onBackPressed();

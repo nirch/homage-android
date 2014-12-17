@@ -1,15 +1,17 @@
 package com.homage.app.story;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.InflateException;
@@ -17,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
@@ -28,6 +31,7 @@ import com.homage.CustomAdapters.SwipeRefreshLayoutBottom;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
+import com.homage.app.player.RemakeVideoFragmentActivity;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
@@ -48,13 +52,19 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String VIDEO_FRAGMENT_TAG = "videoPlayerFragment";
 
+
+
     View rootView;
     LayoutInflater inflater;
     AQuery aq;
     ExpandableHeightGridView remakesGridView;
     ScrollView remakesScrollView;
 
-//    static boolean createdOnce = false;
+    private final Handler handler = new Handler();
+    private Runnable runPager;
+
+
+    //    static boolean createdOnce = false;
     public Story story;
     boolean shouldFetchMoreRemakes = false;
     VideoPlayerFragment videoPlayerFragment;
@@ -221,6 +231,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
 
     private void initialize() {
         aq = new AQuery(rootView);
+        aq.id(R.id.storyName).text(story.name);
         aq.id(R.id.storyDescription).text(story.description);
 
         User excludedUser = User.getCurrent();
@@ -263,16 +274,28 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
         boolean shouldCreateChild = getArguments().getBoolean("shouldCreateStoryDetailsVideoFragment");
 
         // Ensure fragment created only once!
-        FragmentManager childFM = getChildFragmentManager();
-        videoPlayerFragment = (VideoPlayerFragment)childFM.findFragmentByTag(VIDEO_FRAGMENT_TAG);
-        if (videoPlayerFragment == null) {
-            FragmentManager fm = getFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            fm.beginTransaction();
-            videoPlayerFragment = new VideoPlayerFragment();
-            ft.add(R.id.storyDetailsVideoContainer, videoPlayerFragment, VIDEO_FRAGMENT_TAG);
-            ft.commit();
-        }
+//        FragmentManager childFM = getChildFragmentManager();
+//        videoPlayerFragment = (VideoPlayerFragment)childFM.findFragmentByTag(VIDEO_FRAGMENT_TAG);
+//        if (videoPlayerFragment == null) {
+//            FragmentManager fm = getFragmentManager();
+//            FragmentTransaction ft = fm.beginTransaction();
+//            fm.beginTransaction();
+//            videoPlayerFragment = new VideoPlayerFragment();
+//            ft.add(R.id.storyDetailsVideoContainer, videoPlayerFragment, VIDEO_FRAGMENT_TAG);
+//            ft.commit();
+//        }
+
+        videoPlayerFragment = new VideoPlayerFragment();
+        runPager = new Runnable() {
+
+            @Override
+            public void run()
+            {
+
+                getFragmentManager().beginTransaction().add(R.id.storyDetailsVideoContainer, videoPlayerFragment, VIDEO_FRAGMENT_TAG).commit();
+            }
+        };
+        handler.post(runPager);
 
 //        remakeVideoContainer = (FrameLayout)aq.id(R.id.remakeVideoContainer).getView();
 
@@ -348,6 +371,8 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
     @Override
     public void onResume() {
         super.onResume();
+        ActionBar action = getActivity().getActionBar();
+        if(action != null) action.hide();
         aq.id(R.id.greyscreen).visibility(View.GONE);
     }
 
@@ -356,6 +381,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
         super.onPause();
         stopStoryVideo();
         aq.id(R.id.greyscreen).visibility(View.VISIBLE);
+        handler.removeCallbacks(runPager);
 //        stopRemakeVideo();
     }
 
@@ -447,6 +473,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
 
         // Hide everything else
         aq.id(R.id.makeYourOwnButton).visibility(View.GONE);
+        aq.id(R.id.storyName).visibility(View.GONE);
         aq.id(R.id.storyDescription).visibility(View.GONE);
         aq.id(R.id.remakesContainer).visibility(View.GONE);
 
@@ -461,7 +488,8 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
         container.setLayoutParams(params);
 
         // Actionbar
-        getActivity().getActionBar().hide();
+        ActionBar action = getActivity().getActionBar();
+        if(action != null)   action.hide();
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         // (remove the top margin that is there for the action bar)
@@ -475,6 +503,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
         Log.v(TAG, "Video, exit full screen");
 
         aq.id(R.id.makeYourOwnButton).visibility(View.VISIBLE);
+        aq.id(R.id.storyName).visibility(View.VISIBLE);
         aq.id(R.id.storyDescription).visibility(View.VISIBLE);
         aq.id(R.id.remakesContainer).visibility(View.VISIBLE);
 
@@ -503,20 +532,20 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
         if(remakeID != null && !remakeID.isEmpty()) {
 //            remakeVideoContainer.setVisibility(View.VISIBLE);
             Remake remake = Remake.findByOID(remakeID);
-            Bundle bundle = new Bundle();
-
-//            Initialize the video of the story we need to show in the fragment.
-            bundle.putString(VideoPlayerFragment.K_FILE_URL, remake.videoURL);
-            bundle.putBoolean(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
-            bundle.putBoolean(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
-            bundle.putBoolean(VideoPlayerFragment.K_IS_EMBEDDED, true);
-            bundle.putString(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
-
-            bundle.putString(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
-            bundle.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
-            bundle.putInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
+//            Bundle bundle = new Bundle();
 //
-            ((MainActivity)getActivity()).showRemakeVideo(bundle,remake);
+////            Initialize the video of the story we need to show in the fragment.
+//            bundle.putString(VideoPlayerFragment.K_FILE_URL, remake.videoURL);
+//            bundle.putBoolean(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
+//            bundle.putBoolean(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
+//            bundle.putBoolean(VideoPlayerFragment.K_IS_EMBEDDED, true);
+//            bundle.putString(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
+//
+//            bundle.putString(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
+//            bundle.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
+//            bundle.putInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
+////
+//            ((MainActivity)getActivity()).showRemakeVideo(bundle,remake);
             // Create new fragment and transaction
 //            Fragment remakeVideoFragment = new RemakeVideoFragment();
 //            // set Fragmentclass Arguments
@@ -530,21 +559,19 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
 //            transaction.commit();
 
 //            aq.id(R.id.greyscreen).visibility(View.VISIBLE);
-//            Intent intent = new Intent(this.getActivity(), RemakeVideoActivity.class);
-//            // Initialize the video of the story we need to show in the fragment.
-//            intent.putExtra(VideoPlayerFragment.K_FILE_URL, remake.videoURL);
-//            intent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
-//            intent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
-//            intent.putExtra(VideoPlayerFragment.K_IS_EMBEDDED, true);
-//            intent.putExtra(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
-//
-//            intent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
-//            intent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
-//            intent.putExtra(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
-//
-//            startActivity(intent);
+            Intent intent = new Intent(this.getActivity(), RemakeVideoFragmentActivity.class);
+            // Initialize the video of the story we need to show in the fragment.
+            intent.putExtra(VideoPlayerFragment.K_FILE_URL, remake.videoURL);
+            intent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
+            intent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
+            intent.putExtra(VideoPlayerFragment.K_IS_EMBEDDED, true);
+            intent.putExtra(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
 
+            intent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
+            intent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
+            intent.putExtra(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
 
+            startActivity(intent);
         }
     }
 

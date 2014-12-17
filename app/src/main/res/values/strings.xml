@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--  Remake Video Buttons  -->
+    <string name="icon_heart_like">{fa-heart-o} Like</string>
+    <string name="icon_heart_unlike">{fa-heart} Unlike</string>
+    <string name="icon_share">{fa_share_alt}</string>
+    <string name="icon_report">{fa_flag}</string>
+    <string name="icon_views">{fa_eye}</string>
+    <string name="icon_likes">{fa-heart-o}</string>
+    <string name="icon_play">{fa_play}</string>
+    <string name="icon_pause">{fa_pause}</string>
+    <string name="icon_full_screen">{fa_expand}</string>
+    <string name="icon_more">{fa-ellipsis-h}</string>
+
+    <string name="more_remakes">MORE REMAKES</string>
+
     <string name="app_name">Homage</string>
     <string name="app_main_title">Homage</string>
 

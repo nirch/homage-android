@@ -30,6 +30,14 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="Theme.Remake" parent="android:Theme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
     <style name="SceneText">
         <item name="android:textSize">24dp</item>
         <item name="android:textColor">@color/homage_text</item>
@@ -110,6 +118,17 @@
         <item name="android:layout_weight">1</item>
     </style>
 
+    <style name="HomageImpactButtonBigTextBlack">
+        <item name="android:textSize">22dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@null</item>
+        <item name="android:textColor">@color/homage_button_text</item>
+        <item name="android:paddingLeft">40dp</item>
+        <item name="android:paddingRight">40dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
     <style name="HomageRecorderOnTopButton">
         <item name="android:background">@drawable/selector_recorder_ontop_button_bg</item>
         <item name="android:layout_width">50dp</item>
@@ -184,6 +203,49 @@
         <item name="android:textColor">@color/homage_text</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">17dp</item>
+    </style>
+
+    <style name="headerText">
+        <item name="android:textColor">@color/homage_impact</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:background">@color/homage_button_text</item>
+    </style>
+
+    <style name="greyDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0.3dp</item>
+        <item name="android:background">@color/holo_gray_bright</item>
+    </style>
+
+    <style name="storyDetailsText">
+        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:background">@color/homage_button_text</item>
+    </style>
+
+    <style name="remakeText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">17dp</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
 </resources>

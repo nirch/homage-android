@@ -213,10 +213,10 @@
             >
         </activity>
 
-        <activity android:name=".player.RemakeVideoActivity"
+        <activity android:name=".player.RemakeVideoFragmentActivity"
             android:screenOrientation="sensor"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
-            android:theme="@style/Theme.Transparent"
+            android:theme="@style/Theme.Remake"
             >
         </activity>
 

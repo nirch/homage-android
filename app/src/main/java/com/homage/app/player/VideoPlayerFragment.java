@@ -151,9 +151,9 @@ public class VideoPlayerFragment
 
     //region *** initializations ***
     private void initializeUIState() {
-        if (!allowToggleFullscreen) {
-            disableButton(R.id.videoFullScreenButton);
-        }
+//        if (!allowToggleFullscreen) {
+//            disableButton(R.id.videoFullScreenButton);
+//        }
 
         if (autoStartPlaying) {
             aq.id(R.id.videoThumbnailImage).visibility(View.GONE);
@@ -202,7 +202,7 @@ public class VideoPlayerFragment
 
             // A remote video with a given URL.
             videoView.setVideoURI(Uri.parse(fileURL));
-            videoView.start();
+//            videoView.start();
         }
 
 
@@ -258,7 +258,7 @@ public class VideoPlayerFragment
         aq.id(R.id.touchVideoButton).clicked(onClickedToggleControlsButton);
         aq.id(R.id.videoStopButton).clicked(onClickedStopButton);
         aq.id(R.id.videoPlayPauseButton).clicked(onClickedPlayPauseButton);
-        aq.id(R.id.videoFullScreenButton).clicked(onClickedFullScreenButton);
+//        aq.id(R.id.videoFullScreenButton).clicked(onClickedFullScreenButton);
         aq.id(R.id.videoBigPlayButton).clicked(onClickedBigPlayButton);
 
     }
@@ -298,14 +298,12 @@ public class VideoPlayerFragment
         Log.d(TAG, String.format("Video is prepared for playing: %s %s", filePath, fileURL));
         aq.id(R.id.videoCurtain).visibility(View.GONE);
         aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
+        aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
+        aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
         if (autoStartPlaying) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_WILL_PLAY , info);
-            aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
-            aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
             start();
         }
-
-
     }
 
 

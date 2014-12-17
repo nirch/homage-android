@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="progressbar_colors" >
+        <item name="test_red">#FFFF5F45</item>
+    </array>
+</resources>

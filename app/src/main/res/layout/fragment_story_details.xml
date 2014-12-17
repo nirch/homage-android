@@ -14,17 +14,27 @@
     android:layout_gravity="center"
     android:weightSum="3">
 
-    <TextView android:id="@+id/storyDescription"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="Story Description"
-        android:layout_gravity="center_horizontal"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:gravity="center"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_weight="0.1"
+    <LinearLayout
+        android:id="@+id/storyHeaders"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <TextView android:id="@+id/storyName"
+        style="@style/headerText"
         />
+
+        <View
+            style="@style/greyDivider"/>
+
+    <TextView android:id="@+id/storyDescription"
+        style="@style/storyDetailsText"
+        />
+
+        <View
+            style="@style/greyDivider"/>
+
+</LinearLayout>
 
 <com.homage.CustomAdapters.SwipeRefreshLayoutBottom
     android:id="@+id/swipe_container"
@@ -53,6 +63,11 @@
         android:layout_above="@+id/remakesGridView"
         >
     </RelativeLayout>
+
+    <TextView android:id="@+id/moreRemakes"
+        style="@style/headerText"
+        android:text="@string/more_remakes"
+        />
 
     <RelativeLayout android:id="@+id/remakesContainer"
         android:layout_width="match_parent"
@@ -123,7 +138,7 @@
         android:layout_height="wrap_content"
         android:indeterminate="true"
         app:spb_sections_count="4"
-        app:spb_color="#FF0000"
+        app:spb_colors="@array/progressbar_colors"
         app:spb_speed="2.0"
         app:spb_stroke_width="4dp"
         app:spb_stroke_separator_length="4dp"
@@ -141,7 +156,7 @@
     android:id="@+id/makebuttonlayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/holo_red_dark"
+    android:background="@color/homage_remake_button"
     android:textAlignment="center"
     android:layout_weight="0.6"
     >
@@ -149,11 +164,11 @@
         android:layout_width="300dp"
         android:layout_height="70dp"
         android:text="@string/make_your_own"
-        android:drawableLeft="@drawable/icon_create_movie"
-        android:drawablePadding="10dp"
+        android:drawableLeft="@drawable/icon_remake_black"
+        android:drawablePadding="3dp"
         android:layout_gravity="center_horizontal"
         android:layout_centerHorizontal="true"
-        style="@style/actionButton" />
+        style="@style/HomageImpactButtonBigTextBlack" />
 </RelativeLayout>
 </LinearLayout>
 
@@ -164,5 +179,10 @@
     android:visibility="gone"
     >
 </FrameLayout>
+
+    <SurfaceView
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:visibility="gone"/>
 
 </FrameLayout>

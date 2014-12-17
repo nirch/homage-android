@@ -39,13 +39,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/homage_text"
-        android:layout_toRightOf="@+id/viewsButton"
+        android:layout_toRightOf="@+id/views_icon"
         android:layout_alignParentBottom="true"/>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/viewsButton"
+        android:id="@+id/views_icon"
         android:src="@drawable/icon_views"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"

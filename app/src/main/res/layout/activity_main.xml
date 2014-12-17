@@ -58,6 +58,19 @@
         tools:layout="@layout/fragment_navigation_drawer" />
 
     <!--android:layout_marginTop="?attr/actionBarSize"-->
+    <VideoView
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:visibility="gone"/>
 
+    <SurfaceView
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:visibility="gone"/>
+
+    <View
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:visibility="gone"/>
 
 </android.support.v4.widget.DrawerLayout>
