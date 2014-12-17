@@ -366,6 +366,8 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         handleEmbeddedVideoConfiguration(newConfig);
+        ActionBar action = getActivity().getActionBar();
+        if(action != null) action.hide();
     }
 
     @Override
