@@ -56,7 +56,6 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.homage.app.R;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
-import com.homage.app.player.RemakeVideoFragment;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.app.recorder.RecorderActivity;
 import com.homage.app.story.StoriesListFragment;
@@ -118,7 +117,7 @@ public class MainActivity extends ActionBarActivity
     int mOnResumeChangeToSection = -1;
     boolean mNavigationItemClicked = false;
     private StoryDetailsFragment storyDetailsFragment;
-    private RemakeVideoFragment remakeVideoFragment;
+//    private RemakeVideoFragment remakeVideoFragment;
     private CharSequence mTitle;
 
     private Remake lastRemakeSentToRender;
@@ -470,33 +469,33 @@ public class MainActivity extends ActionBarActivity
 
     // Observers handlers
 
-    // get Like refresh
-    private BroadcastReceiver onRemakeLiked = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Crashlytics.log("onRemakeLiked");
-            hideRefreshProgress();
-            Bundle b = intent.getExtras();
-            boolean success = b.getBoolean("success", false);
-            if(success) {
-                HashMap<String, Object> responseInfo = (HashMap<String, Object>) intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
-
-                if (responseInfo != null) {
-                    String remakeOID = (String) responseInfo.get("remakeOID");
-                    String statuscode = responseInfo.get("status_code").toString();
-
-                    if (success) {
-                        FragmentManager fragmentManager = getSupportFragmentManager();
-                        Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_REMAKE_VIDEO);
-                        if (f!=null) {
-                            ((RemakeVideoFragment)f).refresh(remakeOID);
-                        }
-                        //showStories();
-                    }
-                }
-            }
-        }
-    };
+//    // get Like refresh
+//    private BroadcastReceiver onRemakeLiked = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            Crashlytics.log("onRemakeLiked");
+//            hideRefreshProgress();
+//            Bundle b = intent.getExtras();
+//            boolean success = b.getBoolean("success", false);
+//            if(success) {
+//                HashMap<String, Object> responseInfo = (HashMap<String, Object>) intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
+//
+//                if (responseInfo != null) {
+//                    String remakeOID = (String) responseInfo.get("remakeOID");
+//                    String statuscode = responseInfo.get("status_code").toString();
+//
+//                    if (success) {
+//                        FragmentManager fragmentManager = getSupportFragmentManager();
+//                        Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_REMAKE_VIDEO);
+//                        if (f!=null) {
+//                            ((RemakeVideoFragment)f).refresh(remakeOID);
+//                        }
+//                        //showStories();
+//                    }
+//                }
+//            }
+//        }
+//    };
 
     private BroadcastReceiver onStoriesUpdated = new BroadcastReceiver() {
         @Override
@@ -808,17 +807,10 @@ public class MainActivity extends ActionBarActivity
     }
     //endregion
 
-<<<<<<< HEAD
-    public void refetchTopRemakesForStory(Story story) {
-        if(story != null) {
-            HomageServer.sh().refetchRemakesForStory(story.getOID(), null, 10, null); // Implement partial fetch
-            showRefreshProgress();
-        }
-=======
+
     public void refetchTopRemakesForStory(Story story,String userID) {
         HomageServer.sh().refetchRemakesForStory(story.getOID(), null, 16, null,userID); // Implement partial fetch
         showRefreshProgress();
->>>>>>> origin/story_details_dan
     }
 
     public void refetchAllRemakesForStory(Story story) {
