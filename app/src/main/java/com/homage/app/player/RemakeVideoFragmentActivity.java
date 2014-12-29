@@ -219,12 +219,12 @@ public class RemakeVideoFragmentActivity extends
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
-        }
-        else{
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
-        }
+//        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
+//        }
+//        else{
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
+//        }
 
         setupScreen();
     }
@@ -239,10 +239,13 @@ public class RemakeVideoFragmentActivity extends
             (aq.id(R.id.remakeWrapper).getView()).getLayoutParams().width = initialWidth;
             videoView.getLayoutParams().height = initialHeight;
             videoView.getLayoutParams().width = initialWidth;
+            aq.id(R.id.remakeThumbnailImage).getView().getLayoutParams().height = initialHeight;
+            aq.id(R.id.remakeThumbnailImage).getView().getLayoutParams().width = initialWidth;
         }else{
             hideHeaders();
             (aq.id(R.id.remakeWrapper).getView()).setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             videoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            aq.id(R.id.remakeThumbnailImage).getView().setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
     }
 
@@ -544,9 +547,9 @@ public class RemakeVideoFragmentActivity extends
         aq.id(R.id.remakeThumbnailImage).visibility(View.GONE);
         aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
         aq.id(R.id.remakeVideoFragmentLoading).visibility(View.GONE);
-        isPlayerReady = true;
         showControls();
         videoView.seekTo(100);
+        isPlayerReady = true;
         if (autoStartPlaying) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_WILL_PLAY, info);
             start();
