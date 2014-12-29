@@ -69,7 +69,7 @@
             No need to update model version unless the model has changed.
             If model changed, change the version of the model according to the version of the app.
         -->
-        <meta-data android:name="VERSION" android:value="1010" />
+        <meta-data android:name="VERSION" android:value="1005" />
         <meta-data android:name="QUERY_LOG" android:value="false" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.homage.model" />
 
