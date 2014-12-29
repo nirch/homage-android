@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/remake_video_top_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/homage_darker_transparent_overlay"
+    android:clickable="true"
+    >
+
+    <LinearLayout
+        android:id="@+id/remakeHeaders"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
+
+    <TextView android:id="@+id/remakeStoryName"
+            style="@style/headerText"
+        />
+
+        <View
+            style="@style/greyDivider"/>
+
+    <TextView android:id="@+id/storyRemakeDescription"
+        style="@style/storyDetailsText"
+        />
+
+        <View
+            style="@style/greyDivider"/>
+
+        <TextView android:id="@+id/remakeMoreRemakes"
+            style="@style/headerText"
+            android:text="@string/more_remakes"
+            />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/remakeWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/remakeHeaders"
+        android:adjustViewBounds="true"
+        android:background="@color/homage_black">
+
+    <VideoView android:id="@+id/videoView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        />
+
+    <ImageView android:id="@+id/remakeThumbnailImage"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitStart"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        />
+
+    <ProgressBar android:id="@+id/remakeVideoFragmentLoading"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        />
+    </RelativeLayout>
+
+    <android.widget.IconTextView
+        android:id="@+id/views_count"
+        style="@style/remakeText"
+        android:layout_alignTop="@+id/remakeWrapper"
+        android:layout_alignEnd="@+id/remakeWrapper"
+        android:layout_alignRight="@+id/remakeWrapper"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        />
+
+    <android.widget.IconTextView
+        android:id="@+id/views_icon"
+        style="@style/remakeText"
+        android:text="@string/icon_views"
+        android:layout_alignTop="@+id/remakeWrapper"
+        android:layout_toLeftOf="@+id/views_count"
+        android:layout_toStartOf="@+id/views_count"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"/>
+
+    <android.widget.IconTextView
+        android:id="@+id/likes_count"
+        style="@style/remakeText"
+        android:layout_alignTop="@+id/remakeWrapper"
+        android:layout_toLeftOf="@+id/views_icon"
+        android:layout_toStartOf="@+id/views_icon"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"/>
+
+    <android.widget.IconTextView
+        android:id="@+id/likes_icon"
+        style="@style/remakeText"
+        android:text="@string/icon_likes"
+        android:layout_alignTop="@+id/remakeWrapper"
+        android:layout_toLeftOf="@+id/likes_count"
+        android:layout_toStartOf="@+id/likes_count"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        />
+
+    <android.widget.IconTextView
+        android:id="@+id/user_name"
+        style="@style/remakeText"
+        android:layout_alignTop="@+id/remakeWrapper"
+        android:layout_toRightOf="@+id/user_image"
+        android:layout_toEndOf="@+id/user_image"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="13dp"
+        android:visibility="gone"
+        />
+
+    <com.homage.CustomAdapters.ProfilePictureView
+        android:id="@+id/user_image"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/guest"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:background="@android:color/transparent"
+        android:adjustViewBounds="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_alignStart="@+id/remakeWrapper"
+        android:layout_alignLeft="@+id/remakeWrapper"
+        android:layout_alignTop="@+id/remakeWrapper"
+        android:visibility="gone"
+        />
+
+
+
+    <ImageView
+        android:id="@+id/liked_flash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/liked_button"
+        android:layout_alignRight="@+id/liked_button"
+        android:layout_alignEnd="@+id/liked_button"
+        android:layout_alignLeft="@+id/liked_button"
+        android:layout_alignStart="@+id/liked_button"
+        android:layout_alignTop="@+id/liked_button"
+        android:padding="3dp"
+        android:layout_marginBottom="5dp"
+        android:src="@drawable/white_circle"
+        android:visibility="gone"/>
+
+
+
+    <android.widget.IconButton
+        android:id="@+id/liked_button"
+        style="@style/remakeText"
+        android:layout_alignBottom="@+id/remakeWrapper"
+        android:clickable="true"
+        android:visibility="gone"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        />
+
+    <!--<android.widget.IconButton-->
+        <!--android:id="@+id/remakeVideoFullScreenButton"-->
+        <!--android:text="@string/icon_full_screen"-->
+        <!--style="@style/remakeText"-->
+        <!--android:layout_alignBottom="@+id/remakeWrapper"-->
+        <!--android:layout_alignRight="@+id/remakeWrapper"-->
+        <!--android:layout_alignEnd="@+id/remakeWrapper"-->
+        <!--android:clickable="true"-->
+        <!--android:visibility="gone"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--/>-->
+
+    <android.widget.IconButton
+        android:id="@+id/shareButton"
+        style="@style/remakeText"
+        android:text="@string/icon_share"
+    android:layout_alignBottom="@+id/remakeWrapper"
+    android:layout_alignRight="@+id/remakeWrapper"
+    android:layout_alignEnd="@+id/remakeWrapper"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:visibility="gone"/>
+
+    <android.widget.IconButton
+        android:id="@+id/remakeVideoPlayPauseButton"
+        style="@style/remakeText"
+        android:layout_centerHorizontal="true"
+        android:layout_alignBottom="@+id/remakeWrapper"
+        android:clickable="true"
+        android:visibility="gone"
+        android:layout_marginBottom="10dp"
+        />
+
+    <android.widget.IconButton
+        android:id="@+id/reportButton"
+        style="@style/remakeText"
+        android:text="@string/icon_more"
+        android:layout_alignBottom="@+id/remakeWrapper"
+        android:layout_toRightOf="@+id/liked_button"
+        android:layout_toEndOf="@+id/liked_button"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:clickable="true"
+        android:visibility="gone"/>
+
+    <RelativeLayout
+        android:id="@+id/remake_bottom_layer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/remakeWrapper"
+        android:background="@color/homage_dark_transparent_overlay"
+
+        ></RelativeLayout>
+
+</RelativeLayout>

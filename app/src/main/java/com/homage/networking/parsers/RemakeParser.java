@@ -67,10 +67,15 @@ public class RemakeParser extends Parser {
         remake.thumbnailURL =   parseString("thumbnail",null);
         remake.videoURL =       parseString("video",null);
         remake.shareURL =       parseString("share_link",null);
+        remake.userFullname =       parseString("user_fullname",null);
         remake.grade =          parseInt("grade",0);
         remake.createdAt =      parseDateAsTimestamp("created_at",-1);
         remake.stillPublic =    true;
         remake.userID      =    Parser.parseOID(remakeInfo.getJSONObject("user_id"));
+        remake.isLiked =        parseBool("is_liked",false);
+        remake.likesCount =     parseInt("like_count",0);
+        remake.sharesCount =    parseInt("share_count",0);
+        remake.viewsCount =     parseInt("views",0);
 
         remake.save();
 

@@ -120,6 +120,15 @@ public class StoriesListFragment extends Fragment {
 
     };
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser) {
+            Activity a = getActivity();
+            if(a != null) a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+    }
+
     public static StoriesListFragment newInstance(int sectionNumber) {
         StoriesListFragment fragment;
         fragment = new StoriesListFragment();
@@ -241,7 +250,6 @@ public class StoriesListFragment extends Fragment {
             if (user == null) return;
 
             Story story = stories.get(i);
-
             HashMap props = new HashMap<String ,String>();
             props.put("story" , story.name);
             props.put("index" , Integer.toString(i));

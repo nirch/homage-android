@@ -14,6 +14,7 @@
     <color name="homage_button_bg2">#ff592a2a</color>
     <color name="homage_button_bg3">#ff363636</color>
     <color name="homage_borders">#ff222222</color>
+    <color name="homage_remake_button">#ffff5f45</color>
 
     <color name="homage_recorder_script_background">#44ffffff</color>
 
@@ -42,5 +43,7 @@
     <color name="test_blue">#0000FF</color>
     <color name="test_yellow">#FFFF00</color>
     <color name="test_bg">#112233</color>
+
+    <color name="holo_gray_bright">#33CCCCCC</color>
 
 </resources>

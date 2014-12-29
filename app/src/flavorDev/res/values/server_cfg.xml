@@ -25,6 +25,8 @@
     <!-- Named URLS -->
     <string name="url_report_inappropriate">remake/report</string>
     <string name="url_update_user">user</string>
+    <string name="url_like_remake">remake/like</string>
+    <string name="url_unlike_remake">remake/unlike</string>
     <string name="url_new_user">user</string>
     <string name="url_stories">stories</string>
     <string name="url_new_remake">remake</string>

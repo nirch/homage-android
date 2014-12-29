@@ -44,10 +44,10 @@
             android:src="@drawable/selector_video_button_play"
             />
 
-        <ImageButton android:id="@+id/videoFullScreenButton"
-            style="@style/videoPlayerButton"
-            android:src="@drawable/selector_video_button_fullscreen"
-            />
+        <!--<ImageButton android:id="@+id/videoFullScreenButton"-->
+            <!--style="@style/videoPlayerButton"-->
+            <!--android:src="@drawable/selector_video_button_fullscreen"-->
+            <!--/>-->
 
     </LinearLayout>
 

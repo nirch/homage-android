@@ -34,14 +34,48 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <TextView
+        android:id="@+id/views_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/homage_text"
+        android:layout_toRightOf="@+id/views_icon"
+        android:layout_alignParentBottom="true"/>
+
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/reportButton"
-        android:src="@drawable/more3dots"
+        android:id="@+id/views_icon"
+        android:src="@drawable/icon_views"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toRightOf="@+id/likes_count"
+        android:layout_marginLeft="60dp"
+        android:layout_marginBottom="4dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:adjustViewBounds="true"
+        android:layout_marginRight="5dp" />
+
+    <TextView
+        android:id="@+id/likes_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/homage_text"
+        android:layout_toRightOf="@+id/liked_button"
+        android:layout_alignParentBottom="true"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/liked_button"
+        android:src="@drawable/icon_likes"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="4dp"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:background="@android:color/transparent"

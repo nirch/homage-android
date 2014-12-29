@@ -136,6 +136,7 @@ abstract public class Server {
 
     //region *** URLS ***
     public void initURLSCache(ArrayList<Integer> urlIDs) {
+//        TODO could be a problem when changing or adding URLs
         Resources res = context.getResources();
         namedURLS = new HashMap<Integer, String>();
         for (Integer urlID : urlIDs) {

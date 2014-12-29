@@ -1,43 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
     android:background="@color/homage_black"
-    android:weightSum="1">
+    android:layout_gravity="center"
+    android:weightSum="3">
+
+    <LinearLayout
+        android:id="@+id/storyHeaders"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <TextView android:id="@+id/storyName"
+        style="@style/headerText"
+        />
+
+        <View
+            style="@style/greyDivider"/>
+
+    <TextView android:id="@+id/storyDescription"
+        style="@style/storyDetailsText"
+        />
+
+        <View
+            style="@style/greyDivider"/>
+
+</LinearLayout>
+
+<com.homage.CustomAdapters.SwipeRefreshLayoutBottom
+    android:id="@+id/swipe_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="2.5"
+    >
+
+<ScrollView
+    android:id="@+id/remakesScrollview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:overScrollHeader="@null"
+    android:overScrollFooter="@null"
+    >
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/mainlayout">
 
     <RelativeLayout android:id="@+id/storyDetailsVideoContainer"
         android:layout_width="match_parent"
         android:layout_height="216dp"
+        android:layout_above="@+id/remakesGridView"
         >
     </RelativeLayout>
 
-
-    <Button android:id="@+id/makeYourOwnButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/make_your_own"
-        android:drawableLeft="@drawable/icon_create_movie"
-        android:drawablePadding="10dp"
-        android:layout_gravity="center_horizontal"
-        android:background="@android:color/transparent"
-        style="@style/actionButton" />
-
-    <TextView android:id="@+id/storyDescription"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="Story Description"
-        android:layout_gravity="center_horizontal"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:gravity="center"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+    <TextView android:id="@+id/moreRemakes"
+        style="@style/headerText"
+        android:text="@string/more_remakes"
         />
 
     <RelativeLayout android:id="@+id/remakesContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         >
 
         <LinearLayout
@@ -65,46 +99,91 @@
 
         </LinearLayout>
 
-        <GridView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <com.homage.CustomAdapters.ExpandableHeightGridView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:id="@+id/remakesGridView"
             tools:listitem="@android:layout/simple_list_item_2"
             android:numColumns="2"
             android:verticalSpacing="2dp"
             android:horizontalSpacing="2dp"
+            android:isScrollContainer="false"
+            android:stretchMode="columnWidth"
             android:clickable="true"
             android:visibility="visible"
             android:descendantFocusability="beforeDescendants"
             />
-
-        <RelativeLayout android:id="@+id/fetchMoreRemakesProgress"
-            android:layout_width="match_parent"
-            android:layout_height="15dp"
-            android:background="@color/homage_darker_transparent_overlay"
-            android:layout_alignParentBottom="true"
-            android:visibility="gone"
-            >
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:orientation="horizontal"
-                >
-                <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fetching more..."
-                    />
-                </LinearLayout>
-        </RelativeLayout>
 
     </RelativeLayout>
 
 
 
 </LinearLayout>
+</ScrollView>
+
+</com.homage.CustomAdapters.SwipeRefreshLayoutBottom>
+
+    <RelativeLayout
+        android:id="@+id/fetchmoreremakeswrap"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/fetchMoreRemakesProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:spb_sections_count="4"
+        app:spb_colors="@array/progressbar_colors"
+        app:spb_speed="2.0"
+        app:spb_stroke_width="4dp"
+        app:spb_stroke_separator_length="4dp"
+        app:spb_reversed="false"
+        app:spb_mirror_mode="false"
+        app:spb_progressiveStart_activated="false"
+        app:spb_progressiveStart_speed="1.5"
+        app:spb_progressiveStop_speed="3.4"
+        />
+
+    </RelativeLayout>
+
+
+<RelativeLayout
+    android:id="@+id/makebuttonlayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/homage_remake_button"
+    android:textAlignment="center"
+    android:layout_weight="0.6"
+    >
+    <Button android:id="@+id/makeYourOwnButton"
+        android:layout_width="300dp"
+        android:layout_height="90dp"
+        android:text="@string/make_your_own"
+        android:drawableLeft="@drawable/icon_remake_black"
+        android:drawablePadding="3dp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        style="@style/HomageImpactButtonBigTextBlack" />
+</RelativeLayout>
+</LinearLayout>
+
+<FrameLayout android:id="@+id/greyscreen"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/homage_darker_transparent_overlay"
+    android:visibility="gone"
+    >
+</FrameLayout>
+
+    <SurfaceView
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:visibility="gone"/>
+
+</FrameLayout>

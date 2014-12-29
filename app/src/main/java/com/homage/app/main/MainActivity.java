@@ -32,14 +32,13 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -49,7 +48,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ListAdapter;
-import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
@@ -58,6 +56,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.homage.app.R;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
+import com.homage.app.player.RemakeVideoFragment;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.app.recorder.RecorderActivity;
 import com.homage.app.story.StoriesListFragment;
@@ -71,11 +70,9 @@ import com.homage.networking.analytics.HEvents;
 import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
-import com.vim.vimapi.vTool;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -97,6 +94,7 @@ public class MainActivity extends ActionBarActivity
     static final int SECTION_SETTINGS   = 3;
     static final int SECTION_HOWTO      = 4;
     static final int SECTION_STORY_DETAILS      = 101;
+    static final int SECTION_REMAKE_VIDEO      = 911;
 
     static final int SHARE_METHOD_COPY_URL  = 0;
     static final int SHARE_METHOD_FACEBOOK  = 1;
@@ -111,6 +109,8 @@ public class MainActivity extends ActionBarActivity
     static final String FRAGMENT_TAG_ME = "fragment me";
     static final String FRAGMENT_TAG_STORIES = "fragment stories";
     static final String FRAGMENT_TAG_MY_STORIES = "fragment my stories";
+    public static final String FRAGMENT_TAG_REMAKE_VIDEO = "fragment remake video";
+    public static final String FRAGMENT_TAG_STORY_DETAILS = "fragment story details";
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     int defaultSelection;
@@ -118,12 +118,13 @@ public class MainActivity extends ActionBarActivity
     int mOnResumeChangeToSection = -1;
     boolean mNavigationItemClicked = false;
     private StoryDetailsFragment storyDetailsFragment;
+    private RemakeVideoFragment remakeVideoFragment;
     private CharSequence mTitle;
 
     private Remake lastRemakeSentToRender;
 
     private int currentSection;
-    private Story currentStory;
+    public Story currentStory;
 
     ProgressDialog pd;
     MovieProgressFragment movieProgressFragment;
@@ -468,6 +469,35 @@ public class MainActivity extends ActionBarActivity
     }
 
     // Observers handlers
+
+    // get Like refresh
+    private BroadcastReceiver onRemakeLiked = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Crashlytics.log("onRemakeLiked");
+            hideRefreshProgress();
+            Bundle b = intent.getExtras();
+            boolean success = b.getBoolean("success", false);
+            if(success) {
+                HashMap<String, Object> responseInfo = (HashMap<String, Object>) intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
+
+                if (responseInfo != null) {
+                    String remakeOID = (String) responseInfo.get("remakeOID");
+                    String statuscode = responseInfo.get("status_code").toString();
+
+                    if (success) {
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_REMAKE_VIDEO);
+                        if (f!=null) {
+                            ((RemakeVideoFragment)f).refresh(remakeOID);
+                        }
+                        //showStories();
+                    }
+                }
+            }
+        }
+    };
+
     private BroadcastReceiver onStoriesUpdated = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -699,6 +729,18 @@ public class MainActivity extends ActionBarActivity
         finish();
     }
 
+//    public void showRemakeVideo(Bundle args, Remake remake) {
+//        showActionBar();
+//        currentSection = SECTION_REMAKE_VIDEO;
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        remakeVideoFragment = RemakeVideoFragment.newInstance(args, remake);
+//        FragmentTransaction transaction = fragmentManager.beginTransaction();
+//        transaction.setCustomAnimations(R.anim.open_from_center, R.anim.close_from_center,R.anim.open_from_center, R.anim.close_from_center);
+//        transaction.replace(R.id.remakecontainer, remakeVideoFragment, FRAGMENT_TAG_REMAKE_VIDEO);
+//        transaction.addToBackStack(null);
+//        transaction.commit();
+//    }
+
     public void showStoryDetails(Story story) {
         showActionBar();
 
@@ -707,8 +749,9 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         storyDetailsFragment = StoryDetailsFragment.newInstance(SECTION_STORY_DETAILS, story);
         fragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out)
-                .replace(R.id.container, storyDetailsFragment)
+                .setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out,R.anim.animation_slide_in, R.anim.animation_slide_out)
+                .replace(R.id.container, storyDetailsFragment,FRAGMENT_TAG_STORY_DETAILS)
+                .addToBackStack(null)
                 .commitAllowingStateLoss();
     }
 
@@ -734,8 +777,9 @@ public class MainActivity extends ActionBarActivity
         currentSection = SECTION_ME;
         currentStory = null;
         fragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout)
+                .setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout,R.anim.animation_fadein, R.anim.animation_fadeout)
                 .replace(R.id.container, MyStoriesFragment.newInstance(currentSection, user), FRAGMENT_TAG_ME)
+                .addToBackStack(null)
                 .commitAllowingStateLoss();
         HMixPanel.sh().track("appMoveToMeTab",null);
     }
@@ -764,20 +808,27 @@ public class MainActivity extends ActionBarActivity
     }
     //endregion
 
+<<<<<<< HEAD
     public void refetchTopRemakesForStory(Story story) {
         if(story != null) {
             HomageServer.sh().refetchRemakesForStory(story.getOID(), null, 10, null); // Implement partial fetch
             showRefreshProgress();
         }
+=======
+    public void refetchTopRemakesForStory(Story story,String userID) {
+        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, 16, null,userID); // Implement partial fetch
+        showRefreshProgress();
+>>>>>>> origin/story_details_dan
     }
 
     public void refetchAllRemakesForStory(Story story) {
-        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, null, null); // Implement partial fetch
+        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, null, null,null); // Implement partial fetch
         showRefreshProgress();
     }
 
-    public void refetchMoreRemakesForStory(Story story) {
-        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, null, 10); // Implement partial fetch
+    public void refetchMoreRemakesForStory(Story story, Integer limit, Integer skip, String userID )
+    {                                                          //user limit skip
+        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, limit, skip,userID ); // Implement partial fetch
         showRefreshProgress();
     }
 
@@ -963,16 +1014,17 @@ public class MainActivity extends ActionBarActivity
         }
     };
 
-    public void onBackPressed(){
+    public void onBackPressed() {
         Log.d(TAG, "Pressed back button");
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        if (currentSection == SECTION_STORY_DETAILS) {
-            showStories();
-        } else {
-            super.onBackPressed();
-        }
+        int count = getSupportFragmentManager().getBackStackEntryCount();
 
+        if (count == 0) {
+            super.onBackPressed();
+            //additional code
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
     }
 
 
