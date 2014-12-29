@@ -125,8 +125,13 @@ public class BackgroundDetection {
 //                    vTool.writeJpeg(rgbaData, width, height, filepath);
 //                    vTool.write(data, "/homage/images/", Integer.toString(imageCounter) + "_data.txt");
 //                      ------------------------------------------
+                    Log.d(TAG,"Start Cropping");
+                    int l = data.length;
                     Matting.imageNV21to640X360(width, height, data, croppedData);
+                    Log.d(TAG,"End Cropping");
+                    Log.d(TAG,"Start Matting");
                     cc = mat.processBackground(HardCodedWidth, HardCodedHeight, croppedData);
+                    Log.d(TAG,"End Matting");
 
 //                      DEBUG Save image to phone
 //                    byte[] rgbaData2 = new byte[HardCodedWidth * HardCodedHeight * 4];

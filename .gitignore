@@ -254,3 +254,5 @@ app/src/main/res/values/com_crashlytics_export_strings.xml
 .gradle/2.2.1/taskArtifacts/outputFileStates.bin
 .idea/
 homage-android-background-detection.iml
+gradlew
+local.properties

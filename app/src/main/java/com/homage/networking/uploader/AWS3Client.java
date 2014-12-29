@@ -15,9 +15,9 @@ import java.io.FileNotFoundException;
 public class AWS3Client {
     String TAG = "TAG_AWS3Client";
 
-    public static final String BUCKET_NAME = "homageapp";
-    private static final String ACCESS_KEY_ID = "AKIAJTPGKC25LGKJUCTA";
-    private static final String SECRET_KEY = "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";
+    public static final String BUCKET_NAME = "homagetest";
+    private static final String ACCESS_KEY_ID = "AKIAJJQ55763CDX5DENQ";
+    private static final String SECRET_KEY = "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";
 
     public TransferManager tm;
 

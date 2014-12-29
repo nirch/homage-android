@@ -338,7 +338,7 @@ public class CameraManager {
         public void surfaceCreated(SurfaceHolder holder) {
             //Start Background Detection
             if(!recorderActivity.isRecording) {
-                backgroundDetection = new BackgroundDetection(recorderContext, mCamera);
+//                backgroundDetection = new BackgroundDetection(recorderContext, mCamera);
             }
         }
 
@@ -376,7 +376,7 @@ public class CameraManager {
                         everyNthPreviewFrame--;
                     } else {
                         everyNthPreviewFrame = defaultEveryNthPreviewFrame;
-                        backgroundDetection.RunTestOnFrame(data, camera);
+//                        backgroundDetection.RunTestOnFrame(data, camera);
                         recorderActivity.isBackgroundDetectionRunning = true;
                     }
                 }
