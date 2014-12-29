@@ -89,7 +89,7 @@ public class RemakeVideoFragmentActivity extends
     ImageView remakeThumbnail;
     RelativeLayout topLayout;
     int initialHeight, initialWidth;
-    boolean intializeRemakeDimentions;
+    boolean intializeRemakeDimentions = false;
 
     // More settings
     boolean allowToggleFullscreen = false;
@@ -239,13 +239,13 @@ public class RemakeVideoFragmentActivity extends
             (aq.id(R.id.remakeWrapper).getView()).getLayoutParams().width = initialWidth;
             videoView.getLayoutParams().height = initialHeight;
             videoView.getLayoutParams().width = initialWidth;
-            aq.id(R.id.remakeThumbnailImage).getView().getLayoutParams().height = initialHeight;
-            aq.id(R.id.remakeThumbnailImage).getView().getLayoutParams().width = initialWidth;
+            remakeThumbnail.getLayoutParams().height = initialHeight;
+            remakeThumbnail.getLayoutParams().width = initialWidth;
         }else{
             hideHeaders();
             (aq.id(R.id.remakeWrapper).getView()).setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             videoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            aq.id(R.id.remakeThumbnailImage).getView().setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            remakeThumbnail.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
     }
 
@@ -421,11 +421,11 @@ public class RemakeVideoFragmentActivity extends
 //    }
 
 
-    private void disableButton(int buttonId) {
-        ImageButton ib = (ImageButton) aq.id(buttonId).getView();
-        ib.setAlpha(0.2f);
-        ib.setImageResource(R.drawable.icon_small_player_disabled);
-    }
+//    private void disableButton(int buttonId) {
+//        ImageButton ib = (ImageButton) aq.id(buttonId).getView();
+//        ib.setAlpha(0.2f);
+//        ib.setImageResource(R.drawable.icon_small_player_disabled);
+//    }
 
     private void initializeVideoPlayer() {
 
