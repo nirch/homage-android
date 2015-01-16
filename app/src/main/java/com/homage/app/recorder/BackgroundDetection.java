@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -39,6 +40,7 @@ public class BackgroundDetection {
     int imageCounter = 0;
     boolean isProductionServer;
     byte[] croppedData;
+    public Canvas lastFrame;
 
     public BackgroundDetection(Context pcontext, Camera pcamera) {
         res = HomageApplication.getContext().getResources();
@@ -126,12 +128,23 @@ public class BackgroundDetection {
 //                    vTool.write(data, "/homage/images/", Integer.toString(imageCounter) + "_data.txt");
 //                      ------------------------------------------
                     Log.d(TAG,"Start Cropping");
-                    int l = data.length;
+//                    int l = data.length;
                     Matting.imageNV21to640X360(width, height, data, croppedData);
                     Log.d(TAG,"End Cropping");
                     Log.d(TAG,"Start Matting");
                     cc = mat.processBackground(HardCodedWidth, HardCodedHeight, croppedData);
                     Log.d(TAG,"End Matting");
+
+//                    Matting.process(HardCodedWidth, HardCodedHeight, croppedData);
+//                    byte[] out = new byte[croppedData.length];
+//                    Log.d(TAG,"Get Image:");
+//                    Matting.getImage( HardCodedWidth, HardCodedHeight, croppedData, out );
+//
+//                    Bitmap bmp;
+//                    BitmapFactory.Options options = new BitmapFactory.Options();
+//                    options.inMutable = true;
+//                    bmp = BitmapFactory.decodeByteArray(out, 0, out.length, options);
+//                    lastFrame = new Canvas(bmp);
 
 //                      DEBUG Save image to phone
 //                    byte[] rgbaData2 = new byte[HardCodedWidth * HardCodedHeight * 4];

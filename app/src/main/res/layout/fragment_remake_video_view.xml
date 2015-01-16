@@ -65,14 +65,14 @@
         android:layout_centerInParent="true"
         android:visibility="gone"
         />
-    </RelativeLayout>
+
 
     <android.widget.IconTextView
         android:id="@+id/views_count"
         style="@style/remakeText"
-        android:layout_alignTop="@+id/remakeWrapper"
-        android:layout_alignEnd="@+id/remakeWrapper"
-        android:layout_alignRight="@+id/remakeWrapper"
+        android:layout_alignTop="@+id/videoView"
+        android:layout_alignEnd="@+id/videoView"
+        android:layout_alignRight="@+id/videoView"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         android:visibility="gone"
@@ -82,7 +82,7 @@
         android:id="@+id/views_icon"
         style="@style/remakeText"
         android:text="@string/icon_views"
-        android:layout_alignTop="@+id/remakeWrapper"
+        android:layout_alignTop="@+id/videoView"
         android:layout_toLeftOf="@+id/views_count"
         android:layout_toStartOf="@+id/views_count"
         android:layout_marginRight="5dp"
@@ -92,7 +92,7 @@
     <android.widget.IconTextView
         android:id="@+id/likes_count"
         style="@style/remakeText"
-        android:layout_alignTop="@+id/remakeWrapper"
+        android:layout_alignTop="@+id/videoView"
         android:layout_toLeftOf="@+id/views_icon"
         android:layout_toStartOf="@+id/views_icon"
         android:layout_marginRight="5dp"
@@ -103,7 +103,7 @@
         android:id="@+id/likes_icon"
         style="@style/remakeText"
         android:text="@string/icon_likes"
-        android:layout_alignTop="@+id/remakeWrapper"
+        android:layout_alignTop="@+id/videoView"
         android:layout_toLeftOf="@+id/likes_count"
         android:layout_toStartOf="@+id/likes_count"
         android:layout_marginRight="5dp"
@@ -114,7 +114,7 @@
     <android.widget.IconTextView
         android:id="@+id/user_name"
         style="@style/remakeText"
-        android:layout_alignTop="@+id/remakeWrapper"
+        android:layout_alignTop="@+id/videoView"
         android:layout_toRightOf="@+id/user_image"
         android:layout_toEndOf="@+id/user_image"
         android:layout_marginStart="5dp"
@@ -135,12 +135,20 @@
         android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
-        android:layout_alignStart="@+id/remakeWrapper"
-        android:layout_alignLeft="@+id/remakeWrapper"
-        android:layout_alignTop="@+id/remakeWrapper"
+        android:layout_alignStart="@+id/videoView"
+        android:layout_alignLeft="@+id/videoView"
+        android:layout_alignTop="@+id/videoView"
         android:visibility="gone"
         />
 
+        <android.widget.IconButton
+            android:id="@+id/videoBigPlayButton"
+            style="@style/remakeText"
+            android:textSize="34dp"
+            android:layout_centerInParent="true"
+            android:clickable="true"
+            android:visibility="gone"
+            />
 
 
     <ImageView
@@ -154,7 +162,7 @@
         android:layout_alignStart="@+id/liked_button"
         android:layout_alignTop="@+id/liked_button"
         android:padding="3dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="-10dp"
         android:src="@drawable/white_circle"
         android:visibility="gone"/>
 
@@ -163,11 +171,11 @@
     <android.widget.IconButton
         android:id="@+id/liked_button"
         style="@style/remakeText"
-        android:layout_alignBottom="@+id/remakeWrapper"
+        android:layout_alignBottom="@+id/videoView"
         android:clickable="true"
         android:visibility="gone"
         android:layout_marginLeft="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="-10dp"
         />
 
     <!--<android.widget.IconButton-->
@@ -187,11 +195,11 @@
         android:id="@+id/shareButton"
         style="@style/remakeText"
         android:text="@string/icon_share"
-    android:layout_alignBottom="@+id/remakeWrapper"
-    android:layout_alignRight="@+id/remakeWrapper"
-    android:layout_alignEnd="@+id/remakeWrapper"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_alignBottom="@+id/videoView"
+        android:layout_alignRight="@+id/videoView"
+        android:layout_alignEnd="@+id/videoView"
+        android:layout_marginRight="-14dp"
+        android:layout_marginBottom="-10dp"
         android:clickable="true"
         android:visibility="gone"/>
 
@@ -199,23 +207,24 @@
         android:id="@+id/remakeVideoPlayPauseButton"
         style="@style/remakeText"
         android:layout_centerHorizontal="true"
-        android:layout_alignBottom="@+id/remakeWrapper"
+        android:layout_alignBottom="@+id/videoView"
+        android:layout_marginBottom="-10dp"
         android:clickable="true"
         android:visibility="gone"
-        android:layout_marginBottom="10dp"
         />
 
     <android.widget.IconButton
         android:id="@+id/reportButton"
         style="@style/remakeText"
         android:text="@string/icon_more"
-        android:layout_alignBottom="@+id/remakeWrapper"
-        android:layout_toRightOf="@+id/liked_button"
-        android:layout_toEndOf="@+id/liked_button"
-        android:layout_marginLeft="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_alignBottom="@+id/videoView"
+        android:layout_toLeftOf="@+id/shareButton"
+        android:layout_toStartOf="@+id/shareButton"
+        android:layout_marginBottom="-10dp"
         android:clickable="true"
         android:visibility="gone"/>
+
+</RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/remake_bottom_layer"

@@ -26,20 +26,22 @@ public class ContourHandler {
     private String contourLocalUrl;
 
     public void DownloadContour(RecorderActivity recorderActivity, Remake remake, String folderName) {
-        new DownloadContourAsync(recorderActivity, remake, folderName).execute();
+        Story story = remake.getStory();
+        Scene scene = story.findScene(remake.lastSceneID());
+        new DownloadContourAsync(recorderActivity, scene.contourURL, folderName).execute();
     }
 
     private class DownloadContourAsync extends AsyncTask<Void, Void, String> {
 
-        Remake remake;
+        String contourURL;
         String folderName;
         RecorderActivity recorderActivity;
 
 
-        public DownloadContourAsync(RecorderActivity precorderActivity, Remake premake, String pfolderName) {
+        public DownloadContourAsync(RecorderActivity precorderActivity, String contourUrl, String pfolderName) {
             super();
             // do stuff
-            remake = premake;
+            contourURL = contourUrl;
             folderName = pfolderName;
             recorderActivity = precorderActivity;
         }
@@ -49,11 +51,10 @@ public class ContourHandler {
 
             try {
                 //Get contour url from scene and download contour
-                Story story = remake.getStory();
-                Scene scene = story.findScene(remake.lastSceneID());
 
-                if (scene.contourURL != null) {
-                    String[] splitURL = scene.contourURL.split("/");
+
+                if (contourURL != null) {
+                    String[] splitURL = contourURL.split("/");
                     String endOfContourURL = splitURL[splitURL.length - 1];
                     File storagePath = new File(recorderActivity.getFilesDir(), endOfContourURL);
                     String contourLocalUrl = storagePath + folderName + endOfContourURL;
@@ -63,7 +64,7 @@ public class ContourHandler {
                         URL url = null;
 
                         try {
-                            url = new URL(scene.contourURL);
+                            url = new URL(contourURL);
                             Download.CreateFolderInLocalStorage(storagePath+folderName);
                             Download.WriteFileToStorage(contourLocalUrl, url);
                         } catch (MalformedURLException e) {

@@ -605,7 +605,11 @@ public class MainActivity extends ActionBarActivity
             case SECTION_HOWTO:
                 mTitle = getString(R.string.nav_item_4_howto);
                 break;
+//            case SECTION_STORY_DETAILS:
+//                mTitle = getString(R.string.nav_item_6_storydetails);
+//                break;
         }
+        aq.id(R.id.appTitle).getTextView().setText(mTitle);
     }
 
     public void restoreActionBar() {
@@ -618,7 +622,6 @@ public class MainActivity extends ActionBarActivity
         // Actionbar
         getActionBar().show();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         /*
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -787,7 +790,6 @@ public class MainActivity extends ActionBarActivity
         Intent myIntent = new Intent(this, SettingsActivity.class);
         HMixPanel.sh().track("appMoveToSettingsTab",null);
         startActivity(myIntent);
-
     }
 
     public void showHowTo() {

@@ -62,6 +62,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
 
     private final Handler handler = new Handler();
     private Runnable runPager;
+    private boolean videoLoaded = false;
 
 
     //    static boolean createdOnce = false;
@@ -298,11 +299,20 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
         handler.post(runPager);
 
 //        remakeVideoContainer = (FrameLayout)aq.id(R.id.remakeVideoContainer).getView();
-
+        loadVideoPlayer();
 
         // Allow orientation change.
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
+        swipeLayout = (SwipeRefreshLayoutBottom)aq.id(R.id.swipe_container).getView();
+        swipeLayout.setOnRefreshListener(this);
+        swipeLayout.setColorScheme(android.R.color.holo_blue_bright, android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
+
+
+        return rootView;
+    }
+
+    private void loadVideoPlayer() {
         // Initialize the video of the story we need to show in the fragment.
         Bundle b = new Bundle();
         b.putString(VideoPlayerFragment.K_FILE_URL, story.video);
@@ -336,13 +346,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
                 } catch (Exception e) {}
             }
         });
-
-        swipeLayout = (SwipeRefreshLayoutBottom)aq.id(R.id.swipe_container).getView();
-        swipeLayout.setOnRefreshListener(this);
-        swipeLayout.setColorScheme(android.R.color.holo_blue_bright, android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
-
-
-        return rootView;
     }
 
     @Override

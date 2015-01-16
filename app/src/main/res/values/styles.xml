@@ -30,7 +30,7 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="Theme.Remake" parent="android:Theme">
+    <style name="Theme.Remake" parent="AppTheme">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>
@@ -260,6 +260,8 @@
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:background">@color/homage_button_text</item>
+        <item name="android:textStyle">bold</item>
+
     </style>
 
     <style name="remakeText">

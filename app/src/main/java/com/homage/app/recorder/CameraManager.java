@@ -378,6 +378,10 @@ public class CameraManager {
                         everyNthPreviewFrame = defaultEveryNthPreviewFrame;
                         backgroundDetection.RunTestOnFrame(data, camera);
                         recorderActivity.isBackgroundDetectionRunning = true;
+//                        if(backgroundDetection.lastFrame != null) {
+//                            mHolder.lockCanvas();
+//                            mHolder.unlockCanvasAndPost(backgroundDetection.lastFrame);
+//                        }
                     }
                 }
             }

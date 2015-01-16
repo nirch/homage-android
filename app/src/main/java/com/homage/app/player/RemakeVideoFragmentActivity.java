@@ -8,18 +8,22 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.IconButton;
 import android.widget.IconTextView;
 import android.widget.ImageButton;
@@ -219,34 +223,35 @@ public class RemakeVideoFragmentActivity extends
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-//        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
-//        }
-//        else{
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
-//        }
-
-        setupScreen();
-    }
-
-    private void setupScreen() {
-        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        int height = size.y;
+        int portraitheight = size.x*9/16;
+        if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // Show status bar
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             showHeaders();
             RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams)((aq.id(R.id.remakeWrapper).getView())).getLayoutParams();
             p.addRule(RelativeLayout.BELOW, R.id.remakeHeaders);
             aq.id(R.id.remakeWrapper).getView().setLayoutParams(p);
-            (aq.id(R.id.remakeWrapper).getView()).getLayoutParams().height = initialHeight;
-            (aq.id(R.id.remakeWrapper).getView()).getLayoutParams().width = initialWidth;
-            videoView.getLayoutParams().height = initialHeight;
-            videoView.getLayoutParams().width = initialWidth;
-            remakeThumbnail.getLayoutParams().height = initialHeight;
-            remakeThumbnail.getLayoutParams().width = initialWidth;
-        }else{
+            height = portraitheight;
+        } else {
+            // Hide status bar
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             hideHeaders();
-            (aq.id(R.id.remakeWrapper).getView()).setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            videoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            remakeThumbnail.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
+        setupScreen(width, height);
+    }
+
+    private void setupScreen(int width, int height) {
+        (aq.id(R.id.remakeWrapper).getView()).getLayoutParams().height = height;
+        (aq.id(R.id.remakeWrapper).getView()).getLayoutParams().width = width;
+        videoView.getLayoutParams().height = height;
+        videoView.getLayoutParams().width = width;
+        remakeThumbnail.getLayoutParams().height = height;
+        remakeThumbnail.getLayoutParams().width = width;
     }
 
 //    private void flipScreen() {
@@ -294,6 +299,15 @@ public class RemakeVideoFragmentActivity extends
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             showHeaders();
         }
+        if(!intializeRemakeDimentions) {
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+            int height = size.y;
+            int portraitheight = size.x*9/16;
+            setupScreen(width, portraitheight);
+        }
     }
 
     private void showHeaders() {
@@ -316,7 +330,7 @@ public class RemakeVideoFragmentActivity extends
 
         if (autoStartPlaying) {
             remakeThumbnail.setVisibility(View.GONE);
-//            aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+            aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
         }
 
         if (thumbURL != null) {
@@ -394,16 +408,6 @@ public class RemakeVideoFragmentActivity extends
         initializeVideoPlayer();
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus){
-        (aq.id(R.id.remakeWrapper).getView()).getLayoutParams().height = remakeThumbnail.getHeight();
-        (aq.id(R.id.remakeWrapper).getView()).getLayoutParams().width = remakeThumbnail.getWidth();
-        if(!intializeRemakeDimentions) {
-            initialHeight = remakeThumbnail.getHeight();
-            initialWidth = remakeThumbnail.getWidth();
-            intializeRemakeDimentions = true;
-        }
-    }
 
 //    private void resizeRemakeWrapper() {
 //        final ImageView iv = aq.id(R.id.remakeThumbnailImage).getImageView();
@@ -477,7 +481,7 @@ public class RemakeVideoFragmentActivity extends
         // More settings
         allowToggleFullscreen = b.getBooleanExtra(K_ALLOW_TOGGLE_FULLSCREEN, true);
         finishOnCompletion = b.getBooleanExtra(K_FINISH_ON_COMPLETION, false);
-        autoStartPlaying = b.getBooleanExtra(K_AUTO_START_PLAYING, true);
+        autoStartPlaying = b.getBooleanExtra(K_AUTO_START_PLAYING, false);
         isEmbedded = b.getBooleanExtra(K_IS_EMBEDDED, false);
         thumbURL = b.getStringExtra(K_THUMB_URL);
         thumbDrawableId = b.getIntExtra(K_THUMB_DRAWABLE_ID, 0);
@@ -487,6 +491,10 @@ public class RemakeVideoFragmentActivity extends
 
         if (autoStartPlaying) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_WILL_AUTO_PLAY, info);
+        }
+        else
+        {
+            showThumbState();
         }
     }
 
@@ -499,7 +507,7 @@ public class RemakeVideoFragmentActivity extends
         aq.id(R.id.shareButton).clicked(onClickedShareButton);
         aq.id(R.id.remakeVideoPlayPauseButton).clicked(onClickedPlayPauseButton);
 //        aq.id(R.id.remakeVideoFullScreenButton).clicked(onClickedFullScreenButton);
-//        aq.id(R.id.videoBigPlayButton).clicked(onClickedBigPlayButton);
+        aq.id(R.id.videoBigPlayButton).clicked(onClickedBigPlayButton);
         aq.id(R.id.reportButton).clicked(onClickedReportButton);
 
             aq.id(R.id.liked_button).clicked(onClickedLikeButton);
@@ -507,6 +515,8 @@ public class RemakeVideoFragmentActivity extends
         aq.id(R.id.remake_bottom_layer).clicked(onClickedBottomLayer);
     }
 
+
+    //region on video events
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         Log.d(TAG, String.format("Finished playing video: %s", filePath));
@@ -544,17 +554,21 @@ public class RemakeVideoFragmentActivity extends
 //        initialWidth = videoView.getWidth();
         Log.d(TAG, String.format("EndBlackScreen"));
         Log.d(TAG, String.format("Video is prepared for playing: %s %s", filePath, fileURL));
-        aq.id(R.id.remakeThumbnailImage).visibility(View.GONE);
+        aq.id(R.id.remakeThumbnailImage).visibility(View.VISIBLE);
         aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
         aq.id(R.id.remakeVideoFragmentLoading).visibility(View.GONE);
-        showControls();
         videoView.seekTo(100);
         isPlayerReady = true;
         if (autoStartPlaying) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_WILL_PLAY, info);
             start();
         }
+        else
+        {
+            showThumbState();
+        }
     }
+    //endregion
 
 
     //endregion
@@ -641,8 +655,12 @@ public class RemakeVideoFragmentActivity extends
         if(!isPlayerReady){
             aq.id(R.id.remakeThumbnailImage).visibility(View.VISIBLE);
         }
-//        aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
-        aq.id(R.id.remakeVideoFragmentLoading).visibility(View.GONE);
+        else{
+            ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
+            aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
+            aq.id(R.id.remakeVideoFragmentLoading).visibility(View.GONE);
+        }
+        showControls();
     }
 
     void showThumbWhileLoading() {
@@ -656,7 +674,7 @@ public class RemakeVideoFragmentActivity extends
 
     void hideThumb() {
         aq.id(R.id.remakeThumbnailImage).visibility(View.INVISIBLE);
-//        aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+        aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
     }
     //endregion
 
@@ -739,20 +757,25 @@ public class RemakeVideoFragmentActivity extends
     View.OnClickListener onClickedPlayPauseButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            togglePlayPause();
+            if(isPlayerReady) {
+                hideThumb();
+                togglePlayPause();
+            }
         }
     };
 
-//    View.OnClickListener onClickedBigPlayButton = new View.OnClickListener() {
-//        @Override
-//        public void onClick(View v) {
-//            hideThumb();
-//            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
-//            aq.id(R.id.loadingVideoPprogress).visibility(View.VISIBLE);
-//            videoView.seekTo(0);
-//            start();
-//        }
-//    };
+    View.OnClickListener onClickedBigPlayButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            hideThumb();
+            hideControls();
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
+            ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_pause);
+            aq.id(R.id.loadingVideoPprogress).visibility(View.VISIBLE);
+            videoView.seekTo(0);
+            start();
+        }
+    };
 
     View.OnClickListener onClickedLikeButton = new View.OnClickListener() {
         @Override

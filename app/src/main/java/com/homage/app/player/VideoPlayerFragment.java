@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.IconButton;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -240,7 +241,7 @@ public class VideoPlayerFragment
         // More settings
         allowToggleFullscreen = b.getBoolean(K_ALLOW_TOGGLE_FULLSCREEN, true);
         finishOnCompletion = b.getBoolean(K_FINISH_ON_COMPLETION, false);
-        autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, true);
+        autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, false);
         isEmbedded = b.getBoolean(K_IS_EMBEDDED, false);
         thumbURL = b.getString(K_THUMB_URL, null);
         thumbDrawableId = b.getInt(K_THUMB_DRAWABLE_ID, 0);
@@ -260,7 +261,6 @@ public class VideoPlayerFragment
         aq.id(R.id.videoPlayPauseButton).clicked(onClickedPlayPauseButton);
 //        aq.id(R.id.videoFullScreenButton).clicked(onClickedFullScreenButton);
         aq.id(R.id.videoBigPlayButton).clicked(onClickedBigPlayButton);
-
     }
 
     @Override
@@ -295,11 +295,9 @@ public class VideoPlayerFragment
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
+        showThumbState();
         Log.d(TAG, String.format("Video is prepared for playing: %s %s", filePath, fileURL));
         aq.id(R.id.videoCurtain).visibility(View.GONE);
-        aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
-        aq.id(R.id.loadingVideoPprogress).visibility(View.GONE);
-        aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
         if (autoStartPlaying) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_WILL_PLAY , info);
             start();
@@ -351,6 +349,7 @@ public class VideoPlayerFragment
     }
 
     void start() {
+        aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
         ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
         ib.setImageResource(R.drawable.selector_video_button_pause);
         aq.id(R.id.videoView).visibility(View.VISIBLE);
@@ -364,11 +363,12 @@ public class VideoPlayerFragment
     }
 
     void showThumbState() {
-        if (videoView != null) videoView.seekTo(0);
-        pause();
+//        if (videoView != null) videoView.seekTo(0);
+//        pause();
         aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
+        ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
         aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
-        aq.id(R.id.videoView).visibility(View.INVISIBLE);
+//        aq.id(R.id.videoView).visibility(View.INVISIBLE);
         aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
     }
 
