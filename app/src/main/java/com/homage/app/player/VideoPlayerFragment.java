@@ -1,8 +1,10 @@
 package com.homage.app.player;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.GradientDrawable;
+import android.media.AudioManager;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.media.MediaPlayer;
@@ -86,6 +88,8 @@ public class VideoPlayerFragment
     VideoView videoView;
     LayoutInflater inflater;
     boolean alreadyGotSettings = false;
+
+    MediaPlayer mediaPlayer;
 
 
     //region *** lifecycle ***
@@ -265,6 +269,7 @@ public class VideoPlayerFragment
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
+        pause();
         Log.d(TAG, String.format("Finished playing video: %s", filePath));
         videoView.pause();
         if (onFinishedPlayback != null) {
@@ -295,6 +300,7 @@ public class VideoPlayerFragment
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
+        pause();
         showThumbState();
         Log.d(TAG, String.format("Video is prepared for playing: %s %s", filePath, fileURL));
         aq.id(R.id.videoCurtain).visibility(View.GONE);

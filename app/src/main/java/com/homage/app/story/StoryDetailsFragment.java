@@ -131,6 +131,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
                 remakes.addAll(story.getRemakes(excludedUser));
             }
             Log.d(TAG, String.format("%d remakes for this story", remakes.size()));
+//            Log.d(TAG, "refresh remake 0: " + String.valueOf(remakes.get(0).isLiked));
         }
 
         @Override
@@ -173,7 +174,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
                 if (rowView == null)
                     rowView = inflater.inflate(R.layout.list_row_remake, remakesGridView, false);
                 final Remake remake = (Remake) getItem(i);
-
+                final int remakeGridviwId = i;
                 // Maintain 16/9 aspect ratio
                 AbsListView.LayoutParams p = (AbsListView.LayoutParams)rowView.getLayoutParams();
                 p.height = rowHeight / 2;
@@ -189,22 +190,12 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
                     }
                 });
 
-                likesCount = aq.id(R.id.likes_count).getTextView();
-                int likesCountdb = remake.likesCount;
-                if(likesCountdb < 0)
-                    likesCountdb = 0;
-                likesCount.setText(Integer.toString(likesCountdb));
-                viewsCount = aq.id(R.id.views_count).getTextView();
-                int viewsCountdb = remake.viewsCount;
-                if(viewsCountdb < 0)
-                    viewsCountdb = 0;
-                viewsCount.setText(Integer.toString(viewsCountdb));
-
+                updateLikesAndViews(remake, aq);
                 aq.id(R.id.watchRemakeButton).clicked(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Log.d(TAG, String.format("remakeOID: %s", remake.getOID()));
-                        playRemakeMovie(remake.getOID());
+                        playRemakeMovie(remake.getOID(),remakeGridviwId);
                     }
                 });
             } catch (InflateException ex) {
@@ -217,7 +208,22 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
         public boolean isEmpty() {
             return false;
         }
-    };
+    }
+
+    private void updateLikesAndViews(Remake remake, AQuery aq) {
+        likesCount = aq.id(R.id.likes_count).getTextView();
+        int likesCountdb = remake.likesCount;
+        if(likesCountdb < 0)
+            likesCountdb = 0;
+        likesCount.setText(Integer.toString(likesCountdb));
+        viewsCount = aq.id(R.id.views_count).getTextView();
+        int viewsCountdb = remake.viewsCount;
+        if(viewsCountdb < 0)
+            viewsCountdb = 0;
+        viewsCount.setText(Integer.toString(viewsCountdb));
+    }
+
+    ;
 
     public static StoryDetailsFragment newInstance(int sectionNumber, Story story) {
         StoryDetailsFragment fragment;
@@ -235,22 +241,10 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
         aq.id(R.id.storyName).text(story.name);
         aq.id(R.id.storyDescription).text(story.description);
 
-        User excludedUser = User.getCurrent();
-
         // Aspect Ratio
         MainActivity activity = (MainActivity)getActivity();
         rowHeight = (activity.screenWidth * 9) / 16;
-
-        // Adapters
-        adapter = new RemakesAdapter(getActivity(), story.getRemakes(excludedUser));
-        remakesGridView = (ExpandableHeightGridView)aq.id(R.id.remakesGridView).getGridView();
-        remakesGridView.setAdapter(adapter);
-//        remakesGridView.setOnScrollListener(onGridViewScrollListener);
-        remakesGridView.setExpanded(true);
-
-        remakesScrollView = (ScrollView) aq.id(R.id.remakesScrollview).getView();
-//        remakesScrollView.setOnOverScrolledListener(getActivity(), this);
-
+        refreshRemakesAdapter();
         //region *** Bind to UI event handlers ***
         /**********************************/
         /** Binding to UI event handlers **/
@@ -259,6 +253,22 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
         aq.id(R.id.makeYourOwnButton).clicked(onClickedMakeYourOwnButton);
         //aq.id(R.id.storyDetailsPlayButton).clicked(onClickedPlayStoryVideo);
         //endregion
+    }
+
+    private void refreshRemakesAdapter() {
+        User excludedUser = User.getCurrent();
+        // Adapters
+        List<Remake> remakes = story.getRemakes(excludedUser);
+//        Log.d(TAG, "Initialize remake: " + String.valueOf(remakes.get(0).isLiked));
+
+        adapter = new RemakesAdapter(getActivity(), remakes);
+        remakesGridView = (ExpandableHeightGridView)aq.id(R.id.remakesGridView).getGridView();
+        remakesGridView.setAdapter(adapter);
+//        remakesGridView.setOnScrollListener(onGridViewScrollListener);
+        remakesGridView.setExpanded(true);
+
+        remakesScrollView = (ScrollView) aq.id(R.id.remakesScrollview).getView();
+//        remakesScrollView.setOnOverScrolledListener(getActivity(), this);
     }
 
     //region *** fragment life cycle related
@@ -346,6 +356,18 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
                 } catch (Exception e) {}
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RemakeVideoFragmentActivity.CHANGED_LIKE_STATUS){
+            int gridviewRemakeId = data.getIntExtra(RemakeVideoFragmentActivity.K_GRIDVIEW_REMAKE_ID, 0);
+            boolean isRemakeLiked = data.getBooleanExtra(RemakeVideoFragmentActivity.K_IS_LIKED, false);
+//            ((Remake)adapter.getItem(gridviewRemakeId)).isLiked = isRemakeLiked;
+            refreshData();
+//            boolean test = ((Remake)adapter.getItem(gridviewRemakeId)).isLiked;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -529,7 +551,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
     //endregion
 
     //region video player calls
-    private void playRemakeMovie(String remakeID) {
+    private void playRemakeMovie(String remakeID, int remakeGridviwId) {
 //        TODO change this to my new movie player screen
 
         stopStoryVideo();
@@ -566,17 +588,17 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
 //            aq.id(R.id.greyscreen).visibility(View.VISIBLE);
             Intent intent = new Intent(this.getActivity(), RemakeVideoFragmentActivity.class);
             // Initialize the video of the story we need to show in the fragment.
-            intent.putExtra(VideoPlayerFragment.K_FILE_URL, remake.videoURL);
-            intent.putExtra(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
-            intent.putExtra(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
-            intent.putExtra(VideoPlayerFragment.K_IS_EMBEDDED, true);
-            intent.putExtra(VideoPlayerFragment.K_THUMB_URL, remake.thumbnailURL);
-
+            intent.putExtra(RemakeVideoFragmentActivity.K_FILE_URL, remake.videoURL);
+            intent.putExtra(RemakeVideoFragmentActivity.K_ALLOW_TOGGLE_FULLSCREEN, true);
+            intent.putExtra(RemakeVideoFragmentActivity.K_FINISH_ON_COMPLETION, false);
+            intent.putExtra(RemakeVideoFragmentActivity.K_IS_EMBEDDED, true);
+            intent.putExtra(RemakeVideoFragmentActivity.K_THUMB_URL, remake.thumbnailURL);
+            intent.putExtra(RemakeVideoFragmentActivity.K_GRIDVIEW_REMAKE_ID, remakeGridviwId);
             intent.putExtra(HEvents.HK_VIDEO_ENTITY_ID, remakeID);
             intent.putExtra(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_REMAKE);
             intent.putExtra(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
 
-            startActivity(intent);
+            startActivityForResult(intent,RemakeVideoFragmentActivity.CHANGED_LIKE_STATUS);
         }
     }
 

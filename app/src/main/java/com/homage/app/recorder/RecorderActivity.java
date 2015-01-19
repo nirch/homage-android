@@ -712,7 +712,7 @@ public class RecorderActivity extends Activity
             controlsDrawer.setTranslationY(viewHeightForClosingControlsDrawer);
             controlsDrawerClosed();
         }
-
+        itsPreviewTime = true;
     }
 
     public void openControlsDrawer(boolean animated) {
@@ -750,6 +750,7 @@ public class RecorderActivity extends Activity
             HMixPanel.sh().track("REexpandMenu",props);
             controlsDrawerOpened();
         }
+        itsPreviewTime = false;
     }
 
 
@@ -782,6 +783,7 @@ public class RecorderActivity extends Activity
             }
         }, 200);
 //        HideWarningButton();
+        itsPreviewTime = true;
     }
 
     private void controlsDrawerOpened() {
@@ -814,6 +816,7 @@ public class RecorderActivity extends Activity
             aq.id(R.id.createMovieButton).visibility(View.GONE);
         }
 //        HideWarningButton();
+        itsPreviewTime = false;
     }
 
 
@@ -1382,7 +1385,14 @@ public class RecorderActivity extends Activity
 
             }
         });
-        builder.setNegativeButton(R.string.no, null);
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                itsPreviewTime = true;
+
+            }
+        });
         builder.create().show();
         cancelCountingDownToRecording();
     }
@@ -1455,6 +1465,7 @@ public class RecorderActivity extends Activity
         } else {
             aq.id(R.id.silhouette).visibility(View.INVISIBLE);
         }
+        itsPreviewTime = false;
     }
 
     private void showSilhouette(boolean animated) {
@@ -1463,6 +1474,7 @@ public class RecorderActivity extends Activity
         } else {
             aq.id(R.id.silhouette).visibility(View.VISIBLE);
         }
+        itsPreviewTime = true;
     }
     //endregion
 
@@ -1597,7 +1609,7 @@ public class RecorderActivity extends Activity
 
     public void ShowWarningButton(){
        warningCountDown--;
-        if(!prefs.getBoolean(SettingsActivity.DONT_SHOW_WARNING_AGAIN,false) && warningCountDown == 0) {
+        if(!prefs.getBoolean(SettingsActivity.DONT_SHOW_WARNING_AGAIN,false) && warningCountDown == 0 && itsPreviewTime) {
             warningButton.performClick();
 //            warningCountDown = warningCountDownFrom;
         }
@@ -1623,6 +1635,7 @@ public class RecorderActivity extends Activity
     private View.OnClickListener onClickedRecorderDismissButton = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            itsPreviewTime = false;
             askUserIfWantToCloseRecorder();
         }
     };

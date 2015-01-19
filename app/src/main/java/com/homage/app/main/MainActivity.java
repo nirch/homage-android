@@ -56,6 +56,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.homage.app.R;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
+import com.homage.app.player.RemakeVideoFragmentActivity;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.app.recorder.RecorderActivity;
 import com.homage.app.story.StoriesListFragment;
