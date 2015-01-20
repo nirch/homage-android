@@ -40,6 +40,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -120,6 +121,7 @@ public class RecorderActivity extends Activity
     private View controlsDrawer;
     private View recordButton;
     private View warningButton;
+    private View recorderSceneScriptButton;
     private View recorderFullDetailsContainer;
     private View recorderShortDetailsContainer;
     private ListView scenesListView;
@@ -159,6 +161,7 @@ public class RecorderActivity extends Activity
     private Handler counterDown;
     protected int countDown;
     protected boolean canceledCountDown;
+
 
 //    Warning section
     protected final static int countDownFrom = 3;
@@ -253,6 +256,7 @@ public class RecorderActivity extends Activity
         controlsDrawer = aq.id(R.id.recorderControlsDrawer).getView();
         recordButton = aq.id(R.id.recorderRecordButton).getView();
         warningButton = aq.id(R.id.warningRecordButton).getView();
+        recorderSceneScriptButton = aq.id(R.id.recorderSceneScriptButton).getView();
         recorderFullDetailsContainer = aq.id(R.id.recorderFullDetailsContainer).getView();
         recorderShortDetailsContainer = aq.id(R.id.recorderShortDetailsContainer).getView();
         scenesListView = aq.id(R.id.scenesListView).getListView();
@@ -284,6 +288,7 @@ public class RecorderActivity extends Activity
         // Dragging the drawer up and down.
         aq.id(R.id.recorderControlsDrawer).getView().setOnTouchListener(new OnDraggingControlsDrawerListener(this));
 
+        aq.id(R.id.recorderShortDetailsSpacerContainerButton).clicked(onClickedOpenDrawerButton);
         // Clicked on the close controls drawer button.
         aq.id(R.id.recorderCloseDrawerButton).clicked(onClickedCloseDrawerButton);
 
@@ -1574,6 +1579,13 @@ public class RecorderActivity extends Activity
         }
     };
 
+    private View.OnClickListener onClickedOpenDrawerButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            openControlsDrawer(true);
+
+        }
+    };
 
     private View.OnClickListener onClickedCloseDrawerButton = new View.OnClickListener() {
         @Override
@@ -1662,10 +1674,20 @@ public class RecorderActivity extends Activity
         @Override
         public void onClick(View view) {
             shouldShowScriptBar = !shouldShowScriptBar;
+            toggleShowHideScriptButtonText(shouldShowScriptBar);
             updateScriptBar();
         }
     };
 
+    private void toggleShowHideScriptButtonText(boolean showScriptBar) {
+        if(showScriptBar) {
+            ((Button) recorderSceneScriptButton).setText(R.string.button_hide_script);
+        }
+        else
+        {
+            ((Button) recorderSceneScriptButton).setText(R.string.button_show_script);
+        }
+    }
 
 
     private View.OnClickListener onClickedWelcomeScreenDismissButton = new View.OnClickListener() {

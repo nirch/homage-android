@@ -317,6 +317,7 @@
                     />
 
                 <ImageView
+                    android:id="@+id/recorderShortDetailsSpacerContainerButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/icon_up_arrow_small"
@@ -335,7 +336,6 @@
         <ImageButton android:id="@+id/recorderCloseDrawerButton"
             android:layout_width="80dp"
             android:layout_height="80dp"
-
             android:src="@drawable/close"
             android:background="@drawable/selector_recorder_close_drawer_button"
             android:layout_centerHorizontal="true"
