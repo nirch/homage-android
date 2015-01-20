@@ -62,6 +62,8 @@ public class StoriesListFragment extends Fragment {
 
     int rowHeight;
     int desnityDPI;
+    int index = 0;
+    int top = 0;
 
     BaseAdapter adapter = new BaseAdapter() {
         @Override
@@ -198,11 +200,17 @@ public class StoriesListFragment extends Fragment {
         if (storiesListView.getAdapter() == null) {
             storiesListView.setAdapter(adapter);
         }
+//        Get back to last location
+        storiesListView.setSelectionFromTop(index, top);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+//        Save Location
+        index = storiesListView.getFirstVisiblePosition();
+        View v = storiesListView.getChildAt(0);
+        top = (v == null) ? 0 : (v.getTop() - storiesListView.getPaddingTop());
     }
     //endregion
 

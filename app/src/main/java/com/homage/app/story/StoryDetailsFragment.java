@@ -263,9 +263,11 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomA
 
         adapter = new RemakesAdapter(getActivity(), remakes);
         remakesGridView = (ExpandableHeightGridView)aq.id(R.id.remakesGridView).getGridView();
-        remakesGridView.setAdapter(adapter);
-//        remakesGridView.setOnScrollListener(onGridViewScrollListener);
         remakesGridView.setExpanded(true);
+        remakesGridView.setAdapter(adapter);
+//        adapter.notifyDataSetChanged();
+//        remakesGridView.setOnScrollListener(onGridViewScrollListener);
+
 
         remakesScrollView = (ScrollView) aq.id(R.id.remakesScrollview).getView();
 //        remakesScrollView.setOnOverScrolledListener(getActivity(), this);
