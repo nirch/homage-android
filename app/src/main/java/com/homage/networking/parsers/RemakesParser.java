@@ -21,11 +21,15 @@ public class RemakesParser extends Parser {
     @Override
     public void parse() throws JSONException {
         JSONArray remakes = (JSONArray)objectToParse;
+//        Create pulledAt
+        long pulledAt = System.currentTimeMillis();
 
-        RemakeParser remakeParser = new RemakeParser();
-        JSONObject remakeInfo;
+        RemakeParser remakeParser = new RemakeParser(pulledAt);
+        JSONObject remakeInfo = null;
+
 
         for (int i=0; i<remakes.length();i++) {
+
             remakeInfo = remakes.getJSONObject(i);
             String remakeOID = parseOID(remakeInfo);
             remakeParser.objectToParse = remakeInfo;
@@ -36,5 +40,20 @@ public class RemakesParser extends Parser {
                 Log.e(TAG, String.format("Failed parsing remake with OID:%s . skipped.", remakeOID) );
             }
         }
+        //        Is this the first page?
+
+        //        If yes delete all remakes not with this pulledAt
+        if(this.requestInfo != null && this.requestInfo.get("skip") == "null"){
+            if (remakeInfo != null) {
+                //        Get Story ID
+                String storyOID = Parser.parseOID(remakeInfo.getJSONObject("story_id"));
+                Story story = Story.findByOID(storyOID);
+                User excludedUser = User.getCurrent();
+                //        Delete Remakes
+                story.deleteRemakes(excludedUser, pulledAt);
+            }
+        }
+
+
     }
 }

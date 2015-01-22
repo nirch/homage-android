@@ -127,12 +127,19 @@ public class Story extends SugarRecord<Story> {
     public List<Remake> getRemakes(User excludedUser) {
         List<Remake> res = Remake.find(
                 Remake.class,                                                               // Entity class
-                "story=? AND user<>? AND grade<>?",                                         // where clause
-                new String[]{getId().toString(), excludedUser.getId().toString(), "-1"},    // where args
+                "story=? AND user<>? AND grade<>? AND still_public=?",                                         // where clause
+                new String[]{getId().toString(), excludedUser.getId().toString(), "-1", "1"},    // where args
                 "",                                                                         // group by
                 "grade DESC",                                                               // order by
                 "");
         return res;
+    }
+
+    public boolean deleteRemakes(User excludedUser, long pulledAt) {
+        Remake.deleteAll(Remake.class,                                                               // Entity class
+                "story=? AND user<>? AND grade<>? AND pulled_at<>?",                                         // where clause
+                new String[]{getId().toString(), excludedUser.getId().toString(), "-1", String.valueOf(pulledAt)});
+        return true;
     }
     //endregion
 

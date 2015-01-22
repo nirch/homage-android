@@ -27,7 +27,8 @@ public class Remake extends SugarRecord<Remake> {
     public String thumbnailURL;
     public String videoURL;
     public long createdAt;
-    public boolean stillPublic;
+    public long pulledAt;
+    public int stillPublic;
     public String userID;
     public String userFullname;
 
@@ -35,7 +36,7 @@ public class Remake extends SugarRecord<Remake> {
     public int likesCount;
     public int viewsCount;
 //TODO add liked
-    public boolean isLiked;
+    public int isLiked;
     //endregion
 
     //region *** Relationships ***

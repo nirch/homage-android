@@ -11,8 +11,17 @@ import org.json.JSONObject;
 
 public class RemakeParser extends Parser {
     String TAG = "TAG_"+getClass().getName();
+    long pulledAt;
 
-     /**
+    public RemakeParser() {
+        pulledAt = 0;
+    }
+
+    public RemakeParser(long lPulledAt) {
+        pulledAt = lPulledAt;
+    }
+
+    /**
      *
      * Example For a remake object.
      *
@@ -67,12 +76,17 @@ public class RemakeParser extends Parser {
         remake.thumbnailURL =   parseString("thumbnail",null);
         remake.videoURL =       parseString("video",null);
         remake.shareURL =       parseString("share_link",null);
-        remake.userFullname =       parseString("user_fullname",null);
+    remake.userFullname =       parseString("user_fullname",null);
         remake.grade =          parseInt("grade",0);
         remake.createdAt =      parseDateAsTimestamp("created_at",-1);
-        remake.stillPublic =    true;
+        remake.pulledAt =      pulledAt;
+        boolean isPublic =    parseBool("is_public",false);
+        remake.stillPublic = 0;
+        if(isPublic == true){remake.stillPublic = 1;}
         remake.userID      =    Parser.parseOID(remakeInfo.getJSONObject("user_id"));
-        remake.isLiked =        parseBool("is_liked",false);
+        boolean isLiked =        parseBool("is_liked",false);
+        remake.isLiked = 0;
+        if(isLiked == true){remake.isLiked = 1;}
         remake.likesCount =     parseInt("like_count",0);
         remake.sharesCount =    parseInt("share_count",0);
         remake.viewsCount =     parseInt("views",0);
@@ -88,6 +102,5 @@ public class RemakeParser extends Parser {
         footagesParser.objectToParse = remakeInfo.getJSONArray("footages");
         footagesParser.remake = remake;
         footagesParser.parse();
-
     }
 }

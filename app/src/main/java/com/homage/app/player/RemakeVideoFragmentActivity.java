@@ -430,11 +430,11 @@ public class RemakeVideoFragmentActivity extends
             aq.id(R.id.remakeThumbnailImage).visibility(View.GONE);
         }
 
-        isLiked.setSelected(remake.isLiked);
+        isLiked.setSelected(remake.isLiked==1);
         String viewsCount = String.valueOf(remake.viewsCount);
         getLikesCount();
         ((IconTextView) aq.id(R.id.views_count).getView()).setText(viewsCount);
-        if (remake.isLiked) {
+        if (remake.isLiked==1) {
             ((IconButton) aq.id(R.id.liked_button).getView()).setText(R.string.icon_heart_unlike);
         } else {
             ((IconButton) aq.id(R.id.liked_button).getView()).setText(R.string.icon_heart_like);

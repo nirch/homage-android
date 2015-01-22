@@ -275,13 +275,16 @@ public class HomageServer extends Server {
         if (userInfo != null) info.putAll(userInfo);
 
         // The GET request
+        RemakesParser remakesParser = new RemakesParser();
+        remakesParser.requestInfo.put("skip",String.valueOf(skip));
+
         super.GET(
                 R.string.url_story_remakes,
                 storyOID,
                 parameters,
                 INTENT_REMAKES_FOR_STORY,
                 info,
-                new RemakesParser());
+                remakesParser);
     }
 
     public void refetchRemakesForStory(String storyOID, HashMap<String,Object> userInfo) {

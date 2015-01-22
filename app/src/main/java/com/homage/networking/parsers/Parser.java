@@ -28,6 +28,8 @@ public class Parser {
     public HashMap<String, Error> errors;
     public Error error;
     public HashMap<String, Object> responseInfo;
+    public HashMap<String, Object> requestInfo;
+
 
     private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     private SimpleDateFormat dateFormatter2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -46,6 +48,7 @@ public class Parser {
 
         //
         responseInfo = new HashMap<String, Object>();
+        requestInfo  = new HashMap<String, Object>();
     }
 
     public static String parseOID(JSONObject obj) throws JSONException {
