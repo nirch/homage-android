@@ -127,9 +127,9 @@ public class User extends SugarRecord<User> {
                 "user = ? AND story=? AND (status=? or status=? or status=?)",
                 getId().toString(),
                 story.getId().toString(),
-                Remake.Status.NEW.toString(),
-                Remake.Status.IN_PROGRESS.toString(),
-                Remake.Status.TIMEOUT.toString()
+                String.valueOf(Remake.Status.NEW.getValue()),
+                String.valueOf(Remake.Status.IN_PROGRESS.getValue()),
+                String.valueOf(Remake.Status.TIMEOUT.getValue())
         );
         if (unfinishedRemakes.size()==0) return;
 

@@ -152,7 +152,6 @@ public class MovieProgressFragment extends Fragment {
         Resources res = getResources();
         String f = res.getString(R.string.rendering_progress_preparing);
         preparingText = String.format(f, story.name);
-        aq.id(R.id.movieProgressTouchButton).text(preparingText);
         // Follow the
         followRemakeWithOID(followingRemakeOID);
 
@@ -195,7 +194,9 @@ public class MovieProgressFragment extends Fragment {
         } else if (remake.status == Remake.Status.TIMEOUT.getValue()) {
 
             failedRemake();
-
+        }
+        else{
+            aq.id(R.id.movieProgressTouchButton).text(preparingText);
         }
     }
 
