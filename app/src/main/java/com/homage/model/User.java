@@ -135,7 +135,6 @@ public class User extends SugarRecord<User> {
 
         for (Remake remake : unfinishedRemakes) {
             remake.delete();
-            remake.save();
         }
     }
 

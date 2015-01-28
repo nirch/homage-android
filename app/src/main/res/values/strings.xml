@@ -87,7 +87,8 @@
 
     <!-- Progress dialogues -->
     <string name="pd_title_please_wait">Please wait.</string>
-    <string name="pd_msg_creating_movie">Starting Recorder...</string>
+    <string name="pd_msg_creating_movie">Creating Movie...</string>
+    <string name="pd_msg_starting_recorder">Starting Recorder...</string>
     <string name="pd_msg_sharing_movie">Preparing first time share of this movie</string>
 
     <string name="pd_title_delete_remake_question">Delete remake.</string>

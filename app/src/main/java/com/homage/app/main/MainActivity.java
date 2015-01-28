@@ -48,6 +48,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ListAdapter;
+import android.widget.RelativeLayout;
 
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
@@ -137,7 +138,8 @@ public class MainActivity extends ActionBarActivity
 
     private Remake lastRemakeSentToRender;
 
-//    A boolean to know if user has requested to leave the app and not load fragments
+//    A flag to know if user has requested to leave the app and not load fragments
+//    If that is the case then when back pressed the app should exit
     boolean leaveapp = false;
 
     private int currentSection;
@@ -342,6 +344,7 @@ public class MainActivity extends ActionBarActivity
                     break;
                 }
                 Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
+
                 movieProgressFragment.showProgressForRemake(renderedRemake);
                 mOnResumeChangeToSection = SECTION_STORIES;
 
@@ -373,7 +376,7 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
         if (f!=null && currentSection == SECTION_STORIES) {
-            ((StoriesListFragment)f).StartLoadingScreen();
+            ((StoriesListFragment) f).StartLoadingScreen();
         }
     }
 
@@ -422,16 +425,19 @@ public class MainActivity extends ActionBarActivity
 
             case SECTION_STORIES:
                 Crashlytics.log("handleDrawerSectionSelection --> Stories");
-
-                currentSection = position;
-                showStories();
+                if(currentSection != position) {
+                    currentSection = position;
+                    showStories();
+                }
                 break;
 
             case SECTION_ME:
                 Crashlytics.log("handleDrawerSectionSelection --> My Stories");
-
-                currentSection = position;
-                showMyStories();
+                
+                if(currentSection != position) {
+                    currentSection = position;
+                    showMyStories();
+                }
                 break;
 
             case SECTION_SETTINGS:
@@ -804,9 +810,11 @@ public class MainActivity extends ActionBarActivity
             // If fragment doesn't exist yet, create one
             if (fragment == null) {
                 fTransaction.add(R.id.container, StoriesListFragment.newInstance(currentSection), FRAGMENT_TAG_STORIES);
+                fTransaction.addToBackStack(null);
                 fTransaction.commitAllowingStateLoss();
             } else { // re-use the old fragment
                 fTransaction.replace(R.id.container, fragment, FRAGMENT_TAG_STORIES);
+                fTransaction.addToBackStack(null);
                 fTransaction.commitAllowingStateLoss();
             }
 
@@ -936,6 +944,7 @@ public class MainActivity extends ActionBarActivity
         pd.setMessage(res.getString(R.string.pd_msg_creating_movie));
         pd.setCancelable(true);
         pd.show();
+        pd.setMessage(res.getString(R.string.pd_msg_starting_recorder));
 
         // Send the request to the server.
         HomageServer.sh().createRemake(
@@ -1077,6 +1086,9 @@ public class MainActivity extends ActionBarActivity
             finish();
             leaveapp = true;
             super.onBackPressed();
+        }
+        else if(currentSection == SECTION_ME){
+            showStories();
         }
         else {
             if (count == 0) {
