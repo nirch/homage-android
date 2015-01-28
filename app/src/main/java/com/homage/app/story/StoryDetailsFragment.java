@@ -395,8 +395,8 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 //        Open Remakes GridView
         if(videoIsDisplayed) {
 //            Animate UI
-            aq.id(R.id.moreRemakes).getView().animate().yBy(-270f);
-            aq.id(R.id.swipe_container).getView().animate().yBy(-270f);
+            aq.id(R.id.moreRemakes).getView().animate().yBy(-portraitheight);
+            aq.id(R.id.swipe_container).getView().animate().yBy(-portraitheight);
             animateStoryDetailsVideoContainer(0, 0, 185f, -120f, -1f, -1f);
 
             videoIsDisplayed = false;
@@ -412,13 +412,13 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 //            On first run only animate the gridview to close and display demo video
             if(!firstRun) {
                 animateStoryDetailsVideoContainer(width, portraitheight, -185f, 120f, 1f, 1f);
-                aq.id(R.id.moreRemakes).getView().animate().yBy(270f);
-                aq.id(R.id.swipe_container).getView().animate().yBy(270f);
+                aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
+                aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
             }
             else{
                 animateStoryDetailsVideoContainer(width, portraitheight, 0, 0, 0, 0);
-                aq.id(R.id.moreRemakes).getView().animate().yBy(270f);
-                aq.id(R.id.swipe_container).getView().animate().yBy(270f);
+                aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
+                aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
             }
 
             videoIsDisplayed = true;
