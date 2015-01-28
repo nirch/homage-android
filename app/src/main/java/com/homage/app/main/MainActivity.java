@@ -121,7 +121,7 @@ public class MainActivity extends ActionBarActivity
     public static final int REQUEST_CODE_RECORDER = 10001;
 
     static final String FRAGMENT_TAG_ME = "fragment me";
-    static final String FRAGMENT_TAG_STORIES = "fragment stories";
+    public static final String FRAGMENT_TAG_STORIES = "fragment stories";
     static final String FRAGMENT_TAG_MY_STORIES = "fragment my stories";
     public static final String FRAGMENT_TAG_REMAKE_VIDEO = "fragment remake video";
     public static final String FRAGMENT_TAG_STORY_DETAILS = "fragment story details";
@@ -136,6 +136,9 @@ public class MainActivity extends ActionBarActivity
     private CharSequence mTitle;
 
     private Remake lastRemakeSentToRender;
+
+//    A boolean to know if user has requested to leave the app and not load fragments
+    boolean leaveapp = false;
 
     private int currentSection;
     public Story currentStory;
@@ -369,8 +372,8 @@ public class MainActivity extends ActionBarActivity
         onSectionAttached(position);
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
-        if (f!=null) {
-            ((StoriesListFragment)f).MakeScreenGrey();
+        if (f!=null && currentSection == SECTION_STORIES) {
+            ((StoriesListFragment)f).StartLoadingScreen();
         }
     }
 
@@ -787,28 +790,28 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void showStories() {
+        if(!leaveapp) {
+            // Show actionbar
+            showActionBar();
 
-        // Show actionbar
-        showActionBar();
+            currentSection = SECTION_STORIES;
+            currentStory = null;
 
-        currentSection = SECTION_STORIES;
-        currentStory = null;
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fTransaction = fragmentManager.beginTransaction();
+            Fragment fragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fTransaction = fragmentManager.beginTransaction();
-        Fragment fragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
+            // If fragment doesn't exist yet, create one
+            if (fragment == null) {
+                fTransaction.add(R.id.container, StoriesListFragment.newInstance(currentSection), FRAGMENT_TAG_STORIES);
+                fTransaction.commitAllowingStateLoss();
+            } else { // re-use the old fragment
+                fTransaction.replace(R.id.container, fragment, FRAGMENT_TAG_STORIES);
+                fTransaction.commitAllowingStateLoss();
+            }
 
-        // If fragment doesn't exist yet, create one
-        if (fragment == null) {
-            fTransaction.add(R.id.container, StoriesListFragment.newInstance(currentSection), FRAGMENT_TAG_STORIES);
-            fTransaction.commitAllowingStateLoss();
+            HMixPanel.sh().track("appMoveToStoriesTab", null);
         }
-        else { // re-use the old fragment
-            fTransaction.replace(R.id.container, fragment, FRAGMENT_TAG_STORIES);
-            fTransaction.commitAllowingStateLoss();
-        }
-
-        HMixPanel.sh().track("appMoveToStoriesTab",null);
     }
 
     public void showMyStories() {
@@ -1072,6 +1075,7 @@ public class MainActivity extends ActionBarActivity
 
         if (currentSection == SECTION_STORIES) {
             finish();
+            leaveapp = true;
             super.onBackPressed();
         }
         else {

@@ -208,11 +208,17 @@ public class StoriesListFragment extends Fragment {
 //        Get back to last location
         storiesListView.setSelectionFromTop(index, top);
 
-        aq.id(R.id.storygreyscreen).visibility(View.GONE);
+        StopLoadingScreen();
     }
 
-    public void MakeScreenGrey() {
+    public void StartLoadingScreen() {
         aq.id(R.id.storygreyscreen).visibility(View.VISIBLE);
+        aq.id(R.id.loadingMeProgress).visibility(View.VISIBLE);
+    }
+
+    public void StopLoadingScreen() {
+        aq.id(R.id.storygreyscreen).visibility(View.GONE);
+        aq.id(R.id.loadingMeProgress).visibility(View.GONE);
     }
 
 

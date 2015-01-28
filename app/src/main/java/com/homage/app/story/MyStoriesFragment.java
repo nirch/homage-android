@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
@@ -299,6 +300,13 @@ public class MyStoriesFragment extends Fragment {
     public void onResume()
     {
         super.onResume();
+//        Make Stories Loading screen disappear... just in case
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        Fragment f = fragmentManager.findFragmentByTag(MainActivity.FRAGMENT_TAG_STORIES);
+        if (f!=null) {
+            ((StoriesListFragment)f).StopLoadingScreen();
+        }
+
         ActionBar action = getActivity().getActionBar();
         if (action != null) {
             action.setTitle(R.string.nav_item_2_me);
@@ -319,6 +327,8 @@ public class MyStoriesFragment extends Fragment {
             if (main != null) main.refetchRemakesForCurrentUser();
             }
         }, 500);
+
+
 
     }
 
