@@ -28,7 +28,7 @@
             android:layout_height="26dp"
             android:name="com.homage.app.main.MovieProgressFragment"
             tools:layout="@layout/fragment_make_movie_progress"
-            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
             />
 
 

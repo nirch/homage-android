@@ -433,7 +433,7 @@ public class MainActivity extends ActionBarActivity
 
             case SECTION_ME:
                 Crashlytics.log("handleDrawerSectionSelection --> My Stories");
-                
+
                 if(currentSection != position) {
                     currentSection = position;
                     showMyStories();
@@ -1088,6 +1088,9 @@ public class MainActivity extends ActionBarActivity
             super.onBackPressed();
         }
         else if(currentSection == SECTION_ME){
+            showStories();
+        }
+        else if(currentSection == SECTION_STORY_DETAILS){
             showStories();
         }
         else {
