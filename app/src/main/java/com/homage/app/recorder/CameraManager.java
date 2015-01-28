@@ -686,21 +686,21 @@ The Camera Manager will decide on which method to use based on API and app confi
         final MediaRecorder.OnInfoListener onRecordingInfoListener = new MediaRecorder.OnInfoListener() {
             @Override
             public void onInfo(MediaRecorder mr, int what, int extra) {
-            if (what == MediaRecorder.MEDIA_ERROR_SERVER_DIED || what == MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN) {
-                sendErrorInRecordingMessageToMainThread();
-                return;
-            }
+                if (what == MediaRecorder.MEDIA_ERROR_SERVER_DIED || what == MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN) {
+                    sendErrorInRecordingMessageToMainThread();
+                    return;
+                }
 
-            if (what != MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) return;
+                if (what != MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) return;
 
-            Log.d(TAG, String.format("finished (%d %d) recording duration %d", what, extra, duration));
-            stopRecordingWithMediaRecorder();
-            if (outputFile != null) {
-                sendFinishedRecordingMessageToMainThread(outputFile);
-            } else {
-                recordingListener.recordingInfo(RECORDING_FAILED, null, null);
-                Log.e(TAG, "Why missing outputFile path is missing when finishing recording?");
-            }
+                Log.d(TAG, String.format("finished (%d %d) recording duration %d", what, extra, duration));
+                stopRecordingWithMediaRecorder();
+                if (outputFile != null) {
+                    sendFinishedRecordingMessageToMainThread(outputFile);
+                } else {
+                    recordingListener.recordingInfo(RECORDING_FAILED, null, null);
+                    Log.e(TAG, "Why missing outputFile path is missing when finishing recording?");
+                }
             }
         };
 
@@ -848,8 +848,10 @@ The Camera Manager will decide on which method to use based on API and app confi
         } catch (Exception e) {
             Log.e(TAG, "failed releasing camera");
         }
-
-        recordingListener.recordingInfo(RECORDING_CANCELED, null, null);
+        HashMap<String, Object> info = new HashMap<String, Object>();
+//        TODO find or create reason codes
+        info.put(RecorderActivity.REASON_CODE, "Not Fount Yet");
+        recordingListener.recordingInfo(RECORDING_CANCELED, null, info);
     }
 
     private void whileUserInteractionCameraSettings(Camera.Parameters parameters) {

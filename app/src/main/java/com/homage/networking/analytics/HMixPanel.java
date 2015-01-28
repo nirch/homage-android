@@ -18,7 +18,7 @@ import java.util.HashMap;
 public class HMixPanel {
     String TAG = "TAG_" + getClass().getName();
 
-    public static final String MIXPANEL_TOKEN = "7d575048f24cb2424cd5c9799bbb49b1";
+    public static String MIXPANEL_TOKEN;
     public MixpanelAPI mMixpanel;
 
 
@@ -28,6 +28,8 @@ public class HMixPanel {
     public void init(Context context) {
         // A reference to the context
         this.context = context;
+        MIXPANEL_TOKEN = context.getResources().getString(R.string.mixpanel_token);
+
 
         // Will initialize mixpanel in one of two scenarios
         // 1. App configured to work with production servers

@@ -2,25 +2,15 @@ package com.homage.app.recorder;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.homage.FileHandler.Download;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.matting.Matting;
-import com.homage.networking.analytics.HMixPanel;
 import com.vim.vimapi.vTool;
-
-import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
 
 /**
  * Created by dangalg on 11/24/2014.

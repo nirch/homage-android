@@ -14,6 +14,7 @@
  */
 package com.homage.app.story;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
@@ -180,10 +181,6 @@ public class StoriesListFragment extends Fragment {
         // Force portrait.
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        // Show actionbar
-        getActivity().getActionBar().show();
-
-
         return rootView;
     }
 
@@ -197,12 +194,27 @@ public class StoriesListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        ActionBar action = getActivity().getActionBar();
+        if (action != null) {
+            action.setTitle(R.string.nav_item_1_stories);
+            ((MainActivity)getActivity()).onSectionAttached(MainActivity.SECTION_STORIES);
+            action.show();
+        }
+
+
         if (storiesListView.getAdapter() == null) {
             storiesListView.setAdapter(adapter);
         }
 //        Get back to last location
         storiesListView.setSelectionFromTop(index, top);
+
+        aq.id(R.id.storygreyscreen).visibility(View.GONE);
     }
+
+    public void MakeScreenGrey() {
+        aq.id(R.id.storygreyscreen).visibility(View.VISIBLE);
+    }
+
 
     @Override
     public void onPause() {

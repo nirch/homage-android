@@ -5,6 +5,7 @@
     <color name="homage_dark_transparent_overlay">#33000000</color>
     <color name="homage_darker_transparent_overlay">#88000000</color>
     <color name="homage_darkest_transparent_overlay">#D00F0707</color>
+    <color name="homage__transparent">#00000000</color>
     <color name="homage_text">#FFFFFF</color>
     <color name="homage_text_error">#FF3333</color>
     <color name="homage_impact">#FF5F45</color>

@@ -16,16 +16,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.amazonaws.services.s3.transfer.Upload;
 import com.androidquery.AQuery;
+import com.homage.FileHandler.VideoHandler;
 import com.homage.app.R;
-import com.homage.model.Footage;
+import com.homage.app.Utils.constants;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
-import com.homage.networking.uploader.UploadManager;
-import com.homage.networking.uploader.UploaderService;
 
 import java.util.HashMap;
 
@@ -179,6 +177,21 @@ public class MovieProgressFragment extends Fragment {
         if (remake.status == Remake.Status.DONE.getValue()) {
 
             finishedRemakeSuccess();
+            if(story.sharingVideoAllowed == 1) {
+                VideoHandler vh = new VideoHandler();
+                HashMap<String, String> videoInfo = new HashMap<String, String>();
+
+                videoInfo.put(constants.PACKAGE_NAME, "");
+                videoInfo.put(constants.MIME_TYPE, "video/mp4");
+                videoInfo.put(constants.SHARE_METHOD, "");
+                videoInfo.put(constants.VIDEO_URL, remake.videoURL);
+                videoInfo.put(constants.EMAIL_CONTENT, "");
+                videoInfo.put(constants.EMAIL_SUBJECT, "");
+                videoInfo.put(constants.EMAIL_BODY, "");
+                videoInfo.put(constants.SHARE_VIDEO, "false");
+                videoInfo.put(constants.DOWNLOAD_IN_BACKGROUND, "true");
+                MainActivity.DownloadVideoAndShare(getActivity(), videoInfo);
+            }
 
         } else if (
                 remake.status == Remake.Status.IN_PROGRESS.getValue() ||

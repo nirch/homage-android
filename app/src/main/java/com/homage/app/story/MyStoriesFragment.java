@@ -1,5 +1,6 @@
 package com.homage.app.story;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -274,6 +275,7 @@ public class MyStoriesFragment extends Fragment {
 
         // Set the list adapter for the stories list view.
         remakes = user.allAvailableRemakesLatestOnTop();
+
         myStoriesListView = aq.id(R.id.myStoriesListView).getListView();
 
         // Don't allow orientation change.
@@ -282,8 +284,6 @@ public class MyStoriesFragment extends Fragment {
         //
         aq.id(R.id.remakeAStoryButton).clicked(onClickedRemakeStories);
 
-        // Show actionbar
-        getActivity().getActionBar().show();
         return rootView;
     }
 
@@ -299,6 +299,13 @@ public class MyStoriesFragment extends Fragment {
     public void onResume()
     {
         super.onResume();
+        ActionBar action = getActivity().getActionBar();
+        if (action != null) {
+            action.setTitle(R.string.nav_item_2_me);
+            ((MainActivity)getActivity()).onSectionAttached(MainActivity.SECTION_ME);
+            action.show();
+        }
+
         HMixPanel.sh().track("MEEnterTab",null);
 
         if (myStoriesListView.getAdapter() == null) {

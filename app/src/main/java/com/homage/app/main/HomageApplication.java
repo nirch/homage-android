@@ -112,9 +112,6 @@ public class HomageApplication extends SugarApp {
 
         Thread.setDefaultUncaughtExceptionHandler(new HomageUnhandledExceptionHandler());
 
-        // Upload service
-        UploadManager.sh().checkUploader();
-
         LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
         lbm.registerReceiver(onFootageUploadSuccess, new IntentFilter(HomageServer.INTENT_FOOTAGE_UPLOAD_SUCCESS));
 

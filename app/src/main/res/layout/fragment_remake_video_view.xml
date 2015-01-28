@@ -32,7 +32,8 @@
 
         <TextView android:id="@+id/remakeMoreRemakes"
             style="@style/headerText"
-            android:text="@string/more_remakes"
+            android:background="@color/homage_black"
+            android:text="@string/show_remake"
             />
     </LinearLayout>
 
@@ -123,7 +124,7 @@
         android:visibility="gone"
         />
 
-    <com.homage.CustomAdapters.ProfilePictureView
+    <com.homage.CustomViews.ProfilePictureView
         android:id="@+id/user_image"
         android:layout_width="20dp"
         android:layout_height="20dp"

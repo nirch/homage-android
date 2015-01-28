@@ -85,7 +85,7 @@ public class VideoPlayerFragment
     // Views & Layout
     AQuery aq;
     View rootView;
-    VideoView videoView;
+    public VideoView videoView;
     LayoutInflater inflater;
     boolean alreadyGotSettings = false;
 

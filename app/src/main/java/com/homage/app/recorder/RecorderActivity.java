@@ -140,7 +140,6 @@ public class RecorderActivity extends Activity
     // Actions & State
     public boolean isRecording;
     public boolean itsPreviewTime = true;
-//    public boolean dontShowAgain;
     public boolean isBackgroundDetectionRunning;
 
 
@@ -150,6 +149,7 @@ public class RecorderActivity extends Activity
 //    preferences;
     SharedPreferences prefs;
     SharedPreferences.Editor prefsEditor;
+
     //Constants
     private final static int ACTION_DO_NOTHING = 1;
     private final static int ACTION_HANDLE_STATE = 2;
@@ -157,6 +157,16 @@ public class RecorderActivity extends Activity
     private final static int ACTION_ADVANCE_AND_HANDLE_STATE = 4;
     private final static int ACTION_BY_RESULT_CODE = 5;
     public final static int DONT_SHOW_THIS_AGAIN = 6;
+
+//    Recorder Info constants
+    public final static String ERROR_DESCRIPTION = "errorDescription";
+    public final static String REASON_CODE = "reasonCode";
+    public final static String TARGET_DURATION = "tragetDuration";
+    public final static String OUTPUT_DURATION = "outputDuration";
+    public final static String DURATION_DIFF = "durationDiff";
+    public final static String FILE_SIZE = "fileSize";
+
+
     private RecorderStateMachine stateMachine;
     private Handler counterDown;
     protected int countDown;
@@ -1056,6 +1066,22 @@ public class RecorderActivity extends Activity
     private void startCountingDownToRecording() {
         if (isCountingDownToRecording()) return;
 
+        if(lastcc > 0){
+            HashMap props = new HashMap<String,String>();
+            props.put("story" , remake.getStory().name);
+            props.put("remake_id" , remake.getOID());
+            props.put("scene_id", Integer.toString(currentSceneID));
+            HMixPanel.sh().track("REShootSceneWithGoodBackground",props);
+        }
+        else
+        {
+            HashMap props = new HashMap<String,String>();
+            props.put("story" , remake.getStory().name);
+            props.put("remake_id" , remake.getOID());
+            props.put("scene_id", Integer.toString(currentSceneID));
+            HMixPanel.sh().track("REShootSceneWithBadBackground",props);
+        }
+
         String eventName = String.format("REHitRecordScene%d" , currentSceneID);
         HashMap props = new HashMap<String,String>();
         props.put("story" , remake.getStory().name);
@@ -1180,29 +1206,42 @@ public class RecorderActivity extends Activity
             public void recordingInfo(int what, File outputFile, HashMap<String, Object> info) {
                 int toastMessage = -1;
                 boolean shouldReturnFromRecordingState = false;
-
+                HashMap props = new HashMap<String,String>();
+                props.put("story" , remake.getStory().name);
+                props.put("remake_id" , remake.getOID());
+                props.put("scene_id", Integer.toString(currentSceneID));
                 switch(what) {
                     case CameraManager.RECORDING_STARTED:
                         toastMessage = R.string.recording_started;
                         hideSilhouette(true);
+
                         break;
 
                     case CameraManager.RECORDING_FAILED:
                         showSilhouette(true);
                         toastMessage = R.string.recording_failed;
                         shouldReturnFromRecordingState = true;
+                        // Analytics
+//                        props.put(ERROR_DESCRIPTION, String.valueOf(info.get(ERROR_DESCRIPTION)));
+                        HMixPanel.sh().track("RECaptureOutputError",props);
                         break;
 
                     case CameraManager.RECORDING_FAILED_TO_START:
                         showSilhouette(true);
                         toastMessage = R.string.recording_failed_to_start;
                         shouldReturnFromRecordingState = true;
+                        // Analytics
+//                        props.put(ERROR_DESCRIPTION, String.valueOf(info.get(ERROR_DESCRIPTION)));
+                        HMixPanel.sh().track("RECaptureOutputError",props);
                         break;
 
                     case CameraManager.RECORDING_CANCELED:
                         showSilhouette(true);
                         toastMessage = R.string.recording_canceled;
                         shouldReturnFromRecordingState = true;
+                        // Analytics
+                        props.put(REASON_CODE, String.valueOf(info.get(REASON_CODE)));
+                        HMixPanel.sh().track("RECaptureOutputCanceledWithReason",props);
                         break;
 
                     case CameraManager.RECORDING_FINISHED:
@@ -1241,6 +1280,11 @@ public class RecorderActivity extends Activity
             Footage footage = remake.findFootage(currentSceneID);
             if (footage == null) {
                 Log.e(TAG, "Error. why footage not found after finishing recording?");
+                HashMap props = new HashMap<String,String>();
+                props.put("story" , remake.getStory().name);
+                props.put("remake_id" , remake.getOID());
+                props.put("scene_id" , Integer.toString(currentSceneID));
+                HMixPanel.sh().track("RECaptureOutputLocalStorageError",props);
                 return;
             }
 
@@ -1281,6 +1325,11 @@ public class RecorderActivity extends Activity
             stateMachine.advanceState();
             stateMachine.handleCurrentState();
 
+            HashMap props = new HashMap<String,String>();
+            props.put("story" , remake.getStory().name);
+            props.put("remake_id" , remake.getOID());
+            props.put("scene_id" , Integer.toString(currentSceneID));
+            HMixPanel.sh().track("RECaptureOutputValidated",props);
         } catch (Exception ex) {
             Log.e(TAG, "Checking recording finished failed.", ex);
         }
@@ -1541,31 +1590,6 @@ public class RecorderActivity extends Activity
      *      UI event handlers.
      *  ==========================
      */
-
-    /*
-    private AdapterView.OnItemClickListener onClickedSceneItem = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Footage.ReadyState readyState = footagesReadyStates.get(i);
-            Scene scene = scenes.get(i);
-            if (readyState == Footage.ReadyState.STILL_LOCKED) {
-                Toast.makeText(
-                        RecorderActivity.this,
-                        "Scene locked.\nFinish with previous scenes first.",
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                currentSceneID = scene.getSceneID();
-                updateUIForSceneID(currentSceneID);
-                updateScenesList();
-                Toast.makeText(
-                        RecorderActivity.this,
-                        String.format("Shooting Scene %d", currentSceneID),
-                        Toast.LENGTH_SHORT).show();
-
-            }
-        }
-    };
-    */
 
     private ViewPager.SimpleOnPageChangeListener onVideosPagerChangeListener = new ViewPager.SimpleOnPageChangeListener() {
         @Override

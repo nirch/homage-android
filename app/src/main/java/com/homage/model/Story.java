@@ -23,6 +23,7 @@ public class Story extends SugarRecord<Story> {
     public String thumbnail;
     public String shareMessage;
     public int level;
+    public int sharingVideoAllowed;
     //endregion
 
     //region *** Factories ***

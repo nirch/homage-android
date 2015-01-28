@@ -11,6 +11,7 @@
     <!-- Analytics -->
     <bool name="homage_server_analytics_on_debug">false</bool>
     <bool name="mp_analytics_on_debug">false</bool>
+    <string name="mixpanel_token">7d575048f24cb2424cd5c9799bbb49b1</string>
 
     <!-- DEV Server -->
     <string name="server_dev_host">homage-server-app-dev.elasticbeanstalk.com</string>

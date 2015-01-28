@@ -45,5 +45,6 @@ public class StoryParser extends Parser {
         story.orderId =         parseInt("order_id",0);
         story.video =           parseString("video",null);
         story.shareMessage =    parseString("share_message",null);
+        story.sharingVideoAllowed = parseBoolAsInt("sharing_video_allowed", 0);
     }
 }

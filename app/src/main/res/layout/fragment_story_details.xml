@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:id="@+id/topStoryDetailsLayout"
+    android:background="@color/homage_black"
     >
 
-<LinearLayout
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:background="@color/homage_black"
-    android:layout_gravity="center"
-    android:weightSum="3">
-
     <LinearLayout
-        android:id="@+id/storyHeaders"
+        android:id="@+id/storyHead"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_alignParentTop="true">
 
     <TextView android:id="@+id/storyName"
         style="@style/headerText"
@@ -34,73 +29,60 @@
         <View
             style="@style/greyDivider"/>
 
-</LinearLayout>
+    </LinearLayout>
 
-<com.homage.CustomAdapters.SwipeRefreshLayoutBottom
-    android:id="@+id/swipe_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_weight="2.5"
-    >
-
-<ScrollView
-    android:id="@+id/remakesScrollview"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:overScrollHeader="@null"
-    android:overScrollFooter="@null"
-    >
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:id="@+id/mainlayout">
-
-    <RelativeLayout android:id="@+id/storyDetailsVideoContainer"
-        android:layout_width="match_parent"
+    <FrameLayout android:id="@+id/storyDetailsVideoContainer"
+        android:layout_width="wrap_content"
         android:layout_height="216dp"
-        android:layout_above="@+id/remakesGridView"
+        android:layout_below="@+id/storyHead"
         >
-    </RelativeLayout>
+    </FrameLayout>
 
     <TextView android:id="@+id/moreRemakes"
         style="@style/headerText"
-        android:text="@string/more_remakes"
+        android:text="@string/show_more_remakes"
+        android:layout_below="@+id/storyHead"
         />
 
-    <RelativeLayout android:id="@+id/remakesContainer"
+
+
+    <FrameLayout
+        android:id="@+id/loadingLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_above="@+id/makeYourOwnButton"
         >
-
-        <LinearLayout
+        <TextView android:id="@+id/noRemakesMessage"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_centerVertical="true"
-            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:textColor="@color/homage_button_bg2"
+            android:text="@string/no_remakes"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:visibility="visible"
+            />
+
+        <ProgressBar android:id="@+id/loadingRemakesProgress"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="visible"
+            android:layout_gravity="center"
+            />
+
+    </FrameLayout>
+
+    <com.homage.CustomViews.SwipeRefreshLayoutBottom
+            android:id="@+id/swipe_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/moreRemakes"
+            android:layout_above="@+id/makeYourOwnButton"
             >
-            <TextView android:id="@+id/noRemakesMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/homage_button_bg2"
-                android:text="@string/no_remakes"
-                android:textSize="14dp"
-                android:gravity="center"
-                android:visibility="visible"
-                />
 
-            <ProgressBar android:id="@+id/loadingRemakesProgress"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:visibility="visible"
-                android:layout_gravity="center"
-                />
-
-        </LinearLayout>
-
-        <com.homage.CustomAdapters.ExpandableHeightGridView
-            android:layout_width="wrap_content"
+        <GridView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:id="@+id/remakesGridView"
@@ -115,74 +97,52 @@
             android:descendantFocusability="beforeDescendants"
             />
 
-    </RelativeLayout>
+    </com.homage.CustomViews.SwipeRefreshLayoutBottom>
 
-
-
-</LinearLayout>
-</ScrollView>
-
-</com.homage.CustomAdapters.SwipeRefreshLayoutBottom>
-
-    <RelativeLayout
-        android:id="@+id/fetchmoreremakeswrap"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
-
-    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/fetchMoreRemakesProgress"
+    <FrameLayout
+        android:id="@+id/fetchMoreRemakesProgressWrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
-        app:spb_sections_count="4"
-        app:spb_colors="@array/progressbar_colors"
-        app:spb_speed="2.0"
-        app:spb_stroke_width="4dp"
-        app:spb_stroke_separator_length="4dp"
-        app:spb_reversed="false"
-        app:spb_mirror_mode="false"
-        app:spb_progressiveStart_activated="false"
-        app:spb_progressiveStart_speed="1.5"
-        app:spb_progressiveStop_speed="3.4"
-        />
+        android:layout_alignBottom="@+id/swipe_container">
+        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/fetchMoreRemakesProgress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            app:spb_sections_count="4"
+            app:spb_colors="@array/progressbar_colors"
+            app:spb_speed="2.0"
+            app:spb_stroke_width="4dp"
+            app:spb_stroke_separator_length="4dp"
+            app:spb_reversed="false"
+            app:spb_mirror_mode="false"
+            app:spb_progressiveStart_activated="false"
+            app:spb_progressiveStart_speed="1.5"
+            app:spb_progressiveStop_speed="3.4"
+            android:visibility="gone"
+            />
+    </FrameLayout>
 
-    </RelativeLayout>
-
-
-<RelativeLayout
-    android:id="@+id/makebuttonlayout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/homage_remake_button"
-    android:textAlignment="center"
-    android:layout_weight="0.6"
-    >
     <Button android:id="@+id/makeYourOwnButton"
-        android:layout_width="300dp"
-        android:layout_height="90dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:text="@string/make_your_own"
         android:drawableLeft="@drawable/icon_remake_black"
+        android:drawableStart="@drawable/icon_remake_black"
         android:drawablePadding="3dp"
         android:layout_gravity="center_horizontal"
-        android:layout_centerHorizontal="true"
-        style="@style/HomageImpactButtonBigTextBlack" />
+        style="@style/HomageImpactButtonBigTextBlack"
+        android:layout_alignParentBottom="true"
+        />
+
+    <FrameLayout android:id="@+id/greyscreen"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/homage_darker_transparent_overlay"
+        android:visibility="gone"
+        >
+    </FrameLayout>
+
 </RelativeLayout>
-</LinearLayout>
-
-<FrameLayout android:id="@+id/greyscreen"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@color/homage_darker_transparent_overlay"
-    android:visibility="gone"
-    >
-</FrameLayout>
-
-    <SurfaceView
-        android:layout_width="0px"
-        android:layout_height="0px"
-        android:visibility="gone"/>
-
-</FrameLayout>

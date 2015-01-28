@@ -1,20 +1,15 @@
 package com.homage.FileHandler;
 
-import android.hardware.Camera;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 
+import com.homage.app.Utils.DownloadUtil;
 import com.homage.app.recorder.RecorderActivity;
-import com.homage.matting.Matting;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
 import com.homage.model.Story;
-import com.vim.vimapi.vTool;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -22,6 +17,7 @@ import java.net.URL;
  * Created by dangalg on 11/27/2014.
  */
 public class ContourHandler {
+    private static int tempFileNumber = 0;
 
     private String contourLocalUrl;
 
@@ -54,26 +50,32 @@ public class ContourHandler {
 
 
                 if (contourURL != null) {
-                    String[] splitURL = contourURL.split("/");
-                    String endOfContourURL = splitURL[splitURL.length - 1];
-                    File storagePath = new File(recorderActivity.getFilesDir(), endOfContourURL);
-                    String contourLocalUrl = storagePath + folderName + endOfContourURL;
-                    File contourFile = new File(contourLocalUrl);
-                    if (!contourFile.exists()) {
+//                    String[] splitURL = contourURL.split("/");
+//                    String endOfContourURL = splitURL[splitURL.length - 1];
+//                    File storagePath = new File(recorderActivity.getFilesDir(), endOfContourURL);
+//                    String contourLocalUrl = endOfContourURL;
+//                    File contourFile = new File(contourLocalUrl);
+                    String contourLocalUrl = getLocalVideoFile(contourURL);
+                    File cacheDir = recorderActivity.getCacheDir();
+                    File outFile = new File(cacheDir, contourLocalUrl);
+                    File tempFile = new File(cacheDir, "tempVideo" + ++tempFileNumber);
+                    if (!outFile.exists()) {
 
                         URL url = null;
 
                         try {
                             url = new URL(contourURL);
-                            Download.CreateFolderInLocalStorage(storagePath+folderName);
-                            Download.WriteFileToStorage(contourLocalUrl, url);
+//                            Download.CreateFolderInLocalStorage(storagePath+folderName);
+
+                            DownloadUtil.WriteFileToStorage(null, outFile, tempFile, url);
+
                         } catch (MalformedURLException e) {
                             Log.d("MalformedURLException: ", e.toString());
                             return null;
                         }
 
                     }
-                    return contourLocalUrl;
+                    return outFile.getAbsolutePath();
                 } else {
                     return null;
                 }
@@ -89,5 +91,12 @@ public class ContourHandler {
             super.onPostExecute(s);
             recorderActivity.contourLocalUrl = s;
         }
+    }
+
+    private String getLocalVideoFile(String url) {
+        String fileName = url.substring(url.lastIndexOf('/') + 1, url.length());
+        fileName = fileName.replace("%20", " ");
+        String fileLocalUrl = fileName;
+        return fileLocalUrl;
     }
 }

@@ -54,9 +54,11 @@ import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.homage.FileHandler.VideoHandler;
 import com.homage.app.R;
+import com.homage.app.Utils.cacheUtil;
+import com.homage.app.Utils.constants;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
-import com.homage.app.player.RemakeVideoFragmentActivity;
 import com.homage.app.player.VideoPlayerFragment;
 import com.homage.app.recorder.RecorderActivity;
 import com.homage.app.story.StoriesListFragment;
@@ -70,7 +72,9 @@ import com.homage.networking.analytics.HEvents;
 import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
+import com.homage.networking.uploader.UploadManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,13 +92,13 @@ public class MainActivity extends ActionBarActivity
     AQuery aq;
     AQuery actionAQ;
 
-    static final int SECTION_LOGIN      = 0;
-    static final int SECTION_STORIES    = 1;
-    static final int SECTION_ME         = 2;
-    static final int SECTION_SETTINGS   = 3;
-    static final int SECTION_HOWTO      = 4;
-    static final int SECTION_STORY_DETAILS      = 101;
-    static final int SECTION_REMAKE_VIDEO      = 911;
+    public static final int SECTION_LOGIN      = 0;
+    public static final int SECTION_STORIES    = 1;
+    public static final int SECTION_ME         = 2;
+    public static final int SECTION_SETTINGS   = 3;
+    public static final int SECTION_HOWTO      = 4;
+    public static final int SECTION_STORY_DETAILS      = 101;
+    public static final int SECTION_REMAKE_VIDEO      = 911;
 
     static final int SHARE_METHOD_COPY_URL  = 0;
     static final int SHARE_METHOD_FACEBOOK  = 1;
@@ -103,6 +107,16 @@ public class MainActivity extends ActionBarActivity
     static final int SHARE_METHOD_MESSAGE   = 4;
     static final int SHARE_METHOD_WEIBO     = 5;
     static final int SHARE_METHOD_TWITTER   = 6;
+
+    static final int SHARE_METHOD_VIDEO = 100;
+    static final int SHARE_METHOD_TEXT = 200;
+    static final int SHARE_METHOD_TEXT_VIDEO = 300;
+
+    public static final String SHARE_INTENT_VIDEO = "shareIntentVideo";
+    public static final String SHARE_VIDEO_LOCAL_URL = "shareIntentVideoLocalUrl";
+
+    static final String MY_VIDEO_FOLDER = "/homage/myvideos/";
+    public static String CONTOUR_FOLDER = "/homage/contours/";
 
     public static final int REQUEST_CODE_RECORDER = 10001;
 
@@ -126,7 +140,7 @@ public class MainActivity extends ActionBarActivity
     private int currentSection;
     public Story currentStory;
 
-    ProgressDialog pd;
+    public ProgressDialog pd;
     MovieProgressFragment movieProgressFragment;
 
     // GCM
@@ -135,6 +149,7 @@ public class MainActivity extends ActionBarActivity
     String regid;
     AtomicInteger msgId = new AtomicInteger();
     Context context;
+    Activity mainActivity;
 
     public int screenWidth;
     public int screenHeight;
@@ -152,6 +167,7 @@ public class MainActivity extends ActionBarActivity
         Crashlytics.log("onCreate MainActivity. Loaded content view.");
 
         context = getApplicationContext();
+        mainActivity = this;
 
         // Screen info (portrait assumed)
         Display display = getWindowManager().getDefaultDisplay();
@@ -165,24 +181,6 @@ public class MainActivity extends ActionBarActivity
         //decorView.setSystemUiVisibility(uiOptions);
 
         aq = new AQuery(this);
-
-
-        // Navigation drawer
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-        lastRemakeSentToRender = null;
-
-        // Navigate to another default section if requested
-        navigateToSectionIfRequested();
-
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout)findViewById(R.id.drawer_layout),
-                defaultSelection
-                );
-        handleDrawerSectionSelection(defaultSelection);
 
         // Custom actionbar layout
         ActionBar actionBar = getSupportActionBar();
@@ -216,6 +214,23 @@ public class MainActivity extends ActionBarActivity
 
         initSharing();
 
+        // Navigation drawer
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mTitle = getTitle();
+        lastRemakeSentToRender = null;
+
+        // Navigate to another default section if requested
+        navigateToSectionIfRequested();
+
+        // Set up the drawer.
+        mNavigationDrawerFragment.setUp(
+                R.id.navigation_drawer,
+                (DrawerLayout) findViewById(R.id.drawer_layout),
+                defaultSelection
+        );
+        handleDrawerSectionSelection(defaultSelection);
+
         //region *** Bind to UI event handlers ***
         /**********************************/
         /** Binding to UI event handlers **/
@@ -224,6 +239,9 @@ public class MainActivity extends ActionBarActivity
 
         actionAQ.id(R.id.refreshButton).clicked(onClickedRefreshButton);
         //endregion
+
+        // Upload service after loading page. Loads Main page more quickly
+        UploadManager.sh().checkUploader();
     }
 
     @Override
@@ -278,6 +296,8 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     protected void onDestroy() {
+        HMixPanel mp = HMixPanel.sh();
+        if (mp != null) mp.flush();
         super.onDestroy();
     }
 
@@ -308,11 +328,20 @@ public class MainActivity extends ActionBarActivity
                 Remake renderedRemake = Remake.findByOID(remakeOID);
                 if (renderedRemake == null) {
                     Log.e(TAG, "Critical error. Recorder sent remake to rendering, but not found in local storage.");
+                    HashMap props = new HashMap<String,String>();
+                    props.put("story" , renderedRemake.getStory().name);
+                    props.put("remake_id" , renderedRemake.getOID());
+                    HMixPanel.sh().track("RERenderRequestFailed",props);
                     break;
                 }
                 Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
                 movieProgressFragment.showProgressForRemake(renderedRemake);
                 mOnResumeChangeToSection = SECTION_STORIES;
+
+                HashMap props = new HashMap<String,String>();
+                props.put("story" , renderedRemake.getStory().name);
+                props.put("remake_id" , renderedRemake.getOID());
+                HMixPanel.sh().track("RERenderRequestSuccess",props);
 
                 // TODO: remove this hack
                 RecorderActivity.hackFinishedRemakeOID = null;
@@ -329,11 +358,16 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-
     @Override
     public void onNavigationDrawerItemSelected(final int position) {
         mPositionClicked = position;
         mNavigationItemClicked = true;
+        onSectionAttached(position);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
+        if (f!=null) {
+            ((StoriesListFragment)f).MakeScreenGrey();
+        }
     }
 
     public void onDrawerClosed() {
@@ -447,6 +481,7 @@ public class MainActivity extends ActionBarActivity
         lbm.registerReceiver(onRemakesForStoryUpdated, new IntentFilter(HomageServer.INTENT_REMAKES_FOR_STORY));
         lbm.registerReceiver(onRemakesForUserUpdated, new IntentFilter(HomageServer.INTENT_USER_REMAKES));
         lbm.registerReceiver(onRemakeDeletion, new IntentFilter((HomageServer.INTENT_REMAKE_DELETION)));
+        lbm.registerReceiver(onShareVideo, new IntentFilter((HomageServer.INTENT_USER_SHARED_VIDEO)));
     }
 
     private void removeObservers() {
@@ -457,6 +492,7 @@ public class MainActivity extends ActionBarActivity
         lbm.unregisterReceiver(onRemakesForStoryUpdated);
         lbm.unregisterReceiver(onRemakesForUserUpdated);
         lbm.unregisterReceiver(onRemakeDeletion);
+        lbm.unregisterReceiver(onShareVideo);
     }
 
     private void refreshMyStoriesIfCurrentSection() {
@@ -467,36 +503,6 @@ public class MainActivity extends ActionBarActivity
             ((MyStoriesFragment)f).refresh();
         }
     }
-
-    // Observers handlers
-
-//    // get Like refresh
-//    private BroadcastReceiver onRemakeLiked = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            Crashlytics.log("onRemakeLiked");
-//            hideRefreshProgress();
-//            Bundle b = intent.getExtras();
-//            boolean success = b.getBoolean("success", false);
-//            if(success) {
-//                HashMap<String, Object> responseInfo = (HashMap<String, Object>) intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
-//
-//                if (responseInfo != null) {
-//                    String remakeOID = (String) responseInfo.get("remakeOID");
-//                    String statuscode = responseInfo.get("status_code").toString();
-//
-//                    if (success) {
-//                        FragmentManager fragmentManager = getSupportFragmentManager();
-//                        Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_REMAKE_VIDEO);
-//                        if (f!=null) {
-//                            ((RemakeVideoFragment)f).refresh(remakeOID);
-//                        }
-//                        //showStories();
-//                    }
-//                }
-//            }
-//        }
-//    };
 
     private BroadcastReceiver onStoriesUpdated = new BroadcastReceiver() {
         @Override
@@ -517,6 +523,34 @@ public class MainActivity extends ActionBarActivity
             }
         }
     };
+
+    private BroadcastReceiver onShareVideo = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Crashlytics.log("onShareVideo");
+            if (pd != null){
+                pd.dismiss();
+            }
+
+            HashMap<String, String> videoInfo = (HashMap<String, String>)intent.getSerializableExtra(constants.VIDEO_INFO);
+
+            assert(videoInfo != null);
+//            Open Share App and share Video
+            shareVideoIntent(videoInfo);
+        }
+    };
+
+    private void shareVideoIntent(HashMap<String, String> videoInfo) {
+        if(videoInfo != null && videoInfo.get(constants.LOCAL_FILE_NAME) != null) {
+            startActivityForResult(cacheUtil.getSendVideoIntent(mainActivity,
+                    videoInfo.get(constants.EMAIL_CONTENT),
+                    videoInfo.get(constants.EMAIL_SUBJECT),
+                    videoInfo.get(constants.EMAIL_BODY),
+                    videoInfo.get(constants.LOCAL_FILE_NAME),
+                    videoInfo.get(constants.MIME_TYPE),
+                    videoInfo.get(constants.PACKAGE_NAME)),555);
+        }
+    }
 
     private BroadcastReceiver onRemakeCreation = new BroadcastReceiver() {
         @Override
@@ -606,11 +640,10 @@ public class MainActivity extends ActionBarActivity
             case SECTION_HOWTO:
                 mTitle = getString(R.string.nav_item_4_howto);
                 break;
-//            case SECTION_STORY_DETAILS:
-//                mTitle = getString(R.string.nav_item_6_storydetails);
-//                break;
         }
-        aq.id(R.id.appTitle).getTextView().setText(mTitle);
+        if(aq != null) {
+            aq.id(R.id.appTitle).getTextView().setText(mTitle);
+        }
     }
 
     public void restoreActionBar() {
@@ -732,58 +765,77 @@ public class MainActivity extends ActionBarActivity
         finish();
     }
 
-//    public void showRemakeVideo(Bundle args, Remake remake) {
-//        showActionBar();
-//        currentSection = SECTION_REMAKE_VIDEO;
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        remakeVideoFragment = RemakeVideoFragment.newInstance(args, remake);
-//        FragmentTransaction transaction = fragmentManager.beginTransaction();
-//        transaction.setCustomAnimations(R.anim.open_from_center, R.anim.close_from_center,R.anim.open_from_center, R.anim.close_from_center);
-//        transaction.replace(R.id.remakecontainer, remakeVideoFragment, FRAGMENT_TAG_REMAKE_VIDEO);
-//        transaction.addToBackStack(null);
-//        transaction.commit();
-//    }
-
     public void showStoryDetails(Story story) {
-        showActionBar();
 
         currentSection = SECTION_STORY_DETAILS;
         currentStory = story;
+
         FragmentManager fragmentManager = getSupportFragmentManager();
-        storyDetailsFragment = StoryDetailsFragment.newInstance(SECTION_STORY_DETAILS, story);
-        fragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out,R.anim.animation_slide_in, R.anim.animation_slide_out)
-                .replace(R.id.container, storyDetailsFragment,FRAGMENT_TAG_STORY_DETAILS)
-                .addToBackStack(null)
-                .commitAllowingStateLoss();
+        FragmentTransaction fTransaction = fragmentManager.beginTransaction();
+        storyDetailsFragment = (StoryDetailsFragment)fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORY_DETAILS);
+
+        fTransaction.replace(R.id.container, storyDetailsFragment = StoryDetailsFragment.newInstance(currentSection, currentStory),FRAGMENT_TAG_STORY_DETAILS);
+        fTransaction.setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out,R.anim.animation_slide_in, R.anim.animation_slide_out);
+        fTransaction.addToBackStack(null);
+        fTransaction.commitAllowingStateLoss();
+
+        HMixPanel.sh().track("appMoveToStorieDetailsTab",null);
     }
 
     public void showStories() {
+
+        // Show actionbar
         showActionBar();
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
         currentSection = SECTION_STORIES;
         currentStory = null;
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, StoriesListFragment.newInstance(currentSection), FRAGMENT_TAG_STORIES)
-                .commitAllowingStateLoss();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fTransaction = fragmentManager.beginTransaction();
+        Fragment fragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
+
+        // If fragment doesn't exist yet, create one
+        if (fragment == null) {
+            fTransaction.add(R.id.container, StoriesListFragment.newInstance(currentSection), FRAGMENT_TAG_STORIES);
+            fTransaction.commitAllowingStateLoss();
+        }
+        else { // re-use the old fragment
+            fTransaction.replace(R.id.container, fragment, FRAGMENT_TAG_STORIES);
+            fTransaction.commitAllowingStateLoss();
+        }
+
         HMixPanel.sh().track("appMoveToStoriesTab",null);
     }
 
     public void showMyStories() {
+
+        // Show actionbar
         showActionBar();
 
         User user = User.getCurrent();
         if (user==null) return;
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
         currentSection = SECTION_ME;
         currentStory = null;
-        fragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout,R.anim.animation_fadein, R.anim.animation_fadeout)
-                .replace(R.id.container, MyStoriesFragment.newInstance(currentSection, user), FRAGMENT_TAG_ME)
-                .addToBackStack(null)
-                .commitAllowingStateLoss();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fTransaction = fragmentManager.beginTransaction();
+        Fragment fragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+
+        // If fragment doesn't exist yet, create one
+        if (fragment == null) {
+            fTransaction.add(R.id.container, MyStoriesFragment.newInstance(currentSection, user), FRAGMENT_TAG_ME);
+            fTransaction.setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout,R.anim.animation_fadein, R.anim.animation_fadeout);
+            fTransaction.addToBackStack(null);
+            fTransaction.commitAllowingStateLoss();
+        }
+        else { // re-use the old fragment
+            fTransaction.replace(R.id.container, fragment, FRAGMENT_TAG_ME);
+            fTransaction.setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout,R.anim.animation_fadein, R.anim.animation_fadeout);
+            fTransaction.addToBackStack(null);
+            fTransaction.commitAllowingStateLoss();
+        }
+
         HMixPanel.sh().track("appMoveToMeTab",null);
     }
 
@@ -1022,25 +1074,52 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-
     //region *** Share ***
     private void initSharing() {
-        shareMimeTypes.put("com.google.android.gm",      "message/rfc822");
-        shareMimeTypes.put("com.google.android.email",   "message/rfc822");
-        shareMimeTypes.put("com.facebook.katana",        "text/plain");
-        shareMimeTypes.put("com.whatsapp",               "text/plain");
-        shareMimeTypes.put("com.twitter.android",        "text/plain");
-        shareMimeTypes.put("com.google.android.talk",    "text/plain");
+        shareMimeTypes.put("com.google.android.gm",           "message/rfc822");
+        shareMimeTypes.put("com.google.android.email",        "message/rfc822");
+        shareMimeTypes.put("com.facebook.katana",             "text/plain");
+        shareMimeTypes.put("com.whatsapp",                    "text/plain");
+        shareMimeTypes.put("com.twitter.android",             "text/plain");
+        shareMimeTypes.put("com.google.android.talk",         "text/plain");
+        shareMimeTypes.put("com.sec.chaton",                  "text/plain");
+        shareMimeTypes.put("com.android.mms",                 "text/plain");
+        shareMimeTypes.put("com.sec.android.app.FileShareClient", "text/plain");
+        shareMimeTypes.put("com.android.bluetooth",           "text/plain");
+        shareMimeTypes.put("com.facebook.orca",               "text/plain");
+        shareMimeTypes.put("com.google.android.apps.plus",    "text/plain");
+        shareMimeTypes.put("com.google.android.talk",         "text/plain");
+//        Only text/plain
+        shareMimeTypes.put("com.sec.android.app.memo",        "text/plain");
+        shareMimeTypes.put("com.linkedin.android",             "text/plain");
+//        Only video/mp4
+        shareMimeTypes.put("com.google.android.youtube",       "video/mp4");
+        shareMimeTypes.put("com.google.android.apps.uploader", "video/mp4");
+        shareMimeTypes.put("com.instagram.android",            "video/mp4");
 
-        shareMethods.put("com.google.android.gm",      SHARE_METHOD_EMAIL);
-        shareMethods.put("com.google.android.email",   SHARE_METHOD_EMAIL);
-        shareMethods.put("com.facebook.katana",        SHARE_METHOD_FACEBOOK);
-        shareMethods.put("com.whatsapp",               SHARE_METHOD_WHATS_APP);
-        shareMethods.put("com.twitter.android",        SHARE_METHOD_TWITTER);
-        shareMethods.put("com.google.android.talk",    SHARE_METHOD_MESSAGE);
+        shareMethods.put("com.google.android.gm",           SHARE_METHOD_TEXT_VIDEO);
+        shareMethods.put("com.google.android.email",        SHARE_METHOD_TEXT_VIDEO);
+        shareMethods.put("com.facebook.katana",             SHARE_METHOD_TEXT_VIDEO);
+        shareMethods.put("com.whatsapp",                    SHARE_METHOD_TEXT_VIDEO);
+        shareMethods.put("com.google.android.talk",         SHARE_METHOD_TEXT_VIDEO);
+        shareMethods.put("com.sec.chaton",                  SHARE_METHOD_TEXT_VIDEO);
+        shareMethods.put("com.android.mms",                 SHARE_METHOD_TEXT_VIDEO);
+        shareMethods.put("com.sec.android.app.FileShareClient", SHARE_METHOD_TEXT_VIDEO);
+        shareMethods.put("com.android.bluetooth",           SHARE_METHOD_TEXT_VIDEO);
+        shareMethods.put("com.facebook.orca",               SHARE_METHOD_TEXT_VIDEO);
+        shareMethods.put("com.google.android.apps.plus",    SHARE_METHOD_TEXT_VIDEO);
+        shareMethods.put("com.google.android.talk",         SHARE_METHOD_TEXT_VIDEO);
+//        Only text/plain
+        shareMethods.put("com.twitter.android",             SHARE_METHOD_TEXT);
+        shareMethods.put("com.sec.android.app.memo",        SHARE_METHOD_TEXT);
+        shareMethods.put("com.linkedin.android",            SHARE_METHOD_TEXT);
+//        Only video/mp4
+        shareMethods.put("com.google.android.youtube",       SHARE_METHOD_VIDEO);
+        shareMethods.put("com.google.android.apps.uploader", SHARE_METHOD_VIDEO);
+        shareMethods.put("com.instagram.android",            SHARE_METHOD_VIDEO);
     }
 
-    private List<ResolveInfo> getSupportedActivitiesForSharing() {
+    private List<ResolveInfo> getSupportedActivitiesForSharing(boolean sharingVideosAllowed) {
         // Most important: GMail, Email, Whatsapp, Twitter, Facebook, others...
         PackageManager pm = getPackageManager();
         Intent i;
@@ -1075,6 +1154,22 @@ public class MainActivity extends ActionBarActivity
             Log.v(TAG, String.format("Share using >>>> %s %s", appName, info.activityInfo.packageName));
         }
 
+        if(sharingVideosAllowed) {
+            // VIDEO MP4
+            i = new Intent(Intent.ACTION_SEND);
+            i.setType("video/mp4");
+            final List<ResolveInfo> activitiesSupportingVideo = getPackageManager().queryIntentActivities(i, 0);
+            for (ResolveInfo info : activitiesSupportingVideo) {
+                String appName = info.loadLabel(pm).toString();
+                String packageName = info.activityInfo.packageName;
+                if (!shareMimeTypes.containsKey(packageName)) continue;
+                String mimeType = shareMimeTypes.get(packageName);
+                if (!mimeType.equals("video/mp4")) continue;
+                activities.add(info);
+                Log.v(TAG, String.format("Share using >>>> %s %s", appName, info.activityInfo.packageName));
+            }
+        }
+
         return activities;
     }
 
@@ -1085,7 +1180,7 @@ public class MainActivity extends ActionBarActivity
         final String downloadLink = "https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8";
 
 
-        final List<ResolveInfo> activities = getSupportedActivitiesForSharing();
+        final List<ResolveInfo> activities = getSupportedActivitiesForSharing(story.sharingVideoAllowed == 1);
         List<String> appNames = new ArrayList<String>();
         List<Drawable> appIcons = new ArrayList<Drawable>();
         for (ResolveInfo info : activities) {
@@ -1100,47 +1195,73 @@ public class MainActivity extends ActionBarActivity
         ListAdapter adapter = new ArrayAdapterWithIcons(this, appNames, appIcons);
         new AlertDialog.Builder(this).setTitle("Share your story:")
                 .setAdapter(adapter, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int item ) {
-                        ResolveInfo info = activities.get(item);
-                        String packageName = info.activityInfo.packageName;
-                        String mimeType = shareMimeTypes.get(packageName);
-                        Integer shareMethod = shareMethods.get(packageName);
+                            public void onClick(DialogInterface dialog, int item) {
+                                ResolveInfo info = activities.get(item);
+                                String packageName = info.activityInfo.packageName;
+                                String mimeType = shareMimeTypes.get(packageName);
+                                Integer shareMethod = shareMethods.get(packageName);
+                                HashMap<String, String> videoInfo = new HashMap<String, String>();
+                                videoInfo.put(constants.PACKAGE_NAME, packageName);
+                                videoInfo.put(constants.MIME_TYPE, mimeType);
+                                videoInfo.put(constants.SHARE_METHOD, String.valueOf(shareMethod));
+                                videoInfo.put(constants.VIDEO_URL, sharedRemake.videoURL);
+                                videoInfo.put(constants.EMAIL_CONTENT, "");
+                                videoInfo.put(constants.EMAIL_SUBJECT, story.shareMessage);
+                                videoInfo.put(constants.EMAIL_BODY, "");
+                                videoInfo.put(constants.SHARE_VIDEO, "true");
+                                videoInfo.put(constants.DOWNLOAD_IN_BACKGROUND, "false");
 
-                        final Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType(mimeType);
+                                final Intent i = new Intent(Intent.ACTION_SEND);
+                                i.setType(mimeType);
+                                boolean canShareVideo = false;
+                                boolean canShareText = true;
+                                switch (shareMethod) {
+                                    case SHARE_METHOD_TEXT_VIDEO:
+                                        canShareVideo = true;
+                                        break;
+                                    case SHARE_METHOD_TEXT:
+                                        canShareVideo = false;
+                                        break;
+                                    case SHARE_METHOD_VIDEO:
+                                        canShareVideo = true;
+                                        canShareText = false;
+                                        break;
+                                    default:
+                                        canShareVideo = false;
+                                        break;
+                                }
 
-                        switch(shareMethod) {
-                            case SHARE_METHOD_EMAIL:
-                                i.putExtra(Intent.EXTRA_SUBJECT, story.shareMessage);
-                                i.putExtra(Intent.EXTRA_TEXT,
-                                        String.format(
-                                                "%s \n\n keep calm and get Homage at: \n\n %s" ,
-                                                sharedRemake.shareURL , downloadLink));
-                                break;
-                            default:
-                                i.putExtra(Intent.EXTRA_TEXT,
-                                        String.format(
-                                                "%s: \n %s \n keep calm and get Homage at: \n %s" ,
-                                                story.shareMessage , sharedRemake.shareURL , downloadLink));
+
+                                // Analytics homage
+                                HomageServer.sh().reportRemakeShareForUser(
+                                        sharedRemake.getOID(), sharedRemake.userID, shareMethod);
+
+                                // Analytics mixpanel
+                                HashMap props = new HashMap<String, String>();
+                                props.put("story", story.name);
+                                props.put("remake_id", sharedRemake.getOID());
+                                props.put("share_method", packageName);
+                                HMixPanel.sh().track("MEShareRemake", props);
+
+                                if (story.sharingVideoAllowed == 1 && canShareVideo) {
+                                    videoInfo.put(constants.MIME_TYPE, "video/mp4");
+                                    DownloadVideoAndShare(mainActivity, videoInfo);
+                                } else {
+                                    i.putExtra(Intent.EXTRA_SUBJECT, story.shareMessage);
+                                    i.putExtra(Intent.EXTRA_TEXT,
+                                            String.format(
+                                                    "%s \n\n keep calm and get Homage at: \n\n %s",
+                                                    sharedRemake.shareURL, downloadLink));
+                                    // start the selected activity
+                                    i.setPackage(info.activityInfo.packageName);
+                                    startActivityForResult(i, 555);
+                                }
+                            }
                         }
 
+                ).
 
-                        // Analytics homage
-                        HomageServer.sh().reportRemakeShareForUser(
-                                sharedRemake.getOID(),sharedRemake.userID, shareMethod);
-
-                        // Analytics mixpanel
-                        HashMap props = new HashMap<String,String>();
-                        props.put("story", story.name);
-                        props.put("remake_id", sharedRemake.getOID());
-                        props.put("share_method", packageName);
-                        HMixPanel.sh().track("MEShareRemake",props);
-
-                        // start the selected activity
-                        i.setPackage(info.activityInfo.packageName);
-                        startActivityForResult(i, 555);
-                    }
-                }).show();
+                    show();
 
 
         /*
@@ -1221,16 +1342,39 @@ public class MainActivity extends ActionBarActivity
 imageView.setImageDrawable(icon);
          */
 
+                }
+
+    public static void DownloadVideoAndShare(Context context, HashMap<String, String> videoInfo) {
+        String localFileUrlName = getLocalVideoFile(videoInfo.get(constants.VIDEO_URL));
+        videoInfo.put(constants.LOCAL_FILE_NAME, localFileUrlName);
+        VideoHandler vd = new VideoHandler();
+        File cacheDir = context.getCacheDir();
+        File outFile = new File(cacheDir, videoInfo.get(constants.LOCAL_FILE_NAME));
+        if (!outFile.exists()) {
+            vd.CreateCachedVideo(context, videoInfo);
+        } else {
+            if(Boolean.valueOf(videoInfo.get(constants.SHARE_VIDEO))) {
+                ((MainActivity)context).shareVideoIntent(videoInfo);
+            }
+        }
+    }
+
+    public static String getLocalVideoFile(String url) {
+        String fileName = url.substring(url.lastIndexOf('/') + 1, url.length());
+        fileName = fileName.replace("%20", " ");
+        String fileLocalUrl = fileName;
+        return fileLocalUrl;
     }
     //endregion
 
-    //region *** GCM ***
-    /**
-     * Registers the application with GCM servers asynchronously.
-     * <p>
-     * Stores the registration ID and the app versionCode in the application's
-     * shared preferences.
-     */
+                        //region *** GCM ***
+                        /**
+                         * Registers the application with GCM servers asynchronously.
+                         * <p>
+                         * Stores the registration ID and the app versionCode in the application's
+                         * shared preferences.
+                         */
+
     private void registerInBackground() {
         new AsyncTask<Void, Void, String>() {
             @Override

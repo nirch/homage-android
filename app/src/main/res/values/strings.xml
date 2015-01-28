@@ -12,7 +12,9 @@
     <string name="icon_full_screen">{fa_expand}</string>
     <string name="icon_more">{fa-ellipsis-h}</string>
 
-    <string name="more_remakes">MORE REMAKES</string>
+    <string name="show_more_remakes">SHOW MORE REMAKES</string>
+    <string name="show_demo_video">SHOW DEMO VIDEO</string>
+    <string name="show_remake">REMAKE</string>
 
     <string name="app_name">Homage</string>
     <string name="app_main_title">Homage</string>
@@ -86,6 +88,7 @@
     <!-- Progress dialogues -->
     <string name="pd_title_please_wait">Please wait.</string>
     <string name="pd_msg_creating_movie">Creating movie...</string>
+    <string name="pd_msg_sharing_movie">Preparing first time share of this movie</string>
 
     <string name="pd_title_delete_remake_question">Delete remake.</string>
     <string name="pd_msg_delete_remake_question">Would you like to delete this remake?</string>
