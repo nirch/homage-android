@@ -298,6 +298,10 @@ public class MainActivity extends ActionBarActivity
     protected void onDestroy() {
         HMixPanel mp = HMixPanel.sh();
         if (mp != null) mp.flush();
+        if(pd != null){
+            pd.dismiss();
+            pd = null;
+        }
         super.onDestroy();
     }
 
@@ -1066,11 +1070,17 @@ public class MainActivity extends ActionBarActivity
 
         int count = getSupportFragmentManager().getBackStackEntryCount();
 
-        if (count == 0) {
+        if (currentSection == SECTION_STORIES) {
+            finish();
             super.onBackPressed();
-            //additional code
-        } else {
-            getSupportFragmentManager().popBackStack();
+        }
+        else {
+            if (count == 0) {
+                super.onBackPressed();
+                //additional code
+            } else {
+                getSupportFragmentManager().popBackStack();
+            }
         }
     }
 
