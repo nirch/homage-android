@@ -941,10 +941,9 @@ public class MainActivity extends ActionBarActivity
         Resources res = getResources();
         pd = new ProgressDialog(this);
         pd.setTitle(res.getString(R.string.pd_title_please_wait));
-        pd.setMessage(res.getString(R.string.pd_msg_creating_movie));
+        pd.setMessage(res.getString(R.string.pd_msg_starting_recorder));
         pd.setCancelable(true);
         pd.show();
-        pd.setMessage(res.getString(R.string.pd_msg_starting_recorder));
 
         // Send the request to the server.
         HomageServer.sh().createRemake(
