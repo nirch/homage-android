@@ -154,11 +154,21 @@ public class MyStoriesFragment extends Fragment {
                 aq.id(R.id.storyImage).image(remake.thumbnailURL, true, true, desnityDPI/3, R.drawable.glass_dark);
 
                 if (remake.status == Remake.Status.DONE.getValue()) {
+                    aq.id(R.id.storyImage).visibility(View.VISIBLE);
                     aq.id(R.id.myPlayButton).visibility(View.VISIBLE);
                     aq.id(R.id.myShareButtonContainer).visibility(View.VISIBLE);
-                } else {
+                    aq.id(R.id.loadingRemakeProgress).visibility(View.GONE);
+                } else if(remake.status == Remake.Status.RENDERING.getValue() ||
+                        remake.status == Remake.Status.STARTED_CREATION.getValue()) {
+                    aq.id(R.id.storyImage).visibility(View.VISIBLE);
                     aq.id(R.id.myPlayButton).visibility(View.GONE);
                     aq.id(R.id.myShareButtonContainer).visibility(View.GONE);
+                    aq.id(R.id.loadingRemakeProgress).visibility(View.VISIBLE);
+                }else{
+                    aq.id(R.id.storyImage).visibility(View.VISIBLE);
+                    aq.id(R.id.myPlayButton).visibility(View.GONE);
+                    aq.id(R.id.myShareButtonContainer).visibility(View.GONE);
+                    aq.id(R.id.loadingRemakeProgress).visibility(View.GONE);
                 }
 
                 // Delete
@@ -171,31 +181,43 @@ public class MyStoriesFragment extends Fragment {
                     }
                 });
 
-                // Share
-                aq.id(R.id.myShareButton).clicked(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.d(TAG, String.format("my story, clicked share: %s", remake.getOID()));
-                        User user = User.getCurrent();
-                        if (user.isGuest()) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            AlertDialog alert = builder.setMessage(R.string.share_signed_in_only)
-                                    .setTitle(R.string.join_us_title)
-                                    .setNegativeButton(R.string.ok_got_it, null)
-                                    .setPositiveButton(R.string.join_us_title, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            MainActivity activity = (MainActivity) getActivity();
-                                            activity.showLogin();
-                                        }
-                                    })
-                                    .create();
-                            alert.show();
-                            return;
+                if(remake.status == Remake.Status.DONE.getValue()) {
+                    // Share
+                    aq.id(R.id.myShareButton).clicked(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.d(TAG, String.format("my story, clicked share: %s", remake.getOID()));
+                            User user = User.getCurrent();
+                            if (user.isGuest()) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                AlertDialog alert = builder.setMessage(R.string.share_signed_in_only)
+                                        .setTitle(R.string.join_us_title)
+                                        .setNegativeButton(R.string.ok_got_it, null)
+                                        .setPositiveButton(R.string.join_us_title, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                MainActivity activity = (MainActivity) getActivity();
+                                                activity.showLogin();
+                                            }
+                                        })
+                                        .create();
+                                alert.show();
+                                return;
+                            }
+                            shareRemake(remake);
                         }
-                        shareRemake(remake);
-                    }
-                });
+                    });
+
+                    // Play
+                    aq.id(R.id.myPlayButton).clicked(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.d(TAG, String.format("my story, clicked play: %s", remake.getOID()));
+                            HMixPanel.sh().track("MEPlayRemake", props);
+                            FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, HEvents.H_REMAKE, remake.getOID().toString(), HomageApplication.HM_ME_TAB, true);
+                        }
+                    });
+                }
 
                 // Remake
                 aq.id(R.id.myResetButton).clicked(new View.OnClickListener() {
@@ -206,6 +228,10 @@ public class MyStoriesFragment extends Fragment {
 
                         switch (remake.status) {
                             case 1: // IN PROGRESS
+                                // Open recorder with this remake.
+                                mainActivity.askUserIfWantToContinueRemake(remake);
+                                break;
+                            case 2: // RENDERING
                                 // Open recorder with this remake.
                                 mainActivity.askUserIfWantToContinueRemake(remake);
                                 break;
@@ -225,16 +251,6 @@ public class MyStoriesFragment extends Fragment {
                             default:
                                 Log.e(TAG, String.format("Wrong status for remake in my stories. %s", remake.getOID()));
                         }
-                    }
-                });
-
-                // Play
-                aq.id(R.id.myPlayButton).clicked(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.d(TAG, String.format("my story, clicked play: %s", remake.getOID()));
-                        HMixPanel.sh().track("MEPlayRemake", props);
-                        FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, HEvents.H_REMAKE, remake.getOID().toString(), HomageApplication.HM_ME_TAB, true);
                     }
                 });
 
@@ -300,7 +316,8 @@ public class MyStoriesFragment extends Fragment {
     public void onResume()
     {
         super.onResume();
-//        Make Stories Loading screen disappear... just in case
+//        Make Stories Loading screen disappear...
+//          so when I return to stories section it won't be greyed out
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         Fragment f = fragmentManager.findFragmentByTag(MainActivity.FRAGMENT_TAG_STORIES);
         if (f!=null) {

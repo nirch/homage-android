@@ -155,15 +155,17 @@ public class User extends SugarRecord<User> {
         // Query for ready made remakes
         List<Remake> remakes = Remake.find(
                 Remake.class,            // Entity class
-                "user=? AND (status=? OR status=? OR status=?)",               // where clause
+                "user=? AND (status=? OR status=? OR status=? OR status=? OR status=?)",               // where clause
                 new String[]{
                     getId().toString(),
                     String.valueOf(Remake.Status.IN_PROGRESS.getValue()),
+                    String.valueOf(Remake.Status.RENDERING.getValue()),
                     String.valueOf(Remake.Status.DONE.getValue()),
-                    String.valueOf(Remake.Status.TIMEOUT.getValue())
+                    String.valueOf(Remake.Status.TIMEOUT.getValue()),
+                    String.valueOf(Remake.Status.STARTED_CREATION.getValue())
                 },                                                             // where args
                 "",                                                            // group by
-                "created_at DESC,status DESC",                                 // order by
+                "created_at DESC",                                 // order by
                 "");                                                           // limit
         return remakes;
     }

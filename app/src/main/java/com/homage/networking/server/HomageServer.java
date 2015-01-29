@@ -73,6 +73,9 @@ public class HomageServer extends Server {
     final static public String INTENT_USER_UPDATE_PUSH_TOKEN    = "intent update push token";
     final static public String INTENT_USER_SHARED_VIDEO    = "intent user shared video";
 
+    //    Push notification intent
+    public static final String GOT_PUSH_REMAKE_SUCCESS_INTENT = "got push remake success";
+
     //region *** info keys ***
     final static public String IK_STORY_OID         = "storyOID";
 

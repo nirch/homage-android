@@ -16,4 +16,7 @@ public class constants {
     public static final String SHARE_VIDEO = "shareVideo";
     public static final String DOWNLOAD_IN_BACKGROUND = "downloadInBackground";
     public static final String LOCAL_FILE_NAME = "localFileName";
+
+//    Push Notification data
+    public static final String MORE_INFO = "moreInfo";
 }

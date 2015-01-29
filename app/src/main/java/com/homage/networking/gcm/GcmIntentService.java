@@ -16,7 +16,10 @@
 package com.homage.networking.gcm;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.homage.FileHandler.VideoHandler;
 import com.homage.app.R;
+import com.homage.app.Utils.constants;
+import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.main.SplashScreenActivity;
 import com.homage.networking.server.HomageServer;
@@ -34,6 +37,7 @@ import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -44,8 +48,8 @@ import java.util.List;
  * wake lock.
  */
 public class GcmIntentService extends IntentService {
-    static final int PushMessageTypeMovieReady = 0;
-    static final int PushMessageTypeMovieFailed = 1;
+    public static final int PushMessageTypeMovieReady = 0;
+    public static final int PushMessageTypeMovieFailed = 1;
     static final int PushMessageTypeNewStory = 2;
     static final int PushMessageTypeGeneralMessage = 3;
 
@@ -123,6 +127,7 @@ public class GcmIntentService extends IntentService {
 
 
         Intent intent = null;
+        Intent mainIntent = null;
 
         /*
             Example:
@@ -139,13 +144,22 @@ public class GcmIntentService extends IntentService {
         Bundle moreInfo = new Bundle();
 
         if (pushType == PushMessageTypeMovieReady || pushType == PushMessageTypeMovieFailed) {
+
             String storyId = extras.getString("story_id", null);
             String remakeId = extras.getString("remake_id", null);
             intent = new Intent(context, SplashScreenActivity.class);
+            mainIntent = new Intent(
+                    HomageServer.GOT_PUSH_REMAKE_SUCCESS_INTENT,
+                    null,
+                    context,
+                    MainActivity.class);
 
-
+            moreInfo.putString("push_message_type", String.valueOf(pushType));
             moreInfo.putString("story_id", storyId);
             moreInfo.putString("remake_id", remakeId);
+            moreInfo.putString("title", context.getResources().getString(R.string.title_got_push_message));
+            moreInfo.putString("text", context.getResources().getString(R.string.title_got_push_message_msg));
+
             moreInfo.putString(MainActivity.SK_START_MAIN_WITH, "MyStories");
 
             // Update the remake info.
@@ -154,6 +168,14 @@ public class GcmIntentService extends IntentService {
             }
 
             intent.putExtras(moreInfo);
+
+            // Send an intent to be caught by main activity and refresh the ME Screen
+            // This intent will pass along the status of the remake and the info about it.
+            mainIntent.putExtra(constants.MORE_INFO, moreInfo);
+            if(((HomageApplication)context).getCurrentActivity() != null){
+                ((HomageApplication)context).getCurrentActivity().startActivity(mainIntent);
+            }
+
 
         } else if (pushType == PushMessageTypeNewStory) {
             intent = new Intent(context, SplashScreenActivity.class);
@@ -167,7 +189,7 @@ public class GcmIntentService extends IntentService {
             PendingIntent contentIntent = PendingIntent.getActivity(
                     context,
                     0,
-                    intent,
+                    mainIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT
             );
             mBuilder.setContentIntent(contentIntent);
@@ -176,7 +198,10 @@ public class GcmIntentService extends IntentService {
 
         // Show the notification
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+
     }
+
+
 
 //    private Intent createIntentForTheMessage(int pushType, Bundle extras) {
 //

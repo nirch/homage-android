@@ -32,6 +32,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -48,7 +49,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ListAdapter;
-import android.widget.RelativeLayout;
 
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
@@ -146,7 +146,7 @@ public class MainActivity extends ActionBarActivity
     public Story currentStory;
 
     public ProgressDialog pd;
-    MovieProgressFragment movieProgressFragment;
+//    MovieProgressFragment movieProgressFragment;
 
     // GCM
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -194,8 +194,8 @@ public class MainActivity extends ActionBarActivity
         actionAQ = new AQuery(getActionBar().getCustomView());
 
         // Movie creation progress bar fragment
-        movieProgressFragment = (MovieProgressFragment)getSupportFragmentManager()
-                .findFragmentById(R.id.movieProgressBar);
+//        movieProgressFragment = (MovieProgressFragment)getSupportFragmentManager()
+//                .findFragmentById(R.id.movieProgressBar);
 
 
         // Refresh stories
@@ -249,9 +249,17 @@ public class MainActivity extends ActionBarActivity
         UploadManager.sh().checkUploader();
     }
 
+    private void clearReferences(){
+        Activity currActivity = ((HomageApplication)context).getCurrentActivity();
+        if (currActivity != null && currActivity.equals(this))
+            ((HomageApplication)context).setCurrentActivity(null);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        ((HomageApplication)context).setCurrentActivity(mainActivity);
+
         sillyOnResumeHackDetectingFinishedRemake();
         navigateToSectionIfRequested();
         initObservers();
@@ -277,7 +285,9 @@ public class MainActivity extends ActionBarActivity
                 return;
             }
             Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
-            movieProgressFragment.showProgressForRemake(renderedRemake);
+            showNotificationDialog(getResources().getString(R.string.title_sent_movie_for_render),
+                    getResources().getString(R.string.title_sent_movie_for_render_msg));
+//            movieProgressFragment.showProgressForRemake(renderedRemake);
             mOnResumeChangeToSection = SECTION_STORIES;
 
             RecorderActivity.hackDismissReason = -1;
@@ -291,6 +301,7 @@ public class MainActivity extends ActionBarActivity
         removeObservers();
         HMixPanel mp = HMixPanel.sh();
         if (mp != null) mp.flush();
+        clearReferences();
     }
 
     @Override
@@ -307,6 +318,7 @@ public class MainActivity extends ActionBarActivity
             pd.dismiss();
             pd = null;
         }
+        clearReferences();
         super.onDestroy();
     }
 
@@ -345,7 +357,9 @@ public class MainActivity extends ActionBarActivity
                 }
                 Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
 
-                movieProgressFragment.showProgressForRemake(renderedRemake);
+                showNotificationDialog(getResources().getString(R.string.title_sent_movie_for_render),
+                        getResources().getString(R.string.title_sent_movie_for_render_msg));
+//                movieProgressFragment.showProgressForRemake(renderedRemake);
                 mOnResumeChangeToSection = SECTION_STORIES;
 
                 HashMap props = new HashMap<String,String>();
@@ -495,6 +509,7 @@ public class MainActivity extends ActionBarActivity
         lbm.registerReceiver(onRemakesForUserUpdated, new IntentFilter(HomageServer.INTENT_USER_REMAKES));
         lbm.registerReceiver(onRemakeDeletion, new IntentFilter((HomageServer.INTENT_REMAKE_DELETION)));
         lbm.registerReceiver(onShareVideo, new IntentFilter((HomageServer.INTENT_USER_SHARED_VIDEO)));
+        lbm.registerReceiver(onGetPushMessage, new IntentFilter((HomageServer.GOT_PUSH_REMAKE_SUCCESS_INTENT)));
     }
 
     private void removeObservers() {
@@ -536,6 +551,81 @@ public class MainActivity extends ActionBarActivity
             }
         }
     };
+
+// region Push notification from remake made
+
+    public static class OpenMessageDialog extends DialogFragment {
+        String TAG = "TAG_GOTPushMessagingClass";
+
+        View rootView;
+        AQuery aq;
+        Remake remake;
+        Story story;
+        String title;
+        String text;
+
+        public static OpenMessageDialog newInstance(String title, String text) {
+            return OpenMessageDialog.newInstance(title, text);
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+
+            aq = new AQuery(getActivity());
+
+            View dRootView = inflater.inflate(R.layout.dialog_fragment_got_push_message, container, false);
+            aq = new AQuery(dRootView);
+            aq.id(R.id.bigImpactTitle).getTextView().setText(title);
+
+            return dRootView;
+        }
+
+    }
+
+    void showNotificationDialog(String title, String text) {
+        // Create the fragment and show it as a dialog.
+        DialogFragment newFragment = OpenMessageDialog.newInstance(title, text);
+        newFragment.show(getSupportFragmentManager(), "dialog");
+    };
+
+    private BroadcastReceiver onGetPushMessage = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Got push notification now do something with it
+
+            Crashlytics.log("onGetPushMessage");
+            if (pd != null){
+                pd.dismiss();
+            }
+
+            HashMap<String, String> moreInfo = (HashMap<String, String>)intent. getSerializableExtra(constants.MORE_INFO);
+
+            assert(moreInfo != null);
+
+            // Get data from more info
+            int pushType = Integer.valueOf(moreInfo.get("push_message_type"));
+            String story_id = moreInfo.get("story_id");
+            String remake_id = moreInfo.get("remake_id");
+            Story story = Story.findByOID(story_id);
+            Remake remake = Remake.findByOID(remake_id);
+            String title = moreInfo.get("title");
+            String text = moreInfo.get("text");
+
+            showNotificationDialog(title, text);
+
+            // Download the movie so that the user can enjoy quick sharing.
+            downloadUserRemakeInBackground(story, remake);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+            if (f!=null) {
+                refetchRemakesForCurrentUser();
+                ((MyStoriesFragment) f).refresh();
+            }
+        }
+    };
+
+//    endregion
 
     private BroadcastReceiver onShareVideo = new BroadcastReceiver() {
         @Override
@@ -941,10 +1031,9 @@ public class MainActivity extends ActionBarActivity
         Resources res = getResources();
         pd = new ProgressDialog(this);
         pd.setTitle(res.getString(R.string.pd_title_please_wait));
-        pd.setMessage(res.getString(R.string.pd_msg_creating_movie));
+        pd.setMessage(res.getString(R.string.pd_msg_starting_recorder));
         pd.setCancelable(true);
         pd.show();
-        pd.setMessage(res.getString(R.string.pd_msg_starting_recorder));
 
         // Send the request to the server.
         HomageServer.sh().createRemake(
@@ -1372,6 +1461,27 @@ imageView.setImageDrawable(icon);
          */
 
                 }
+//endregion
+
+//    region Download and Share
+
+    public void downloadUserRemakeInBackground(Story story, Remake remake) {
+        if(story.sharingVideoAllowed == 1) {
+            VideoHandler vh = new VideoHandler();
+            HashMap<String, String> videoInfo = new HashMap<String, String>();
+
+            videoInfo.put(constants.PACKAGE_NAME, "");
+            videoInfo.put(constants.MIME_TYPE, "video/mp4");
+            videoInfo.put(constants.SHARE_METHOD, "");
+            videoInfo.put(constants.VIDEO_URL, remake.videoURL);
+            videoInfo.put(constants.EMAIL_CONTENT, "");
+            videoInfo.put(constants.EMAIL_SUBJECT, "");
+            videoInfo.put(constants.EMAIL_BODY, "");
+            videoInfo.put(constants.SHARE_VIDEO, "false");
+            videoInfo.put(constants.DOWNLOAD_IN_BACKGROUND, "true");
+            MainActivity.DownloadVideoAndShare(mainActivity, videoInfo);
+        }
+    }
 
     public static void DownloadVideoAndShare(Context context, HashMap<String, String> videoInfo) {
         String localFileUrlName = getLocalVideoFile(videoInfo.get(constants.VIDEO_URL));

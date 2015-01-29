@@ -81,6 +81,8 @@ public class HomageApplication extends SugarApp {
     private UploadManager uploadManager;
     private String startingNavigationOn;
 
+    private Activity mCurrentActivity = null;
+
     static public final String GCM_SENDER_ID = "414832899241";
 
     public HomageApplication() {
@@ -158,6 +160,15 @@ public class HomageApplication extends SugarApp {
             }
         }
     };
+
+
+    public Activity getCurrentActivity(){
+        return mCurrentActivity;
+    }
+
+    public void setCurrentActivity(Activity mCurrentActivity){
+        this.mCurrentActivity = mCurrentActivity;
+    }
 
     protected void initSingletons() {
         // Homage Server

@@ -144,9 +144,9 @@ public class MovieProgressFragment extends Fragment {
         followingRemakeOID = remake.getOID();
 
         // Show the progress bar
-        rootView.setVisibility(View.VISIBLE);
-        aq.id(R.id.movieProgressDismissButton).visibility(View.VISIBLE);
-        aq.id(R.id.movieProgress).visibility(View.VISIBLE);
+        rootView.setVisibility(View.GONE);
+        aq.id(R.id.movieProgressDismissButton).visibility(View.GONE);
+        aq.id(R.id.movieProgress).visibility(View.GONE);
         Resources res = getResources();
         String f = res.getString(R.string.rendering_progress_preparing);
         preparingText = String.format(f, story.name);
@@ -177,28 +177,14 @@ public class MovieProgressFragment extends Fragment {
         if (remake.status == Remake.Status.DONE.getValue()) {
 
             finishedRemakeSuccess();
-            if(story.sharingVideoAllowed == 1) {
-                VideoHandler vh = new VideoHandler();
-                HashMap<String, String> videoInfo = new HashMap<String, String>();
-
-                videoInfo.put(constants.PACKAGE_NAME, "");
-                videoInfo.put(constants.MIME_TYPE, "video/mp4");
-                videoInfo.put(constants.SHARE_METHOD, "");
-                videoInfo.put(constants.VIDEO_URL, remake.videoURL);
-                videoInfo.put(constants.EMAIL_CONTENT, "");
-                videoInfo.put(constants.EMAIL_SUBJECT, "");
-                videoInfo.put(constants.EMAIL_BODY, "");
-                videoInfo.put(constants.SHARE_VIDEO, "false");
-                videoInfo.put(constants.DOWNLOAD_IN_BACKGROUND, "true");
-                MainActivity.DownloadVideoAndShare(getActivity(), videoInfo);
-            }
 
         } else if (
                 remake.status == Remake.Status.IN_PROGRESS.getValue() ||
-                remake.status == Remake.Status.RENDERING.getValue()) {
+                remake.status == Remake.Status.RENDERING.getValue() ||
+                remake.status == Remake.Status.STARTED_CREATION.getValue()) {
 
             // Still preparing the movie.
-            aq.id(R.id.movieProgressTouchButton).text(preparingText);
+//            aq.id(R.id.movieProgressTouchButton).text(preparingText);
 
         } else if (remake.status == Remake.Status.DELETED.getValue()) {
 
@@ -209,7 +195,7 @@ public class MovieProgressFragment extends Fragment {
             failedRemake();
         }
         else{
-            aq.id(R.id.movieProgressTouchButton).text(preparingText);
+//            aq.id(R.id.movieProgressTouchButton).text(preparingText);
         }
     }
 
@@ -220,7 +206,8 @@ public class MovieProgressFragment extends Fragment {
 
     private void finishedRemakeSuccess() {
         stopFollowing();
-        aq.id(R.id.movieProgressTouchButton).text(R.string.rendering_progress_ready);
+        aq.id(R.id.movieProgress).visibility(View.GONE);
+//        aq.id(R.id.movieProgressTouchButton).text(R.string.rendering_progress_ready);
     }
 
     private void stopAndHide() {
@@ -232,7 +219,7 @@ public class MovieProgressFragment extends Fragment {
 
     private void failedRemake() {
         stopFollowing();
-        aq.id(R.id.movieProgressTouchButton).text(R.string.rendering_progress_failed);
+//        aq.id(R.id.movieProgressTouchButton).text(R.string.rendering_progress_failed);
         aq.id(R.id.movieProgressDismissButton).visibility(View.GONE);
     }
 
