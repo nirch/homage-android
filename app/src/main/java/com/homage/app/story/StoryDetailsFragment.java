@@ -538,6 +538,10 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     @Override
     public void onResume() {
         super.onResume();
+
+        MainActivity mainActivity = (MainActivity)getActivity();
+        mainActivity.currentSection = MainActivity.SECTION_STORY_DETAILS;
+
         ActionBar action = getActivity().getActionBar();
         if (action != null) action.hide();
         aq.id(R.id.greyscreen).visibility(View.GONE);

@@ -194,6 +194,10 @@ public class StoriesListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        MainActivity mainActivity = (MainActivity)getActivity();
+        mainActivity.currentSection = MainActivity.SECTION_STORIES;
+
         ActionBar action = getActivity().getActionBar();
         if (action != null) {
             action.setTitle(R.string.nav_item_1_stories);

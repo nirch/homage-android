@@ -300,6 +300,10 @@ public class MyStoriesFragment extends Fragment {
     public void onResume()
     {
         super.onResume();
+
+        MainActivity mainActivity = (MainActivity)getActivity();
+        mainActivity.currentSection = MainActivity.SECTION_ME;
+
 //        Make Stories Loading screen disappear... just in case
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         Fragment f = fragmentManager.findFragmentByTag(MainActivity.FRAGMENT_TAG_STORIES);

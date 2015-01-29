@@ -142,7 +142,7 @@ public class MainActivity extends ActionBarActivity
 //    If that is the case then when back pressed the app should exit
     boolean leaveapp = false;
 
-    private int currentSection;
+    public int currentSection;
     public Story currentStory;
 
     public ProgressDialog pd;
@@ -780,14 +780,14 @@ public class MainActivity extends ActionBarActivity
 
     public void showStoryDetails(Story story) {
 
-        currentSection = SECTION_STORY_DETAILS;
+        int thiscurrentSection = SECTION_STORY_DETAILS;
         currentStory = story;
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fTransaction = fragmentManager.beginTransaction();
         storyDetailsFragment = (StoryDetailsFragment)fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORY_DETAILS);
 
-        fTransaction.replace(R.id.container, storyDetailsFragment = StoryDetailsFragment.newInstance(currentSection, currentStory),FRAGMENT_TAG_STORY_DETAILS);
+        fTransaction.replace(R.id.container, storyDetailsFragment = StoryDetailsFragment.newInstance(thiscurrentSection, currentStory),FRAGMENT_TAG_STORY_DETAILS);
         fTransaction.setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out,R.anim.animation_slide_in, R.anim.animation_slide_out);
         fTransaction.addToBackStack(null);
         fTransaction.commitAllowingStateLoss();
@@ -800,7 +800,7 @@ public class MainActivity extends ActionBarActivity
             // Show actionbar
             showActionBar();
 
-            currentSection = SECTION_STORIES;
+            int thiscurrentSection = SECTION_STORIES;
             currentStory = null;
 
             FragmentManager fragmentManager = getSupportFragmentManager();
@@ -809,7 +809,7 @@ public class MainActivity extends ActionBarActivity
 
             // If fragment doesn't exist yet, create one
             if (fragment == null) {
-                fTransaction.add(R.id.container, StoriesListFragment.newInstance(currentSection), FRAGMENT_TAG_STORIES);
+                fTransaction.add(R.id.container, StoriesListFragment.newInstance(thiscurrentSection), FRAGMENT_TAG_STORIES);
                 fTransaction.addToBackStack(null);
                 fTransaction.commitAllowingStateLoss();
             } else { // re-use the old fragment
@@ -830,7 +830,7 @@ public class MainActivity extends ActionBarActivity
         User user = User.getCurrent();
         if (user==null) return;
 
-        currentSection = SECTION_ME;
+        int thiscurrentSection = SECTION_ME;
         currentStory = null;
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -839,7 +839,7 @@ public class MainActivity extends ActionBarActivity
 
         // If fragment doesn't exist yet, create one
         if (fragment == null) {
-            fTransaction.add(R.id.container, MyStoriesFragment.newInstance(currentSection, user), FRAGMENT_TAG_ME);
+            fTransaction.add(R.id.container, MyStoriesFragment.newInstance(thiscurrentSection, user), FRAGMENT_TAG_ME);
             fTransaction.setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout,R.anim.animation_fadein, R.anim.animation_fadeout);
             fTransaction.addToBackStack(null);
             fTransaction.commitAllowingStateLoss();
