@@ -271,6 +271,11 @@ public class MyStoriesFragment extends Fragment {
         // Don't allow orientation change.
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        //
+        aq.id(R.id.remakeAStoryButton).clicked(onClickedRemakeStories);
+
+
+
         return rootView;
     }
 
@@ -324,6 +329,7 @@ public class MyStoriesFragment extends Fragment {
         public void onClick(View view) {
             MainActivity mainActivity = (MainActivity)getActivity();
             mainActivity.showStories();
+            mainActivity.setActionBarTitle(mainActivity.getResources().getString(R.string.nav_item_1_stories));
         }
     };
     //endregion
