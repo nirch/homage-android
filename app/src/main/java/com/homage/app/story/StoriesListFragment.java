@@ -174,6 +174,7 @@ public class StoriesListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_stories, container, false);
         initialize();
@@ -187,24 +188,15 @@ public class StoriesListFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((MainActivity) activity).onSectionAttached(
-                getArguments().getInt(ARG_SECTION_NUMBER));
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        MainActivity mainActivity = (MainActivity)getActivity();
-        mainActivity.currentSection = MainActivity.SECTION_STORIES;
-
-        ActionBar action = getActivity().getActionBar();
-        if (action != null) {
-            action.setTitle(R.string.nav_item_1_stories);
-            ((MainActivity)getActivity()).onSectionAttached(MainActivity.SECTION_STORIES);
-            action.show();
-        }
-
+        // Set title bar
+        ((MainActivity)getActivity()).setActionBarTitle(((MainActivity)getActivity()).getResources()
+                .getString(R.string.nav_item_1_stories));
 
         if (storiesListView.getAdapter() == null) {
             storiesListView.setAdapter(adapter);

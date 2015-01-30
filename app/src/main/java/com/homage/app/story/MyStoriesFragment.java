@@ -1,42 +1,28 @@
 package com.homage.app.story;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.text.Html;
-import android.text.Spanned;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
-import com.homage.app.player.VideoPlayerFragment;
 import com.homage.app.recorder.RecorderActivity;
 import com.homage.model.Remake;
 import com.homage.model.Story;
@@ -45,7 +31,6 @@ import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.uploader.UploadManager;
 import com.homage.networking.analytics.HEvents;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -265,6 +250,10 @@ public class MyStoriesFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
+        // Set title bar
+        ((MainActivity) getActivity())
+                .setActionBarTitle(getActivity().getResources().getString(R.string.nav_item_2_me));
+
         // Pixel density
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         desnityDPI = metrics.densityDpi;
@@ -282,17 +271,12 @@ public class MyStoriesFragment extends Fragment {
         // Don't allow orientation change.
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        //
-        aq.id(R.id.remakeAStoryButton).clicked(onClickedRemakeStories);
-
         return rootView;
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((MainActivity) activity).onSectionAttached(
-                getArguments().getInt(ARG_SECTION_NUMBER));
         UploadManager.sh().checkUploader();
     }
 
@@ -300,22 +284,14 @@ public class MyStoriesFragment extends Fragment {
     public void onResume()
     {
         super.onResume();
-
-        MainActivity mainActivity = (MainActivity)getActivity();
-        mainActivity.currentSection = MainActivity.SECTION_ME;
+        ((MainActivity)getActivity()).setActionBarTitle(((MainActivity)getActivity()).getResources()
+                .getString(R.string.nav_item_2_me));
 
 //        Make Stories Loading screen disappear... just in case
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         Fragment f = fragmentManager.findFragmentByTag(MainActivity.FRAGMENT_TAG_STORIES);
         if (f!=null) {
             ((StoriesListFragment)f).StopLoadingScreen();
-        }
-
-        ActionBar action = getActivity().getActionBar();
-        if (action != null) {
-            action.setTitle(R.string.nav_item_2_me);
-            ((MainActivity)getActivity()).onSectionAttached(MainActivity.SECTION_ME);
-            action.show();
         }
 
         HMixPanel.sh().track("MEEnterTab",null);

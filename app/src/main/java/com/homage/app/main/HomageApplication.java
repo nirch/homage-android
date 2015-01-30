@@ -86,7 +86,6 @@ public class HomageApplication extends SugarApp {
     public HomageApplication() {
         super();
         instance = this;
-        uploadManager = UploadManager.sh();
     }
 
     public static HomageApplication getInstance() {
@@ -165,6 +164,9 @@ public class HomageApplication extends SugarApp {
 
         // Mixpanel
         HMixPanel.sh().init(this);
+
+        // Upload manager
+        uploadManager = UploadManager.sh();
     }
 
     protected void initSettings() {

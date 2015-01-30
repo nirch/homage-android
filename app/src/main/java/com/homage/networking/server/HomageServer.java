@@ -90,6 +90,8 @@ public class HomageServer extends Server {
 
     //region *** more settings ***
     public boolean prefetchTopRemakes = false;
+    public String bucketName;
+    public String mMixpanelToken;
     public int topRemakesCount = 10;
     private boolean serverAnalyticsOnDebug;
     private boolean mpAnalyticsOnDebug;
@@ -152,6 +154,8 @@ public class HomageServer extends Server {
         serverAnalyticsOnDebug = res.getBoolean(R.bool.homage_server_analytics_on_debug);
         mpAnalyticsOnDebug = res.getBoolean(R.bool.mp_analytics_on_debug);
         isProductionServer = res.getBoolean(R.bool.is_production_server);
+        bucketName = res.getString(R.string.bucket_name);
+        mMixpanelToken = res.getString(R.string.mixpanel_token);
         topRemakesCount = res.getInteger(R.integer.top_remakes_count);
         isDebug = BuildConfig.DEBUG;
     }

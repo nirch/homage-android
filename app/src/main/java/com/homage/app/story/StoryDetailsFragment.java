@@ -513,8 +513,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((MainActivity) activity).onSectionAttached(
-                getArguments().getInt(ARG_SECTION_NUMBER));
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -538,13 +536,9 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     @Override
     public void onResume() {
         super.onResume();
-
-        MainActivity mainActivity = (MainActivity)getActivity();
-        mainActivity.currentSection = MainActivity.SECTION_STORY_DETAILS;
-
-        ActionBar action = getActivity().getActionBar();
-        if (action != null) action.hide();
-        aq.id(R.id.greyscreen).visibility(View.GONE);
+        // Set title bar
+        ((MainActivity) getActivity())
+                .setActionBarTitle(story.name);
     }
 
     @Override
@@ -634,7 +628,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         int height = size.y;
         container.getLayoutParams().width = width;
         container.getLayoutParams().height = height;
-        if (videoPlayerFragment != null && videoPlayerFragment.getView().getLayoutParams() != null) {
+        if (videoPlayerFragment != null && videoPlayerFragment.getView() != null && videoPlayerFragment.getView().getLayoutParams() != null) {
             videoPlayerFragment.getView().getLayoutParams().width = width;
             videoPlayerFragment.getView().getLayoutParams().height = height;
         }
