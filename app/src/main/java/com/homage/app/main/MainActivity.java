@@ -1080,8 +1080,21 @@ public class MainActivity extends ActionBarActivity
         int count = getSupportFragmentManager().getBackStackEntryCount();
 
         if (currentSection == SECTION_STORIES) {
-            finish();
             leaveapp = true;
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fTransaction = fragmentManager.beginTransaction();
+            Fragment myStoriesFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_MY_STORIES);
+            Fragment meFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+
+            // If myStoriesFragment is alive kill it before exiting the app
+            if (myStoriesFragment != null) {
+                getSupportFragmentManager().beginTransaction().remove(myStoriesFragment).commit();
+            }
+            // If meFragment is alive kill it before exiting the app
+            if (meFragment != null) {
+                getSupportFragmentManager().beginTransaction().remove(meFragment).commit();
+            }
+            finish();
         }
         else if(currentSection == SECTION_ME){
             currentSection = SECTION_STORIES;
@@ -1206,7 +1219,8 @@ public class MainActivity extends ActionBarActivity
         PackageManager pm = getPackageManager();
 
         final Story story = sharedRemake.getStory();
-        final String downloadLink = "https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8";
+        final String iosDownloadLink = "http://bit.ly/18CsEjt"; // https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8
+        final String androidDownloadLink = "http://bit.ly/1BACxVP"; // https://play.google.com/store/apps/details?id=com.homage.app
 
 
         final List<ResolveInfo> activities = getSupportedActivitiesForSharing(story.sharingVideoAllowed == 1);
@@ -1279,8 +1293,10 @@ public class MainActivity extends ActionBarActivity
                                     i.putExtra(Intent.EXTRA_SUBJECT, story.shareMessage);
                                     i.putExtra(Intent.EXTRA_TEXT,
                                             String.format(
-                                                    "%s \n\n keep calm and get Homage at: \n\n %s",
-                                                    sharedRemake.shareURL, downloadLink));
+                                                    "%s \n\n keep calm and get Homage at: " +
+                                                            "\n\n Android: %s " +
+                                                            "\n\n Apple: %s",
+                                                    sharedRemake.shareURL, androidDownloadLink, iosDownloadLink));
                                     // start the selected activity
                                     i.setPackage(info.activityInfo.packageName);
                                     startActivityForResult(i, 555);

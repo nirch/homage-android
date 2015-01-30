@@ -770,21 +770,41 @@ public class RemakeVideoFragmentActivity extends
     };
 
     private void startShareIntent() {
+
+        final String iosDownloadLink = "http://bit.ly/18CsEjt"; // https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8
+        final String androidDownloadLink = "http://bit.ly/1BACxVP"; // https://play.google.com/store/apps/details?id=com.homage.app
+
+
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
+
+        String subject = "";
+        String text = "";
+
+        // User and story found
         if (userFullname != null && story != null) {
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Remake of " + story.name);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out " + userFullname + "'s Remake of " + story.name + "\n" +
-                    "http://play.homage.it/" + remake.getOID());
+            subject ="Remake of " + story.name;
+            text = "Check out " + userFullname + "'s Remake of " + story.name + "\n" +
+                    "http://play.homage.it/" + remake.getOID();
+            // no user but story found
         } else if (userFullname == null && story != null) {
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Remake of " + story.name);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out this Remake of " + story.name + "\n" +
-                    "http://play.homage.it/" + remake.getOID());
+            subject = "Remake of " + story.name;
+            text = "Check out this Remake of " + story.name + "\n" +
+                    "http://play.homage.it/" + remake.getOID();
+            // no user and no story
         } else {
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Remake from Homage");
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out this Remake\n" +
-                    "http://play.homage.it/" + remake.getOID());
+            subject = "Remake from Homage";
+            text = "Check out this Remake\n" +
+                    "http://play.homage.it/" + remake.getOID();
         }
+//        Add links to playstore and apple store
+        text = text + "\n\n" +
+                "Get Homage at:\n\n" +
+                "Android:" + androidDownloadLink + "\n\n" +
+                "Apple:" + iosDownloadLink;
+
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
     }
