@@ -12,7 +12,7 @@
     <string name="icon_full_screen">{fa_expand}</string>
     <string name="icon_more">{fa-ellipsis-h}</string>
 
-    <string name="show_more_remakes">SHOW MORE REMAKES</string>
+    <string name="show_more_remakes">HIDE DEMO VIDEO</string>
     <string name="show_demo_video">SHOW DEMO VIDEO</string>
     <string name="show_remake">REMAKE</string>
 

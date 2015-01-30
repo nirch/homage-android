@@ -252,7 +252,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     private void initialize() {
 
         aq = new AQuery(rootView);
-        aq.id(R.id.storyName).text(story.name);
         aq.id(R.id.storyDescription).text(story.description);
 
         // Aspect Ratio
@@ -342,6 +341,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 
         loadVideoPlayer();
 
+
         // Allow orientation change.
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
@@ -365,6 +365,16 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
                            }
             );
         }
+
+        ((GridView)aq.id(R.id.remakesGridView).getView()).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(videoIsDisplayed){
+                    flingUI();
+                }
+                return false;
+            }
+        });
 
         return rootView;
     }
@@ -539,6 +549,8 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         // Set title bar
         ((MainActivity) getActivity())
                 .setActionBarTitle(story.name);
+
+        aq.id(R.id.greyscreen).visibility(View.GONE);
     }
 
     @Override
