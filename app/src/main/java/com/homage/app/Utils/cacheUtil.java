@@ -33,21 +33,27 @@ public class cacheUtil {
 
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
 
-        // Add the attachment by specifying a reference to our custom ContentProvider
-        // and the specific file of interest
-//        File shareFile = new File(context.getCacheDir() + File.separator + fileName);
-        // This line makes the magic!
-//        shareFile.setReadable(true, false);
+        Uri uri = null;
+        if(spackage.equals("com.google.android.youtube")) {
+            ContentValues content = new ContentValues(4);
+            content.put(MediaStore.Video.VideoColumns.DATE_ADDED,
+                    System.currentTimeMillis() / 1000);
+            content.put(MediaStore.Video.Media.MIME_TYPE, type);
+            content.put(MediaStore.Video.Media.DATA, context.getCacheDir() + File.separator + fileName);
+            ContentResolver resolver = context.getContentResolver();
+            uri = resolver.insert(MediaStore.Video.Media.INTERNAL_CONTENT_URI, content);
+        }
+        else{
+            // Add the attachment by specifying a reference to our custom ContentProvider
+            // and the specific file of interest
+            File shareFile = new File(context.getCacheDir() + File.separator + fileName);
+            // This line makes the magic!
+            shareFile.setReadable(true, false);
+            uri = Uri.fromFile(shareFile);
+        }
 
-        ContentValues content = new ContentValues(4);
-        content.put(MediaStore.Video.VideoColumns.DATE_ADDED,
-                System.currentTimeMillis() / 1000);
-        content.put(MediaStore.Video.Media.MIME_TYPE, type);
-        content.put(MediaStore.Video.Media.DATA, context.getCacheDir() + File.separator + fileName);
-        ContentResolver resolver = context.getContentResolver();
-        Uri uri = resolver.insert(MediaStore.Video.Media.INTERNAL_CONTENT_URI, content);
+        emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
 
-        emailIntent.putExtra(Intent.EXTRA_STREAM, uri);//Uri.fromFile(shareFile)
 
         return emailIntent;
     }

@@ -142,7 +142,7 @@ public class MainActivity extends ActionBarActivity
 //    If that is the case then when back pressed the app should exit
     boolean leaveapp = false;
 
-    private int currentSection;
+    public int currentSection;
     public Story currentStory;
 
     public ProgressDialog pd;
@@ -386,11 +386,13 @@ public class MainActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(final int position) {
         mPositionClicked = position;
         mNavigationItemClicked = true;
-        onSectionAttached(position);
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
-        if (f!=null && currentSection == SECTION_STORIES) {
+        if (f!=null && currentSection == SECTION_STORIES && position == SECTION_ME) {
             ((StoriesListFragment) f).StartLoadingScreen();
+        }
+        else if(position == SECTION_STORIES){
+            setActionBarTitle(mainActivity.getResources().getString(R.string.nav_item_1_stories));
         }
     }
 
@@ -440,8 +442,8 @@ public class MainActivity extends ActionBarActivity
             case SECTION_STORIES:
                 Crashlytics.log("handleDrawerSectionSelection --> Stories");
                 if(currentSection != position) {
-                    currentSection = position;
                     showStories();
+                    currentSection = SECTION_STORIES;
                 }
                 break;
 
@@ -449,8 +451,8 @@ public class MainActivity extends ActionBarActivity
                 Crashlytics.log("handleDrawerSectionSelection --> My Stories");
 
                 if(currentSection != position) {
-                    currentSection = position;
                     showMyStories();
+                    currentSection = SECTION_ME;
                 }
                 break;
 
@@ -470,7 +472,6 @@ public class MainActivity extends ActionBarActivity
                 Crashlytics.log("handleDrawerSectionSelection --> Unimplemented!");
 
                 // Not implemented yet. Just put a place holder fragment for now.
-                currentSection = position;
                 fragmentManager.beginTransaction()
                         .setCustomAnimations(R.anim.animation_fadein_with_zoom, R.anim.animation_fadeout_with_zoom)
                         .replace(R.id.container, PlaceholderFragment.newInstance(position))
@@ -728,26 +729,26 @@ public class MainActivity extends ActionBarActivity
     };
     //endregion
 
-    //region *** Options ***
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case SECTION_STORIES:
-                mTitle = getString(R.string.nav_item_1_stories);
-                break;
-            case SECTION_ME:
-                mTitle = getString(R.string.nav_item_2_me);
-                break;
-            case SECTION_SETTINGS:
-                mTitle = getString(R.string.nav_item_3_settings);
-                break;
-            case SECTION_HOWTO:
-                mTitle = getString(R.string.nav_item_4_howto);
-                break;
-        }
-        if(aq != null) {
-            aq.id(R.id.appTitle).getTextView().setText(mTitle);
-        }
-    }
+//    //region *** Options ***
+//    public void onSectionAttached(int number) {
+//        switch (number) {
+//            case SECTION_STORIES:
+//                mTitle = getString(R.string.nav_item_1_stories);
+//                break;
+//            case SECTION_ME:
+//                mTitle = getString(R.string.nav_item_2_me);
+//                break;
+//            case SECTION_SETTINGS:
+//                mTitle = getString(R.string.nav_item_3_settings);
+//                break;
+//            case SECTION_HOWTO:
+//                mTitle = getString(R.string.nav_item_4_howto);
+//                break;
+//        }
+//        if(aq != null) {
+//            aq.id(R.id.appTitle).getTextView().setText(mTitle);
+//        }
+//    }
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
@@ -846,8 +847,8 @@ public class MainActivity extends ActionBarActivity
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
+//            ((MainActivity) activity).onSectionAttached(
+//                    getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
     //endregion
@@ -1169,25 +1170,51 @@ public class MainActivity extends ActionBarActivity
     public void onBackPressed() {
         Log.d(TAG, "Pressed back button");
 
+        // Get number of live fragments
         int count = getSupportFragmentManager().getBackStackEntryCount();
 
-        if (currentSection == SECTION_STORIES) {
-            finish();
-            leaveapp = true;
-            super.onBackPressed();
+        // Get all fragments for handling
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fTransaction = fragmentManager.beginTransaction();
+        Fragment storiesFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
+        Fragment myStoriesFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_MY_STORIES);
+        Fragment meFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+
+        // On return to stories remove loading screen
+        if (storiesFragment!=null) {
+            ((StoriesListFragment) storiesFragment).StopLoadingScreen();
         }
+        // Leave the app
+        if (currentSection == SECTION_STORIES) {
+            leaveapp = true;
+            // If myStoriesFragment is alive kill it before exiting the app
+            if (myStoriesFragment != null) {
+                fTransaction.remove(myStoriesFragment).commit();
+            }
+            // If meFragment is alive kill it before exiting the app
+            if (meFragment != null) {
+                fTransaction.remove(meFragment).commit();
+            }
+            finish();
+        }
+        // Set actonbar title
         else if(currentSection == SECTION_ME){
+            currentSection = SECTION_STORIES;
             showStories();
+            setActionBarTitle(mainActivity.getResources().getString(R.string.nav_item_1_stories));
         }
         else if(currentSection == SECTION_STORY_DETAILS){
+            currentSection = SECTION_STORIES;
             showStories();
+            setActionBarTitle(mainActivity.getResources().getString(R.string.nav_item_1_stories));
         }
+        // Currently this is not supposed to be reached
         else {
             if (count == 0) {
                 super.onBackPressed();
-                //additional code
+                // go back
             } else {
-                getSupportFragmentManager().popBackStack();
+                fragmentManager.popBackStack();
             }
         }
     }
@@ -1295,7 +1322,8 @@ public class MainActivity extends ActionBarActivity
         PackageManager pm = getPackageManager();
 
         final Story story = sharedRemake.getStory();
-        final String downloadLink = "https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8";
+        final String iosDownloadLink = "http://bit.ly/18CsEjt"; // https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8
+        final String androidDownloadLink = "http://bit.ly/1BACxVP"; // https://play.google.com/store/apps/details?id=com.homage.app
 
 
         final List<ResolveInfo> activities = getSupportedActivitiesForSharing(story.sharingVideoAllowed == 1);
@@ -1368,8 +1396,10 @@ public class MainActivity extends ActionBarActivity
                                     i.putExtra(Intent.EXTRA_SUBJECT, story.shareMessage);
                                     i.putExtra(Intent.EXTRA_TEXT,
                                             String.format(
-                                                    "%s \n\n keep calm and get Homage at: \n\n %s",
-                                                    sharedRemake.shareURL, downloadLink));
+                                                    "%s \n\n keep calm and get Homage at: " +
+                                                            "\n\n Android: %s " +
+                                                            "\n\n Apple: %s",
+                                                    sharedRemake.shareURL, androidDownloadLink, iosDownloadLink));
                                     // start the selected activity
                                     i.setPackage(info.activityInfo.packageName);
                                     startActivityForResult(i, 555);
@@ -1505,6 +1535,14 @@ imageView.setImageDrawable(icon);
         return fileLocalUrl;
     }
     //endregion
+
+//    region utility functions
+
+    public void setActionBarTitle(String title){
+        aq.id(R.id.appTitle).getTextView().setText(title);
+    }
+
+//    endregion
 
                         //region *** GCM ***
                         /**

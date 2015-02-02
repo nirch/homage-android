@@ -7,6 +7,9 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
+import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
+import com.homage.networking.server.HomageServer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +22,6 @@ public class AWS3Client {
 //    private static final String ACCESS_KEY_ID = "AKIAJTPGKC25LGKJUCTA";
 //    private static final String SECRET_KEY = "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";
 
-    public static final String BUCKET_NAME = "homagetest";
     private static final String ACCESS_KEY_ID = "AKIAJJQ55763CDX5DENQ";
     private static final String SECRET_KEY = "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";
 
@@ -52,7 +54,7 @@ public class AWS3Client {
      * @return Returns the S3TransferOperation object for this upload operation.
      */
     public Upload startUploadJobForWorker(UploadS3Worker s3Worker, File sourceFile, String destination) {
-        PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET_NAME, destination, sourceFile);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(HomageServer.sh().bucketName, destination, sourceFile);
         Upload upload;
         Log.v(TAG, String.format("Starting upload from %s to %s", sourceFile.getAbsoluteFile(), destination));
         upload = tm.upload(putObjectRequest);
