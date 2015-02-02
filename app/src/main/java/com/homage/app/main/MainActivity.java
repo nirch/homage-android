@@ -374,8 +374,11 @@ public class MainActivity extends ActionBarActivity
         mNavigationItemClicked = true;
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
-        if (f!=null && currentSection == SECTION_STORIES) {
+        if (f!=null && currentSection == SECTION_STORIES && position == SECTION_ME) {
             ((StoriesListFragment) f).StartLoadingScreen();
+        }
+        else if(position == SECTION_STORIES){
+            setActionBarTitle(mainActivity.getResources().getString(R.string.nav_item_1_stories));
         }
     }
 
@@ -1077,25 +1080,34 @@ public class MainActivity extends ActionBarActivity
     public void onBackPressed() {
         Log.d(TAG, "Pressed back button");
 
+        // Get number of live fragments
         int count = getSupportFragmentManager().getBackStackEntryCount();
 
+        // Get all fragments for handling
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fTransaction = fragmentManager.beginTransaction();
+        Fragment storiesFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
+        Fragment myStoriesFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_MY_STORIES);
+        Fragment meFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+
+        // On return to stories remove loading screen
+        if (storiesFragment!=null) {
+            ((StoriesListFragment) storiesFragment).StopLoadingScreen();
+        }
+        // Leave the app
         if (currentSection == SECTION_STORIES) {
             leaveapp = true;
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fTransaction = fragmentManager.beginTransaction();
-            Fragment myStoriesFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_MY_STORIES);
-            Fragment meFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
-
             // If myStoriesFragment is alive kill it before exiting the app
             if (myStoriesFragment != null) {
-                getSupportFragmentManager().beginTransaction().remove(myStoriesFragment).commit();
+                fTransaction.remove(myStoriesFragment).commit();
             }
             // If meFragment is alive kill it before exiting the app
             if (meFragment != null) {
-                getSupportFragmentManager().beginTransaction().remove(meFragment).commit();
+                fTransaction.remove(meFragment).commit();
             }
             finish();
         }
+        // Set actonbar title
         else if(currentSection == SECTION_ME){
             currentSection = SECTION_STORIES;
             showStories();
@@ -1106,12 +1118,13 @@ public class MainActivity extends ActionBarActivity
             showStories();
             setActionBarTitle(mainActivity.getResources().getString(R.string.nav_item_1_stories));
         }
+        // Currently this is not supposed to be reached
         else {
             if (count == 0) {
                 super.onBackPressed();
-                //additional code
+                // go back
             } else {
-                getSupportFragmentManager().popBackStack();
+                fragmentManager.popBackStack();
             }
         }
     }
