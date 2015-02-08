@@ -12,6 +12,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Display;
 import android.view.GestureDetector;
@@ -47,7 +48,7 @@ import java.util.List;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
-public class StoryDetailsFragment extends Fragment implements com.homage.CustomViews.SwipeRefreshLayoutBottom.OnRefreshListener {
+public class StoryDetailsFragment extends Fragment implements com.homage.CustomViews.SwipeRefreshLayoutBottom.OnRefreshListener{
     public String TAG = "TAG_StoryDetailsFragment";
 
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -84,6 +85,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 
 //    Animation related variables
     boolean videoIsDisplayed = false;
+    boolean transformingVideo = false;
     boolean firstRun = true;
     boolean finishedPlayingVideo = true;
 
@@ -97,7 +99,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     }
 
     @Override
-    public void onRefresh() {
+    public void onRefreshBottom() {
         showFetchMoreRemakesProgress();
         new Handler().postDelayed(new Runnable() {
             @Override public void run() {
@@ -292,19 +294,19 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         mGestureDetector = new GestureDetector(getActivity(), new GestureListener() {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                flingUI();
+//                flingUI();
                 return super.onFling(e1, e2, velocityX, velocityY);
             }
 
             @Override
             public boolean onDoubleTap(MotionEvent e) {
-                doubletapUI();
+//                doubletapUI();
                 return super.onDoubleTap(e);
             }
 
             @Override
             public boolean onSingleTapUp(MotionEvent ev) {
-                singleTapUI();
+//                singleTapUI();
                 return super.onSingleTapUp(ev);
             }
         });
@@ -358,7 +360,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
                                public void run() {
                                    // code you want to run when view is visible for the first time
                                    if (firstRun) {
-                                       flingUI();
+                                       openDemoVideo();
                                        firstRun = false;
                                    }
                                }
@@ -366,13 +368,33 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
             );
         }
 
-        ((GridView)aq.id(R.id.remakesGridView).getView()).setOnTouchListener(new View.OnTouchListener() {
+//        ((GridView)aq.id(R.id.remakesGridView).getView()).setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if(videoIsDisplayed){
+//                    flingUI();
+//                }
+//                return false;
+//            }
+//        });
+
+//        ((GridView)aq.id(R.id.remakesGridView).getView())
+
+        ((GridView)aq.id(R.id.remakesGridView).getView()).setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(videoIsDisplayed){
-                    flingUI();
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if(!firstRun && firstVisibleItem == 0 && !videoIsDisplayed){
+                    openDemoVideo();
                 }
-                return false;
+                else if(!firstRun && firstVisibleItem > 0 && videoIsDisplayed){
+                    closeDemoVideo();
+                }
+
             }
         });
 
@@ -382,11 +404,11 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 //    region Gesture Handlers and functions
 
     public void singleTapUI(){
-        openCloseRemakesGridView();
+//        openCloseRemakesGridView();
     }
 
     public void flingUI() {
-        openCloseRemakesGridView();
+//        openCloseRemakesGridView();
     }
 
     public void doubletapUI() {
@@ -395,16 +417,67 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     }
 
     public void openCloseRemakesGridView() {
+
+        if(transformingVideo == false) {
+
+//        Open Remakes GridView
+            if (videoIsDisplayed) {
+                closeDemoVideo();
+            }
+            //        Close Remakes GridView
+            else {
+                openDemoVideo();
+
+            }
+
+        }
+    }
+
+    private void openDemoVideo() {
+
+        if(!transformingVideo)
+    {
+        transformingVideo = true;
+
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         final int width = size.x;
         final int height = size.y;
         final int portraitheight = (size.x * 9) / 16;
+        //            On first run only animate the gridview to close and display demo video
+        if (!firstRun) {
+            animateStoryDetailsVideoContainer(width, portraitheight, -185f, 120f, 1f, 1f);
+            aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
+            aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
+        } else {
+            animateStoryDetailsVideoContainer(width, portraitheight, 0, 0, 0, 0);
+            aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
+            aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
+        }
 
-//        Open Remakes GridView
-        if(videoIsDisplayed) {
-//            Animate UI
+        videoIsDisplayed = true;
+
+//            Allow screen orientation to rotate demo video into full screen
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        aq.id(R.id.moreRemakes).getTextView().setText(R.string.show_more_remakes);
+    }
+        //        firstRun runs first but never runs again...
+        firstRun = false;
+    }
+
+    private void closeDemoVideo() {
+
+        if(!transformingVideo) {
+            transformingVideo = true;
+
+            Display display = getActivity().getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            final int width = size.x;
+            final int height = size.y;
+            final int portraitheight = (size.x * 9) / 16;
+            //            Animate UI
             aq.id(R.id.moreRemakes).getView().animate().yBy(-portraitheight);
             aq.id(R.id.swipe_container).getView().animate().yBy(-portraitheight);
             animateStoryDetailsVideoContainer(0, 0, 185f, -120f, -1f, -1f);
@@ -416,29 +489,9 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
             videoPlayerFragment.fullStop();
 
             aq.id(R.id.moreRemakes).getTextView().setText(R.string.show_demo_video);
+            //        firstRun runs first but never runs again...
+            firstRun = false;
         }
-        //        Close Remakes GridView
-        else{
-//            On first run only animate the gridview to close and display demo video
-            if(!firstRun) {
-                animateStoryDetailsVideoContainer(width, portraitheight, -185f, 120f, 1f, 1f);
-                aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
-                aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
-            }
-            else{
-                animateStoryDetailsVideoContainer(width, portraitheight, 0, 0, 0, 0);
-                aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
-                aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
-            }
-
-            videoIsDisplayed = true;
-
-//            Allow screen orientation to rotate demo video into full screen
-            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-            aq.id(R.id.moreRemakes).getTextView().setText(R.string.show_more_remakes);
-        }
-//        firstRun runs first but never runs again...
-        firstRun = false;
     }
 
     private void animateStoryDetailsVideoContainer(final int width, final int height, float xby,
@@ -458,6 +511,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
                     videoPlayerFragment.getView().getLayoutParams().height = height;
                     videoPlayerFragment.getView().getLayoutParams().width = width;
                 }
+                transformingVideo = false;
             }
 
             @Override

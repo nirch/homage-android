@@ -165,7 +165,7 @@ public class SwipeRefreshLayoutBottom extends ViewGroup {
                 mProgress.start();
                 if (mNotify) {
                     if (mListener != null) {
-                        mListener.onRefresh();
+                        mListener.onRefreshBottom();
                     }
                 }
             } else {
@@ -1011,6 +1011,6 @@ public class SwipeRefreshLayoutBottom extends ViewGroup {
      * triggers a refresh should implement this interface.
      */
     public interface OnRefreshListener {
-        public void onRefresh();
+        public void onRefreshBottom();
     }
 }
