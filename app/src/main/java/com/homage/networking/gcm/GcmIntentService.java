@@ -183,7 +183,7 @@ public class GcmIntentService extends IntentService {
             PendingIntent contentIntent = PendingIntent.getActivity(
                     context,
                     0,
-                    mainIntent,
+                    intent,
                     PendingIntent.FLAG_UPDATE_CURRENT
             );
             mBuilder.setContentIntent(contentIntent);
