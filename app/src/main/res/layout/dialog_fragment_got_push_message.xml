@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    style="@style/HomageDarkOverlay"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_centerInParent="true">
@@ -15,16 +14,6 @@
         android:layout_centerHorizontal="true"
         >
 
-        <!-- The title -->
-        <TextView
-            android:id="@+id/bigImpactTitle"
-            style="@style/HomageSmallTitle"
-            android:layout_width="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            />
-
         <!-- Some description text -->
         <TextView
             android:id="@+id/descriptionText"
@@ -36,6 +25,7 @@
             android:gravity="center"
             android:text="@string/title_got_push_message_msg"
             style="@style/HomageSmallTitle"
+            android:padding="10dp"
             />
 
     </RelativeLayout>-->

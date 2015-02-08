@@ -35,6 +35,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.HashMap;
@@ -148,11 +149,7 @@ public class GcmIntentService extends IntentService {
             String storyId = extras.getString("story_id", null);
             String remakeId = extras.getString("remake_id", null);
             intent = new Intent(context, SplashScreenActivity.class);
-            mainIntent = new Intent(
-                    HomageServer.GOT_PUSH_REMAKE_SUCCESS_INTENT,
-                    null,
-                    context,
-                    MainActivity.class);
+            mainIntent = new Intent(HomageServer.GOT_PUSH_REMAKE_SUCCESS_INTENT);
 
             moreInfo.putString("push_message_type", String.valueOf(pushType));
             moreInfo.putString("story_id", storyId);
@@ -172,10 +169,7 @@ public class GcmIntentService extends IntentService {
             // Send an intent to be caught by main activity and refresh the ME Screen
             // This intent will pass along the status of the remake and the info about it.
             mainIntent.putExtra(constants.MORE_INFO, moreInfo);
-            if(((HomageApplication)context).getCurrentActivity() != null){
-                ((HomageApplication)context).getCurrentActivity().startActivity(mainIntent);
-            }
-
+            LocalBroadcastManager.getInstance(context).sendBroadcast(mainIntent);
 
         } else if (pushType == PushMessageTypeNewStory) {
             intent = new Intent(context, SplashScreenActivity.class);

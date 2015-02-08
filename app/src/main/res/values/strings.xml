@@ -53,10 +53,13 @@
     <string name="title_improper_background">IMPROPER BACKGROUND</string>
     <string name="title_improper_msg">For optimal results, use a solid color wall</string>
 
-    <string name="title_got_push_message">YOUR MOVIE IS READY!</string>
+    <string name="title_got_push_message">MOVIE READY!</string>
     <string name="title_got_push_message_msg">Go to My Stories screen to watch your result</string>
 
-    <string name="title_sent_movie_for_render">YOUR MOVIE IS BEING PREPARED!</string>
+    <string name="open_dialog_button_ok">OK</string>
+    <string name="open_dialog_button_goto_me">My Stories</string>
+
+    <string name="title_sent_movie_for_render">PREPARING MOVIE!</string>
     <string name="title_sent_movie_for_render_msg">We will notify you as soon as the movie is ready</string>
 
     <string name="back_camera_title">Back Camera</string>

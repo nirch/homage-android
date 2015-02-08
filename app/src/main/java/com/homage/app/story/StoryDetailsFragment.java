@@ -546,11 +546,17 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     @Override
     public void onResume() {
         super.onResume();
+        SetTitle();
+
+        ((MainActivity) getActivity()).lastSection = MainActivity.SECTION_STORY_DETAILS;
+
+        aq.id(R.id.greyscreen).visibility(View.GONE);
+    }
+
+    public void SetTitle() {
         // Set title bar
         ((MainActivity) getActivity())
                 .setActionBarTitle(story.name);
-
-        aq.id(R.id.greyscreen).visibility(View.GONE);
     }
 
     @Override

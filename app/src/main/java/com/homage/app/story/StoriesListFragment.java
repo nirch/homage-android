@@ -14,18 +14,14 @@
  */
 package com.homage.app.story;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +29,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
@@ -44,7 +39,6 @@ import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.analytics.HMixPanel;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -203,18 +197,6 @@ public class StoriesListFragment extends Fragment {
         }
 //        Get back to last location
         storiesListView.setSelectionFromTop(index, top);
-
-        StopLoadingScreen();
-    }
-
-    public void StartLoadingScreen() {
-        aq.id(R.id.storygreyscreen).visibility(View.VISIBLE);
-        aq.id(R.id.loadingMeProgress).visibility(View.VISIBLE);
-    }
-
-    public void StopLoadingScreen() {
-        aq.id(R.id.storygreyscreen).visibility(View.GONE);
-        aq.id(R.id.loadingMeProgress).visibility(View.GONE);
     }
 
 
@@ -281,6 +263,8 @@ public class StoriesListFragment extends Fragment {
 
             // Remake the story
             showStoryDetails(story);
+
+            ((MainActivity)getActivity()).lastSection = MainActivity.SECTION_STORIES;
         }
     };
     //endregion

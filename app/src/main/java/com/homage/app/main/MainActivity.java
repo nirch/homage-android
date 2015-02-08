@@ -49,6 +49,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ListAdapter;
+import android.widget.Switch;
 
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
@@ -98,6 +99,7 @@ public class MainActivity extends ActionBarActivity
     public static final int SECTION_ME         = 2;
     public static final int SECTION_SETTINGS   = 3;
     public static final int SECTION_HOWTO      = 4;
+    public static final int SECTION_OPEN_DIALOG= 5;
     public static final int SECTION_STORY_DETAILS      = 101;
     public static final int SECTION_REMAKE_VIDEO      = 911;
 
@@ -126,6 +128,7 @@ public class MainActivity extends ActionBarActivity
     static final String FRAGMENT_TAG_MY_STORIES = "fragment my stories";
     public static final String FRAGMENT_TAG_REMAKE_VIDEO = "fragment remake video";
     public static final String FRAGMENT_TAG_STORY_DETAILS = "fragment story details";
+    public static final String FRAGMENT_TAG_OPEN_DIALOG = "fragment open dialog";
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     int defaultSelection;
@@ -136,6 +139,15 @@ public class MainActivity extends ActionBarActivity
 //    private RemakeVideoFragment remakeVideoFragment;
     private CharSequence mTitle;
 
+//    A boolean that checks if going in to ME screen or out
+//    In order to change the action bar title to stories when going out
+    public boolean goingOutOfMeScreen = true;
+    public boolean goingOutOfStoryDetailsScreen = true;
+    public boolean goingOutOfStoriesScreen = true;
+
+//    A flag that says gcm notification has arrived!
+    boolean gotPushMessage = false;
+
     private Remake lastRemakeSentToRender;
 
 //    A flag to know if user has requested to leave the app and not load fragments
@@ -143,6 +155,7 @@ public class MainActivity extends ActionBarActivity
     boolean leaveapp = false;
 
     public int currentSection;
+    public int lastSection = SECTION_STORIES;
     public Story currentStory;
 
     public ProgressDialog pd;
@@ -235,6 +248,60 @@ public class MainActivity extends ActionBarActivity
                 defaultSelection
         );
         handleDrawerSectionSelection(defaultSelection);
+
+        // Change the action bar title when the fragment changes
+        //
+        //******************************************************
+        getSupportFragmentManager().addOnBackStackChangedListener(
+                new FragmentManager.OnBackStackChangedListener() {
+                    public void onBackStackChanged() {
+                        if(currentSection == SECTION_ME)
+                        {
+//                            going into me screen
+                            if(goingOutOfMeScreen){
+                                goingOutOfMeScreen = false;
+                                lastSection = SECTION_ME;
+                            }
+                            else{
+//                                Set title to me screen
+                                setActionBarTitle(getResources().getString(R.string.nav_item_2_me));
+                                currentSection = SECTION_ME;
+                                goingOutOfMeScreen = true;
+                            }
+                        }
+//                        Going into story details
+                        else if(currentSection == SECTION_STORY_DETAILS) {
+                            if(goingOutOfStoryDetailsScreen) {
+                                lastSection = SECTION_STORY_DETAILS;
+                                goingOutOfStoryDetailsScreen = false;
+                            }
+                            else {
+                                Fragment f = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_STORY_DETAILS);
+                                if (f != null) {
+                                    ((StoryDetailsFragment) f).SetTitle();
+                                    currentSection = SECTION_STORY_DETAILS;
+                                    goingOutOfStoryDetailsScreen = true;
+                                }
+                            }
+                        }
+                        else if(currentSection == SECTION_STORIES){
+                            if(goingOutOfStoriesScreen) {
+                                lastSection = SECTION_STORIES;
+                                goingOutOfStoriesScreen = false;
+                            }
+                            else {
+                                Fragment f = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_STORIES);
+                                if (f != null) {
+                                    //                          Set Stories title
+                                    setActionBarTitle(getResources().getString(R.string.nav_item_1_stories));
+                                    currentSection = SECTION_STORIES;
+                                    goingOutOfStoriesScreen = true;
+                                }
+                            }
+                        }
+
+                    }
+                });
 
         //region *** Bind to UI event handlers ***
         /**********************************/
@@ -386,14 +453,6 @@ public class MainActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(final int position) {
         mPositionClicked = position;
         mNavigationItemClicked = true;
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
-        if (f!=null && currentSection == SECTION_STORIES && position == SECTION_ME) {
-            ((StoriesListFragment) f).StartLoadingScreen();
-        }
-        else if(position == SECTION_STORIES){
-            setActionBarTitle(mainActivity.getResources().getString(R.string.nav_item_1_stories));
-        }
     }
 
     public void onDrawerClosed() {
@@ -441,19 +500,18 @@ public class MainActivity extends ActionBarActivity
 
             case SECTION_STORIES:
                 Crashlytics.log("handleDrawerSectionSelection --> Stories");
-                if(currentSection != position) {
-                    showStories();
-                    currentSection = SECTION_STORIES;
-                }
+
+                showStories();
+                currentSection = SECTION_STORIES;
+
                 break;
 
             case SECTION_ME:
                 Crashlytics.log("handleDrawerSectionSelection --> My Stories");
 
-                if(currentSection != position) {
-                    showMyStories();
-                    currentSection = SECTION_ME;
-                }
+                showMyStories();
+                currentSection = SECTION_ME;
+
                 break;
 
             case SECTION_SETTINGS:
@@ -530,6 +588,13 @@ public class MainActivity extends ActionBarActivity
         Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
         if (f!=null) {
             ((MyStoriesFragment)f).refresh();
+            // If this refresh came from the gcm notification
+            // then after it is finished notify the user that the movie is prepared
+            if(gotPushMessage){
+                showNotificationDialog(getResources().getString(R.string.title_got_push_message),
+                        getResources().getString(R.string.title_got_push_message_msg));
+                gotPushMessage = false;
+            }
         }
     }
 
@@ -558,15 +623,20 @@ public class MainActivity extends ActionBarActivity
     public static class OpenMessageDialog extends DialogFragment {
         String TAG = "TAG_GOTPushMessagingClass";
 
-        View rootView;
         AQuery aq;
-        Remake remake;
-        Story story;
         String title;
         String text;
 
         public static OpenMessageDialog newInstance(String title, String text) {
-            return OpenMessageDialog.newInstance(title, text);
+            OpenMessageDialog f = new OpenMessageDialog();
+
+            // Supply num input as an argument.
+            Bundle args = new Bundle();
+            args.putString("title", title);
+            args.putString("text", text);
+            f.setArguments(args);
+
+            return f;
         }
 
         @Override
@@ -574,10 +644,16 @@ public class MainActivity extends ActionBarActivity
                                  Bundle savedInstanceState) {
 
             aq = new AQuery(getActivity());
+            // Set title for this dialog
+            title = getArguments().getString("title");
+            text = getArguments().getString("text");
+
+            getDialog().setTitle(title);
 
             View dRootView = inflater.inflate(R.layout.dialog_fragment_got_push_message, container, false);
             aq = new AQuery(dRootView);
-            aq.id(R.id.bigImpactTitle).getTextView().setText(title);
+
+            aq.id(R.id.descriptionText).getTextView().setText(text);
 
             return dRootView;
         }
@@ -585,9 +661,10 @@ public class MainActivity extends ActionBarActivity
     }
 
     void showNotificationDialog(String title, String text) {
+        currentSection = SECTION_OPEN_DIALOG;
         // Create the fragment and show it as a dialog.
         DialogFragment newFragment = OpenMessageDialog.newInstance(title, text);
-        newFragment.show(getSupportFragmentManager(), "dialog");
+        newFragment.show(getSupportFragmentManager(), FRAGMENT_TAG_OPEN_DIALOG);
     };
 
     private BroadcastReceiver onGetPushMessage = new BroadcastReceiver() {
@@ -595,25 +672,25 @@ public class MainActivity extends ActionBarActivity
         public void onReceive(Context context, Intent intent) {
             // Got push notification now do something with it
 
+            gotPushMessage = true;
+
             Crashlytics.log("onGetPushMessage");
             if (pd != null){
                 pd.dismiss();
             }
 
-            HashMap<String, String> moreInfo = (HashMap<String, String>)intent. getSerializableExtra(constants.MORE_INFO);
-
-            assert(moreInfo != null);
+//            Get info from intent bundle
+            Bundle b = intent.getExtras();
+            Bundle moreInfo = b.getBundle(constants.MORE_INFO);
 
             // Get data from more info
-            int pushType = Integer.valueOf(moreInfo.get("push_message_type"));
-            String story_id = moreInfo.get("story_id");
-            String remake_id = moreInfo.get("remake_id");
+            int pushType = Integer.valueOf(moreInfo.getString("push_message_type"));
+            String story_id = moreInfo.getString("story_id");
+            String remake_id = moreInfo.getString("remake_id");
             Story story = Story.findByOID(story_id);
             Remake remake = Remake.findByOID(remake_id);
-            String title = moreInfo.get("title");
-            String text = moreInfo.get("text");
-
-            showNotificationDialog(title, text);
+            String title = moreInfo.getString("title");
+            String text = moreInfo.getString("text");
 
             // Download the movie so that the user can enjoy quick sharing.
             downloadUserRemakeInBackground(story, remake);
@@ -621,7 +698,6 @@ public class MainActivity extends ActionBarActivity
             Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
             if (f!=null) {
                 refetchRemakesForCurrentUser();
-                ((MyStoriesFragment) f).refresh();
             }
         }
     };
@@ -879,7 +955,7 @@ public class MainActivity extends ActionBarActivity
         storyDetailsFragment = (StoryDetailsFragment)fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORY_DETAILS);
 
         fTransaction.replace(R.id.container, storyDetailsFragment = StoryDetailsFragment.newInstance(currentSection, currentStory),FRAGMENT_TAG_STORY_DETAILS);
-        fTransaction.setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out,R.anim.animation_slide_in, R.anim.animation_slide_out);
+        fTransaction.setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out,R.anim.animation_slide_in, R.anim.animation_slide_out);;
         fTransaction.addToBackStack(null);
         fTransaction.commitAllowingStateLoss();
 
@@ -1169,53 +1245,49 @@ public class MainActivity extends ActionBarActivity
 
     public void onBackPressed() {
         Log.d(TAG, "Pressed back button");
-
-        // Get number of live fragments
-        int count = getSupportFragmentManager().getBackStackEntryCount();
-
-        // Get all fragments for handling
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fTransaction = fragmentManager.beginTransaction();
-        Fragment storiesFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORIES);
-        Fragment myStoriesFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_MY_STORIES);
-        Fragment meFragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
-
-        // On return to stories remove loading screen
-        if (storiesFragment!=null) {
-            ((StoriesListFragment) storiesFragment).StopLoadingScreen();
-        }
-        // Leave the app
-        if (currentSection == SECTION_STORIES) {
-            leaveapp = true;
-            // If myStoriesFragment is alive kill it before exiting the app
-            if (myStoriesFragment != null) {
-                fTransaction.remove(myStoriesFragment).commit();
-            }
-            // If meFragment is alive kill it before exiting the app
-            if (meFragment != null) {
-                fTransaction.remove(meFragment).commit();
-            }
-            finish();
-        }
-        // Set actonbar title
-        else if(currentSection == SECTION_ME){
-            currentSection = SECTION_STORIES;
+        if(currentSection == SECTION_ME)
+        {
             showStories();
-            setActionBarTitle(mainActivity.getResources().getString(R.string.nav_item_1_stories));
-        }
-        else if(currentSection == SECTION_STORY_DETAILS){
+            //                          Set Stories title
+            setActionBarTitle(getResources().getString(R.string.nav_item_1_stories));
             currentSection = SECTION_STORIES;
-            showStories();
-            setActionBarTitle(mainActivity.getResources().getString(R.string.nav_item_1_stories));
+            lastSection = SECTION_ME;
+            goingOutOfMeScreen = false;
         }
-        // Currently this is not supposed to be reached
-        else {
-            if (count == 0) {
-                super.onBackPressed();
-                // go back
-            } else {
-                fragmentManager.popBackStack();
-            }
+//                        Going into story details
+        else if(currentSection == SECTION_STORY_DETAILS) {
+
+            showStories();
+            //                          Set Stories title
+            setActionBarTitle(getResources().getString(R.string.nav_item_1_stories));
+            currentSection = SECTION_STORIES;
+            lastSection = SECTION_STORY_DETAILS;
+            goingOutOfStoryDetailsScreen = false;
+        }
+        else if(currentSection == SECTION_STORIES){
+            new AlertDialog.Builder(mainActivity)
+                    .setTitle("Close Homage?")
+                    .setMessage("Do you really want to exit?")
+                    .setPositiveButton("YES",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    finish();
+                                    MainActivity.super.onBackPressed();
+                                }
+                            })
+                    .setNegativeButton("NO",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    showStories();
+                                }
+                            }).show();
+
         }
     }
 

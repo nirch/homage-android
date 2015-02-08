@@ -266,10 +266,6 @@ public class MyStoriesFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        // Set title bar
-        ((MainActivity) getActivity())
-                .setActionBarTitle(getActivity().getResources().getString(R.string.nav_item_2_me));
-
         // Pixel density
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         desnityDPI = metrics.densityDpi;
@@ -290,8 +286,6 @@ public class MyStoriesFragment extends Fragment {
         //
         aq.id(R.id.remakeAStoryButton).clicked(onClickedRemakeStories);
 
-
-
         return rootView;
     }
 
@@ -306,15 +300,9 @@ public class MyStoriesFragment extends Fragment {
     {
         super.onResume();
 
+        // Set title bar
         ((MainActivity)getActivity()).setActionBarTitle(((MainActivity)getActivity()).getResources()
                 .getString(R.string.nav_item_2_me));
-
-//        Make Stories Loading screen disappear... just in case
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        Fragment f = fragmentManager.findFragmentByTag(MainActivity.FRAGMENT_TAG_STORIES);
-        if (f!=null) {
-            ((StoriesListFragment)f).StopLoadingScreen();
-        }
 
         HMixPanel.sh().track("MEEnterTab",null);
 
