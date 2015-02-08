@@ -56,9 +56,6 @@
     <string name="title_got_push_message">MOVIE READY!</string>
     <string name="title_got_push_message_msg">Go to My Stories screen to watch your result</string>
 
-    <string name="open_dialog_button_ok">OK</string>
-    <string name="open_dialog_button_goto_me">My Stories</string>
-
     <string name="title_sent_movie_for_render">PREPARING MOVIE!</string>
     <string name="title_sent_movie_for_render_msg">We will notify you as soon as the movie is ready</string>
 
@@ -73,6 +70,7 @@
 
     <!-- My Stories -->
     <string name="remake_a_story_button">REMAKE A STORY!</string>
+    <string name="rendering_remake_message">Preparing...</string>
 
     <!-- Videos -->
     <string name="video_title_scene">WATCH OUR SCENE</string>
