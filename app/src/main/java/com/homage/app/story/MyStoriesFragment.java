@@ -143,17 +143,22 @@ public class MyStoriesFragment extends Fragment {
                     aq.id(R.id.myPlayButton).visibility(View.VISIBLE);
                     aq.id(R.id.myShareButtonContainer).visibility(View.VISIBLE);
                     aq.id(R.id.loadingRemakeProgress).visibility(View.GONE);
+                    aq.id(R.id.myMessageContainer).visibility(View.GONE);
                 } else if(remake.status == Remake.Status.RENDERING.getValue() ||
                         remake.status == Remake.Status.STARTED_CREATION.getValue()) {
                     aq.id(R.id.storyImage).visibility(View.VISIBLE);
                     aq.id(R.id.myPlayButton).visibility(View.GONE);
                     aq.id(R.id.myShareButtonContainer).visibility(View.GONE);
+                    aq.id(R.id.myDeleteButtonContainer).visibility(View.GONE);
+                    aq.id(R.id.myResetButtonContainer).visibility(View.GONE);
+                    aq.id(R.id.myMessageContainer).visibility(View.VISIBLE);
                     aq.id(R.id.loadingRemakeProgress).visibility(View.VISIBLE);
                 }else{
                     aq.id(R.id.storyImage).visibility(View.VISIBLE);
                     aq.id(R.id.myPlayButton).visibility(View.GONE);
                     aq.id(R.id.myShareButtonContainer).visibility(View.GONE);
                     aq.id(R.id.loadingRemakeProgress).visibility(View.GONE);
+                    aq.id(R.id.myMessageContainer).visibility(View.GONE);
                 }
 
                 // Delete
@@ -172,23 +177,6 @@ public class MyStoriesFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             Log.d(TAG, String.format("my story, clicked share: %s", remake.getOID()));
-                            User user = User.getCurrent();
-                            if (user.isGuest()) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                AlertDialog alert = builder.setMessage(R.string.share_signed_in_only)
-                                        .setTitle(R.string.join_us_title)
-                                        .setNegativeButton(R.string.ok_got_it, null)
-                                        .setPositiveButton(R.string.join_us_title, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                MainActivity activity = (MainActivity) getActivity();
-                                                activity.showLogin();
-                                            }
-                                        })
-                                        .create();
-                                alert.show();
-                                return;
-                            }
                             shareRemake(remake);
                         }
                     });
