@@ -111,7 +111,7 @@
             <Button
                 android:text="@string/action_button_lets_shot"
                 android:id="@+id/welcomeScreenDismissButton"
-                android:drawableLeft="@drawable/icon_got_it"
+                android:drawableLeft="@drawable/icon_lets_create"
                 style="@style/actionButton" />
         </LinearLayout>
 

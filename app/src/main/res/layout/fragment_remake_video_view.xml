@@ -128,7 +128,7 @@
         android:id="@+id/user_image"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:src="@drawable/guest"
+        android:src="@drawable/guest_user_icon"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:background="@android:color/transparent"

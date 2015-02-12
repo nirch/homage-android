@@ -1,12 +1,9 @@
 package com.homage.app.recorder;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 
-import com.androidquery.util.Constants;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
@@ -46,7 +43,7 @@ public class RecorderOverlayFinishedSceneMessageDlgActivity extends RecorderOver
         String nextSceneText = getResources().getString(R.string.at_the_next_scene_text);
         nextSceneText = String.format(nextSceneText, nextScene.context);
 
-        aq.id(R.id.overlayIcon).image(R.drawable.recorder_icon_trophy);
+        aq.id(R.id.overlayIcon).image(R.drawable.icon_trophy);
         aq.id(R.id.bigImpactTitle).text(getResources().getString(R.string.title_great_job));
         aq.id(R.id.descriptionText).text(nextSceneText);
         aq.id(R.id.actionButton).text(R.string.button_shoot_scene);

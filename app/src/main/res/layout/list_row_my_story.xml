@@ -4,44 +4,127 @@
     android:layout_height="90dp"
     android:orientation="vertical"
     android:background="@color/homage_black"
+    android:id="@+id/parent_container"
     >
 
-    <RelativeLayout  android:id="@+id/thumbContainer"
-        android:layout_width="159dp"
+    <RelativeLayout  android:id="@+id/mainContainer"
+        android:layout_width="match_parent"
         android:layout_height="89dp"
         android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/moreButtonContainer"
+        android:layout_toStartOf="@+id/moreButtonContainer"
         >
-        <ImageView android:id="@+id/storyImage"
+
+        <RelativeLayout  android:id="@+id/thumbContainer"
+            android:layout_width="159dp"
+            android:layout_height="89dp"
+            android:layout_centerVertical="true"
+            >
+            <ImageView android:id="@+id/storyImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:visibility="gone"
+                />
+            <ImageButton android:id="@+id/myPlayButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:src="@drawable/selector_my_play"
+                android:visibility="gone"
+                />
+            <ProgressBar android:id="@+id/loadingRemakeProgress"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerInParent="true"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/main_controls_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitXY"
-            android:visibility="gone"
-            />
-        <ImageButton android:id="@+id/myPlayButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:src="@drawable/selector_my_play"
-            android:visibility="gone"
-            />
-        <ProgressBar android:id="@+id/loadingRemakeProgress"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_centerInParent="true"
-            />
+            android:layout_marginLeft="160dp"
+            >
+
+            <RelativeLayout android:id="@+id/myShareButtonContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1"
+                android:visibility="visible"
+                >
+                <ImageButton android:id="@+id/myShareButton"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:scaleType="fitCenter"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/selector_my_share_button"
+                    />
+            </RelativeLayout>
+
+            <RelativeLayout android:id="@+id/myMessageContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_centerHorizontal="true"
+                >
+                <TextView android:id="@+id/myMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:scaleType="fitCenter"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@android:color/transparent"
+                    android:text="@string/rendering_remake_message"
+                    android:textColor="@color/homage_impact"
+                    android:textSize="22dp"
+                    />
+            </RelativeLayout>
+
+
+            <TextView android:id="@+id/storyName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/homage_text"
+                android:textSize="17sp"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:text="@string/placeholder_story_title"
+                android:layout_alignParentTop="true" />
+
+        </RelativeLayout>
+
     </RelativeLayout>
 
 
     <LinearLayout
+        android:id="@+id/other_controls_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="160dp"
+        android:visibility="gone"
+        android:layout_toLeftOf="@+id/moreButtonContainer"
+        android:layout_toStartOf="@+id/moreButtonContainer"
         >
         <RelativeLayout android:id="@+id/myResetButtonContainer"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
             >
+
+            <TextView android:id="@+id/resetButtonName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/homage_text"
+                android:textSize="17sp"
+                android:paddingTop="10dp"
+                android:gravity="center"
+                android:text="@string/placeholder_reset_title"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"/>
+
             <ImageButton android:id="@+id/myResetButton"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
@@ -57,6 +140,17 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             >
+            <TextView android:id="@+id/deleteButtonName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/homage_text"
+                android:textSize="17sp"
+                android:paddingTop="10dp"
+                android:text="@string/placeholder_delete_title"
+                android:gravity="center"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"/>
+
             <ImageButton android:id="@+id/myDeleteButton"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
@@ -67,105 +161,27 @@
                 android:src="@drawable/selector_my_delete_button"
                 />
         </RelativeLayout>
-        <RelativeLayout android:id="@+id/myShareButtonContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:visibility="visible"
-            >
-            <ImageButton android:id="@+id/myShareButton"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:scaleType="fitCenter"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:background="@android:color/transparent"
-                android:src="@drawable/selector_my_share_button"
-                />
-        </RelativeLayout>
-        <RelativeLayout android:id="@+id/myMessageContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            >
-            <TextView android:id="@+id/myMessage"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:scaleType="fitCenter"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:background="@android:color/transparent"
-                android:text="@string/rendering_remake_message"
-                android:textColor="@color/homage_impact"
-                android:textSize="22dp"
-                />
-        </RelativeLayout>
+
     </LinearLayout>
 
-    <TextView android:id="@+id/storyName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/homage_text"
-        android:textSize="17dp"
-        android:gravity="center"
-        android:paddingTop="10dp"
-        android:layout_toRightOf="@+id/thumbContainer"
-        android:text="@string/placeholder_story_title"
-        android:layout_alignParentTop="true" />
-
-    <!--<ImageView android:id="@+id/storyImageHighlight"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_alignParentTop="true"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:alpha="0.2"-->
-        <!--android:background="@drawable/selector_story_fg"-->
-        <!--/>-->
-
-
-    <!--
-    <TextView android:id="@+id/storyName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/homage_text"
-        android:textSize="18dp"
-        android:paddingLeft="10dp"
+    <FrameLayout
+        android:id="@+id/moreButtonContainer"
+        android:layout_width="20dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
         android:paddingRight="10dp"
-        android:layout_toRightOf="@+id/storyImage"
-        android:text="@string/placeholder_story_title"
-        android:layout_alignParentTop="true"
+        android:paddingEnd="10dp">
 
-    <ImageButton android:id="@+id/myDeleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:src="@drawable/selector_my_delete_button"
-        android:background="@color/homage_dark_transparent_overlay"
-        android:padding="10dp"
-        />
+        <android.widget.IconButton
+            android:id="@+id/moreButton"
+            style="@style/remakeText"
+            android:text="@string/icon_more_v"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"/>
 
-    <ImageButton android:id="@+id/myResetButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/selector_my_reset_button"
-        android:background="@color/homage_dark_transparent_overlay"
-        android:padding="10dp"
-        />
-
-    <ImageButton android:id="@+id/myShareButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/selector_my_share_button"
-        android:background="@color/homage_dark_transparent_overlay"
-        android:padding="10dp"
-        />
-        -->
-
+    </FrameLayout>
 
 </RelativeLayout>

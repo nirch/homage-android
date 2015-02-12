@@ -68,7 +68,7 @@
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="15dp"
-            android:src="@drawable/scene_script_light"
+            android:src="@drawable/icon_scene_script_lighter"
             />
         <TextView android:id="@+id/topScriptText"
             android:layout_width="wrap_content"
@@ -92,7 +92,7 @@
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="15dp"
-            android:src="@drawable/scene_script_light"
+            android:src="@drawable/icon_scene_script_lighter"
             />
 
         <TextView android:id="@+id/bottomScriptText"
@@ -233,8 +233,8 @@
                     <Button
                         android:id="@+id/recorderSceneDirectionButton"
                         style="@style/HomageImpactButton"
-                        android:drawableStart="@drawable/icon_scene_direction_black"
-                        android:drawableLeft="@drawable/icon_scene_direction_black"
+                        android:drawableStart="@drawable/scene_direction_icon"
+                        android:drawableLeft="@drawable/scene_direction_icon"
                         android:text="@string/button_scene_direction"
 
                         />
@@ -242,8 +242,8 @@
                     <Button
                         android:id="@+id/recorderSceneScriptButton"
                         style="@style/HomageImpactButton"
-                        android:drawableStart="@drawable/icon_script_black"
-                        android:drawableLeft="@drawable/icon_script_black"
+                        android:drawableStart="@drawable/icon_scene_script"
+                        android:drawableLeft="@drawable/icon_scene_script"
                         android:text="@string/button_show_script"
                         />
                 </LinearLayout>

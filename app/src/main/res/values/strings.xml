@@ -11,6 +11,7 @@
     <string name="icon_pause">{fa_pause}</string>
     <string name="icon_full_screen">{fa_expand}</string>
     <string name="icon_more">{fa-ellipsis-h}</string>
+    <string name="icon_more_v">{fa-ellipsis-v}</string>
 
     <string name="show_more_remakes">HIDE DEMO VIDEO</string>
     <string name="show_demo_video">SHOW DEMO VIDEO</string>
@@ -195,6 +196,8 @@
     <string name="placeholder_hello_guest">Hello Guest</string>
     <string name="placeholder_join_now">join now</string>
     <string name="placeholder_story_title">Story title</string>
+    <string name="placeholder_reset_title">Reset</string>
+    <string name="placeholder_delete_title">Delete</string>
     <string name="placeholder_story_remakes_count">#666</string>
 
     <!-- debug -->

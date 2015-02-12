@@ -89,6 +89,12 @@ public class VideoPlayerFragment
     LayoutInflater inflater;
     boolean alreadyGotSettings = false;
 
+    // booleans for not playing video
+    public boolean remakePlaying = false;
+    public boolean videoIsShowing = true;
+    public boolean storyDetailsPaused = false;
+
+
     MediaPlayer mediaPlayer;
 
 
@@ -245,7 +251,7 @@ public class VideoPlayerFragment
         // More settings
         allowToggleFullscreen = b.getBoolean(K_ALLOW_TOGGLE_FULLSCREEN, true);
         finishOnCompletion = b.getBoolean(K_FINISH_ON_COMPLETION, false);
-        autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, false);
+        autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, true);
         isEmbedded = b.getBoolean(K_IS_EMBEDDED, false);
         thumbURL = b.getString(K_THUMB_URL, null);
         thumbDrawableId = b.getInt(K_THUMB_DRAWABLE_ID, 0);
@@ -306,7 +312,8 @@ public class VideoPlayerFragment
         aq.id(R.id.videoCurtain).visibility(View.GONE);
         if (autoStartPlaying) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_WILL_PLAY , info);
-            start();
+
+            togglePlayPause();
         }
     }
 
@@ -344,7 +351,9 @@ public class VideoPlayerFragment
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PAUSE, info);
             pause();
         } else {
-            start();
+            if(!remakePlaying && !videoIsShowing) {
+                start();
+            }
         }
     }
 
@@ -372,8 +381,8 @@ public class VideoPlayerFragment
 //        if (videoView != null) videoView.seekTo(0);
 //        pause();
         aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
-        ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
-        aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
+        ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_pause);
+        aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
 //        aq.id(R.id.videoView).visibility(View.INVISIBLE);
         aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
     }
@@ -390,22 +399,24 @@ public class VideoPlayerFragment
 
     //region *** video commands ***
     public void fullStop() {
-        HashMap<String, Object> eInfo = new HashMap<String, Object>(info);
-        eInfo.put(HEvents.HK_VIDEO_PLAYBACK_TIME, videoView.getCurrentPosition());
-        eInfo.put(HEvents.HK_VIDEO_TOTAL_DURATION, videoView.getDuration());
+        if(videoView != null) {
+            HashMap<String, Object> eInfo = new HashMap<String, Object>(info);
+            eInfo.put(HEvents.HK_VIDEO_PLAYBACK_TIME, videoView.getCurrentPosition());
+            eInfo.put(HEvents.HK_VIDEO_TOTAL_DURATION, videoView.getDuration());
 
-        videoView.seekTo(0);
-        videoView.pause();
+            videoView.seekTo(0);
+            videoView.pause();
 
-        HEvents.sh().track(HEvents.H_EVENT_VIDEO_FULL_STOP, eInfo);
-        if (onFinishedPlayback != null) {
-            new Handler().post(onFinishedPlayback);
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_FULL_STOP, eInfo);
+            if (onFinishedPlayback != null) {
+                new Handler().post(onFinishedPlayback);
+            }
+            if (finishOnCompletion) {
+                VideoPlayerFragment.this.getActivity().finish();
+                return;
+            }
+            showThumbState();
         }
-        if (finishOnCompletion) {
-            VideoPlayerFragment.this.getActivity().finish();
-            return;
-        }
-        showThumbState();
     }
     //endregion
 

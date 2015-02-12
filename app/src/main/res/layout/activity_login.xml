@@ -9,7 +9,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/blurred_background"
+        android:src="@drawable/subtle_background"
         android:scaleType="centerCrop"
         android:alpha="0.2"
         />
@@ -79,7 +79,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             style="@style/actionButton"
-            android:drawableLeft="@drawable/icon_got_it"
+            android:drawableLeft="@drawable/icon_lets_create"
             android:drawablePadding="20dp" />
 
         <Button android:id="@+id/loginCancelButton"

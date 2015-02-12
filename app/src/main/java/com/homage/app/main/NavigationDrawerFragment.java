@@ -13,7 +13,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,14 +20,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.homage.app.R;
-import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.analytics.HMixPanel;
 
@@ -237,7 +234,7 @@ public class NavigationDrawerFragment extends Fragment {
                     100,
                     R.drawable.com_facebook_profile_picture_blank_portrait);
         } else {
-            aq.id(R.id.profilePicture).image(R.drawable.guest);
+            aq.id(R.id.profilePicture).image(R.drawable.guest_user_icon);
         }
     }
 

@@ -447,7 +447,7 @@ public class RemakeVideoFragmentActivity extends
         } else {
             aq.id(R.id.user_name).getTextView().setText("Guest");
         }
-        aq.id(R.id.user_image).image(R.drawable.guest);
+        aq.id(R.id.user_image).image(R.drawable.guest_user_icon);
 
 //        }
         if (story != null) {
@@ -524,7 +524,7 @@ public class RemakeVideoFragmentActivity extends
         // More settings
         allowToggleFullscreen = b.getBooleanExtra(K_ALLOW_TOGGLE_FULLSCREEN, true);
         finishOnCompletion = b.getBooleanExtra(K_FINISH_ON_COMPLETION, false);
-        autoStartPlaying = b.getBooleanExtra(K_AUTO_START_PLAYING, false);
+        autoStartPlaying = b.getBooleanExtra(K_AUTO_START_PLAYING, true);
         isEmbedded = b.getBooleanExtra(K_IS_EMBEDDED, false);
         thumbURL = b.getStringExtra(K_THUMB_URL);
         thumbDrawableId = b.getIntExtra(K_THUMB_DRAWABLE_ID, 0);
@@ -536,6 +536,7 @@ public class RemakeVideoFragmentActivity extends
 
         if (autoStartPlaying) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_WILL_AUTO_PLAY, info);
+            hideControls();
         } else {
             showThumbState();
         }
@@ -603,7 +604,7 @@ public class RemakeVideoFragmentActivity extends
         isPlayerReady = true;
         if (autoStartPlaying) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_WILL_PLAY, info);
-            start();
+            togglePlayPause();
         } else {
             showThumbState();
         }
@@ -696,8 +697,8 @@ public class RemakeVideoFragmentActivity extends
         if (!isPlayerReady) {
             aq.id(R.id.remakeThumbnailImage).visibility(View.VISIBLE);
         } else {
-            ((IconButton) aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
-            aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
+            ((IconButton) aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_pause);
+            aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
             aq.id(R.id.remakeVideoFragmentLoading).visibility(View.GONE);
         }
         showControls();

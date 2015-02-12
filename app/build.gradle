@@ -16,21 +16,13 @@ repositories {
 
 
 android {
-    signingConfigs {
-        HomageSign {
-            keyAlias 'HomageAndroidKey'
-            keyPassword 'homageIt10'
-            storeFile file('C:/Users/dangalg/Google Drive/homage/HomageAndroid.jks')
-            storePassword 'homageIt10'
-        }
-    }
     compileSdkVersion 19
     buildToolsVersion '19.1.0'
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 19
-        versionCode 10204
-        versionName "1.2.5"
+        versionCode 10205
+        versionName "1.2.5.t"
     }
     buildTypes {
         release {
@@ -43,7 +35,6 @@ android {
     }
     productFlavors {
         flavorProduction {
-            signingConfig signingConfigs.HomageSign
         }
         flavorDev {
         }

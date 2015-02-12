@@ -82,6 +82,9 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 
     //    Gesture stuff
     private GestureDetector mGestureDetector;
+    boolean userScrolled = false;
+    boolean scrollingUp;
+    float lastScrollPosition = 400;
 
 //    Animation related variables
     boolean videoIsDisplayed = false;
@@ -368,31 +371,57 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
             );
         }
 
-//        ((GridView)aq.id(R.id.remakesGridView).getView()).setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if(videoIsDisplayed){
-//                    flingUI();
-//                }
-//                return false;
-//            }
-//        });
+        ((GridView)aq.id(R.id.remakesGridView).getView()).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                // get last scroll position and current scroll position to figure out if scrolling up or down
+                // then pass that through global variable to onscroll of gridview and only open video when scrolling down
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lastScrollPosition = event.getY();
+                }
+                else if(event.getAction() == MotionEvent.ACTION_MOVE){
+
+                    float currentPosition = event.getY();
+                    if(currentPosition > lastScrollPosition)
+                    {
+                        scrollingUp = false;
+                    }
+                    else{
+                        scrollingUp = true;
+                    }
+
+                    lastScrollPosition = currentPosition;
+                }
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    lastScrollPosition = 0;
+                }
+
+                return false;
+            }
+        });
 
 //        ((GridView)aq.id(R.id.remakesGridView).getView())
 
         ((GridView)aq.id(R.id.remakesGridView).getView()).setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-
+                if(scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
+                    userScrolled = true;
+                }
+                else{
+                    userScrolled = false;
+                }
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if(!firstRun && firstVisibleItem == 0 && !videoIsDisplayed){
-                    openDemoVideo();
-                }
-                else if(!firstRun && firstVisibleItem > 0 && videoIsDisplayed){
-                    closeDemoVideo();
+                if(userScrolled) {
+                    if (!firstRun && firstVisibleItem == 0 && !videoIsDisplayed && !scrollingUp) {
+                        openDemoVideo();
+                    } else if (!firstRun && firstVisibleItem >= 0 && videoIsDisplayed && scrollingUp) {
+                        closeDemoVideo();
+                    }
                 }
 
             }
@@ -457,6 +486,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         }
 
         videoIsDisplayed = true;
+        videoPlayerFragment.videoIsShowing = true;
 
 //            Allow screen orientation to rotate demo video into full screen
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
@@ -483,6 +513,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
             animateStoryDetailsVideoContainer(0, 0, 185f, -120f, -1f, -1f);
 
             videoIsDisplayed = false;
+            videoPlayerFragment.videoIsShowing = false;
 
 //            Video is closed so don't allow flip screen! And close video if playing
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
@@ -600,6 +631,8 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     @Override
     public void onResume() {
         super.onResume();
+        videoPlayerFragment.remakePlaying = false;
+        videoPlayerFragment.storyDetailsPaused = false;
         SetTitle();
 
         ((MainActivity) getActivity()).lastSection = MainActivity.SECTION_STORY_DETAILS;
@@ -616,6 +649,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     @Override
     public void onPause() {
         super.onPause();
+        videoPlayerFragment.storyDetailsPaused = true;
         stopStoryVideo();
         aq.id(R.id.greyscreen).visibility(View.VISIBLE);
         handler.removeCallbacks(runPager);
@@ -747,7 +781,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 
     //region video player calls
     private void playRemakeMovie(String remakeID, int remakeGridviwId) {
-
+        videoPlayerFragment.remakePlaying = true;
         stopStoryVideo();
         hideFetchMoreRemakesProgress();
 

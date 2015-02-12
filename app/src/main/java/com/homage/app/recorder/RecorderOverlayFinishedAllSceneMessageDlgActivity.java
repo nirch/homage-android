@@ -11,10 +11,8 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
-import com.androidquery.util.Constants;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
@@ -25,7 +23,6 @@ import com.homage.model.Story;
 import com.homage.networking.analytics.HEvents;
 import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
-import com.homage.networking.server.Server;
 
 import java.util.HashMap;
 
@@ -51,7 +48,7 @@ public class RecorderOverlayFinishedAllSceneMessageDlgActivity extends RecorderO
         story = remake.getStory();
         scene = story.findScene(sceneID);
 
-        aq.id(R.id.overlayIcon).image(R.drawable.recorder_icon_trophy);
+        aq.id(R.id.overlayIcon).image(R.drawable.icon_trophy);
         aq.id(R.id.bigImpactTitle).text(getResources().getString(R.string.title_great_job));
         aq.id(R.id.descriptionText).text("You nailed all scenes. Lets finish the movie");
         aq.id(R.id.actionButton).text("CREATE MOVIE");

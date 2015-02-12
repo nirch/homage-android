@@ -101,6 +101,11 @@ public class Remake extends SugarRecord<Remake> {
         return null;
     }
 
+    public static void deleteByOID(String oid) {
+        List<Remake> res = Remake.find(Remake.class, "oid = ?", oid);
+        res.get(0).delete();
+    }
+
     public Footage findFootageOrCreate(int sceneID) {
         Footage footage = findFootage(sceneID);
         if (footage != null) return footage;

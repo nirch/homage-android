@@ -583,7 +583,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     private void refreshMyStoriesIfCurrentSection() {
-        hideRefreshProgress();
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
         if (f!=null) {
@@ -596,6 +596,7 @@ public class MainActivity extends ActionBarActivity
                 gotPushMessage = false;
             }
         }
+        hideRefreshProgress();
     }
 
     private BroadcastReceiver onStoriesUpdated = new BroadcastReceiver() {
@@ -605,7 +606,7 @@ public class MainActivity extends ActionBarActivity
 
             Bundle b = intent.getExtras();
             boolean success = b.getBoolean("success", false);
-            hideRefreshProgress();
+
 
             if (currentSection == SECTION_STORIES && success) {
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -615,6 +616,7 @@ public class MainActivity extends ActionBarActivity
                 }
                 //showStories();
             }
+            hideRefreshProgress();
         }
     };
 
@@ -661,7 +663,6 @@ public class MainActivity extends ActionBarActivity
     }
 
     void showNotificationDialog(String title, String text) {
-        currentSection = SECTION_OPEN_DIALOG;
         // Create the fragment and show it as a dialog.
         DialogFragment newFragment = OpenMessageDialog.newInstance(title, text);
         newFragment.show(getSupportFragmentManager(), FRAGMENT_TAG_OPEN_DIALOG);
@@ -735,6 +736,7 @@ public class MainActivity extends ActionBarActivity
     private BroadcastReceiver onRemakeCreation = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             Crashlytics.log("onRemakeCreation");
 
             pd.dismiss();
@@ -753,6 +755,7 @@ public class MainActivity extends ActionBarActivity
                 myIntent.putExtras(b);
                 MainActivity.this.startActivityForResult(myIntent, MainActivity.REQUEST_CODE_RECORDER);
             }
+            hideRefreshProgress();
         }
     };
 
@@ -760,6 +763,7 @@ public class MainActivity extends ActionBarActivity
     private BroadcastReceiver onRemakesForStoryUpdated = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             Crashlytics.log("onRemakesForStoryUpdated");
 
             HashMap<String, Object> requestInfo = Server.requestInfoFromIntent(intent);
@@ -768,21 +772,26 @@ public class MainActivity extends ActionBarActivity
                 hideRefreshProgress();
                 storyDetailsFragment.refreshData();
             }
+            hideRefreshProgress();
         }
     };
 
     private BroadcastReceiver onRemakesForUserUpdated = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             Crashlytics.log("onRemakesForUserUpdated");
+            if (pd != null) pd.dismiss();
 
             refreshMyStoriesIfCurrentSection();
+            hideRefreshProgress();
         }
     };
 
     private BroadcastReceiver onRemakeDeletion = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             Crashlytics.log("onRemakeDeletion");
 
             if (pd != null) pd.dismiss();
@@ -790,14 +799,17 @@ public class MainActivity extends ActionBarActivity
             HashMap<String, Object> responseInfo = (HashMap<String, Object>) intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
 
             if (success && currentSection == SECTION_ME) {
-                refreshMyStoriesIfCurrentSection();
+//                refetchRemakesForCurrentUser();
+                //refreshMyStoriesIfCurrentSection();
             }
+            hideRefreshProgress();
         }
     };
 
     private BroadcastReceiver onUserLogin = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            hideRefreshProgress();
             Crashlytics.log("onUserLogin");
 
             updateLoginState();
@@ -806,25 +818,6 @@ public class MainActivity extends ActionBarActivity
     //endregion
 
 //    //region *** Options ***
-//    public void onSectionAttached(int number) {
-//        switch (number) {
-//            case SECTION_STORIES:
-//                mTitle = getString(R.string.nav_item_1_stories);
-//                break;
-//            case SECTION_ME:
-//                mTitle = getString(R.string.nav_item_2_me);
-//                break;
-//            case SECTION_SETTINGS:
-//                mTitle = getString(R.string.nav_item_3_settings);
-//                break;
-//            case SECTION_HOWTO:
-//                mTitle = getString(R.string.nav_item_4_howto);
-//                break;
-//        }
-//        if(aq != null) {
-//            aq.id(R.id.appTitle).getTextView().setText(mTitle);
-//        }
-//    }
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
@@ -1156,10 +1149,22 @@ public class MainActivity extends ActionBarActivity
         pd.setCancelable(true);
         pd.show();
 
+        // return share view to position and remove delete and reset
+        Fragment f = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_ME);
+        if (f != null) {
+            ((MyStoriesFragment)f).slideInShare(((MyStoriesFragment)f).getLastViewTouched());
+            ((MyStoriesFragment)f).setShareView(null);
+            ((MyStoriesFragment)f).setShareIsDisplayed(true);
+
+        }
+
         // Send the request to the server.
         HomageServer.sh().deleteRemake(
                 remake.getOID(),
                 null);
+        Remake.deleteByOID(remake.getOID());
+        refreshMyStoriesIfCurrentSection();
+        if(pd != null) pd.dismiss();
     }
 
     public void askUserIfWantToContinueRemake(Remake remake) {
@@ -1587,24 +1592,31 @@ imageView.setImageDrawable(icon);
 
     public static void DownloadVideoAndShare(Context context, HashMap<String, String> videoInfo) {
         String localFileUrlName = getLocalVideoFile(videoInfo.get(constants.VIDEO_URL));
-        videoInfo.put(constants.LOCAL_FILE_NAME, localFileUrlName);
-        VideoHandler vd = new VideoHandler();
-        File cacheDir = context.getCacheDir();
-        File outFile = new File(cacheDir, videoInfo.get(constants.LOCAL_FILE_NAME));
-        if (!outFile.exists()) {
-            vd.CreateCachedVideo(context, videoInfo);
-        } else {
-            if(Boolean.valueOf(videoInfo.get(constants.SHARE_VIDEO))) {
-                ((MainActivity)context).shareVideoIntent(videoInfo);
+        if(localFileUrlName != null) {
+            videoInfo.put(constants.LOCAL_FILE_NAME, localFileUrlName);
+            VideoHandler vd = new VideoHandler();
+            File cacheDir = context.getCacheDir();
+            File outFile = new File(cacheDir, videoInfo.get(constants.LOCAL_FILE_NAME));
+            if (!outFile.exists()) {
+                vd.CreateCachedVideo(context, videoInfo);
+            } else {
+                if (Boolean.valueOf(videoInfo.get(constants.SHARE_VIDEO))) {
+                    ((MainActivity) context).shareVideoIntent(videoInfo);
+                }
             }
         }
     }
 
     public static String getLocalVideoFile(String url) {
         String fileName = url.substring(url.lastIndexOf('/') + 1, url.length());
-        fileName = fileName.replace("%20", " ");
-        String fileLocalUrl = fileName;
-        return fileLocalUrl;
+        if(!fileName.isEmpty()) {
+            fileName = fileName.replace("%20", " ");
+            String fileLocalUrl = fileName;
+            return fileLocalUrl;
+        }
+        else{
+            return null;
+        }
     }
     //endregion
 

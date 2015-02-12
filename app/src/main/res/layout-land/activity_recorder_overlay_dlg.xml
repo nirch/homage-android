@@ -21,7 +21,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="35dp"
-        android:src="@drawable/recorder_icon_trophy"
+        android:src="@drawable/icon_trophy"
         android:contentDescription="icon" />
 
     <!-- Container that will hold the title, the description text and the main action button of this dlg -->
@@ -62,7 +62,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             style="@style/actionButton"
-            android:drawableLeft="@drawable/icon_got_it"
+            android:drawableLeft="@drawable/icon_lets_create"
             android:drawablePadding="20dp" />
 
         <!-- main action button for this dialogue -->

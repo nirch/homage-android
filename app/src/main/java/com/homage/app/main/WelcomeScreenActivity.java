@@ -1,6 +1,5 @@
 package com.homage.app.main;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -18,8 +17,6 @@ import com.homage.app.player.VideoPlayerFragment;
 import com.homage.networking.analytics.HEvents;
 import com.homage.networking.analytics.HMixPanel;
 import com.homage.views.ActivityHelper;
-
-import java.util.HashMap;
 
 public class WelcomeScreenActivity extends FragmentActivity {
     static final String TAG = "TAG_WelcomeScreenActivity";
@@ -40,7 +37,7 @@ public class WelcomeScreenActivity extends FragmentActivity {
         b.putBoolean(VideoPlayerFragment.K_AUTO_START_PLAYING, true);
         b.putBoolean(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, false);
         b.putString(VideoPlayerFragment.K_FILE_URL, videoURL.toString());
-        b.putInt(VideoPlayerFragment.K_THUMB_DRAWABLE_ID, R.drawable.intro_video_thumb);
+        b.putInt(VideoPlayerFragment.K_THUMB_DRAWABLE_ID, R.drawable.intro_movie_thumbnail);
 
         b.putString(HEvents.HK_VIDEO_ENTITY_ID, "");
         b.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_INTRO_MOVIE);
