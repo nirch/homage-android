@@ -33,10 +33,25 @@ android {
             minifyEnabled false
         }
     }
+
+    flavorDimensions "enviornment", "white_label"
+
     productFlavors {
+
+
         flavorProduction {
+            flavorDimension "enviornment"
         }
         flavorDev {
+            flavorDimension "enviornment"
+        }
+
+        Homage{
+            flavorDimension "white_label"
+        }
+
+        Monkey_Dance{
+            flavorDimension "white_label"
         }
     }
     sourceSets.main {
