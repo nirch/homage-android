@@ -3,14 +3,16 @@
 
     <color name="the_void">#77000000</color>
     <color name="clear">#00000000</color>
-    <color name="record">#FF7D5F</color>
+    <color name="record">#AB1723</color>
+    <color name="bright">#C76C2C</color>
+    <color name="bright_see_through">#88C76C2C</color>
     <color name="normal_text">#FFFFFF</color>
-    <color name="impact">#FF7656</color>
-    <color name="impact_see_through">#FF765699</color>
-    <color name="dark_see_through">#44000000</color>
-    <color name="dark">#000000</color>
-    <color name="darker">#222222</color>
-    <color name="very_dark">#000000</color>
+    <color name="impact">#FDAE2B</color>
+    <color name="impact_see_through">#88FDAE2B</color>
+    <color name="dark_see_through">#88361915</color>
+    <color name="dark">#552C17</color>
+    <color name="darker">#351914</color>
+    <color name="very_dark">#1E0E0D</color>
     <color name="darkest">#000000</color>
     <color name="dark_overlay">#22000000</color>
     <color name="error">#FF2523</color>

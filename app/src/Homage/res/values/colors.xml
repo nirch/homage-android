@@ -6,7 +6,7 @@
     <color name="record">#FF7D5F</color>
     <color name="normal_text">#FFFFFF</color>
     <color name="impact">#FF7656</color>
-    <color name="impact_see_through">#FF765699</color>
+    <color name="impact_see_through">#99FF7656</color>
     <color name="dark_see_through">#44000000</color>
     <color name="dark">#000000</color>
     <color name="darker">#222222</color>
