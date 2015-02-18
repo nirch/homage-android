@@ -1,23 +1,16 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.Base.AppCompat">
-        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
-        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
-        <item name="android:actionBarStyle">@style/HomageActionBar</item>
-    </style>
-
     <!-- ActionBar styles -->
     <style name="HomageActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@android:color/transparent</item>
+        <item name="android:background">@color/dark</item>
     </style>
 
     <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
-        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:typeface">monospace</item>
     </style>
 
     <style name="RobotoButtonStyle" parent="android:Widget.Holo.Button">
-        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:typeface">monospace</item>
     </style>
 
     <style name="Theme.Transparent" parent="android:Theme">
@@ -40,7 +33,7 @@
 
     <style name="SceneText">
         <item name="android:textSize">24dp</item>
-        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:textColor">@color/normal_text</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
@@ -50,7 +43,7 @@
 
     <style name="SceneTextImpact">
         <item name="android:textSize">24dp</item>
-        <item name="android:textColor">@color/homage_impact</item>
+        <item name="android:textColor">@color/impact</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
@@ -62,30 +55,30 @@
         <item name="android:textSize">34dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:textColor">@color/normal_text</item>
     </style>
 
     <style name="HomageMediumTitle">
         <item name="android:textSize">26dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:textColor">@color/normal_text</item>
     </style>
 
     <style name="HomageSmallTitle">
         <item name="android:textSize">17dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:textColor">@color/normal_text</item>
     </style>
 
     <style name="HomageSmallVideoTitleImpact">
         <item name="android:textSize">25dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/homage_impact</item>
+        <item name="android:textColor">@color/impact</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:shadowColor">@color/homage_dark_void_2</item>
+        <item name="android:shadowColor">@color/dark</item>
         <item name="android:shadowDx">2</item>
         <item name="android:shadowDy">2</item>
         <item name="android:shadowRadius">2</item>
@@ -94,14 +87,14 @@
     <style name="HomageDarkOverlay">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
-        <item name="android:background">@color/homage_dark_overlay</item>
+        <item name="android:background">@color/dark_overlay</item>
     </style>
 
     <style name="HomageImpactButtonsContainer">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">56dp</item>
         <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:background">@color/homage_void</item>
+        <item name="android:background">@color/the_void</item>
     </style>
 
     <style name="HomageVideosPageIndicator">
@@ -115,7 +108,7 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@drawable/selector_impact_button</item>
-        <item name="android:textColor">@color/homage_button_text</item>
+        <item name="android:textColor">@color/dark</item>
         <item name="android:paddingLeft">12dp</item>
         <item name="android:paddingRight">12dp</item>
         <item name="android:layout_weight">1</item>
@@ -126,7 +119,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@drawable/selector_impact_button</item>
-        <item name="android:textColor">@color/homage_button_text</item>
+        <item name="android:textColor">@color/dark</item>
         <item name="android:paddingLeft">40dp</item>
         <item name="android:paddingRight">40dp</item>
         <item name="android:layout_weight">1</item>
@@ -136,8 +129,8 @@
         <item name="android:textSize">22dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/homage_remake_button</item>
-        <item name="android:textColor">@color/homage_button_text</item>
+        <item name="android:background">@color/impact</item>
+        <item name="android:textColor">@color/dark</item>
         <item name="android:paddingLeft">40dp</item>
         <item name="android:paddingRight">40dp</item>
         <item name="android:layout_weight">1</item>
@@ -180,9 +173,9 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:background">@drawable/selector_action_button_bg</item>
-        <item name="android:textColor">@color/homage_record_button</item>
+        <item name="android:textColor">@color/record</item>
         <item name="android:textSize">23dp</item>
-        <item name="android:shadowColor">@color/homage_dark_void_2</item>
+        <item name="android:shadowColor">@color/dark</item>
         <item name="android:shadowDx">2</item>
         <item name="android:shadowDy">2</item>
         <item name="android:shadowRadius">2</item>
@@ -193,9 +186,9 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:background">@drawable/selector_action_button_bg</item>
-        <item name="android:textColor">@color/homage_record_button_stroke</item>
+        <item name="android:textColor">@color/record_button_stroke</item>
         <item name="android:textSize">20dp</item>
-        <item name="android:shadowColor">@color/homage_dark_void_2</item>
+        <item name="android:shadowColor">@color/dark</item>
         <item name="android:shadowDx">2</item>
         <item name="android:shadowDy">2</item>
         <item name="android:shadowRadius">2</item>
@@ -206,7 +199,7 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:background">@drawable/selector_action_button_bg</item>
-        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:textColor">@color/normal_text</item>
         <item name="android:textSize">14dp</item>
     </style>
 
@@ -227,13 +220,13 @@
     <style name="storiesCellText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:textColor">@color/normal_text</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">17dp</item>
     </style>
 
     <style name="headerText">
-        <item name="android:textColor">@color/homage_impact</item>
+        <item name="android:textColor">@color/impact</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">50dp</item>
         <item name="android:gravity">center</item>
@@ -241,17 +234,17 @@
         <item name="android:adjustViewBounds">true</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
-        <item name="android:background">@color/homage_black</item>
+        <item name="android:background">@color/dark</item>
     </style>
 
     <style name="greyDivider">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0.3dp</item>
-        <item name="android:background">@color/holo_gray_bright</item>
+        <item name="android:background">@color/faded1</item>
     </style>
 
     <style name="storyDetailsText">
-        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:textColor">@color/normal_text</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">50dp</item>
         <item name="android:gravity">center</item>
@@ -259,7 +252,7 @@
         <item name="android:adjustViewBounds">true</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
-        <item name="android:background">@color/homage_button_text</item>
+        <item name="android:background">@color/dark</item>
         <item name="android:textStyle">bold</item>
 
     </style>
@@ -267,7 +260,7 @@
     <style name="remakeText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/homage_text</item>
+        <item name="android:textColor">@color/normal_text</item>
         <item name="android:textStyle">bold</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">17dp</item>

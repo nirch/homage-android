@@ -29,6 +29,7 @@ import com.homage.app.main.MainActivity;
 import com.homage.app.main.WelcomeScreenActivity;
 import com.homage.model.User;
 import com.homage.networking.analytics.HMixPanel;
+import com.homage.networking.parsers.ConfigParser;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import com.homage.views.ActivityHelper;
@@ -66,6 +67,8 @@ public class LoginActivity extends Activity {
     boolean allowGuestLogin = false;
     boolean startMainActivityAfterLogin = false;
 
+    SharedPreferences prefs;
+
     int login_method;
 
     //region *** Lifecycle ***
@@ -81,8 +84,8 @@ public class LoginActivity extends Activity {
         aq = new AQuery(this);
 
         // Set default email field
-        SharedPreferences p = HomageApplication.getSettings(this);
-        String email = p.getString(HomageApplication.SK_EMAIL, "").trim();
+        prefs = HomageApplication.getSettings(this);
+        String email = prefs.getString(HomageApplication.SK_EMAIL, "").trim();
         aq.id(R.id.loginMail).text(email);
 
         //
@@ -190,6 +193,8 @@ public class LoginActivity extends Activity {
             HashMap props = new HashMap<String,String>();
             props.put("email",user.email);
             props.put("homage_id",user.getOID().toString());
+            props.put("Campaign ID", HomageApplication.getInstance().getResources().getString(R.string.campaign_id));
+            props.put("App", HomageApplication.getInstance().getResources().getString(R.string.app_name));
             HMixPanel.sh().registerSuperProperties(props);
             HMixPanel.sh().setPeople(props);
 
@@ -202,6 +207,8 @@ public class LoginActivity extends Activity {
         } else {
             HashMap props = new HashMap<String, String>();
             props.put("email", "guest");
+            props.put("Campaign ID", HomageApplication.getInstance().getResources().getString(R.string.campaign_id));
+            props.put("App", HomageApplication.getInstance().getResources().getString(R.string.app_name));
             props.put("homage_id", user.getOID().toString());
         }
 
@@ -298,6 +305,8 @@ public class LoginActivity extends Activity {
                     HashMap props = new HashMap<String,String>();
                     props.put("email",user.email);
                     props.put("homage_id",user.getOID().toString());
+                    props.put("Campaign ID", HomageApplication.getInstance().getResources().getString(R.string.campaign_id));
+                    props.put("App", HomageApplication.getInstance().getResources().getString(R.string.app_name));
                     HMixPanel.sh().registerSuperProperties(props);
                     HMixPanel.sh().setPeople(props);
 

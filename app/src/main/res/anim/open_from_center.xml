@@ -9,7 +9,7 @@
 
         <translate
             android:duration="500"
-            android:background="@color/homage_dark_transparent_overlay"
+            android:background="@color/dark_overlay"
             android:fillAfter="false"
             android:fillBefore="false"
             android:fromYDelta="20%"

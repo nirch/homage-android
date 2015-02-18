@@ -3,15 +3,15 @@
     <item android:state_selected="true">
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
             <gradient android:angle="270"
-                android:startColor="@color/homage_button_bg3"
-                android:endColor="@color/homage_button_bg3" />
+                android:startColor="@color/dark"
+                android:endColor="@color/dark" />
         </shape>
     </item>
     <item android:state_pressed="true">
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
             <gradient android:angle="270"
-                android:startColor="@color/homage_button_bg2"
-                android:endColor="@color/homage_button_bg" />
+                android:startColor="@color/dark"
+                android:endColor="@color/impact" />
         </shape>
     </item>
     <item>

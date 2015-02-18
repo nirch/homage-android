@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="108dp"
     android:orientation="vertical"
-    android:background="@color/homage_almost_black"
+    android:background="@color/dark"
     >
 
     <ImageView android:id="@+id/remakeImage"
@@ -38,7 +38,7 @@
         android:id="@+id/views_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/homage_text"
+        android:textColor="@color/normal_text"
         android:layout_toRightOf="@+id/views_icon"
         android:layout_alignParentBottom="true"/>
 
@@ -63,7 +63,7 @@
         android:id="@+id/likes_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/homage_text"
+        android:textColor="@color/normal_text"
         android:layout_toRightOf="@+id/liked_button"
         android:layout_alignParentBottom="true"/>
 

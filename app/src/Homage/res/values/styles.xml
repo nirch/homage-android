@@ -1,3 +1,367 @@
 <resources>
 
+    <!--  Homage -->
+
+    <!-- region Downloading -->
+
+    <style name="recorderDownloadContainer">
+        <item name="android:background">@color/darker</item>
+    </style>
+
+    <style name="recorderDownloadActivity">
+        <item name="android:background">@color/impact</item>
+    </style>
+
+    <style name="recorderDownloadCancelButtonBG">
+        <item name="android:background">@color/bright</item>
+    </style>
+
+    <style name="recorderDownloadCancelButtonX">
+        <item name="android:background">@color/bright</item>
+    </style>
+
+    <style name="recorderDownloadCancelButtonBorder">
+        <item name="android:background">@color/darker</item>
+    </style>
+
+    <style name="recorderDownloadTitle">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+
+    <!-- endregion Downloading -->
+
+    <!-- region Misc -->
+
+    <style name="videoTitles">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+    <style name="activityControlTint">
+        <item name="android:color">@color/impact</item>
+    </style>
+
+    <style name="refreshControlTint">
+        <item name="android:color">@color/impact</item>
+    </style>
+
+    <style name="hideAppViewBG">
+        <item name="android:color">@color/the_void</item>
+    </style>
+
+    <!-- endregion Misc -->
+
+    <!-- region Recorder -->
+
+    <style name="recorderCloseButtonX">
+        <!--<item name="android:color">@color/impact</item>-->
+        <item name="android:background">@drawable/selector_recorder_ontop_button_bg</item>
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:imageButtonStyle">?android:actionButtonStyle</item>
+    </style>
+
+    <style name="recorderTutorialButton">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+    <style name="recorderTutorialText">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+    <style name="recorderRecordButton">
+        <item name="android:color">@color/record</item>
+        <!--<item name="android:background">@color/darker</item>-->
+        <item name="android:textColor">@color/impact</item>
+        <item name="android:background">@drawable/selector_recorder_record_button</item>
+        <!-- the outline is defined in colors.xml as record_button_stroke-->
+    </style>
+
+    <style name="recorderRecordButtonCounterBG1">
+        <item name="android:background">@color/record</item>
+    </style>
+
+    <style name="recorderRecordButtonCounterBG2">
+        <item name="android:background">@color/darker</item>
+    </style>
+
+    <style name="recorderMessageActionButton">
+        <item name="android:background">@color/darker</item>
+    </style>
+
+    <style name="recorderMessageText">
+        <item name="android:background">@color/normal_text</item>
+    </style>
+
+    <style name="recorderMessageTitle">
+        <item name="android:background">@color/bright</item>
+    </style>
+
+    <style name="recorderRecordingProgressBar">
+        <item name="android:background">@color/impact</item>
+    </style>
+
+    <style name="recorderVideoTitles">
+        <item name="android:background">@color/impact</item>
+    </style>
+
+    <style name="recorderDrawerBG">
+        <item name="android:background">@color/bright_see_through</item>
+    </style>
+
+    <style name="recorderDrawerSepLine">
+        <item name="android:color">@color/dark_overlay</item>
+    </style>
+
+    <style name="recorderSceneInfoTitle">
+        <item name="android:textColor">@color/bright</item>
+    </style>
+
+    <style name="recorderSceneInfoData">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+    <!-- endregion Recorder -->
+
+    <!-- region Rendering Bar -->
+
+    <style name="renderingBar">
+        <item name="android:textColor">@color/impact</item>
+        <item name="android:background">@color/bright</item>
+    </style>
+
+    <!-- endregion Rendering Bar -->
+
+    <!-- region splash -->
+
+    <array name="arraySplashActivityIndicator" >
+        <item name="item_0">#6655D3</item>
+        <item name="item_1">#2693D5</item>
+        <item name="item_2">#FD7A29</item>
+        <item name="item_3">#ED1B72</item>
+        <item name="item_4">#1F9239</item>
+        <item name="item_5">#FEC92F</item>
+        <item name="item_6">#D81A27</item>
+    </array>
+
+    <style name="splashActivityIndicator">
+        <item name="android:background">@color/impact</item>
+    </style>
+
+    <!-- endregion splash -->
+
+    <!-- region navigation and status bar -->
+
+    <style name="statusBar">
+        <item name="android:background">@color/darkest</item>
+    </style>
+
+    <style name="sideNavBarSeparator">
+        <item name="android:color">@color/bright</item>
+    </style>
+
+    <style name="sideNavBarOptionText">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+    <style name="sideNavBar">
+        <item name="android:background">@color/very_dark</item>
+    </style>
+
+    <style name="sideNavBarLoginButton">
+        <item name="android:textColor">@color/normal_text</item>
+    </style>
+
+    <style name="sideNavBarTopContainer">
+        <item name="android:background">@color/darker</item>
+    </style>
+
+    <style name="sideNavBarUser">
+        <item name="android:background">@color/impact</item>
+    </style>
+
+    <style name="navBar">
+        <item name="android:textColor">@color/impact</item>
+        <item name="android:background">@color/darker</item>
+    </style>
+
+    <style name="navBarSeparator">
+        <item name="android:background">@color/darker</item>
+    </style>
+
+    <!-- endregion navigation and status bar -->
+
+    <!-- region login Section -->
+
+    <style name="login">
+        <item name="android:background">@color/clear</item>
+        <item name="android:textColor">@color/normal_text</item>
+    </style>
+
+    <style name="loginSubtleButtonText">
+        <item name="android:textColor">@color/normal_text</item>
+    </style>
+
+    <style name="loginInputPlaceHolder">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+    <style name="loginInput">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+    <style name="loginActivityIndicator">
+        <item name="android:background">@color/impact</item>
+    </style>
+
+    <style name="loginErrorMessages">
+        <item name="android:textColor">@color/error</item>
+    </style>
+
+    <style name="loginImpactButton">
+        <item name="android:textColor">@color/darkest</item>
+        <item name="android:background">@color/impact</item>
+    </style>
+
+    <style name="loginFadedText">
+        <item name="android:textColor">@color/faded1</item>
+    </style>
+
+    <style name="loginFadedLinks">
+        <item name="android:textColor">@color/faded2</item>
+    </style>
+
+    <!-- endregion login Section -->
+
+    <!-- region settings -->
+
+    <style name="settings">
+        <item name="android:textColor">@color/impact</item>
+        <item name="android:background">@color/darkest</item>
+    </style>
+
+    <style name="settingsSeparator">
+        <item name="android:background">@color/impact</item>
+    </style>
+
+    <style name="settingsControlsTint">
+        <item name="android:background">@color/impact</item>
+    </style>
+
+    <style name="settingsSectionTitle">
+        <item name="android:textColor">@color/darkest</item>
+        <item name="android:background">@color/faded2</item>
+    </style>
+
+    <!-- endregion settings -->
+
+    <!-- region stories -->
+
+    <style name="storiesText">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+    <!-- endregion stories -->
+
+    <!-- My Stories Section -->
+
+    <style name="meText">
+        <item name="android:textColor">@color/normal_text</item>
+    </style>
+
+    <style name="meRemakeButton">
+        <item name="android:textColor">@color/impact</item>
+        <item name="android:background">@color/darker</item>
+    </style>
+
+    <style name="meCreateFirstVideo">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+    <!-- end My Stories Section -->
+
+    <!-- region story details -->
+
+    <style name="sDText">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+    <style name="sDDescription">
+        <item name="android:textColor">@color/impact</item>
+        <item name="android:background">@color/bright</item>
+    </style>
+
+    <style name="sDMoreRemakesTitle">
+        <item name="android:textColor">@color/impact</item>
+        <item name="android:background">@color/darker</item>
+    </style>
+
+    <style name="sDRemakeButton">
+        <item name="android:textColor">@color/impact</item>
+        <item name="android:background">@color/darker</item>
+    </style>
+
+    <style name="sDNoRemakesLabel">
+        <item name="android:textColor">@color/impact_see_through</item>
+    </style>
+
+    <style name="sDRemakeInfo">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+
+    <array name="arraySDMoreRemakesActivityIndicator" >
+        <item name="item_0">#552C17</item>
+        <item name="item_1">#361915</item>
+    </array>
+
+    <!-- endregion story details -->
+
+    <!-- region store -->
+
+    <style name="pCNumKey">
+        <item name="android:textColor">@color/very_dark</item>
+        <item name="android:background">@color/impact</item>
+        <!--<item name="android:stroke">@color/veryDark</item>-->
+    </style>
+
+    <style name="pCTitle">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+    <style name="pCText">
+        <item name="android:textColor">@color/normal_text</item>
+    </style>
+
+    <style name="pCInput">
+        <item name="android:textColor">@color/normal_text</item>
+        <!--<item name="android:border">@color/normalText</item>-->
+    </style>
+
+    <style name="storeProductTitle">
+        <item name="android:textColor">@color/normal_text</item>
+    </style>
+
+    <style name="storeProductDescription">
+        <item name="android:textColor">@color/impact</item>
+    </style>
+
+    <style name="storeProductPrice">
+        <item name="android:textColor">@color/normal_text</item>
+    </style>
+
+    <style name="storeProductLine">
+        <item name="android:color">@color/faded3</item>
+    </style>
+
+    <style name="storeProductBuyButton">
+        <item name="android:textColor">@color/normal_text</item>
+        <item name="android:background">@color/darker</item>
+        <!--<item name="android:stroke">@color/bright</item>-->
+    </style>
+
+    <!-- endregion store -->
+
+
 </resources>

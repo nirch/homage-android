@@ -13,7 +13,7 @@
     <FrameLayout android:id="@+id/videoCurtain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/homage_darker_transparent_overlay"
+        android:background="@color/dark_overlay"
         >
     </FrameLayout>
 
@@ -28,6 +28,7 @@
         style="@style/HomageRecorderOnTopButton"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:src="@drawable/back_nav_icon" />
 
 </RelativeLayout>

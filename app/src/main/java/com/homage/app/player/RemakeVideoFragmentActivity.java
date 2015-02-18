@@ -43,6 +43,7 @@ import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.networking.analytics.HEvents;
 import com.homage.networking.analytics.HMixPanel;
+import com.homage.networking.parsers.ConfigParser;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 
@@ -360,6 +361,8 @@ public class RemakeVideoFragmentActivity extends
         try {
             fullStop();
             removeObservers();
+            ActionBar action = getActionBar();
+            if (action != null) action.show();
         } catch (Exception ex) {
         }
     }
@@ -781,22 +784,25 @@ public class RemakeVideoFragmentActivity extends
 
         String subject = "";
         String text = "";
+        String sharePrefix = HomageApplication.getInstance().
+                getSharedPreferences(HomageApplication.SETTINGS_NAME, Context.MODE_PRIVATE).getString(
+                ConfigParser.SHARE_LINK_PREFIX,getResources().getString(R.string.share_link_prefix));
 
         // User and story found
         if (userFullname != null && story != null) {
             subject ="Remake of " + story.name;
             text = "Check out " + userFullname + "'s Remake of " + story.name + "\n" +
-                    "http://play.homage.it/" + remake.getOID();
+                    sharePrefix + "/" + remake.getOID();
             // no user but story found
         } else if (userFullname == null && story != null) {
             subject = "Remake of " + story.name;
             text = "Check out this Remake of " + story.name + "\n" +
-                    "http://play.homage.it/" + remake.getOID();
+                    sharePrefix + "/" + remake.getOID();
             // no user and no story
         } else {
             subject = "Remake from Homage";
             text = "Check out this Remake\n" +
-                    "http://play.homage.it/" + remake.getOID();
+                    sharePrefix + "/" + remake.getOID();
         }
 //        Add links to playstore and apple store
         text = text + "\n\n" +

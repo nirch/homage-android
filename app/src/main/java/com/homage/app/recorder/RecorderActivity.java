@@ -583,21 +583,21 @@ public class RecorderActivity extends Activity
                 raq.id(R.id.sceneIconLockedInList).visibility(View.GONE);
                 raq.id(R.id.sceneTimeInList).visibility(View.VISIBLE);
                 raq.id(R.id.sceneRetakeButton).visibility(View.GONE);
-                raq.id(R.id.sceneNumberInList).textColorId(R.color.homage_text);
+                raq.id(R.id.sceneNumberInList).textColorId(R.color.normal_text);
             } else if (readyState == Footage.ReadyState.READY_FOR_SECOND_RETAKE) {
                 //
                 // Ready for second retake.
                 raq.id(R.id.sceneIconLockedInList).visibility(View.GONE);
                 raq.id(R.id.sceneTimeInList).visibility(View.GONE);
                 raq.id(R.id.sceneRetakeButton).visibility(View.VISIBLE);
-                raq.id(R.id.sceneNumberInList).textColorId(R.color.homage_impact);
+                raq.id(R.id.sceneNumberInList).textColorId(R.color.impact);
             } else {
                 //
                 // Locked.
                 raq.id(R.id.sceneIconLockedInList).visibility(View.VISIBLE);
                 raq.id(R.id.sceneTimeInList).visibility(View.GONE);
                 raq.id(R.id.sceneRetakeButton).visibility(View.GONE);
-                raq.id(R.id.sceneNumberInList).textColorId(R.color.homage_disabled);
+                raq.id(R.id.sceneNumberInList).textColorId(R.color.faded3);
             }
 
             raq.id(R.id.sceneNumberInList).clicked(new View.OnClickListener() {

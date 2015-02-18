@@ -5,7 +5,7 @@
     android:id="@+id/remake_video_top_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/homage_darker_transparent_overlay"
+    android:background="@color/dark_overlay"
     android:clickable="true"
     >
 
@@ -32,7 +32,7 @@
 
         <TextView android:id="@+id/remakeMoreRemakes"
             style="@style/headerText"
-            android:background="@color/homage_black"
+            android:background="@color/dark"
             android:text="@string/show_remake"
             />
     </LinearLayout>
@@ -44,7 +44,7 @@
         android:orientation="horizontal"
         android:layout_below="@+id/remakeHeaders"
         android:adjustViewBounds="true"
-        android:background="@color/homage_black">
+        android:background="@color/dark">
 
     <VideoView android:id="@+id/videoView"
         android:layout_width="fill_parent"
@@ -242,7 +242,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/remakeWrapper"
-        android:background="@color/homage_dark_transparent_overlay"
+        android:background="@color/dark_overlay"
 
         ></RelativeLayout>
 

@@ -11,7 +11,6 @@
     <!-- Analytics -->
     <bool name="mp_analytics_on_debug">true</bool>
     <bool name="homage_server_analytics_on_debug">false</bool>
-    <string name="mixpanel_token">bab0997e7171d56daf35df751f523962</string>
 
     <!--Bucket Name-->
     <string name="bucket_name">homagetest</string>
@@ -33,6 +32,7 @@
     <string name="url_unlike_remake">remake/unlike</string>
     <string name="url_new_user">user</string>
     <string name="url_stories">stories</string>
+    <string name="url_config">config</string>
     <string name="url_new_remake">remake</string>
     <string name="url_existing_remake">remake</string>
     <string name="url_delete_remake">remake</string>

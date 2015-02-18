@@ -64,7 +64,7 @@
         <TextView android:id="@+id/textErrorMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/homage_text_error"
+            android:textColor="@color/error"
             android:text=""
             />
 
@@ -123,7 +123,7 @@
                 android:layout_height="30dp"
                 android:text="@string/login_tos_button"
                 android:background="@drawable/selector_action_button_bg"
-                android:textColor="@color/homage_impact"
+                android:textColor="@color/impact"
                 android:alpha="0.5"
                 android:textSize="12dp"
                 />
@@ -141,7 +141,7 @@
                 android:layout_height="30dp"
                 android:text="@string/login_privacy_button"
                 android:background="@drawable/selector_action_button_bg"
-                android:textColor="@color/homage_impact"
+                android:textColor="@color/impact"
                 android:alpha="0.5"
                 android:textSize="12dp"
                 />

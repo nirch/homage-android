@@ -5,7 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@+id/topStoryDetailsLayout"
-    android:background="@color/homage_black"
+    android:background="@color/dark"
     >
 
     <LinearLayout
@@ -33,11 +33,9 @@
 
     <TextView android:id="@+id/moreRemakes"
         style="@style/headerText"
-        android:text="@string/show_more_remakes"
+        android:text="@string/more_remakes"
         android:layout_below="@+id/storyHead"
         />
-
-
 
     <FrameLayout
         android:id="@+id/loadingLayout"
@@ -50,7 +48,7 @@
         <TextView android:id="@+id/noRemakesMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/homage_button_bg2"
+            android:textColor="@color/dark"
             android:text="@string/no_remakes"
             android:textSize="14sp"
             android:gravity="center"
@@ -134,7 +132,7 @@
     <FrameLayout android:id="@+id/greyscreen"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/homage_darker_transparent_overlay"
+        android:background="@color/dark_overlay"
         android:visibility="gone"
         >
     </FrameLayout>

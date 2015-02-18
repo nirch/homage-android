@@ -67,6 +67,8 @@ public class ContourHandler {
                             url = new URL(contourURL);
 //                            Download.CreateFolderInLocalStorage(storagePath+folderName);
 
+
+
                             DownloadUtil.WriteFileToStorage(null, outFile, tempFile, url);
 
                         } catch (MalformedURLException e) {

@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="70px"
         android:layout_alignParentTop="true"
-        android:background="@color/homage_black"
+        android:background="@color/dark"
         android:visibility="invisible"
         >
     </View>
@@ -51,7 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="70px"
         android:layout_alignParentBottom="true"
-        android:background="@color/homage_black"
+        android:background="@color/dark"
         android:visibility="invisible"
         >
     </View>
@@ -60,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
-        android:background="@color/homage_recorder_script_background"
+        android:background="@color/white_seethrough_bg"
         >
         <ImageView
             android:layout_width="wrap_content"
@@ -75,7 +75,7 @@
             android:layout_height="wrap_content"
             android:text="@string/placeholder_story_remakes_count"
             android:layout_centerInParent="true"
-            android:textColor="@color/homage_text"
+            android:textColor="@color/normal_text"
             android:textStyle="bold"
             />
     </RelativeLayout>
@@ -84,7 +84,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/homage_recorder_script_background"
+        android:background="@color/white_seethrough_bg"
         >
         <ImageView
             android:layout_width="wrap_content"
@@ -100,7 +100,7 @@
             android:layout_height="wrap_content"
             android:text="@string/placeholder_story_remakes_count"
             android:layout_centerInParent="true"
-            android:textColor="@color/homage_text"
+            android:textColor="@color/normal_text"
             android:textStyle="bold"
             />
     </RelativeLayout>
@@ -147,7 +147,7 @@
             android:layout_height="fill_parent"
             android:layout_marginTop="40dp"
             android:layout_alignParentBottom="true"
-            android:background="@color/homage_dark_overlay"
+            android:background="@color/dark_overlay"
             >
         </RelativeLayout>
 
@@ -186,7 +186,7 @@
             <View
                 android:layout_width="2dp"
                 android:layout_height="fill_parent"
-                android:background="@color/homage_record_button_stroke"
+                android:background="@color/record_button_stroke"
                 />
 
             <RelativeLayout
@@ -313,7 +313,7 @@
                     style="@style/HCenteredText"
                     android:visibility="gone"
                     android:text="Use Solid Color Background"
-                    android:textColor="@color/homage_impact"
+                    android:textColor="@color/impact"
                     />
 
                 <ImageView
@@ -347,15 +347,14 @@
         <ImageButton android:id="@+id/recorderRecordButton"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/selector_recorder_record_button"
+            style="@style/recorderRecordButton"
             android:layout_centerHorizontal="true"
             />
 
         <!-- Warning button -->
         <ImageButton android:id="@+id/warningRecordButton"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:background="@android:color/transparent"
             android:src="@drawable/selector_warning_button"
             android:layout_marginLeft="-27dp"
@@ -399,7 +398,7 @@
             ***********************
     -->
     <ImageButton android:id="@+id/recorderOverlayDismissButton"
-        style="@style/HomageRecorderOnTopButton"
+        style="@style/recorderCloseButtonX"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"

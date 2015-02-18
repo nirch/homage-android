@@ -2,17 +2,17 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_checked="true">
         <shape>
-            <solid android:color="@color/homage_option_selected" />
+            <solid android:color="@color/option_selected" />
         </shape>
     </item>
     <item android:state_selected="true">
         <shape>
-            <solid android:color="@color/homage_option_selected" />
+            <solid android:color="@color/option_selected" />
         </shape>
     </item>
     <item android:state_pressed="true">
         <shape>
-            <solid android:color="@color/homage_option_highlighted" />
+            <solid android:color="@color/option_highlighted" />
         </shape>
     </item>
     <item>

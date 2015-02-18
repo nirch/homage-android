@@ -14,7 +14,7 @@
     <FrameLayout android:id="@+id/storygreyscreen"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/homage_darkest_transparent_overlay"
+        android:background="@color/dark_overlay"
         android:visibility="gone"
         >
     </FrameLayout>

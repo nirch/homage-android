@@ -8,7 +8,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="2px"
-        android:background="@color/homage_borders"
+        android:background="@color/dark"
         android:layout_alignParentBottom="true"
         />
 

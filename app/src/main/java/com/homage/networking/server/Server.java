@@ -61,8 +61,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -294,7 +296,8 @@ abstract public class Server {
             return nameValuePairs;
         }
 
-        protected HttpRequestBase requestForMethod(String method, String url, HashMap<String,String> parameters)
+        protected HttpRequestBase requestForMethod(String method, String url, HashMap<String,String> parameters,
+                                                   HashMap<String,Object> info)
                 throws ServerException, UnsupportedEncodingException, URISyntaxException {
 
             method = method.toUpperCase();
@@ -346,6 +349,19 @@ abstract public class Server {
             request.setHeader("APP_CLIENT_TYPE", "Android");
             request.setHeader("APP_VERSION_INFO", app.getVersionName());
             request.setHeader("USER_ID", app.getCurrentUserID());
+
+            // Add headers from flavour
+            if (info != null && info.size() > 0) {
+                for (Map.Entry<String, Object> entry : info.entrySet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    // ...
+                    Log.d(TAG, key + " = " + value);
+
+                    request.setHeader(key, value.toString());
+                }
+            }
+
             return request;
         }
 
@@ -361,7 +377,7 @@ abstract public class Server {
 
             try {
                 // Choose the request according to the method type.
-                HttpRequestBase request = requestForMethod(method, url, parameters);
+                HttpRequestBase request = requestForMethod(method, url, parameters, info);
 
                 // Set the URI
                 HttpResponse response = client.execute(request);

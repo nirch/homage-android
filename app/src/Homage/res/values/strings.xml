@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">Homage</string>
     <string name="app_main_title">Homage</string>
+    <string name="campaign_id">544ead1e454c610d1600000f</string>
+    <string name="main_font">font/DINOT-CondBold.otf</string>
+
+    <!-- Default fallback Config Homage -->
+    <string name="share_link_prefix">http://play-test.homage.it</string>
+    <string name="significant_view_pct_threshold">0.5</string>
+    <string name="mirror_selfie_silhouette">true</string>
+    <string name="mixpanel_token">bab0997e7171d56daf35df751f523962</string>
+    <string name="recorder_forced_bbg_policy">0</string>
+    <string name="remakes_save_to_device">2</string>
+    <string name="remakes_save_to_device_premium_id">0</string>
+
 </resources>

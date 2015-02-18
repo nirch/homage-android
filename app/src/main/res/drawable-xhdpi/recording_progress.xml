@@ -4,7 +4,7 @@
     <item android:id="@android:id/background">
         <shape>
             <shape>
-                <solid android:color="@color/homage_recorder_progress_bg"/>
+                <solid android:color="@color/impact_see_through"/>
             </shape>
         </shape>
     </item>
@@ -12,7 +12,7 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape>
-                <solid android:color="@color/homage_impact"/>
+                <solid android:color="@color/impact"/>
             </shape>
         </clip>
     </item>

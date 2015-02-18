@@ -1,33 +1,30 @@
 package com.homage.app.player;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.drawable.GradientDrawable;
-import android.media.AudioManager;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.IconButton;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.androidquery.AQuery;
+import com.homage.CustomViews.VideoViewInternal;
 import com.homage.app.R;
 import com.homage.networking.analytics.HEvents;
-import com.homage.networking.server.HomageServer;
 
-import java.lang.reflect.Field;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 
 public class VideoPlayerFragment
@@ -85,7 +82,7 @@ public class VideoPlayerFragment
     // Views & Layout
     AQuery aq;
     View rootView;
-    public VideoView videoView;
+    public VideoViewInternal videoView;
     LayoutInflater inflater;
     boolean alreadyGotSettings = false;
 
@@ -103,9 +100,9 @@ public class VideoPlayerFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.inflater = inflater;
-        rootView = inflater.inflate(R.layout.fragment_homage_video_view, container, false);
+        rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
         aq = new AQuery(rootView);
-        videoView = (VideoView)aq.id(R.id.videoView).getView();
+        videoView = (VideoViewInternal)aq.id(R.id.videoView).getView();
 
         // Get the the file path / url of the video.
         if (alreadyGotSettings) {
@@ -168,7 +165,8 @@ public class VideoPlayerFragment
 
         if (autoStartPlaying) {
             aq.id(R.id.videoThumbnailImage).visibility(View.GONE);
-            aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+            hideControls();
+
         }
 
         if (thumbURL != null) {
@@ -186,7 +184,7 @@ public class VideoPlayerFragment
         }
 
         showThumbWhileLoading();
-        showControls();
+//        showControls();
     }
 
     private void initializePlayingVideo() {
@@ -206,8 +204,27 @@ public class VideoPlayerFragment
 
         if (filePath != null) {
 
-            // A local video file.
-            videoView.setVideoPath(filePath);
+            try {
+
+                FileInputStream fis = new FileInputStream (new File(filePath));
+
+
+                try {
+                    videoView.setVideoFD(fis.getFD());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }finally {
+//                    try {
+//                        fis.close();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+                }
+
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
 
         } else if (fileURL != null) {
 
@@ -220,10 +237,10 @@ public class VideoPlayerFragment
         videoView.setOnPreparedListener(this);
         videoView.setOnErrorListener(this);
         videoView.setOnCompletionListener(this);
-        if (Build.VERSION.SDK_INT > 16) {
-            // Only available in API 17 and up.
-            videoView.setOnInfoListener(this);
-        }
+//        if (Build.VERSION.SDK_INT > 16) {
+//            // Only available in API 17 and up.
+//            videoView.setOnInfoListener(this);
+//        }
     }
     //endregion
 
@@ -267,15 +284,16 @@ public class VideoPlayerFragment
     // Bind to UI events
     private void bindUIHandlers() {
         aq.id(R.id.touchVideoButton).clicked(onClickedToggleControlsButton);
-        aq.id(R.id.videoStopButton).clicked(onClickedStopButton);
-        aq.id(R.id.videoPlayPauseButton).clicked(onClickedPlayPauseButton);
+        aq.id(R.id.videoBigStopButton).clicked(onClickedStopButton);
+//        aq.id(R.id.videoPlayPauseButton).clicked(onClickedPlayPauseButton);
 //        aq.id(R.id.videoFullScreenButton).clicked(onClickedFullScreenButton);
         aq.id(R.id.videoBigPlayButton).clicked(onClickedBigPlayButton);
     }
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        pause();
+//        pause();
+        fullStop();
         Log.d(TAG, String.format("Finished playing video: %s", filePath));
         videoView.pause();
         if (onFinishedPlayback != null) {
@@ -322,7 +340,8 @@ public class VideoPlayerFragment
 
     //region *** Controls ***
     void showControls() {
-        aq.id(R.id.videoControls).visibility(View.VISIBLE);
+        aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
+        aq.id(R.id.videoBigStopButton).visibility(View.VISIBLE);
 
         if (autoHideControls) {
             new Handler().postDelayed(new Runnable() {
@@ -335,11 +354,13 @@ public class VideoPlayerFragment
     }
 
     void hideControls() {
-        aq.id(R.id.videoControls).visibility(View.GONE);
+        aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+        aq.id(R.id.videoBigStopButton).visibility(View.GONE);
     }
 
     void toggleControls() {
-        if (aq.id(R.id.videoControls).getView().getVisibility() == View.VISIBLE) {
+        if (aq.id(R.id.videoBigPlayButton).getView().getVisibility() == View.VISIBLE ||
+                aq.id(R.id.videoBigStopButton).getView().getVisibility() == View.VISIBLE) {
             hideControls();
         } else {
             showControls();
@@ -350,23 +371,25 @@ public class VideoPlayerFragment
         if (videoView.isPlaying()) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PAUSE, info);
             pause();
+            ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
         } else {
-            if(!remakePlaying && !videoIsShowing) {
+            if(!remakePlaying && videoIsShowing) {
                 start();
+                ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_pause);
             }
         }
     }
 
     void pause() {
-        ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
-        ib.setImageResource(R.drawable.selector_video_button_play);
+//        ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
+//        ib.setImageResource(R.drawable.selector_video_button_play);
         if (videoView != null) videoView.pause();
     }
 
     void start() {
         aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
-        ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
-        ib.setImageResource(R.drawable.selector_video_button_pause);
+//        ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
+//        ib.setImageResource(R.drawable.selector_video_button_pause);
         aq.id(R.id.videoView).visibility(View.VISIBLE);
         if (videoView != null) {
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYING, info);
@@ -381,8 +404,8 @@ public class VideoPlayerFragment
 //        if (videoView != null) videoView.seekTo(0);
 //        pause();
         aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
-        ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_pause);
         aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+        aq.id(R.id.videoBigStopButton).visibility(View.GONE);
 //        aq.id(R.id.videoView).visibility(View.INVISIBLE);
         aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
     }
@@ -394,12 +417,17 @@ public class VideoPlayerFragment
     void hideThumb() {
         aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
         aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+        aq.id(R.id.videoBigStopButton).visibility(View.GONE);
+
     }
     //endregion
 
     //region *** video commands ***
     public void fullStop() {
         if(videoView != null) {
+
+            ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
+
             HashMap<String, Object> eInfo = new HashMap<String, Object>(info);
             eInfo.put(HEvents.HK_VIDEO_PLAYBACK_TIME, videoView.getCurrentPosition());
             eInfo.put(HEvents.HK_VIDEO_TOTAL_DURATION, videoView.getDuration());
@@ -416,6 +444,7 @@ public class VideoPlayerFragment
                 return;
             }
             showThumbState();
+
         }
     }
     //endregion
@@ -447,31 +476,32 @@ public class VideoPlayerFragment
         }
     };
 
-    View.OnClickListener onClickedPlayPauseButton = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            togglePlayPause();
-        }
-    };
+//    View.OnClickListener onClickedPlayPauseButton = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//            togglePlayPause();
+//        }
+//    };
 
     View.OnClickListener onClickedBigPlayButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            hideThumb();
-            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
-            aq.id(R.id.loadingVideoPprogress).visibility(View.VISIBLE);
-            videoView.seekTo(0);
-            start();
+//            hideThumb();
+//            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
+//            aq.id(R.id.loadingVideoPprogress).visibility(View.VISIBLE);
+//            videoView.seekTo(0);
+//            start();
+            togglePlayPause();
         }
     };
 
 
 
-    View.OnClickListener onClickedFullScreenButton = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-        }
-    };
+//    View.OnClickListener onClickedFullScreenButton = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//        }
+//    };
 
     @Override
     public boolean onInfo(MediaPlayer mp, int what, int extra) {

@@ -3,11 +3,13 @@ package com.homage.networking.analytics;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.model.User;
+import com.homage.networking.parsers.ConfigParser;
 import com.homage.networking.server.HomageServer;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
@@ -18,6 +20,11 @@ import java.util.HashMap;
 
 public class HMixPanel {
     String TAG = "TAG_" + getClass().getName();
+
+    HomageApplication app = HomageApplication.getInstance();
+    SharedPreferences prefs = app.getSharedPreferences(
+            HomageApplication.SETTINGS_NAME,
+            Context.MODE_PRIVATE);
 
     public MixpanelAPI mMixpanel;
 
@@ -34,8 +41,10 @@ public class HMixPanel {
         // 2. App configured to work with test servers and configured not to block mix panel events (blocked by default)
         if (!HomageServer.sh().shouldBlockMPAnalytics()) {
             // Should initialize mixpanel analytics.
-            mMixpanel = MixpanelAPI.getInstance(context, HomageServer.sh().mMixpanelToken);
-            Log.d(TAG, String.format("Initializing mixpanel with token: %s", HomageServer.sh().mMixpanelToken));
+            String mixPanelToken = prefs.getString(
+                    ConfigParser.MIXPANEL_TOKEN, app.getResources().getString(R.string.mixpanel_token));
+            mMixpanel = MixpanelAPI.getInstance(context, mixPanelToken);
+            Log.d(TAG, String.format("Initializing mixpanel with token: %s", mixPanelToken));
         } else {
             // Should block mix panel analytics.
             Log.d(TAG, "Configured not to initialize mixpanel");

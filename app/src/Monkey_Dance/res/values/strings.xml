@@ -2,4 +2,17 @@
 <resources>
     <string name="app_name">Monkey Dance</string>
     <string name="app_main_title">Monkey Dance</string>
+    <string name="campaign_id">54919516454c61f4080000e5</string>
+    <string name="main_font">font/jilkyway.otf</string>
+
+    <!-- Default fallback Config Monkey Dance-->
+
+    <string name="share_link_prefix">http://play-test.homage.it</string>
+    <string name="significant_view_pct_threshold">0.5</string>
+    <string name="mirror_selfie_silhouette">true</string>
+    <string name="mixpanel_token">bab0997e7171d56daf35df751f523962</string>
+    <string name="recorder_forced_bbg_policy">0</string>
+    <string name="remakes_save_to_device">2</string>
+    <string name="remakes_save_to_device_premium_id">5492ae082b9986d480000482</string>
+
 </resources>

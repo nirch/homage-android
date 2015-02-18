@@ -61,6 +61,8 @@ public class SplashScreenActivity extends Activity {
         ActivityHelper.hideSystemBars(this);
         HMixPanel.sh().track("AppLaunch",null);
 
+
+
         final User user = User.getCurrent();
         new Handler().postDelayed(new Runnable(){
             @Override

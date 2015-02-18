@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="90dp"
     android:orientation="vertical"
-    android:background="@color/homage_black"
+    android:background="@color/dark"
     android:id="@+id/parent_container"
     >
 
@@ -11,8 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="89dp"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/moreButtonContainer"
-        android:layout_toStartOf="@+id/moreButtonContainer"
         >
 
         <RelativeLayout  android:id="@+id/thumbContainer"
@@ -79,7 +77,7 @@
                     android:layout_centerHorizontal="true"
                     android:background="@android:color/transparent"
                     android:text="@string/rendering_remake_message"
-                    android:textColor="@color/homage_impact"
+                    android:textColor="@color/impact"
                     android:textSize="22dp"
                     />
             </RelativeLayout>
@@ -88,7 +86,7 @@
             <TextView android:id="@+id/storyName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/homage_text"
+                android:textColor="@color/normal_text"
                 android:textSize="17sp"
                 android:gravity="center"
                 android:paddingTop="10dp"
@@ -105,8 +103,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        android:layout_toLeftOf="@+id/moreButtonContainer"
-        android:layout_toStartOf="@+id/moreButtonContainer"
         >
         <RelativeLayout android:id="@+id/myResetButtonContainer"
             android:layout_width="wrap_content"
@@ -117,7 +113,7 @@
             <TextView android:id="@+id/resetButtonName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/homage_text"
+                android:textColor="@color/normal_text"
                 android:textSize="17sp"
                 android:paddingTop="10dp"
                 android:gravity="center"
@@ -143,7 +139,7 @@
             <TextView android:id="@+id/deleteButtonName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/homage_text"
+                android:textColor="@color/normal_text"
                 android:textSize="17sp"
                 android:paddingTop="10dp"
                 android:text="@string/placeholder_delete_title"
@@ -165,23 +161,10 @@
     </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/moreButtonContainer"
-        android:layout_width="20dp"
+        android:id="@+id/swipeLayout"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:paddingRight="10dp"
-        android:paddingEnd="10dp">
-
-        <android.widget.IconButton
-            android:id="@+id/moreButton"
-            style="@style/remakeText"
-            android:text="@string/icon_more_v"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"/>
-
+        android:background="@color/clear">
     </FrameLayout>
 
 </RelativeLayout>

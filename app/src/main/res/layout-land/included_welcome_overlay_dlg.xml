@@ -24,7 +24,7 @@
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/homage_dark_transparent_overlay"
+        android:background="@color/dark_overlay"
         android:alpha="0.9"></FrameLayout>
 
     <LinearLayout
@@ -68,7 +68,7 @@
                 android:layout_weight="0.8"
                 android:textAllCaps="true"
                 android:gravity="center_vertical"
-                android:shadowColor="@color/homage_dark_void_2"
+                android:shadowColor="@color/dark"
                 android:shadowDx="2"
                 android:shadowDy="2" />
         </LinearLayout>

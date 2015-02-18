@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/bigImpactTitle"
-            android:textColor="@color/homage_text"
+            android:textColor="@color/normal_text"
             android:gravity="center"
             android:text="@string/title_got_push_message_msg"
             style="@style/HomageSmallTitle"

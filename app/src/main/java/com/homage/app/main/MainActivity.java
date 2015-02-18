@@ -32,6 +32,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Vibrator;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -57,6 +59,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.homage.FileHandler.VideoHandler;
+import com.homage.app.Download.DownloadTask;
+import com.homage.app.Download.DownloadThread;
+import com.homage.app.Download.DownloadThreadListener;
 import com.homage.app.R;
 import com.homage.app.Utils.cacheUtil;
 import com.homage.app.Utils.constants;
@@ -78,6 +83,10 @@ import com.homage.networking.uploader.UploadManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +94,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends ActionBarActivity
         implements
-            NavigationDrawerFragment.NavigationDrawerCallbacks {
+            NavigationDrawerFragment.NavigationDrawerCallbacks,
+        DownloadThreadListener {
 
     String TAG = "TAG_MainActivity";
 
@@ -93,6 +103,14 @@ public class MainActivity extends ActionBarActivity
 
     AQuery aq;
     AQuery actionAQ;
+
+    // Download Stories
+    public DownloadThread downloadThread;
+    public Handler handler;
+    List<Story> stories;
+    int maxStoriesToDownload = 10;
+    boolean reDownloadStories = false;
+
 
     public static final int SECTION_LOGIN      = 0;
     public static final int SECTION_STORIES    = 1;
@@ -312,6 +330,16 @@ public class MainActivity extends ActionBarActivity
         actionAQ.id(R.id.refreshButton).clicked(onClickedRefreshButton);
         //endregion
 
+        // Create and launch the download thread
+        downloadThread = new DownloadThread(this);
+        downloadThread.start();
+
+        // Create the Handler. It will implicitly bind to the Looper
+        // that is internally created for this thread (since it is the UI thread)
+        handler = new Handler();
+
+        downloadStories();
+
         // Upload service after loading page. Loads Main page more quickly
         UploadManager.sh().checkUploader();
     }
@@ -386,6 +414,10 @@ public class MainActivity extends ActionBarActivity
             pd = null;
         }
         clearReferences();
+
+        // request the thread to stop
+        downloadThread.requestStop();
+
         super.onDestroy();
     }
 
@@ -619,6 +651,56 @@ public class MainActivity extends ActionBarActivity
             hideRefreshProgress();
         }
     };
+
+    // region Download Stories
+
+    private void downloadStories(){
+        stories = Story.allActiveStories();
+
+        for (int i = 0; i < maxStoriesToDownload; i++){
+                if(stories.size() >= i+1) {
+                    try {
+                        File cacheDir = context.getCacheDir();
+                        File mOutFile = new File(cacheDir, stories.get(i).name.replace(" ", "_") + ".mp4");
+                        if (reDownloadStories || !mOutFile.exists()) {
+                            downloadThread.enqueueDownload(new DownloadTask(mOutFile,
+                                    new URL(stories.get(i).video), true));
+                        }
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+        }
+    }
+
+    @Override
+    public void handleDownloadThreadUpdate() {
+        // we want to modify the progress bar so we need to do it from the UI thread
+        // how can we make sure the code runs in the UI thread? use the handler!
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                int total = downloadThread.getTotalQueued();
+                int completed = downloadThread.getTotalCompleted();
+
+//                progressBar.setMax(total);
+//
+//                progressBar.setProgress(0); // need to do it due to a ProgressBar bug
+//                progressBar.setProgress(completed);
+//
+//                statusText.setText(String.format("Downloaded %d/%d", completed, total));
+
+                // vibrate for fun
+//                if (completed == total) {
+//                    ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(100);
+//                }
+            }
+        });
+
+    }
+
+    // endregion
 
 // region Push notification from remake made
 
@@ -1399,6 +1481,7 @@ public class MainActivity extends ActionBarActivity
         PackageManager pm = getPackageManager();
 
         final Story story = sharedRemake.getStory();
+        // TODO add to config
         final String iosDownloadLink = "http://bit.ly/18CsEjt"; // https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8
         final String androidDownloadLink = "http://bit.ly/1BACxVP"; // https://play.google.com/store/apps/details?id=com.homage.app
 

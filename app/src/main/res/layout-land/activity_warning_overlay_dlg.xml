@@ -10,7 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:scaleType="fitXY"
-        android:background="@color/homage_darkest_transparent_overlay"
+        android:background="@color/dark_overlay"
         android:alpha="0.75" />
 
     <!-- An icon at the top -->
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:textColor="@color/homage_text"
+            android:textColor="@color/normal_text"
             android:gravity="center"
             android:text="@string/title_improper_msg"
             style="@style/HomageSmallTitle"

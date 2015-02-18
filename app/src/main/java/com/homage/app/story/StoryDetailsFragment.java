@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -43,6 +45,7 @@ import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.server.HomageServer;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -70,6 +73,8 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     TextView likesCount;
     TextView viewsCount;
 
+    Typeface tf;
+
     //Fetching remakes area
     private final int NUMBERTOREFRESH = 16;
     final int fetchRemakes = NUMBERTOREFRESH;
@@ -81,8 +86,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     SwipeRefreshLayoutBottom swipeLayout;
 
     //    Gesture stuff
-    private GestureDetector mGestureDetector;
-    boolean userScrolled = false;
     boolean scrollingUp;
     float lastScrollPosition = 400;
 
@@ -293,42 +296,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         rootView = inflater.inflate(R.layout.fragment_story_details, container, false);
         initialize();
 
-        // Bind the gestureDetector to GestureListener
-        mGestureDetector = new GestureDetector(getActivity(), new GestureListener() {
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-//                flingUI();
-                return super.onFling(e1, e2, velocityX, velocityY);
-            }
-
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-//                doubletapUI();
-                return super.onDoubleTap(e);
-            }
-
-            @Override
-            public boolean onSingleTapUp(MotionEvent ev) {
-//                singleTapUI();
-                return super.onSingleTapUp(ev);
-            }
-        });
-
-//        Bind the more remakes button to the Gesture detector
-        aq.id(R.id.moreRemakes).getView().setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                boolean result = mGestureDetector.onTouchEvent(event);
-                if (!result) {
-                    if (event.getAction() == MotionEvent.ACTION_UP) {
-//                        stopScrolling();
-                        result = true;
-                    }
-                }
-                return result;
-            }
-        });
-
         // Add embedded video player fragment.
         videoPlayerFragment = new VideoPlayerFragment();
         runPager = new Runnable() {
@@ -397,69 +364,24 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
                     lastScrollPosition = 0;
                 }
 
+                int firstVisibleItem = ((GridView)aq.id(R.id.remakesGridView).getView()).getFirstVisiblePosition();
+
+                if (!firstRun && firstVisibleItem == 0 && !videoIsDisplayed && !scrollingUp) {
+                    openDemoVideo();
+                } else if (!firstRun && firstVisibleItem >= 0 && videoIsDisplayed && scrollingUp) {
+                    closeDemoVideo();
+                }
+
                 return false;
             }
         });
 
-//        ((GridView)aq.id(R.id.remakesGridView).getView())
+        tf = Typeface.createFromAsset(getActivity().getAssets(),
+                getActivity().getResources().getString(R.string.main_font));
 
-        ((GridView)aq.id(R.id.remakesGridView).getView()).setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if(scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
-                    userScrolled = true;
-                }
-                else{
-                    userScrolled = false;
-                }
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if(userScrolled) {
-                    if (!firstRun && firstVisibleItem == 0 && !videoIsDisplayed && !scrollingUp) {
-                        openDemoVideo();
-                    } else if (!firstRun && firstVisibleItem >= 0 && videoIsDisplayed && scrollingUp) {
-                        closeDemoVideo();
-                    }
-                }
-
-            }
-        });
+        aq.id(R.id.storyDescription).getTextView().setTypeface(tf);
 
         return rootView;
-    }
-
-//    region Gesture Handlers and functions
-
-    public void singleTapUI(){
-//        openCloseRemakesGridView();
-    }
-
-    public void flingUI() {
-//        openCloseRemakesGridView();
-    }
-
-    public void doubletapUI() {
-//        flipScreen();
-        int test = 10;
-    }
-
-    public void openCloseRemakesGridView() {
-
-        if(transformingVideo == false) {
-
-//        Open Remakes GridView
-            if (videoIsDisplayed) {
-                closeDemoVideo();
-            }
-            //        Close Remakes GridView
-            else {
-                openDemoVideo();
-
-            }
-
-        }
     }
 
     private void openDemoVideo() {
@@ -490,7 +412,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 
 //            Allow screen orientation to rotate demo video into full screen
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-        aq.id(R.id.moreRemakes).getTextView().setText(R.string.show_more_remakes);
     }
         //        firstRun runs first but never runs again...
         firstRun = false;
@@ -519,7 +440,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
             videoPlayerFragment.fullStop();
 
-            aq.id(R.id.moreRemakes).getTextView().setText(R.string.show_demo_video);
             //        firstRun runs first but never runs again...
             firstRun = false;
         }
@@ -562,6 +482,16 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     private void loadVideoPlayer() {
         // Initialize the video of the story we need to show in the fragment.
         Bundle b = new Bundle();
+
+        // if there is a file locally play it and not the url (faster!! :))
+        File cacheDir = getActivity().getCacheDir();
+        File mOutFile = new File(cacheDir,
+                story.name.replace(" ", "_") + ".mp4");
+        if(mOutFile.exists()) {
+            b.putString(VideoPlayerFragment.K_FILE_PATH, mOutFile.getPath());
+        }
+
+
         b.putString(VideoPlayerFragment.K_FILE_URL, story.video);
         b.putBoolean(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
         b.putBoolean(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
@@ -622,9 +552,15 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if(videoIsDisplayed) {
-            handleEmbeddedVideoConfiguration(newConfig);
-            ActionBar action = getActivity().getActionBar();
-            if (action != null) action.hide();
+            if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                handleEmbeddedVideoConfiguration(newConfig);
+                ActionBar action = getActivity().getActionBar();
+                if (action != null) action.show();
+            }else{
+                handleEmbeddedVideoConfiguration(newConfig);
+                ActionBar action = getActivity().getActionBar();
+                if (action != null) action.hide();
+            }
         }
     }
 

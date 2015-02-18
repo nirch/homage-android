@@ -35,8 +35,8 @@
                 <corners
                     android:radius="5dip" />
                 <gradient
-                    android:startColor="@color/homage_impact"
-                    android:endColor="@color/homage_button_bg2"
+                    android:startColor="@color/impact"
+                    android:endColor="@color/dark"
                     android:angle="270" />
             </shape>
         </clip>

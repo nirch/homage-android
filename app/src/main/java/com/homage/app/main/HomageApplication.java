@@ -31,6 +31,8 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.androidquery.callback.BitmapAjaxCallback;
+import com.homage.CustomViews.FontsOverride;
+import com.homage.app.R;
 import com.homage.app.recorder.CameraManager;
 import com.homage.model.User;
 import com.homage.networking.analytics.HMixPanel;
@@ -100,12 +102,21 @@ public class HomageApplication extends SugarApp {
         Log.d(TAG, "Started Homage android application.");
         Log.d(TAG, String.format("App version : %d", getAppVersion(getApplicationContext())));
 
+        // Override Monospace with my font
+        FontsOverride.setDefaultFont(this, "MONOSPACE", getResources().getString(R.string.main_font));
+
         registerActivityLifecycleCallbacks(new MyActivityLifecycleCallbacks());
         // Limit memory cache
         BitmapAjaxCallback.setCacheLimit(12);
 
+        // Initialize Server
+        initServer();
+
         // Initialize settings.
         initSettings();
+
+        // Initialize Configurations from server
+        initConfig();
 
         // Initialize the singletons so their instances
         // are bound to the application process.
@@ -169,9 +180,12 @@ public class HomageApplication extends SugarApp {
         this.mCurrentActivity = mCurrentActivity;
     }
 
-    protected void initSingletons() {
+    protected void initServer() {
         // Homage Server
         HomageServer.sh().init(this);
+    }
+
+    protected void initSingletons() {
 
         // Mixpanel
         HMixPanel.sh().init(this);
@@ -188,6 +202,10 @@ public class HomageApplication extends SugarApp {
         e.putBoolean(SettingsActivity.SKIP_STORY_DETAILS, false);
         e.putBoolean(SettingsActivity.UPLOADER_ACTIVE, true);
         e.commit();
+    }
+
+    protected void initConfig(){
+        HomageServer.sh().fetchConfig();
     }
 
     public static Context getContext() {

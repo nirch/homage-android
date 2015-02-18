@@ -39,6 +39,7 @@ import com.homage.app.main.HomageApplication;
 import com.homage.device.Device;
 import com.homage.model.Story;
 import com.homage.model.User;
+import com.homage.networking.parsers.ConfigParser;
 import com.homage.networking.parsers.RemakeParser;
 import com.homage.networking.parsers.RemakesParser;
 import com.homage.networking.parsers.StoriesParser;
@@ -51,6 +52,7 @@ import java.util.Random;
 public class HomageServer extends Server {
     //region *** Intent names ***
     final static public String INTENT_USER_CREATION             = "intent user creation";
+    final static public String INTENT_CONFIG                   = "intent config";
     final static public String INTENT_STORIES                   = "intent stories";
     final static public String INTENT_REMAKE_CREATION           = "intent remake creation";
     final static public String INTENT_REMAKE                    = "intent remake";
@@ -78,6 +80,7 @@ public class HomageServer extends Server {
 
     //region *** info keys ***
     final static public String IK_STORY_OID         = "storyOID";
+    final static public String CAMPAIGN_ID         = "CAMPAIGN_ID";
 
     //endregion
     final static public String IK_REMAKE_OID        = "remakeOID";
@@ -175,14 +178,19 @@ public class HomageServer extends Server {
         return true;
     }
 
-    //region *** Stories ***
+    //region *** Config ***
     /**
-     * Refetch all stories (and their child objects) info from the server.
+     * Fetch the config route from the server in order to configure the app correctly
      */
-    public void refetchStories() {
-        Log.v(TAG, "Refetching stories");
+    public void fetchConfig() {
+        Log.v(TAG, "Fetching config");
+
+        // Request info
+        HashMap<String,Object> info = new HashMap<String, Object>();
+        info.put(CAMPAIGN_ID, String.valueOf(HomageApplication.getInstance().getResources().getString(R.string.campaign_id)));
 
         HashMap<String, String> parameters;
+
 
         if (prefetchTopRemakes) {
             // Also prefetch the top remakes for each story.
@@ -192,7 +200,34 @@ public class HomageServer extends Server {
             // Fetch stories only.
             parameters = null;
         }
-        super.GET(R.string.url_stories, null, parameters, INTENT_STORIES, null, new StoriesParser());
+        super.GET(R.string.url_config, null, parameters, INTENT_CONFIG, info, new ConfigParser());
+    }
+    //endregion
+
+    //region *** Stories ***
+    /**
+     * Refetch all stories (and their child objects) info from the server.
+     * Get stories by campaign
+     */
+    public void refetchStories() {
+        Log.v(TAG, "Refetching stories");
+
+        // Request info
+        HashMap<String,Object> info = new HashMap<String, Object>();
+        info.put(CAMPAIGN_ID, String.valueOf(HomageApplication.getInstance().getResources().getString(R.string.campaign_id)));
+
+        HashMap<String, String> parameters;
+
+
+        if (prefetchTopRemakes) {
+            // Also prefetch the top remakes for each story.
+            parameters = new HashMap<String, String>();
+            parameters.put("remakes", "6");
+        } else {
+            // Fetch stories only.
+            parameters = null;
+        }
+        super.GET(R.string.url_stories, null, parameters, INTENT_STORIES, info, new StoriesParser());
     }
     //endregion
 

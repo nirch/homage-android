@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.InflateException;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -33,8 +35,6 @@ import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.uploader.UploadManager;
 import com.homage.networking.analytics.HEvents;
 
-import android.widget.IconButton;
-
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,6 +47,14 @@ public class MyStoriesFragment extends Fragment {
     List<Remake> remakes;
     ListView myStoriesListView;
     AQuery aq;
+
+    // drag variables to animate sliding correctly
+    int maxMovement;
+    float firstX;
+    float secondX;
+    float firstY;
+    float secondY;
+    boolean fingerIsDown = false;
 
     public View getLastViewTouched() {
         return lastViewTouched;
@@ -183,13 +191,7 @@ public class MyStoriesFragment extends Fragment {
                     aq.id(R.id.myMessageContainer).visibility(View.GONE);
                 }
 
-                aq.id(R.id.moreButton).clicked(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        lastViewTouched = view;
-                        showHideMoreButtons();
-                    }
-                });
+                bindUIButtonsToSwipeGesture(aq);
 
                 // Delete
                 aq.id(R.id.myDeleteButton).clicked(new View.OnClickListener() {
@@ -220,6 +222,7 @@ public class MyStoriesFragment extends Fragment {
                             FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, HEvents.H_REMAKE, remake.getOID().toString(), HomageApplication.HM_ME_TAB, true);
                         }
                     });
+
                 }
 
                 // Remake
@@ -307,26 +310,6 @@ public class MyStoriesFragment extends Fragment {
         return rootView;
     }
 
-    private void showHideMoreButtons() {
-        // If changed view close view if opened and go to next view
-        if(shareView != null && lastViewTouched != shareView){
-            if(!shareIsDisplayed){
-                changedViews = true;
-                slideInShare(shareView);
-            }
-            shareIsDisplayed = true;
-        }
-
-
-        if(shareIsDisplayed){
-            shareView = lastViewTouched;
-            slideOutShare(lastViewTouched);
-        }else{
-            shareView = lastViewTouched;
-            slideInShare(lastViewTouched);
-        }
-    }
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -377,63 +360,198 @@ public class MyStoriesFragment extends Fragment {
     };
     //endregion
 
+
     // region Animation and Gesture
+    /**
+     *  ==========================
+     *      ANIMATION BABY YEAH!!
+     *  ==========================
+     */
 
-    private void slideOutShare(final View viewTouched) {
+    private void bindUIButtonsToSwipeGesture(final AQuery aqView){
 
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        final int width = size.x;
-        final int height = size.y;
-        final int portraitheight = (size.x * 9) / 16;
-
-        shareIsDisplayed = false;
-
-
-        ((RelativeLayout)viewTouched.getParent().getParent()).findViewById(R.id.mainContainer).animate().xBy(width).setListener(new Animator.AnimatorListener() {
+        aqView.id(R.id.swipeLayout).getView().setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onAnimationStart(Animator animator) {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
 
+                if (checkForSwipeOrClickGesture(view, motionEvent, aqView)) return true;
+
+                return false;
             }
+        });
 
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                if(!shareIsDisplayed && viewTouched == lastViewTouched) {
-                    ((RelativeLayout)viewTouched.getParent().getParent()).findViewById(R.id.other_controls_container).setVisibility(View.VISIBLE);
-                    changedViews = false;
+    }
+
+    Rect outRect = new Rect();
+    int[] location = new int[2];
+
+    private boolean inViewInBounds(View view, int x, int y){
+        view.getDrawingRect(outRect);
+        view.getLocationOnScreen(location);
+        outRect.offset(location[0], location[1]);
+        return outRect.contains(x, y);
+    }
+
+    private boolean checkForSwipeOrClickGesture(View view, MotionEvent motionEvent, AQuery aqView) {
+
+        if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+            firstX = motionEvent.getX();
+            secondX = firstX;
+            firstY = motionEvent.getY();
+            secondY = firstY;
+//                            fingerIsDown = true;
+            lastViewTouched = view;
+            return true;
+        }
+        else if(motionEvent.getAction() == MotionEvent.ACTION_UP)
+        {
+
+//                            fingerIsDown = false;
+            int x = (int)motionEvent.getRawX();
+            int y = (int)motionEvent.getRawY();
+            View playButton =  aqView.id(R.id.myPlayButton).getView();
+            View shareButton =  aqView.id(R.id.myShareButton).getView();
+            View deleteButton =  aqView.id(R.id.myDeleteButton).getView();
+            View resetButton =  aqView.id(R.id.myResetButton).getView();
+
+            if(shareIsDisplayed && Math.abs(secondY - firstY) < 10
+                    && Math.abs(secondX - firstX) < 10){
+
+                if( inViewInBounds(playButton, x, y)){
+
+                    playButton.performClick();
+
+                }
+
+                if( inViewInBounds(shareButton, x, y)){
+
+                    shareButton.performClick();
+
                 }
 
             }
 
-            @Override
-            public void onAnimationCancel(Animator animator) {
+
+            if(!shareIsDisplayed && Math.abs(secondY - firstY) < 10
+                    && Math.abs(secondX - firstX) < 10){
+
+                if( inViewInBounds(deleteButton, x, y)){
+
+                    deleteButton.performClick();
+
+                }
+
+                if( inViewInBounds(resetButton, x, y)){
+
+                    resetButton.performClick();
+
+                }
 
             }
 
-            @Override
-            public void onAnimationRepeat(Animator animator) {
+            firstX = secondX;
+            firstY = secondY;
 
+        }
+
+        if(motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+            secondX = motionEvent.getX();
+            secondY = motionEvent.getY();
+
+            // if its not a down or up motion, and it's a big enough motion
+            // going right and share is displayed
+            // slide share out
+            if(Math.abs(secondY - firstY) < Math.abs(secondX - firstX)
+                    && secondX - firstX > 10){
+                closeLastView();
+                slideOutShare(view);
             }
-        });
+            // if its not a down or up motion, and it's a big enough motion
+            // going left and share is not displayed
+            // slide share in
+            else if(Math.abs(secondY - firstY) < Math.abs(secondX - firstX)
+                    && secondX - firstX < 10){
+                closeLastView();
+                slideInShare(view);
+            }
+        }
+        return false;
+    }
+
+    private void slideOutShare(final View viewTouched) {
+
+        if(shareIsDisplayed) {
+
+            Display display = getActivity().getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            final int width = size.x;
+            final int height = size.y;
+            final int portraitheight = (size.x * 9) / 16;
+
+            shareIsDisplayed = false;
 
 
+            ((RelativeLayout) viewTouched.getParent()).findViewById(R.id.mainContainer).animate().xBy(width).setListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    if (!shareIsDisplayed && viewTouched == lastViewTouched) {
+                        ((RelativeLayout) viewTouched.getParent()).findViewById(R.id.other_controls_container).setVisibility(View.VISIBLE);
+                        changedViews = false;
+                    }
+
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animator) {
+
+                }
+            });
+        }
     }
 
     public void slideInShare(final View viewTouched) {
 
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        final int width = size.x;
-        final int height = size.y;
-        final int portraitheight = (size.x * 9) / 16;
+        if(!shareIsDisplayed) {
 
-        shareIsDisplayed = true;
+            Display display = getActivity().getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            final int width = size.x;
+            final int height = size.y;
+            final int portraitheight = (size.x * 9) / 16;
 
-        ((RelativeLayout)viewTouched.getParent().getParent()).findViewById(R.id.other_controls_container).setVisibility(View.GONE);
+            shareIsDisplayed = true;
 
-        ((RelativeLayout)viewTouched.getParent().getParent()).findViewById(R.id.mainContainer).animate().xBy(-width);
+            ((RelativeLayout) viewTouched.getParent()).findViewById(R.id.other_controls_container).setVisibility(View.GONE);
+
+            ((RelativeLayout) viewTouched.getParent()).findViewById(R.id.mainContainer).animate().xBy(-width);
+
+        }
+    }
+
+    private void closeLastView() {
+        // If changed view close view if opened and go to next view
+        if(shareView != null && lastViewTouched != shareView){
+            if(!shareIsDisplayed){
+                changedViews = true;
+                slideInShare(shareView);
+
+                shareIsDisplayed = true;
+            }
+        }
+
+        shareView = lastViewTouched;
     }
 
     // endregion

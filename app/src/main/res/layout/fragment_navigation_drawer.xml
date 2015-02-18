@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:choiceMode="singleChoice"
-    android:divider="@color/homage_option_sep"
+    android:divider="@color/option_sep"
     android:dividerHeight="1dp"
-    android:background="@color/homage_impact"
+    android:background="@color/impact"
     tools:context="com.homage.app.main.NavigationDrawerFragment"
     >
 

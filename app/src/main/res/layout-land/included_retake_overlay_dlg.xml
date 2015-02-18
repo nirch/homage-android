@@ -10,7 +10,7 @@
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/homage_dark_transparent_overlay"
+        android:background="@color/dark_overlay"
         android:alpha="0.9"></FrameLayout>
 
     <!-- An icon at the top -->

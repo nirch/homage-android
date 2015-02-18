@@ -20,4 +20,13 @@
     <color name="faded2">#686868</color>
     <color name="faded3">#949695</color>
 
+    <!-- Android only -->
+    <color name="record_highlight">#ffff4034</color>
+    <color name="white_seethrough_bg">#44ffffff</color>
+    <color name="option_selected">#ffa35848</color>
+    <color name="option_highlighted">#99a35848</color>
+    <color name="option_sep">#FF000000</color>
+    <color name="record_button_stroke">#FFFFFF</color>
+    <color name="recorder_close_drawer">#FFFFFF</color>
+
 </resources>

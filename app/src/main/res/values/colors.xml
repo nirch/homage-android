@@ -1,50 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="homage_void">#000000</color>
-    <color name="homage_dark_overlay">#aa000000</color>
-    <color name="homage_dark_transparent_overlay">#33000000</color>
-    <color name="homage_darker_transparent_overlay">#88000000</color>
-    <color name="homage_darkest_transparent_overlay">#D00F0707</color>
-    <color name="homage__transparent">#00000000</color>
-    <color name="homage_text">#FFFFFF</color>
-    <color name="homage_text_error">#FF3333</color>
-    <color name="homage_impact">#FF5F45</color>
-    <color name="homage_disabled">#ffa4a4a4</color>
-    <color name="homage_button_text">#000000</color>
-    <color name="homage_button_bg">#FF7D5F</color>
-    <color name="homage_button_bg2">#ff592a2a</color>
-    <color name="homage_button_bg3">#ff363636</color>
-    <color name="homage_borders">#ff222222</color>
-    <color name="homage_remake_button">#ffff5f45</color>
+    <!--<color name="the_void">#000000</color>-->
+    <!--<color name="dark_overlay">#aa000000</color>-->
+    <!--<color name="dark_overlay">#33000000</color>-->
+    <!--<color name="dark_overlay">#88000000</color>-->
+    <!--<color name="dark_overlay">#D00F0707</color>-->
+    <!--<color name="clear">#00000000</color>-->
+    <!--<color name="normal_text">#FFFFFF</color>-->
+    <!--<color name="error">#FF3333</color>-->
+    <!--<color name="impact">#FF5F45</color>-->
+    <!--<color name="faded3">#ffa4a4a4</color>-->
+    <!--<color name="dark">#000000</color>-->
+    <!--<color name="impact">#FF7D5F</color>-->
+    <!--<color name="dark">#ff592a2a</color>-->
+    <!--<color name="dark">#ff363636</color>-->
+    <!--<color name="dark">#ff222222</color>-->
+    <!--<color name="impact">#ffff5f45</color>-->
 
-    <color name="homage_recorder_script_background">#44ffffff</color>
+    <!--<color name="white_seethrough_bg">#44ffffff</color>-->
 
-    <color name="homage_recorder_progress">#FF7D5F</color>
-    <color name="homage_recorder_progress_bg">#AADDDDDD</color>
-
-
-    <color name="homage_record_highlight">#ffff4034</color>
-    <color name="homage_record_button">#FF7D5F</color>
-    <color name="homage_record_button_stroke">#FFFFFF</color>
-    <color name="homage_recorder_close_drawer">#FFFFFF</color>
-    <color name="homage_recorder_close_drawer2">#999999</color>
-
-    <color name="homage_black">#ff000000</color>
-    <color name="homage_almost_black">#ff282828</color>
-    <color name="homage_dark_void_1">#ff000000</color>
-    <color name="homage_dark_void_2">#ff341a1a</color>
-
-    <color name="homage_option_selected">#ffa35848</color>
-    <color name="homage_option_highlighted">#99a35848</color>
-    <color name="homage_option_sep">#FF000000</color>
+    <!--<color name="impact">#FF7D5F</color>-->
+    <!--<color name="homage_recorder_progress_bg">#AADDDDDD</color>-->
 
 
-    <color name="test_red">#FF0000</color>
-    <color name="test_green">#00FF00</color>
-    <color name="test_blue">#0000FF</color>
-    <color name="test_yellow">#FFFF00</color>
-    <color name="test_bg">#112233</color>
+    <!--<color name="record_highlight">#ffff4034</color>-->
+    <!--<color name="record">#FF7D5F</color>-->
+    <!--<color name="record_button_stroke">#FFFFFF</color>-->
+    <!--<color name="recorder_close_drawer">#FFFFFF</color>-->
+    <!--<color name="faded3">#999999</color>-->
 
-    <color name="holo_gray_bright">#33CCCCCC</color>
+    <!--<color name="dark">#ff000000</color>-->
+    <!--<color name="dark">#ff282828</color>-->
+    <!--<color name="dark">#ff000000</color>-->
+    <!--<color name="dark">#ff341a1a</color>-->
+
+    <!--<color name="option_selected">#ffa35848</color>-->
+    <!--<color name="option_highlighted">#99a35848</color>-->
+    <!--<color name="option_sep">#FF000000</color>-->
+
+    <!--<color name="faded1">#33CCCCCC</color>-->
 
 </resources>

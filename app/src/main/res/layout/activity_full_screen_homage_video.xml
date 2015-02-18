@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/homage_black"
+    android:background="@color/dark"
     >
 
     <fragment android:name="com.homage.app.player.VideoPlayerFragment"
@@ -12,6 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         class="com.homage.app.player.VideoPlayerFragment"
-        tools:layout="@layout/fragment_homage_video_view" />
+        tools:layout="@layout/fragment_video_player" />
 
 </RelativeLayout>

@@ -19,6 +19,7 @@ import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -32,6 +33,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
+import com.homage.app.Download.DownloadThread;
 import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
@@ -162,6 +164,7 @@ public class StoriesListFragment extends Fragment {
         /**********************************/
         aq.id(R.id.storiesListView).itemClicked(onItemClicked);
         //endregion
+
     }
 
     //region *** fragment life cycle related
@@ -171,6 +174,7 @@ public class StoriesListFragment extends Fragment {
 
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_stories, container, false);
+
         initialize();
 
         // Force portrait.
