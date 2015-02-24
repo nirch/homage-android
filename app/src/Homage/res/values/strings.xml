@@ -6,6 +6,11 @@
     <string name="campaign_id">544ead1e454c610d1600000f</string>
     <string name="main_font">font/DINOT-CondBold.otf</string>
 
+    <string name="mixpanel_token">bab0997e7171d56daf35df751f523962</string>
+
+    <string name="app_share_message_subject">Join me in making awesome clips!</string>
+    <string name="app_share_message">keep calm and get Homage at</string>
+
     <!-- Default fallback Config Homage -->ד
 
     <!--Conversion-->
@@ -17,12 +22,12 @@
 
     <string name="share_link_prefix">http://play-test.homage.it</string>
     <!--description: The base url / prefix of url for share links-->
-    <string name="share_app_button">true</string>
+    <bool name="share_app_button">true</bool>
     <!--TODO description: if the share button of the application should appear in the sidebar-->
-    <string name="download_app_ios_url">http://app-test.homage.it/ios?src=ios</string>
-    <!--TODO description: Link for downloading iOS app from the app store-->
-    <string name="download_app_android_url">http://app-test.homage.it/ios?src=ios</string>
-    <!--TODO description: Link for downloading android app from google play-->
+    <string name="download_app_ios_url">http://bit.ly/1rONZLw</string>
+    <!--description: Link for downloading iOS app from the app store-->
+    <string name="download_app_android_url">http://bit.ly/1vHOBUK</string>
+    <!--description: Link for downloading android app from google play-->
 
     <!--Login, Signup & User settings-->
 
@@ -34,22 +39,22 @@
     <!--0: Login screen when user opens the app. Allows user email, facebook or guest login.-->
     <!--1: Skips login screen (Does auto Login as guest without involving the user)-->
     <!--TODO description: indicates what flow the app will use regarding login/signup-->
-    <string name="login_flow_skip_intro_video">false</string>
+    <bool name="login_flow_skip_intro_video">false</bool>
     <!--description: Indicates if app should display or skip the intro video, after the user signs up.-->
-    <string name="guest_public_as_default">false</string>
+    <bool name="guest_public_as_default">false</bool>
     <!--TODO description:  Indicates if guest user is set as public on signup.-->
-    <string name="guest_allow_public">false</string>
+    <bool name="guest_allow_public">false</bool>
     <!--TODO description: Indicates if guest user is allowed to toggle / be set to public.-->
-    <string name="guest_allow_share">true</string>
+    <bool name="guest_allow_share">true</bool>
     <!--TODO description: Indicates if guest user is allowed to share or not.-->
 
     <!--Download & Caching on device-->
 
-    <string name="cache_stories_videos">true</string>
+    <bool name="cache_stories_videos">true</bool>
     <!--TODO description: Indicates if to download and cache stories videos on device.-->
-    <string name="cache_audio">true</string>
+    <bool name="cache_audio">true</bool>
     <!--TODO description: Indicates if to download and cache audio resources on device.-->
-    <string name="cache_user_remakes_videos">true</string>
+    <bool name="cache_user_remakes_videos">true</bool>
     <!--TODO description: Indicates if to download and cache user remakes on device.-->
     <string name="cache_stories_videos_max_count">10</string>
     <!--TODO description: The max number of cached videos of stories
@@ -63,9 +68,9 @@
 
     <!--In App Store-->
 
-    <string name="in_app_purchases">false</string>
+    <bool name="in_app_purchases">false</bool>
     <!--TODO description: Indicates if the app includes an in app purchases store.-->
-    <string name="in_app_purchases_hide_premium_stories">false</string>
+    <bool name="in_app_purchases_hide_premium_stories">false</bool>
     <!--TODO description: If set to true, stories that are marked as premium,
     will not be shown on the list of stories.-->
 
@@ -77,23 +82,34 @@
 
     <!--Recorder & Uploads-->
 
-    <string name="recorder_first_scene_context_message">true</string>
+    <string name="recorder_forced_bbg_policy">0</string>
+    <!--// 0: Tolerant. warnings but will not prevent user from shooting videos.-->
+    <!--// 1: Strict. warnings and blocks recording on -10 and -11 marks-->
+    <!--// 2: Nazi. warnings and blocks on -10, -11, -5, -4-->
+    <!--TODO description: forcing client to choose a bad background policy in recording, disregarding the policy set by AB testing.-->
+    <bool name="recorder_first_scene_context_message">true</bool>
     <!--TODO description: Indicates of a popup message opens with the description of the first scene,
     when the user starts the recording of scenes flow.-->
-    <string name="uploader_reports_uploads">true</string>
+    <bool name="uploader_reports_uploads">true</bool>
     <!--TODO description: Indicates if the uploader send POST and PUT requests to the server whenever it
     starts or finishes to upload a video to s3.-->
-    <string name="recorder_skip_are_you_sure_in_good_job_message">false</string>
+    <bool name="recorder_skip_are_you_sure_in_good_job_message">false</bool>
     <!--TODO description: If set to true, will not show the "Are you sure?" popup message,
     when user selects to retake a scene in the "GOOD JOB" screen of the recorder.-->
-    <string name="recorder_disclaimer">false</string>
+    <bool name="recorder_disclaimer">false</bool>
     <!--TODO description: Indicates if the disclaimer screen should appear when user enters recorder for the first time.-->
 
-    <string name="mirror_selfie_silhouette">true</string>
-    <string name="mixpanel_token">bab0997e7171d56daf35df751f523962</string>
-    <string name="recorder_forced_bbg_policy">0</string>
-    <string name="remakes_save_to_device">2</string>
-    <string name="remakes_save_to_device_premium_id">0</string>
+    <!--Misc-->
+
+    <string name="song_loop">song_loop</string>
+    <!--description: The name of a local mp3 file that will play in a loop when user is in main screens.-->
+    <!--If set, a mute button will appear in top bar.-->
+    <!--The playing of the loop will pause when user watches a video or enters the recorder.-->
+    <!--Will continue playing when user returns to main screens or videos stopped playing in main screens.-->
+
+    <string name="song_loop_volume">0.5</string>
+    <!--values: <float> (0.0 - 1.0 range)-->
+    <!--description: The volume of the played song_loop-->
 
     <!--End Config-->
 

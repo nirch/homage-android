@@ -1,6 +1,7 @@
 package com.homage.app.main;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -28,6 +29,9 @@ import com.androidquery.AQuery;
 import com.homage.app.R;
 import com.homage.model.User;
 import com.homage.networking.analytics.HMixPanel;
+import com.homage.networking.parsers.ConfigParser;
+
+import java.util.ArrayList;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -67,8 +71,9 @@ public class NavigationDrawerFragment extends Fragment {
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
+    private SharedPreferences prefs = HomageApplication.getInstance().getSharedPreferences(HomageApplication.SETTINGS_NAME, Context.MODE_PRIVATE);
 
-    private String[] options;
+    private ArrayList<String> options;
 
     public NavigationDrawerFragment() {
     }
@@ -78,13 +83,17 @@ public class NavigationDrawerFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Resources res = getResources();
-        options = new String[]{
-                "",
-                res.getString(R.string.nav_item_1_stories),
-                res.getString(R.string.nav_item_2_me),
-                res.getString(R.string.nav_item_3_settings),
-                res.getString(R.string.nav_item_4_howto)
-        };
+        options = new ArrayList<String>();
+        options.add("");
+        options.add(res.getString(R.string.nav_item_1_stories));
+        options.add(res.getString(R.string.nav_item_2_me));
+        options.add(res.getString(R.string.nav_item_3_settings));
+        options.add(res.getString(R.string.nav_item_4_howto));
+
+        if(prefs.getBoolean(ConfigParser.SHARE_APP_BUTTON,getResources().getBoolean(R.bool.share_app_button))) {
+            options.add(res.getString(R.string.nav_item_5_share_app));
+        }
+
         mCurrentSelectedPosition = 1;
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
@@ -132,12 +141,12 @@ public class NavigationDrawerFragment extends Fragment {
     BaseAdapter adapter = new BaseAdapter() {
         @Override
         public int getCount() {
-            return options.length;
+            return options.size();
         }
 
         @Override
         public Object getItem(int i) {
-            return options[i];
+            return options.get(i);
         }
 
         @Override
@@ -175,7 +184,6 @@ public class NavigationDrawerFragment extends Fragment {
             switch (i) {
                 case 0:
                     break;
-
                 default:
                     String option = (String)getItem(i);
                     AQuery aq = new AQuery(rowView);
@@ -192,14 +200,16 @@ public class NavigationDrawerFragment extends Fragment {
 
     private int navIconIDByIndex(int i) {
         switch (i) {
-            case 1:
+            case MainActivity.SECTION_STORIES:
                 return R.drawable.nav_icon_stories;
-            case 2:
+            case MainActivity.SECTION_ME:
                 return R.drawable.nav_icon_my_stories;
-            case 3:
+            case MainActivity.SECTION_SETTINGS:
                 return R.drawable.nav_icon_settings;
-            case 4:
+            case MainActivity.SECTION_HOWTO:
                 return R.drawable.nav_icon_howto;
+            case MainActivity.SECTION_SHARE_APP:
+                return R.drawable.nav_app_icon;
             default:
                 return R.drawable.nav_icon_stories;
         }
@@ -336,17 +346,20 @@ public class NavigationDrawerFragment extends Fragment {
         mCurrentSelectedPosition = position;
 
         switch (position) {
-            case 1: //stories
+            case MainActivity.SECTION_STORIES: //stories
                 HMixPanel.sh().track("UserPressedStoriesTab", null);
                 break;
-            case 2: //me
+            case MainActivity.SECTION_ME: //me
                 HMixPanel.sh().track("UserPressedmeTab", null);
                 break;
-            case 3: //settings
+            case MainActivity.SECTION_SETTINGS: //settings
                 HMixPanel.sh().track("UserPressedSettingsTab", null);
                 break;
-            case 4: //intro movie
+            case MainActivity.SECTION_HOWTO: //intro movie
                 HMixPanel.sh().track("UserPressedIntroStoryTab", null);
+                break;
+            case MainActivity.SECTION_SHARE_APP: // share app button
+                HMixPanel.sh().track("UserPressedShareAppIcon", null);
                 break;
             default:
                 break;

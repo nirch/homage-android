@@ -191,16 +191,7 @@ public class HomageServer extends Server {
 
         HashMap<String, String> parameters;
 
-
-        if (prefetchTopRemakes) {
-            // Also prefetch the top remakes for each story.
-            parameters = new HashMap<String, String>();
-            parameters.put("remakes", "6");
-        } else {
-            // Fetch stories only.
-            parameters = null;
-        }
-        super.GET(R.string.url_config, null, parameters, INTENT_CONFIG, info, new ConfigParser());
+        super.GET(R.string.url_config, null, null, INTENT_CONFIG, info, new ConfigParser());
     }
     //endregion
 

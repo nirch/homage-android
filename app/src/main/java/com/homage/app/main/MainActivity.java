@@ -135,7 +135,8 @@ public class MainActivity extends ActionBarActivity
     public static final int SECTION_ME         = 2;
     public static final int SECTION_SETTINGS   = 3;
     public static final int SECTION_HOWTO      = 4;
-    public static final int SECTION_OPEN_DIALOG= 5;
+    public static final int SECTION_SHARE_APP      = 5;
+    public static final int SECTION_OPEN_DIALOG= 6;
     public static final int SECTION_STORY_DETAILS      = 101;
     public static final int SECTION_REMAKE_VIDEO      = 911;
 
@@ -602,14 +603,33 @@ public class MainActivity extends ActionBarActivity
                 showHowTo();
                 break;
 
+            case SECTION_SHARE_APP:
+                Crashlytics.log("handleDrawerSectionSelection --> Howto");
+
+                final String iosDownloadLink =
+                        prefs.getString(ConfigParser.DOWNLOAD_APP_IOS_URL,getResources().getString(R.string.download_app_ios_url)); // https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8
+                final String androidDownloadLink =
+                        prefs.getString(ConfigParser.DOWNLOAD_APP_ANDROID_URL,getResources().getString(R.string.download_app_android_url)); // https://play.google.com/store/apps/details?id=com.homage.app
+
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_share_message_subject));
+                i.putExtra(Intent.EXTRA_TEXT,
+                        String.format(
+                                "\n\n "+ getResources().getString(R.string.app_share_message) + ": " +
+                                        "\n\n Android: %s " +
+                                        "\n\n Apple: %s",
+                                androidDownloadLink, iosDownloadLink));
+                i.setType("text/plain");
+                // start the selected activity
+                startActivity(i);
+                break;
+
             default:
                 Crashlytics.log("handleDrawerSectionSelection --> Unimplemented!");
 
-                // Not implemented yet. Just put a place holder fragment for now.
-                fragmentManager.beginTransaction()
-                        .setCustomAnimations(R.anim.animation_fadein_with_zoom, R.anim.animation_fadeout_with_zoom)
-                        .replace(R.id.container, PlaceholderFragment.newInstance(position))
-                        .commitAllowingStateLoss();
+                // Not implemented yet. Just go to stories fragment for now.
+                showStories();
+                currentSection = SECTION_STORIES;
         }
     }
 
@@ -1656,9 +1676,11 @@ public class MainActivity extends ActionBarActivity
         PackageManager pm = getPackageManager();
 
         final Story story = sharedRemake.getStory();
-        // TODO add to config
-        final String iosDownloadLink = "http://bit.ly/18CsEjt"; // https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8
-        final String androidDownloadLink = "http://bit.ly/1BACxVP"; // https://play.google.com/store/apps/details?id=com.homage.app
+
+        final String iosDownloadLink =
+                prefs.getString(ConfigParser.DOWNLOAD_APP_IOS_URL,getResources().getString(R.string.download_app_ios_url)); // https://itunes.apple.com/us/app/homage/id851746600?l=iw&ls=1&mt=8
+        final String androidDownloadLink =
+                prefs.getString(ConfigParser.DOWNLOAD_APP_ANDROID_URL,getResources().getString(R.string.download_app_android_url)); // https://play.google.com/store/apps/details?id=com.homage.app
 
 
         final List<ResolveInfo> activities = getSupportedActivitiesForSharing(story.sharingVideoAllowed == 1);

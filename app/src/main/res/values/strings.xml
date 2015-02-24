@@ -116,8 +116,8 @@
     <string name="nav_item_2_me">MY STORIES</string>
     <string name="nav_item_3_settings">SETTINGS</string>
     <string name="nav_item_4_howto">HOW TO</string>
-    <string name="nav_item_6_storydetails">STORY DETAILS</string>
     <string name="nav_item_5_share_app">SHARE APP</string>
+    <string name="nav_item_6_storydetails">STORY DETAILS</string>
     <string name="nav_title_hello_user">Hello Guest</string>
     <string name="nav_join_button">join now</string>
 
