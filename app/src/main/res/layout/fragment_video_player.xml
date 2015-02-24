@@ -36,17 +36,18 @@
         android:id="@+id/videoBigStopButton"
         style="@style/remakeText"
         android:text="@string/icon_stop"
-        android:textSize="34dp"
+        android:textSize="34sp"
         android:layout_centerInParent="true"
         android:clickable="true"
         android:visibility="gone"
         android:layout_toLeftOf="@+id/videoBigPlayButton"
+        android:layout_toStartOf="@+id/videoBigPlayButton"
         />
 
     <android.widget.IconButton
         android:id="@+id/videoBigPlayButton"
         style="@style/remakeText"
-        android:textSize="34dp"
+        android:textSize="34sp"
         android:layout_centerInParent="true"
         android:clickable="true"
         android:visibility="gone"

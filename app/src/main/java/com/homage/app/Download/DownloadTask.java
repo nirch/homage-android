@@ -16,12 +16,9 @@ import java.util.Random;
 import android.content.Context;
 import android.util.Log;
 
-/**
- * This is not a real download task.
- * It just sleeps for some random time when it's launched.
- * The idea is not to require a connection and not to eat it.
- *
- */
+import com.homage.app.main.MainActivity;
+
+
 public class DownloadTask implements Runnable {
 
     private static final String TAG = DownloadTask.class.getSimpleName();
@@ -30,6 +27,7 @@ public class DownloadTask implements Runnable {
     private File mTempFile;
     private URL mUrl;
     private boolean mOverwrite;
+
 
     public DownloadTask(File outFile, URL url, boolean overWrite) {
 
@@ -43,6 +41,9 @@ public class DownloadTask implements Runnable {
     public void run() {
         if (mOverwrite || !mOutFile.exists()) {
             try {
+
+                Log.d(TAG, "Downloading: " + mOutFile.getName());
+
                 OutputStream output = null;
                 InputStream input = null;
                 String downloadStatus = "OK";
@@ -62,6 +63,7 @@ public class DownloadTask implements Runnable {
                 input.close();
 
                 output.close();
+                Log.d(TAG, "Downloaded: " + mOutFile.getName());
 
             } catch (Throwable t) {
                 Log.e(TAG, "Error in DownloadTask", t);

@@ -1,4 +1,4 @@
-package com.homage.app.Utils;
+package com.homage.app.Download;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,25 +21,8 @@ import java.net.URLConnection;
 /**
  * Created by dangalg on 11/27/2014.
  */
-public class DownloadUtil {
-    public static void WriteBitmapToDisk(Bitmap bmp, String folder_path, String file_name)
-    {
-        File dir = new File(Environment.getExternalStorageDirectory() + folder_path);
-        if(!dir.exists())
-            dir.mkdirs();
-        File file = new File(dir, file_name);
-        FileOutputStream fOut = null;
-        try {
-            fOut = new FileOutputStream(file);
+public class DownloadForAsyncTask {
 
-            bmp.compress(Bitmap.CompressFormat.PNG, 85, fOut);
-
-            fOut.flush();
-            fOut.close();
-        } catch (IOException e) {
-            Log.d("IOException: ", e.toString());
-        }
-    }
 
     public static String WriteFileToStorage(Progress progress, File outFile, File tempFile, URL url) {
         OutputStream output = null;
@@ -88,16 +71,37 @@ public class DownloadUtil {
         return downloadStatus;
     }
 
-    public static void CreateFolderInLocalStorage(String foldername){
-        File folder = new File(foldername);
-        boolean success = true;
-        if (!folder.exists()) {
-            success = folder.mkdirs();
-        }
-        if (success) {
-            // Do something on success
-        } else {
-            // Do something else on failure
-        }
-    }
+
+
+//    public static void WriteBitmapToDisk(Bitmap bmp, String folder_path, String file_name)
+//    {
+//        File dir = new File(Environment.getExternalStorageDirectory() + folder_path);
+//        if(!dir.exists())
+//            dir.mkdirs();
+//        File file = new File(dir, file_name);
+//        FileOutputStream fOut = null;
+//        try {
+//            fOut = new FileOutputStream(file);
+//
+//            bmp.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+//
+//            fOut.flush();
+//            fOut.close();
+//        } catch (IOException e) {
+//            Log.d("IOException: ", e.toString());
+//        }
+//    }
+//
+//    public static void CreateFolderInLocalStorage(String foldername){
+//        File folder = new File(foldername);
+//        boolean success = true;
+//        if (!folder.exists()) {
+//            success = folder.mkdirs();
+//        }
+//        if (success) {
+//            // Do something on success
+//        } else {
+//            // Do something else on failure
+//        }
+//    }
 }

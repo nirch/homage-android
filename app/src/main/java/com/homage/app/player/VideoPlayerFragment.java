@@ -91,7 +91,6 @@ public class VideoPlayerFragment
     public boolean videoIsShowing = true;
     public boolean storyDetailsPaused = false;
 
-
     MediaPlayer mediaPlayer;
 
 
@@ -145,7 +144,12 @@ public class VideoPlayerFragment
         } catch(Exception ex) {}
     }
 
-//    @Override
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    //    @Override
 //    public void onConfigurationChanged(Configuration newConfig) {
 //        super.onConfigurationChanged(newConfig);
 //        if (isEmbedded) handleEmbeddedVideoConfiguration(newConfig);
@@ -208,19 +212,14 @@ public class VideoPlayerFragment
 
                 FileInputStream fis = new FileInputStream (new File(filePath));
 
-
                 try {
+                    // play from file
                     videoView.setVideoFD(fis.getFD());
                 } catch (IOException e) {
+                    // if it doesn't work play from url
+                    videoView.setVideoURI(Uri.parse(fileURL));
                     e.printStackTrace();
-                }finally {
-//                    try {
-//                        fis.close();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
                 }
-
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -249,6 +248,7 @@ public class VideoPlayerFragment
         info = new HashMap<String, Object>();
         initTime = System.currentTimeMillis();
         filePath = b.getString(K_FILE_PATH);
+
         entityType = b.getInt(HEvents.HK_VIDEO_ENTITY_TYPE);
         entityID = b.getString(HEvents.HK_VIDEO_ENTITY_ID);
         originatingScreen = b.getInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN);
@@ -271,6 +271,7 @@ public class VideoPlayerFragment
         autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, true);
         isEmbedded = b.getBoolean(K_IS_EMBEDDED, false);
         thumbURL = b.getString(K_THUMB_URL, null);
+        if (filePath != null){thumbURL = null;}
         thumbDrawableId = b.getInt(K_THUMB_DRAWABLE_ID, 0);
 
         Log.d(TAG, String.format("Will play video in fragment: %s %s", filePath, fileURL));
@@ -387,7 +388,9 @@ public class VideoPlayerFragment
     }
 
     void start() {
-        aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
+        if(thumbURL != null) {
+            aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
+        }
 //        ImageButton ib = (ImageButton)aq.id(R.id.videoPlayPauseButton).getView();
 //        ib.setImageResource(R.drawable.selector_video_button_pause);
         aq.id(R.id.videoView).visibility(View.VISIBLE);
@@ -403,7 +406,9 @@ public class VideoPlayerFragment
     void showThumbState() {
 //        if (videoView != null) videoView.seekTo(0);
 //        pause();
-        aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
+        if(thumbURL != null) {
+            aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
+        }
         aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
         aq.id(R.id.videoBigStopButton).visibility(View.GONE);
 //        aq.id(R.id.videoView).visibility(View.INVISIBLE);
@@ -411,11 +416,13 @@ public class VideoPlayerFragment
     }
 
     void showThumbWhileLoading() {
-        aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
+        if(thumbURL != null) {aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);}
     }
 
     void hideThumb() {
-        aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
+        if(thumbURL != null) {
+            aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
+        }
         aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
         aq.id(R.id.videoBigStopButton).visibility(View.GONE);
 
@@ -550,4 +557,5 @@ public class VideoPlayerFragment
         return true;
     }
     //endregion
+
 }

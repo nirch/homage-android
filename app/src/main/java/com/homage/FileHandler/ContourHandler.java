@@ -3,7 +3,7 @@ package com.homage.FileHandler;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.homage.app.Utils.DownloadUtil;
+import com.homage.app.Download.DownloadForAsyncTask;
 import com.homage.app.recorder.RecorderActivity;
 import com.homage.model.Remake;
 import com.homage.model.Scene;
@@ -69,7 +69,7 @@ public class ContourHandler {
 
 
 
-                            DownloadUtil.WriteFileToStorage(null, outFile, tempFile, url);
+                            DownloadForAsyncTask.WriteFileToStorage(null, outFile, tempFile, url);
 
                         } catch (MalformedURLException e) {
                             Log.d("MalformedURLException: ", e.toString());

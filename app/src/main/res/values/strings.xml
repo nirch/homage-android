@@ -211,4 +211,7 @@
     <string name="debug_exported_db_failed_title">Failed exporting db</string>
     <string name="debug_exported_db_failed_description">Failed exporting the db. Check logs for exception.</string>
 
+    <string name="scene_scene">SCENE</string>
+    <string name="scene_seconds">SEC</string>
+
 </resources>

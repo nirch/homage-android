@@ -23,17 +23,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Vibrator;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -50,8 +51,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
-import android.widget.Switch;
 
 import com.androidquery.AQuery;
 import com.crashlytics.android.Crashlytics;
@@ -84,8 +85,6 @@ import com.homage.networking.uploader.UploadManager;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -104,12 +103,31 @@ public class MainActivity extends ActionBarActivity
     AQuery aq;
     AQuery actionAQ;
 
+    // Shared Preferences
+    public SharedPreferences prefs;
+    public SharedPreferences.Editor editor;
+
+
+    // Audio
+    MediaPlayer musicPlayer;
+    boolean musicOn = true;
+    public static final String MUSIC_STATE = "music state";
+
     // Download Stories
-    public DownloadThread downloadThread;
+    private DownloadThread downloadThread;
     public Handler handler;
     List<Story> stories;
-    int maxStoriesToDownload = 10;
+    public static List<Remake> remakes;
+    public static final int MAX_STORIES_TO_DOWNLOAD = 10;
+    public static final int MAX_REMAKES_TO_DOWNLOAD = 10;
+    public static final boolean RE_DOWNLOAD_REMAKES = false;
     boolean reDownloadStories = false;
+
+    static public boolean userEnteredRecorder = false;
+    static public boolean downloadStopped = false;
+
+    // resuming from recorder I want to go back to story details so save last story
+    public Story lastStory;
 
 
     public static final int SECTION_LOGIN      = 0;
@@ -143,7 +161,6 @@ public class MainActivity extends ActionBarActivity
 
     static final String FRAGMENT_TAG_ME = "fragment me";
     public static final String FRAGMENT_TAG_STORIES = "fragment stories";
-    static final String FRAGMENT_TAG_MY_STORIES = "fragment my stories";
     public static final String FRAGMENT_TAG_REMAKE_VIDEO = "fragment remake video";
     public static final String FRAGMENT_TAG_STORY_DETAILS = "fragment story details";
     public static final String FRAGMENT_TAG_OPEN_DIALOG = "fragment open dialog";
@@ -151,7 +168,7 @@ public class MainActivity extends ActionBarActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
     int defaultSelection;
     int mPositionClicked;
-    int mOnResumeChangeToSection = -1;
+    public int mOnResumeChangeToSection = -1;
     boolean mNavigationItemClicked = false;
     private StoryDetailsFragment storyDetailsFragment;
 //    private RemakeVideoFragment remakeVideoFragment;
@@ -224,10 +241,9 @@ public class MainActivity extends ActionBarActivity
         actionBar.setCustomView(R.layout.actionbar_view);
         actionAQ = new AQuery(getActionBar().getCustomView());
 
-        // Movie creation progress bar fragment
-//        movieProgressFragment = (MovieProgressFragment)getSupportFragmentManager()
-//                .findFragmentById(R.id.movieProgressBar);
-
+        // Shared Prefs
+        prefs = getSharedPreferences(HomageApplication.SETTINGS_NAME, Context.MODE_PRIVATE);
+        editor = prefs.edit();
 
         // Refresh stories
         showRefreshProgress();
@@ -328,20 +344,24 @@ public class MainActivity extends ActionBarActivity
         aq.id(R.id.navButton).clicked(onClickedNavButton);
 
         actionAQ.id(R.id.refreshButton).clicked(onClickedRefreshButton);
+        actionAQ.id(R.id.musicButton).clicked(onClickedMusicButton);
         //endregion
 
         // Create and launch the download thread
-        downloadThread = new DownloadThread(this);
-        downloadThread.start();
+        setDownloadThread(new DownloadThread(this));
+        getDownloadThread().start();
 
         // Create the Handler. It will implicitly bind to the Looper
         // that is internally created for this thread (since it is the UI thread)
         handler = new Handler();
 
-        downloadStories();
+
+        refreshMyRemakes();
+        refetchRemakesForCurrentUser();
 
         // Upload service after loading page. Loads Main page more quickly
         UploadManager.sh().checkUploader();
+
     }
 
     private void clearReferences(){
@@ -353,6 +373,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onResume() {
         super.onResume();
+
         ((HomageApplication)context).setCurrentActivity(mainActivity);
 
         sillyOnResumeHackDetectingFinishedRemake();
@@ -362,8 +383,12 @@ public class MainActivity extends ActionBarActivity
         updateRenderProgressState();
         hideRefreshProgress();
 
+        startMusic(true);
+
         // If requested to change section on resume. navigate to that section.
         if (mOnResumeChangeToSection > -1) handleDrawerSectionSelection(mOnResumeChangeToSection);
+
+        userEnteredRecorder = false;
     }
 
     // TODO: remove this ugly hack after implementing camera flip correctly in recorder
@@ -380,6 +405,9 @@ public class MainActivity extends ActionBarActivity
                 return;
             }
             Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
+
+            refreshMyRemakes();
+
             showNotificationDialog(getResources().getString(R.string.title_sent_movie_for_render),
                     getResources().getString(R.string.title_sent_movie_for_render_msg));
 //            movieProgressFragment.showProgressForRemake(renderedRemake);
@@ -397,6 +425,8 @@ public class MainActivity extends ActionBarActivity
         HMixPanel mp = HMixPanel.sh();
         if (mp != null) mp.flush();
         clearReferences();
+
+        stopMusic(false);
     }
 
     @Override
@@ -416,7 +446,11 @@ public class MainActivity extends ActionBarActivity
         clearReferences();
 
         // request the thread to stop
-        downloadThread.requestStop();
+        getDownloadThread().requestStop();
+
+        if(musicPlayer != null){
+            musicPlayer.release();
+        }
 
         super.onDestroy();
     }
@@ -455,6 +489,8 @@ public class MainActivity extends ActionBarActivity
                     break;
                 }
                 Log.d(TAG, String.format("Sent remake. Will show progress for remake %s", remakeOID));
+
+                refreshMyRemakes();
 
                 showNotificationDialog(getResources().getString(R.string.title_sent_movie_for_render),
                         getResources().getString(R.string.title_sent_movie_for_render_msg));
@@ -545,6 +581,14 @@ public class MainActivity extends ActionBarActivity
                 currentSection = SECTION_ME;
 
                 break;
+            // coming back from recorder
+            case SECTION_STORY_DETAILS:
+                Crashlytics.log("coming back to story details somehow --> Story Details");
+
+                showStoryDetails(lastStory);
+                currentSection = SECTION_STORY_DETAILS;
+
+                break;
 
             case SECTION_SETTINGS:
                 Crashlytics.log("handleDrawerSectionSelection --> Settings");
@@ -614,23 +658,6 @@ public class MainActivity extends ActionBarActivity
         lbm.unregisterReceiver(onShareVideo);
     }
 
-    private void refreshMyStoriesIfCurrentSection() {
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
-        if (f!=null) {
-            ((MyStoriesFragment)f).refresh();
-            // If this refresh came from the gcm notification
-            // then after it is finished notify the user that the movie is prepared
-            if(gotPushMessage){
-                showNotificationDialog(getResources().getString(R.string.title_got_push_message),
-                        getResources().getString(R.string.title_got_push_message_msg));
-                gotPushMessage = false;
-            }
-        }
-        hideRefreshProgress();
-    }
-
     private BroadcastReceiver onStoriesUpdated = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -648,28 +675,104 @@ public class MainActivity extends ActionBarActivity
                 }
                 //showStories();
             }
+            downloadStories();
             hideRefreshProgress();
         }
     };
 
-    // region Download Stories
+    // region Download Stories and remakes
+
+    private BroadcastReceiver onRemakesForUserUpdated = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Crashlytics.log("onRemakesForUserUpdated");
+            if (pd != null) pd.dismiss();
+
+            refreshMyStories();
+
+            hideRefreshProgress();
+        }
+    };
+
+    private void refreshMyStories() {
+
+        // If this refresh came from the gcm notification
+        // then after it is finished notify the user that the movie is prepared
+        if(gotPushMessage){
+            showNotificationDialog(getResources().getString(R.string.title_got_push_message),
+                    getResources().getString(R.string.title_got_push_message_msg));
+            gotPushMessage = false;
+        }
+
+        refreshMyRemakes();
+
+        downloadRemakes(0);
+
+        hideRefreshProgress();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+        if (f!=null) {
+            ((MyStoriesFragment)f).refreshUI();
+        }
+    }
+
+    public void refreshMyRemakes() {
+
+        if (MainActivity.remakes == null) {
+            MainActivity.remakes = User.getCurrent().allAvailableRemakesLatestOnTop();
+        } else {
+            MainActivity.remakes.clear();
+            MainActivity.remakes.addAll(User.getCurrent().allAvailableRemakesLatestOnTop());
+        }
+
+    }
+
+    public void downloadRemakes(int numOfVideosToDownload) {
+        File cacheDir = getCacheDir();
+
+        int remakeDownloadNum = MainActivity.MAX_REMAKES_TO_DOWNLOAD;
+
+        if(numOfVideosToDownload > 0){
+            remakeDownloadNum = numOfVideosToDownload;
+        }
+
+        for (int i = 0; i < remakeDownloadNum; i++) {
+            if (MainActivity.remakes.size() >= i + 1) {
+                try {
+                    File mOutFile = new File(cacheDir,
+                            MainActivity.getLocalVideoFile(MainActivity.remakes.get(i).videoURL));
+                    if (MainActivity.RE_DOWNLOAD_REMAKES || !mOutFile.exists()) {
+                        getDownloadThread().enqueueDownload(new DownloadTask(mOutFile,
+                                new URL(MainActivity.remakes.get(i).videoURL), true));
+                    }
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
 
     private void downloadStories(){
         stories = Story.allActiveStories();
 
-        for (int i = 0; i < maxStoriesToDownload; i++){
-                if(stories.size() >= i+1) {
-                    try {
-                        File cacheDir = context.getCacheDir();
-                        File mOutFile = new File(cacheDir, stories.get(i).name.replace(" ", "_") + ".mp4");
-                        if (reDownloadStories || !mOutFile.exists()) {
-                            downloadThread.enqueueDownload(new DownloadTask(mOutFile,
-                                    new URL(stories.get(i).video), true));
-                        }
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
+        for (int i = 0; i < MAX_STORIES_TO_DOWNLOAD; i++){
+            if(stories.size() >= i+1) {
+                try {
+                    File cacheDir = context.getCacheDir();
+                    File mOutFile = new File(cacheDir, stories.get(i).name.replace(" ", "_") + ".mp4");
+                    if (reDownloadStories || !mOutFile.exists()) {
+                        getDownloadThread().enqueueDownload(new DownloadTask(mOutFile,
+                                new URL(stories.get(i).video), true));
                     }
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
                 }
+            }
 
         }
     }
@@ -681,8 +784,8 @@ public class MainActivity extends ActionBarActivity
         handler.post(new Runnable() {
             @Override
             public void run() {
-                int total = downloadThread.getTotalQueued();
-                int completed = downloadThread.getTotalCompleted();
+                int total = getDownloadThread().getTotalQueued();
+                int completed = getDownloadThread().getTotalCompleted();
 
 //                progressBar.setMax(total);
 //
@@ -698,6 +801,23 @@ public class MainActivity extends ActionBarActivity
             }
         });
 
+    }
+
+    public void stopDownloadThread(){
+        DownloadThread dt = getDownloadThread();
+        // If there are still remakes or stories that have not been downloaded
+        if(dt.getTotalCompleted() < dt.getTotalQueued())
+        {
+            downloadStopped = true;
+        }
+    }
+
+    public DownloadThread getDownloadThread() {
+        return downloadThread;
+    }
+
+    public void setDownloadThread(DownloadThread downloadThread) {
+        this.downloadThread = downloadThread;
     }
 
     // endregion
@@ -777,6 +897,7 @@ public class MainActivity extends ActionBarActivity
 
             // Download the movie so that the user can enjoy quick sharing.
             downloadUserRemakeInBackground(story, remake);
+
             FragmentManager fragmentManager = getSupportFragmentManager();
             Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
             if (f!=null) {
@@ -858,18 +979,6 @@ public class MainActivity extends ActionBarActivity
         }
     };
 
-    private BroadcastReceiver onRemakesForUserUpdated = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            Crashlytics.log("onRemakesForUserUpdated");
-            if (pd != null) pd.dismiss();
-
-            refreshMyStoriesIfCurrentSection();
-            hideRefreshProgress();
-        }
-    };
-
     private BroadcastReceiver onRemakeDeletion = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -880,10 +989,6 @@ public class MainActivity extends ActionBarActivity
             boolean success = intent.getBooleanExtra(Server.SR_SUCCESS, false);
             HashMap<String, Object> responseInfo = (HashMap<String, Object>) intent.getSerializableExtra(Server.SR_RESPONSE_INFO);
 
-            if (success && currentSection == SECTION_ME) {
-//                refetchRemakesForCurrentUser();
-                //refreshMyStoriesIfCurrentSection();
-            }
             hideRefreshProgress();
         }
     };
@@ -1022,6 +1127,8 @@ public class MainActivity extends ActionBarActivity
 
     public void showStoryDetails(Story story) {
 
+        stopMusic(false);
+
         currentSection = SECTION_STORY_DETAILS;
         currentStory = story;
 
@@ -1137,6 +1244,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void refetchRemakesForCurrentUser() {
+
         User user = User.getCurrent();
         if (user==null) return;
         HomageServer.sh().refetchRemakesForUser(user.getOID(), null);
@@ -1245,7 +1353,7 @@ public class MainActivity extends ActionBarActivity
                 remake.getOID(),
                 null);
         Remake.deleteByOID(remake.getOID());
-        refreshMyStoriesIfCurrentSection();
+        refreshMyStories();
         if(pd != null) pd.dismiss();
     }
 
@@ -1307,6 +1415,73 @@ public class MainActivity extends ActionBarActivity
             }
         }
     };
+
+    // region MUSIC
+
+    private View.OnClickListener onClickedMusicButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            // Stop Music
+            if(musicOn){
+                stopMusic(true);
+            }
+            // Start Music
+            else{
+                startMusic(false);
+            }
+
+            switch (currentSection) {
+                case SECTION_STORIES:
+
+                    break;
+
+                case SECTION_STORY_DETAILS:
+
+                    break;
+
+                case SECTION_ME:
+
+                    break;
+            }
+        }
+    };
+
+    public void startMusic(boolean resumeMusic) {
+        musicOn = true;
+        if(resumeMusic){
+            musicOn = prefs.getBoolean(MUSIC_STATE,true);
+        }
+        if(musicOn) {
+            if (musicPlayer != null) {
+                musicPlayer.stop();
+                musicPlayer.reset();
+            }
+            ((ImageButton) aq.id(R.id.musicButton).getView()).setSelected(false);
+            musicPlayer = MediaPlayer.create(getApplicationContext(), R.raw.song_loop);
+            musicPlayer.start(); // no need to call prepare(); create() does that for you
+            editor.putBoolean(MUSIC_STATE, true);
+            editor.commit();
+        }
+        else{
+            stopMusic(false);
+        }
+    }
+
+    public void stopMusic(boolean saveToPrefs) {
+        musicOn = false;
+        ((ImageButton)aq.id(R.id.musicButton).getView()).setSelected(true);
+        if(musicPlayer != null) {
+            musicPlayer.stop();
+            musicPlayer.reset();
+        }
+        if(saveToPrefs) {
+            editor.putBoolean(MUSIC_STATE, false);
+            editor.commit();
+        }
+    }
+
+    // endregion
 
     private View.OnClickListener onClickedRefreshButton = new View.OnClickListener() {
         @Override
@@ -1693,7 +1868,7 @@ imageView.setImageDrawable(icon);
     public static String getLocalVideoFile(String url) {
         String fileName = url.substring(url.lastIndexOf('/') + 1, url.length());
         if(!fileName.isEmpty()) {
-            fileName = fileName.replace("%20", " ");
+            fileName = fileName.replace("%20", "_");
             String fileLocalUrl = fileName;
             return fileLocalUrl;
         }

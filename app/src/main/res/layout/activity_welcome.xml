@@ -29,6 +29,7 @@
             android:layout_centerHorizontal="true"
             style="@style/actionButton"
             android:drawableLeft="@drawable/icon_lets_create"
+            android:drawableStart="@drawable/icon_lets_create"
             android:drawablePadding="20dp" />
 
     </RelativeLayout>

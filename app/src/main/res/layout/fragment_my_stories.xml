@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/impact"
         android:text="@string/no_remakes"
-        android:textSize="22dp"
+        android:textSize="22sp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:paddingTop="130dp"

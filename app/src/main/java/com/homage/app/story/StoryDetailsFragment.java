@@ -73,8 +73,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     TextView likesCount;
     TextView viewsCount;
 
-    Typeface tf;
-
     //Fetching remakes area
     private final int NUMBERTOREFRESH = 16;
     final int fetchRemakes = NUMBERTOREFRESH;
@@ -274,27 +272,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         /**********************************/
         aq.id(R.id.makeYourOwnButton).clicked(onClickedMakeYourOwnButton);
         //endregion
-    }
-
-    private void refreshRemakesAdapter() {
-        User excludedUser = User.getCurrent();
-        // Adapters
-        List<Remake> remakes = story.getRemakes(excludedUser);
-//      Set gridview adapter
-        adapter = new RemakesAdapter(getActivity(), remakes);
-        remakesGridView = (GridView)aq.id(R.id.remakesGridView).getGridView();
-        remakesGridView.setAdapter(adapter);
-    }
-
-    //region *** fragment life cycle related
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-
-        this.inflater = inflater;
-        rootView = inflater.inflate(R.layout.fragment_story_details, container, false);
-        initialize();
 
         // Add embedded video player fragment.
         videoPlayerFragment = new VideoPlayerFragment();
@@ -326,15 +303,15 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 //        Flings the UI into correct position after loading
         if(rootView != null) {
             rootView.post(new Runnable() {
-                               @Override
-                               public void run() {
-                                   // code you want to run when view is visible for the first time
-                                   if (firstRun) {
-                                       openDemoVideo();
-                                       firstRun = false;
-                                   }
-                               }
-                           }
+                              @Override
+                              public void run() {
+                                  // code you want to run when view is visible for the first time
+                                  if (firstRun) {
+                                      openDemoVideo();
+                                      firstRun = false;
+                                  }
+                              }
+                          }
             );
         }
 
@@ -375,11 +352,31 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
                 return false;
             }
         });
+    }
 
-        tf = Typeface.createFromAsset(getActivity().getAssets(),
-                getActivity().getResources().getString(R.string.main_font));
+    private void refreshRemakesAdapter() {
+        User excludedUser = User.getCurrent();
+        // Adapters
+        List<Remake> remakes = story.getRemakes(excludedUser);
+//      Set gridview adapter
+        adapter = new RemakesAdapter(getActivity(), remakes);
+        remakesGridView = (GridView)aq.id(R.id.remakesGridView).getGridView();
+        remakesGridView.setAdapter(adapter);
+    }
 
-        aq.id(R.id.storyDescription).getTextView().setTypeface(tf);
+    //region *** fragment life cycle related
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        this.inflater = inflater;
+        rootView = inflater.inflate(R.layout.fragment_story_details, container, false);
+
+
+        initialize();
+
+
 
         return rootView;
     }
@@ -567,6 +564,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     @Override
     public void onResume() {
         super.onResume();
+
         videoPlayerFragment.remakePlaying = false;
         videoPlayerFragment.storyDetailsPaused = false;
         SetTitle();
@@ -585,6 +583,12 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     @Override
     public void onPause() {
         super.onPause();
+
+        ((MainActivity)getActivity()).mOnResumeChangeToSection = MainActivity.SECTION_STORY_DETAILS;
+        ((MainActivity)getActivity()).lastStory = story;
+
+        ((MainActivity)getActivity()).startMusic(true);
+
         videoPlayerFragment.storyDetailsPaused = true;
         stopStoryVideo();
         aq.id(R.id.greyscreen).visibility(View.VISIBLE);
@@ -744,6 +748,10 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     final View.OnClickListener onClickedMakeYourOwnButton = new View.OnClickListener() {
         @Override
         public void onClick(View button) {
+           MainActivity.userEnteredRecorder = true;
+           ((MainActivity)getActivity()).stopDownloadThread();
+
+           videoPlayerFragment.fullStop();
            createNewRemake();
         }
     };

@@ -9,20 +9,15 @@ import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.homage.app.Download.DownloadForAsyncTask;
 import com.homage.app.R;
-import com.homage.app.Utils.DownloadUtil;
 import com.homage.app.Utils.constants;
-import com.homage.app.main.MainActivity;
 import com.homage.networking.server.HomageServer;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
-
-import bolts.Task;
 
 /**
  * Created by dangalg on 1/25/2015.
@@ -106,10 +101,10 @@ public class VideoHandler {
 
 
                             if(!inbackground) {
-                                downloadStatus = DownloadUtil.WriteFileToStorage(progress, outFile, tempFile, url);
+                                downloadStatus = DownloadForAsyncTask.WriteFileToStorage(progress, outFile, tempFile, url);
                             }
                             else{
-                                downloadStatus = DownloadUtil.WriteFileToStorage(null, outFile, tempFile, url);
+                                downloadStatus = DownloadForAsyncTask.WriteFileToStorage(null, outFile, tempFile, url);
                             }
                             if(downloadStatus == "Error"){
                                 pd.setMessage("There was an error with your download, please try again later");

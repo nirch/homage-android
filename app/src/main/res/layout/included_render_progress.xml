@@ -10,6 +10,7 @@
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:src="@drawable/icon_small_x_black"
         android:background="@null"
@@ -23,6 +24,8 @@
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
         android:progressDrawable="@drawable/dark_progress"
         />
 
@@ -30,11 +33,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="@string/rendering_progress_preparing"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:background="@null"
         android:textColor="@color/dark"
         android:textStyle="bold"
-        android:gravity="left|center"
+        android:gravity="start|center"
         android:paddingLeft="5dp"
         />
 

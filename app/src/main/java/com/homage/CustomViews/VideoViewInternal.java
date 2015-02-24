@@ -214,6 +214,9 @@ public class VideoViewInternal extends SurfaceView implements MediaPlayerControl
         } catch (IllegalArgumentException ex) {
             Log.w("VideoView", "Unable to open content: " + mUri, ex);
             return;
+        } catch (SecurityException ex){
+            Log.w("VideoView", "Unable to open content: " + mUri, ex);
+            return;
         }
     }
 

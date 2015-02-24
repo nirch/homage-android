@@ -6,13 +6,95 @@
     <string name="campaign_id">544ead1e454c610d1600000f</string>
     <string name="main_font">font/DINOT-CondBold.otf</string>
 
-    <!-- Default fallback Config Homage -->
-    <string name="share_link_prefix">http://play-test.homage.it</string>
+    <!-- Default fallback Config Homage -->ד
+
+    <!--Conversion-->
+
     <string name="significant_view_pct_threshold">0.5</string>
+    <!--TODO description: The part of a video that should be watched, before it is considered as a significant view.-->
+
+    <!--Sharing, Links & URLS-->
+
+    <string name="share_link_prefix">http://play-test.homage.it</string>
+    <!--description: The base url / prefix of url for share links-->
+    <string name="share_app_button">true</string>
+    <!--TODO description: if the share button of the application should appear in the sidebar-->
+    <string name="download_app_ios_url">http://app-test.homage.it/ios?src=ios</string>
+    <!--TODO description: Link for downloading iOS app from the app store-->
+    <string name="download_app_android_url">http://app-test.homage.it/ios?src=ios</string>
+    <!--TODO description: Link for downloading android app from google play-->
+
+    <!--Login, Signup & User settings-->
+
+    <string name="signup">1</string>
+    <!--0: Totally removes signup options from the app on the sidebar.-->
+    <!--1: Normal signup (always allowed)-->
+    <!--TODO description: if signup screen should appear-->
+    <string name="login_flow_type">0</string>
+    <!--0: Login screen when user opens the app. Allows user email, facebook or guest login.-->
+    <!--1: Skips login screen (Does auto Login as guest without involving the user)-->
+    <!--TODO description: indicates what flow the app will use regarding login/signup-->
+    <string name="login_flow_skip_intro_video">false</string>
+    <!--description: Indicates if app should display or skip the intro video, after the user signs up.-->
+    <string name="guest_public_as_default">false</string>
+    <!--TODO description:  Indicates if guest user is set as public on signup.-->
+    <string name="guest_allow_public">false</string>
+    <!--TODO description: Indicates if guest user is allowed to toggle / be set to public.-->
+    <string name="guest_allow_share">true</string>
+    <!--TODO description: Indicates if guest user is allowed to share or not.-->
+
+    <!--Download & Caching on device-->
+
+    <string name="cache_stories_videos">true</string>
+    <!--TODO description: Indicates if to download and cache stories videos on device.-->
+    <string name="cache_audio">true</string>
+    <!--TODO description: Indicates if to download and cache audio resources on device.-->
+    <string name="cache_user_remakes_videos">true</string>
+    <!--TODO description: Indicates if to download and cache user remakes on device.-->
+    <string name="cache_stories_videos_max_count">10</string>
+    <!--TODO description: The max number of cached videos of stories
+    (meaningful only on cache_stories_videos = true).-->
+    <string name="user_save_remakes_policy">0</string>
+    <!--0: // Not allowed to save to camera roll.-->
+    <!--1: // User can save remakes to camera roll freely.-->
+    <!--2: // User can save remakes to camera roll at a price (in app purchases must be turned on).-->
+    <!--TODO description: The policy indicating if and how a user can save remakes to camera roll.-->
+
+
+    <!--In App Store-->
+
+    <string name="in_app_purchases">false</string>
+    <!--TODO description: Indicates if the app includes an in app purchases store.-->
+    <string name="in_app_purchases_hide_premium_stories">false</string>
+    <!--TODO description: If set to true, stories that are marked as premium,
+    will not be shown on the list of stories.-->
+
+    <!--User Interface-->
+
+    <string name="remakes_per_page">16</string>
+    <!--TODO description: Remakes to get per request to the server.
+    Used in paging of remakes in stories details screen.-->
+
+    <!--Recorder & Uploads-->
+
+    <string name="recorder_first_scene_context_message">true</string>
+    <!--TODO description: Indicates of a popup message opens with the description of the first scene,
+    when the user starts the recording of scenes flow.-->
+    <string name="uploader_reports_uploads">true</string>
+    <!--TODO description: Indicates if the uploader send POST and PUT requests to the server whenever it
+    starts or finishes to upload a video to s3.-->
+    <string name="recorder_skip_are_you_sure_in_good_job_message">false</string>
+    <!--TODO description: If set to true, will not show the "Are you sure?" popup message,
+    when user selects to retake a scene in the "GOOD JOB" screen of the recorder.-->
+    <string name="recorder_disclaimer">false</string>
+    <!--TODO description: Indicates if the disclaimer screen should appear when user enters recorder for the first time.-->
+
     <string name="mirror_selfie_silhouette">true</string>
     <string name="mixpanel_token">bab0997e7171d56daf35df751f523962</string>
     <string name="recorder_forced_bbg_policy">0</string>
     <string name="remakes_save_to_device">2</string>
     <string name="remakes_save_to_device_premium_id">0</string>
+
+    <!--End Config-->
 
 </resources>

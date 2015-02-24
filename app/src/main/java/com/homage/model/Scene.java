@@ -3,8 +3,7 @@
  */
 package com.homage.model;
 
-import android.content.Context;
-
+import com.homage.app.R;
 import com.homage.app.main.HomageApplication;
 import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
@@ -61,12 +60,12 @@ public class Scene extends SugarRecord<Scene> {
     }
 
     public String getTitle() {
-        return String.format("SCENE %d", sceneID);
+        return String.format(HomageApplication.getInstance().getResources().getString(R.string.scene_scene) + " %d", sceneID);
     }
 
     public String getTimeString() {
         String secondsRounded = nf.format(duration/1000.0f);
-        return String.format("%s SEC", secondsRounded);
+        return String.format("%s " + HomageApplication.getInstance().getResources().getString(R.string.scene_seconds), secondsRounded);
     }
 
     public static Scene findOrCreate(Story story, int sceneID) {

@@ -20,7 +20,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_below="@+id/bigImpactTitle"
             android:textColor="@color/normal_text"
             android:gravity="center"
             android:text="@string/title_got_push_message_msg"
@@ -28,6 +27,6 @@
             android:padding="10dp"
             />
 
-    </RelativeLayout>-->
+    </RelativeLayout>
 
 </RelativeLayout>

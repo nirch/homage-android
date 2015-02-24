@@ -30,12 +30,24 @@
         android:text="@string/nav_item_1_stories"
         style="@style/headerText" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
+
+    <ImageButton android:id="@+id/musicButton"
+        android:layout_width="60dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:src="@drawable/selector_music"
+        />
 
     <ImageButton android:id="@+id/refreshButton"
         android:layout_width="60dp"
         android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
+
         android:background="@android:color/transparent"
         android:src="@drawable/selector_refresh"
         android:visibility="gone"
@@ -44,9 +56,9 @@
     <ProgressBar android:id="@+id/refreshProgress"
         android:layout_width="60dp"
         android:layout_height="30dp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
         android:visibility="gone"
         />
+
+    </LinearLayout>
 
 </RelativeLayout>

@@ -53,7 +53,5 @@ public class RemakesParser extends Parser {
                 story.deleteRemakes(excludedUser, pulledAt);
             }
         }
-
-
     }
 }

@@ -23,7 +23,7 @@
         <Button android:id="@+id/sceneNumberInList"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:text="SCENE 1"
+            android:text="@string/scene_scene"
             android:singleLine="true"
             android:gravity="center"
             android:layout_weight="0.4"

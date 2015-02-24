@@ -10,13 +10,14 @@
         android:layout_height="match_parent"
         android:id="@+id/textView"
         android:textColor="@color/dark"
-        android:textSize="19dp"
+        android:textSize="19sp"
         android:textStyle="bold"
         android:paddingLeft="10dp"
         android:layout_margin="10dp"
         android:text="Header"
         android:gravity="center_vertical"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
 
     <ImageView android:id="@+id/navOptionIcon"
         android:layout_width="45dp"
@@ -24,6 +25,8 @@
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
         android:src="@drawable/nav_icon_stories"
         />
 

@@ -17,7 +17,8 @@ public class FullScreenVideoPlayerActivity extends FragmentActivity
     String TAG = "TAG_FullScreenVideoPlayerActivity";
     AQuery aq;
 
-    static public void openFullScreenVideoForURL(Activity activity, String url, String thumbURL, int entityType, String entityID, int originatingScreen, boolean finishOnCompletion) {
+    static public void openFullScreenVideoForURL(Activity activity, String url, String thumbURL, int entityType, String entityID,
+                                                 int originatingScreen, boolean finishOnCompletion) {
         try {
             Intent myIntent = new Intent(activity, FullScreenVideoPlayerActivity.class);
             Uri videoURL = Uri.parse(url);
@@ -41,7 +42,8 @@ public class FullScreenVideoPlayerActivity extends FragmentActivity
         }
     }
 
-    static public void openFullScreenVideoForFile(Activity activity, String filePath, int entityType, String entityID, int originatingScreen, boolean finishOnCompletion) {
+    static public void openFullScreenVideoForFile(Activity activity, String filePath, int entityType, String entityID,
+                                                  int originatingScreen, boolean finishOnCompletion) {
         try {
             Intent myIntent = new Intent(activity, FullScreenVideoPlayerActivity.class);
             myIntent.putExtra(VideoPlayerFragment.K_FILE_PATH, filePath);

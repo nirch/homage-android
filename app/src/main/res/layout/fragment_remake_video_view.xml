@@ -75,6 +75,7 @@
         android:layout_alignEnd="@+id/videoView"
         android:layout_alignRight="@+id/videoView"
         android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginTop="10dp"
         android:visibility="gone"
         />
@@ -87,6 +88,7 @@
         android:layout_toLeftOf="@+id/views_count"
         android:layout_toStartOf="@+id/views_count"
         android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
         android:layout_marginTop="10dp"
         android:visibility="gone"/>
 
@@ -97,6 +99,7 @@
         android:layout_toLeftOf="@+id/views_icon"
         android:layout_toStartOf="@+id/views_icon"
         android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
         android:layout_marginTop="10dp"
         android:visibility="gone"/>
 
@@ -108,6 +111,7 @@
         android:layout_toLeftOf="@+id/likes_count"
         android:layout_toStartOf="@+id/likes_count"
         android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
         android:layout_marginTop="10dp"
         android:visibility="gone"
         />
@@ -145,7 +149,7 @@
         <android.widget.IconButton
             android:id="@+id/videoBigPlayButton"
             style="@style/remakeText"
-            android:textSize="34dp"
+            android:textSize="34sp"
             android:layout_centerInParent="true"
             android:clickable="true"
             android:visibility="gone"
@@ -176,6 +180,7 @@
         android:clickable="true"
         android:visibility="gone"
         android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:layout_marginBottom="-10dp"
         />
 
@@ -209,6 +214,7 @@
         android:layout_alignRight="@+id/videoView"
         android:layout_alignEnd="@+id/videoView"
         android:layout_marginRight="-14dp"
+        android:layout_marginEnd="-14dp"
         android:layout_marginBottom="-10dp"
         android:clickable="true"
         android:visibility="gone"/>
@@ -231,6 +237,7 @@
         android:layout_toLeftOf="@+id/shareButton"
         android:layout_toStartOf="@+id/shareButton"
         android:layout_marginRight="-14dp"
+        android:layout_marginEnd="-14dp"
         android:layout_marginBottom="-10dp"
         android:clickable="true"
         android:visibility="gone"/>

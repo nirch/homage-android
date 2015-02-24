@@ -23,7 +23,9 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.androidquery.AQuery;
+import com.homage.app.Download.DownloadTask;
 import com.homage.app.R;
+import com.homage.app.Utils.constants;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
@@ -35,6 +37,9 @@ import com.homage.networking.analytics.HMixPanel;
 import com.homage.networking.uploader.UploadManager;
 import com.homage.networking.analytics.HEvents;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,7 +49,6 @@ public class MyStoriesFragment extends Fragment {
 
     View rootView;
     LayoutInflater inflater;
-    List<Remake> remakes;
     ListView myStoriesListView;
     AQuery aq;
 
@@ -91,15 +95,8 @@ public class MyStoriesFragment extends Fragment {
         return fragment;
     }
 
-    public void refresh() {
-        if (remakes == null) {
-            remakes = user.allAvailableRemakesLatestOnTop();
-        } else {
-            remakes.clear();
-            remakes.addAll(user.allAvailableRemakesLatestOnTop());
-        }
-
-        if (remakes.size() == 0) {
+    public void refreshUI(){
+        if (MainActivity.remakes.size() == 0) {
             aq.id(R.id.noRemakesMessage).visibility(View.VISIBLE);
         } else {
             aq.id(R.id.noRemakesMessage).visibility(View.GONE);
@@ -135,12 +132,12 @@ public class MyStoriesFragment extends Fragment {
     BaseAdapter adapter = new BaseAdapter() {
         @Override
         public int getCount() {
-            return remakes.size();
+            return MainActivity.remakes.size();
         }
 
         @Override
         public Object getItem(int i) {
-            return remakes.get(i);
+            return MainActivity.remakes.get(i);
         }
 
         @Override
@@ -219,7 +216,18 @@ public class MyStoriesFragment extends Fragment {
                         public void onClick(View v) {
                             Log.d(TAG, String.format("my story, clicked play: %s", remake.getOID()));
                             HMixPanel.sh().track("MEPlayRemake", props);
-                            FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(), remake.videoURL, remake.thumbnailURL, HEvents.H_REMAKE, remake.getOID().toString(), HomageApplication.HM_ME_TAB, true);
+                            File cacheDir = getActivity().getCacheDir();
+                            File outFile = new File(cacheDir, MainActivity.getLocalVideoFile(remake.videoURL));
+                            if (!outFile.exists()) {
+                                FullScreenVideoPlayerActivity.openFullScreenVideoForURL(getActivity(),
+                                        remake.videoURL, remake.thumbnailURL, HEvents.H_REMAKE, remake.getOID().toString(),
+                                        HomageApplication.HM_ME_TAB, true);
+                            }
+                            else{
+                                FullScreenVideoPlayerActivity.openFullScreenVideoForFile(getActivity(),
+                                        outFile.getPath(), HEvents.H_REMAKE, remake.getOID().toString(),
+                                        HomageApplication.HM_ME_TAB, true);
+                            }
                         }
                     });
 
@@ -268,7 +276,7 @@ public class MyStoriesFragment extends Fragment {
 
         @Override
         public boolean isEmpty() {
-            return remakes.size() == 0;
+            return MainActivity.remakes.size() == 0;
         }
     };
 
@@ -295,9 +303,6 @@ public class MyStoriesFragment extends Fragment {
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_my_stories, container, false);
         aq = new AQuery(rootView);
-
-        // Set the list adapter for the stories list view.
-        remakes = user.allAvailableRemakesLatestOnTop();
 
         myStoriesListView = aq.id(R.id.myStoriesListView).getListView();
 
@@ -331,15 +336,7 @@ public class MyStoriesFragment extends Fragment {
             myStoriesListView.setAdapter(adapter);
         }
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-            MainActivity main = (MainActivity)getActivity();
-            if (main != null) main.refetchRemakesForCurrentUser();
-            }
-        }, 500);
-
-
+        refreshUI();
 
     }
 
