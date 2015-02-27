@@ -14,13 +14,9 @@ import org.json.JSONObject;
 public class ConfigParser extends Parser {
     String TAG = "TAG_"+getClass().getName();
 
-
-    static private int lastParseTime = 0;
-    final static private int threshold = 15000;
-
     public ConfigParser() {
         super();
-        expectedObjectClass = JSONArray.class;
+        expectedObjectClass = JSONObject.class;
     }
 
     // All the constants

@@ -17,12 +17,12 @@
     <string name="bucket_name">homageapp</string>
 
     <!-- DEV Server -->
-    <string name="server_dev_host">homage-server-app-dev.elasticbeanstalk.com</string>
+    <string name="server_dev_host">app-test.homage.it</string>
     <integer name="server_dev_port">80</integer>
     <string name="server_dev_protocol">http</string>
 
     <!-- Production Server -->
-    <string name="server_prod_host">homage-server-app-prod.elasticbeanstalk.com</string>
+    <string name="server_prod_host">app.homage.it</string>
     <integer name="server_prod_port">80</integer>
     <string name="server_prod_protocol">http</string>
 
@@ -33,6 +33,7 @@
     <string name="url_like_remake">remake/like</string>
     <string name="url_unlike_remake">remake/unlike</string>
     <string name="url_stories">stories</string>
+    <string name="url_config">config</string>
     <string name="url_new_remake">remake</string>
     <string name="url_existing_remake">remake</string>
     <string name="url_delete_remake">remake</string>

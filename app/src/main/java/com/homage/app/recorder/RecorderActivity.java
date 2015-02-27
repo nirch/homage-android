@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.graphics.SurfaceTexture;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
@@ -65,6 +66,8 @@ import com.homage.views.ActivityHelper;
 import com.homage.views.Pacman;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -367,6 +370,7 @@ public class RecorderActivity extends Activity
         final CameraManager cm = CameraManager.sh();
         cm.resumeCameraPreviewIfInitialized();
         Log.d(TAG, "onPause complete");
+
     }
 
     @Override
@@ -486,6 +490,7 @@ public class RecorderActivity extends Activity
         ViewPager videosPager = (ViewPager)aq.id(R.id.videosPager).getView();
         videosPager.setAdapter(videosAdapter);
         videosPager.setOnPageChangeListener(onVideosPagerChangeListener);
+
     }
     //endregion
 
@@ -885,6 +890,11 @@ public class RecorderActivity extends Activity
                     Crashlytics.log("Recorder advance state: SCENE_MESSAGE --> MAKING_A_SCENE");
                     currentState = RecorderState.MAKING_A_SCENE;
                     showControlsDrawer(false);
+                    final Scene scene = story.findScene(currentSceneID);
+                    // play scene audio from pre downloaded file
+                    if(scene != null && scene.directionAudio != null) {
+                        playSoundFile(scene.getDirectionAudioLocalFileName());
+                    }
                     break;
                 case MAKING_A_SCENE:
                     // User recorded footage for a scene in a remake.
@@ -906,6 +916,12 @@ public class RecorderActivity extends Activity
                     currentSceneID = remake.nextReadyForFirstRetakeSceneID();
                     Crashlytics.setInt("currentSceneID", currentSceneID);
                     currentState = RecorderState.MAKING_A_SCENE;
+
+                    final Scene nextScene = story.findScene(currentSceneID);
+                    // play scene audio from pre downloaded file
+                    if(nextScene != null && nextScene.directionAudio != null) {
+                        playSoundFile(nextScene.getDirectionAudioLocalFileName());
+                    }
                     break;
                 default:
                     throw new RecorderException(String.format("Unimplemented when advancing state %s", currentState));
@@ -1129,6 +1145,10 @@ public class RecorderActivity extends Activity
                 break;
 
             case 2:
+                if(mp != null){
+                    mp.stop();
+                    mp.reset();
+                }
                 mp = MediaPlayer.create(getApplicationContext() , R.raw.cinema_countdown);
                 mp.start();
                 pacman.startOneSecondAnimation();
@@ -1215,6 +1235,11 @@ public class RecorderActivity extends Activity
                         toastMessage = R.string.recording_started;
                         hideSilhouette(true);
 
+                        // play scene audio from pre downloaded file
+                        if(scene.sceneAudio != null) {
+                            playSoundFile(scene.getSceneAudioLocalFileName());
+                        }
+
                         break;
 
                     case CameraManager.RECORDING_FAILED:
@@ -1251,6 +1276,11 @@ public class RecorderActivity extends Activity
                         isRecording = false;
                         returnFromRecordingUI();
                         handleSuccessfulTake(outputFile.toString());
+
+                        // play post scene audio from pre downloaded file
+                        if(scene.postSceneAudio != null) {
+                            playSoundFile(scene.getPostSceneAudioLocalFileName());
+                        }
                         return;
 
                 }
@@ -1271,6 +1301,20 @@ public class RecorderActivity extends Activity
 
             }
         });
+    }
+
+    public void playSoundFile(String soundFilePath) {
+        if (mp != null) {
+            mp.stop();
+            mp.reset();
+        }
+
+        File cacheDir = getCacheDir();
+        File sceneFile = new File(cacheDir,soundFilePath);
+        if(sceneFile.exists()) {
+            mp = MediaPlayer.create(this, Uri.fromFile(sceneFile));
+            mp.start();
+        }
     }
 
     private void handleSuccessfulTake(String outputFile) {

@@ -76,62 +76,74 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Make this activity, full screen with no title bar.
-        ActivityHelper.goFullScreen(this);
+        prefs = getSharedPreferences(HomageApplication.SETTINGS_NAME, Context.MODE_PRIVATE);
 
-        setContentView(R.layout.activity_login);
+        final boolean login_flow_type = prefs.getString(ConfigParser.LOGIN_FLOW_TYPE,
+                getResources().getString(R.string.login_flow_type)).equals("1");
 
-        aq = new AQuery(this);
-
-        // Set default email field
-        prefs = HomageApplication.getSettings(this);
-        String email = prefs.getString(HomageApplication.SK_EMAIL, "").trim();
-        aq.id(R.id.loginMail).text(email);
-
-        //
-        // More settings
-        //
-        Bundle b = getIntent().getExtras();
-        if (b!=null) {
-            // Flag that indicates if this screen allows to login as a guest user
-            // (if not, button will be cancel button)
-            allowGuestLogin = b.getBoolean(SK_ALLOW_GUEST_LOGIN, false);
-
-            // Flash that indicates if after login, the main activity (or welcome screen)
-            // should be opened.
-            startMainActivityAfterLogin = b.getBoolean(SK_START_MAIN_ACTIVITY_AFTER_LOGIN, false);
+        if(login_flow_type) {
+            loginAsGuest();
         }
+        else {
 
-        if (allowGuestLogin) {
-            aq.id(R.id.loginCancelButton).text(R.string.login_guest_button);
-        }
 
-        //
-        // Facebook
-        //
+            // Make this activity, full screen with no title bar.
+            ActivityHelper.goFullScreen(this);
 
-        // By default, be logged out of facebook when opening the login screen.
-        Session session = Session.getActiveSession();
-        if (session != null) session.closeAndClearTokenInformation();
-        LoginButton fbLoginButton = (LoginButton)findViewById(R.id.facebookLoginButton);
-        fbLoginButton.setVisibility(View.GONE);
-        // Initialize the button (after waiting for a while)
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                initFaceLoginButton();
+            setContentView(R.layout.activity_login);
+
+            aq = new AQuery(this);
+
+            // Set default email field
+            prefs = HomageApplication.getSettings(this);
+            String email = prefs.getString(HomageApplication.SK_EMAIL, "").trim();
+            aq.id(R.id.loginMail).text(email);
+
+            //
+            // More settings
+            //
+            Bundle b = getIntent().getExtras();
+            if (b != null) {
+                // Flag that indicates if this screen allows to login as a guest user
+                // (if not, button will be cancel button)
+                allowGuestLogin = b.getBoolean(SK_ALLOW_GUEST_LOGIN, false);
+
+                // Flash that indicates if after login, the main activity (or welcome screen)
+                // should be opened.
+                startMainActivityAfterLogin = b.getBoolean(SK_START_MAIN_ACTIVITY_AFTER_LOGIN, false);
             }
-        }, 800);
 
-        //region *** Bind to UI event handlers ***
-        /**********************************/
-        /** Binding to UI event handlers **/
-        /**********************************/
-        aq.id(R.id.loginButton).clicked(onClickedLoginButton);
-        aq.id(R.id.loginCancelButton).clicked(onClickedCanceOrGuestButton);
-        aq.id(R.id.termsOfServiceButton).clicked(onClickedTOSButton);
-        aq.id(R.id.privacyPolicyButton).clicked(onClickedPrivacyPolicyButton);
-        //endregion
+            if (allowGuestLogin) {
+                aq.id(R.id.loginCancelButton).text(R.string.login_guest_button);
+            }
+
+            //
+            // Facebook
+            //
+
+            // By default, be logged out of facebook when opening the login screen.
+            Session session = Session.getActiveSession();
+            if (session != null) session.closeAndClearTokenInformation();
+            LoginButton fbLoginButton = (LoginButton) findViewById(R.id.facebookLoginButton);
+            fbLoginButton.setVisibility(View.GONE);
+            // Initialize the button (after waiting for a while)
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    initFaceLoginButton();
+                }
+            }, 800);
+
+            //region *** Bind to UI event handlers ***
+            /**********************************/
+            /** Binding to UI event handlers **/
+            /**********************************/
+            aq.id(R.id.loginButton).clicked(onClickedLoginButton);
+            aq.id(R.id.loginCancelButton).clicked(onClickedCanceOrGuestButton);
+            aq.id(R.id.termsOfServiceButton).clicked(onClickedTOSButton);
+            aq.id(R.id.privacyPolicyButton).clicked(onClickedPrivacyPolicyButton);
+            //endregion
+        }
     }
 
     @Override
@@ -166,6 +178,14 @@ public class LoginActivity extends Activity {
         pd = new ProgressDialog(this);
         pd.setTitle(res.getString(R.string.login_pd_title));
         pd.setMessage(res.getString(R.string.login_pd_signing_in_guest));
+        final boolean login_flow_type = prefs.getString(ConfigParser.LOGIN_FLOW_TYPE,
+                getResources().getString(R.string.login_flow_type)).equals("1");
+
+        if(login_flow_type) {
+            pd.setTitle(res.getString(R.string.login_pd_title));
+            pd.setMessage(res.getString(R.string.login_pd_signing_in_guest_no_login_screen));
+        }
+
         pd.setCancelable(false);
         pd.show();
         HomageServer.sh().createGuest();
@@ -238,7 +258,10 @@ public class LoginActivity extends Activity {
                 User user = User.getCurrent();
                 if (user == null) return;
                 Intent startIntent;
-                if (user.isGuest()) {
+                SharedPreferences prefs = getSharedPreferences(HomageApplication.SETTINGS_NAME, Context.MODE_PRIVATE);
+                final boolean login_flow_skip_intro_video = prefs.getBoolean(ConfigParser.LOGIN_FLOW_SKIP_INTRO_VIDEO,
+                        getResources().getBoolean(R.bool.login_flow_skip_intro_video));
+                if (user.isGuest() && !login_flow_skip_intro_video) {
                     // If a guest user just logged in, show the welcome screen.
                     startIntent = new Intent(LoginActivity.this, WelcomeScreenActivity.class);
                     Toast.makeText(LoginActivity.this, "Logged in Guest.", Toast.LENGTH_LONG).show();

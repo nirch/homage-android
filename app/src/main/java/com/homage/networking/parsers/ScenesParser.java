@@ -52,6 +52,10 @@ public class ScenesParser extends Parser {
         scene.videoURL = parseString(sceneInfo, "video",null);
         scene.thumbnailURL = parseString(sceneInfo, "thumbnail",null);
 
+        scene.sceneAudio = parseString(sceneInfo, "scene_audio",null);
+        scene.postSceneAudio = parseString(sceneInfo, "post_scene_audio",null);
+        scene.directionAudio = parseString(sceneInfo, "direction_audio",null);
+
         JSONObject contours = parseJSONObject(sceneInfo, "contours", null);
         if (contours != null) {
             JSONObject contourstypes = contours.getJSONObject("360");

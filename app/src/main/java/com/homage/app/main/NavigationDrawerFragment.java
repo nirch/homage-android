@@ -84,7 +84,12 @@ public class NavigationDrawerFragment extends Fragment {
 
         Resources res = getResources();
         options = new ArrayList<String>();
-        options.add("");
+
+        boolean signup = prefs.getString(ConfigParser.SIGNUP,getResources().getString(R.string.signup)).equals("1");
+        if(signup) {
+            options.add("");
+        }
+
         options.add(res.getString(R.string.nav_item_1_stories));
         options.add(res.getString(R.string.nav_item_2_me));
         options.add(res.getString(R.string.nav_item_3_settings));
@@ -168,11 +173,19 @@ public class NavigationDrawerFragment extends Fragment {
 
         private View rowViewForIndex(int i) {
             View rowView;
+            boolean signup = prefs.getString(ConfigParser.SIGNUP,getResources().getString(R.string.signup)).equals("1");
             switch (i) {
                 case 0:
-                    // Login
-                    rowView = inflater.inflate(R.layout.list_row_login, mDrawerListView, false);
-                    configureLoginRow(rowView);
+
+                    if(signup) {
+                        // Login
+                        rowView = inflater.inflate(R.layout.list_row_login, mDrawerListView, false);
+                        configureLoginRow(rowView);
+                    }
+                    else{
+                        rowView = inflater.inflate(R.layout.list_row_nav, mDrawerListView, false);
+                    }
+
                     break;
                 default:
                     rowView = inflater.inflate(R.layout.list_row_nav, mDrawerListView, false);
@@ -181,8 +194,18 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         private void configureRowViewForIndex(View rowView, int i) {
+            boolean signup = prefs.getString(ConfigParser.SIGNUP,getResources().getString(R.string.signup)).equals("1");
             switch (i) {
                 case 0:
+                    if(signup) {
+
+                    }
+                    else{
+                        String option = (String)getItem(i);
+                        AQuery aq = new AQuery(rowView);
+                        aq.id(R.id.textView).text(option);
+                        aq.id(R.id.navOptionIcon).image(navIconIDByIndex(i));
+                    }
                     break;
                 default:
                     String option = (String)getItem(i);

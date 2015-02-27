@@ -494,7 +494,7 @@ public class VideoPlayerFragment
         @Override
         public void onClick(View v) {
 //            hideThumb();
-//            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PLAY, info);
 //            aq.id(R.id.loadingVideoPprogress).visibility(View.VISIBLE);
 //            videoView.seekTo(0);
 //            start();

@@ -28,6 +28,9 @@ public class Scene extends SugarRecord<Scene> {
     public String videoURL;
     public double focusPointX;
     public double focusPointY;
+    public String sceneAudio;
+    public String postSceneAudio;
+    public String directionAudio;
     //endregion
 
     //region *** Relationships ***
@@ -44,7 +47,22 @@ public class Scene extends SugarRecord<Scene> {
         nf.setRoundingMode(RoundingMode.HALF_UP);
     }
 
+    // region builders
+
+    public String getSceneAudioLocalFileName(){
+        return story.name.replace(" ", "_") + "_" + sceneID + sceneAudio.substring(sceneAudio.lastIndexOf("/")).replace("/","_");
+    }
+    public String getPostSceneAudioLocalFileName(){
+        return story.name.replace(" ", "_") + "_" + sceneID + postSceneAudio.substring(postSceneAudio.lastIndexOf("/")).replace("/","_");
+    }
+    public String getDirectionAudioLocalFileName(){
+        return story.name.replace(" ", "_") + "_" + sceneID + directionAudio.substring(directionAudio.lastIndexOf("/")).replace("/","_");
+    }
+
+    // endregion builders
+
     //region *** Factories ***
+
     public Scene() {
         super();
     }

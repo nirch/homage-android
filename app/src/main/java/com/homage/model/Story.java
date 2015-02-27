@@ -26,6 +26,14 @@ public class Story extends SugarRecord<Story> {
     public int sharingVideoAllowed;
     //endregion
 
+    // region builders
+
+    public String getStoryVideoLocalFileName(){
+        return name.replace(" ", "_") + video.substring(video.lastIndexOf("."));
+    }
+
+    // endregion builders
+
     //region *** Factories ***
     public Story() {
         super();

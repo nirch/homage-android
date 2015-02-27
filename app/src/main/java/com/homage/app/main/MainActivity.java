@@ -74,15 +74,19 @@ import com.homage.app.story.StoryDetailsFragment;
 import com.homage.app.user.LoginActivity;
 import com.homage.app.story.MyStoriesFragment;
 import com.homage.model.Remake;
+import com.homage.model.Scene;
 import com.homage.model.Story;
 import com.homage.model.User;
 import com.homage.networking.analytics.HEvents;
 import com.homage.networking.analytics.HMixPanel;
+import com.homage.networking.parsers.ConfigParser;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import com.homage.networking.uploader.UploadManager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -275,6 +279,10 @@ public class MainActivity extends ActionBarActivity
 
         // Navigate to another default section if requested
         navigateToSectionIfRequested();
+
+        // No Signup advance defaultSelection by 1
+        boolean signup = prefs.getString(ConfigParser.SIGNUP,getResources().getString(R.string.signup)).equals("1");
+        if(!signup){defaultSelection--;}
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -548,6 +556,10 @@ public class MainActivity extends ActionBarActivity
         // update the main content by replacing fragments
         if (mOnResumeChangeToSection > -1) mOnResumeChangeToSection = -1;
 
+        // No Signup advance all buttons by 1
+        boolean signup = prefs.getString(ConfigParser.SIGNUP,getResources().getString(R.string.signup)).equals("1");
+        if(!signup){position++;}
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
             case SECTION_LOGIN:
@@ -783,11 +795,36 @@ public class MainActivity extends ActionBarActivity
         for (int i = 0; i < MAX_STORIES_TO_DOWNLOAD; i++){
             if(stories.size() >= i+1) {
                 try {
+                    // get scenes in order to save audio files
+                    List<Scene> scenes = stories.get(i).getScenesOrdered();
                     File cacheDir = context.getCacheDir();
-                    File mOutFile = new File(cacheDir, stories.get(i).name.replace(" ", "_") + ".mp4");
+                    File mOutFile = new File(cacheDir, stories.get(i).getStoryVideoLocalFileName());
                     if (reDownloadStories || !mOutFile.exists()) {
                         getDownloadThread().enqueueDownload(new DownloadTask(mOutFile,
                                 new URL(stories.get(i).video), true));
+                    }
+                    for (Scene scene : scenes){
+                        if(scene.sceneAudio != null) {
+                            File sceneFile = new File(cacheDir,scene.getSceneAudioLocalFileName());
+                            if (reDownloadStories || !sceneFile.exists()) {
+                                getDownloadThread().enqueueDownload(new DownloadTask(sceneFile,
+                                        new URL(scene.sceneAudio), true));
+                            }
+                        }
+                        if(scene.postSceneAudio != null) {
+                            File sceneFile = new File(cacheDir,scene.getPostSceneAudioLocalFileName());
+                            if (reDownloadStories || !sceneFile.exists()) {
+                                getDownloadThread().enqueueDownload(new DownloadTask(sceneFile,
+                                        new URL(scene.postSceneAudio), true));
+                            }
+                        }
+                        if(scene.directionAudio != null) {
+                            File sceneFile = new File(cacheDir,scene.getDirectionAudioLocalFileName());
+                            if (reDownloadStories || !sceneFile.exists()) {
+                                getDownloadThread().enqueueDownload(new DownloadTask(sceneFile,
+                                        new URL(scene.directionAudio), true));
+                            }
+                        }
                     }
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -1468,23 +1505,32 @@ public class MainActivity extends ActionBarActivity
     };
 
     public void startMusic(boolean resumeMusic) {
-        musicOn = true;
-        if(resumeMusic){
-            musicOn = prefs.getBoolean(MUSIC_STATE,true);
-        }
-        if(musicOn) {
-            if (musicPlayer != null) {
-                musicPlayer.stop();
-                musicPlayer.reset();
+        String song = getResources().getString(R.string.song_loop);
+        if(!song.isEmpty()) {
+            ((ImageButton) aq.id(R.id.musicButton).getView()).setVisibility(View.VISIBLE);
+            musicOn = true;
+            if (resumeMusic) {
+                musicOn = prefs.getBoolean(MUSIC_STATE, true);
             }
-            ((ImageButton) aq.id(R.id.musicButton).getView()).setSelected(false);
-            musicPlayer = MediaPlayer.create(getApplicationContext(), R.raw.song_loop);
-            musicPlayer.start(); // no need to call prepare(); create() does that for you
-            editor.putBoolean(MUSIC_STATE, true);
-            editor.commit();
+            if (musicOn) {
+                if (musicPlayer != null) {
+                    musicPlayer.stop();
+                    musicPlayer.reset();
+                }
+                ((ImageButton) aq.id(R.id.musicButton).getView()).setSelected(false);
+                musicPlayer = MediaPlayer.create(getApplicationContext(),
+                        getResources().getIdentifier("raw/" + song,
+                                "raw", getPackageName()));
+                musicPlayer.setLooping(true);
+                musicPlayer.start(); // no need to call prepare(); create() does that for you
+                editor.putBoolean(MUSIC_STATE, true);
+                editor.commit();
+            } else {
+                stopMusic(false);
+            }
         }
         else{
-            stopMusic(false);
+            ((ImageButton) aq.id(R.id.musicButton).getView()).setVisibility(View.GONE);
         }
     }
 
@@ -1499,6 +1545,20 @@ public class MainActivity extends ActionBarActivity
             editor.putBoolean(MUSIC_STATE, false);
             editor.commit();
         }
+    }
+
+    public void playSoundFile(MediaPlayer mp, String soundFilePath) {
+        if (mp != null) {
+            mp.stop();
+            mp.reset();
+        }
+
+            File cacheDir = getCacheDir();
+            File sceneFile = new File(cacheDir,soundFilePath);
+            if(sceneFile.exists()) {
+                mp = MediaPlayer.create(this, Uri.fromFile(sceneFile));
+                mp.start();
+            }
     }
 
     // endregion

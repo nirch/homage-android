@@ -144,9 +144,10 @@
     <string name="login_error_email_format">incorrect email format</string>
     <string name="login_error_password_format">password must be at least 6 characters long</string>
 
-    <string name="login_pd_title">Please wait.</string>
+    <string name="login_pd_title">Please wait...</string>
     <string name="login_pd_signing_in">Signing in user...</string>
     <string name="login_pd_signing_in_guest">Signing in as guest...</string>
+    <string name="login_pd_signing_in_guest_no_login_screen">Just a few more seconds</string>
 
     <!-- Login error messages -->
     <string name="login_error_authorization_failed">Authorization failed.</string>

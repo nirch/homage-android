@@ -3,9 +3,13 @@ package com.homage.networking.analytics;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.homage.app.R;
+import com.homage.app.main.HomageApplication;
 import com.homage.model.User;
+import com.homage.networking.parsers.ConfigParser;
 import com.homage.networking.server.HomageServer;
 
 import org.bson.types.ObjectId;
@@ -59,7 +63,6 @@ public class HEvents {
         // Do your initializations here.
         // .
         // .
-        // .
     }
 
     private static HEvents instance = new HEvents();
@@ -89,6 +92,8 @@ public class HEvents {
         int playbackTimeMilSeconds;
         int totalDurationMilSeconds;
 
+        SharedPreferences prefs = HomageApplication.getInstance().getSharedPreferences(HomageApplication.SETTINGS_NAME,Context.MODE_PRIVATE);
+
         HashMap props = new HashMap<String,String>();
         props.put("entity_id", entityID);
         props.put("playing_entity", Integer.toString(entityType));
@@ -99,8 +104,8 @@ public class HEvents {
             // IMPORTANT: Don't do long operations on the UI thread.
 
             case H_EVENT_VIDEO_USER_PRESSED_PLAY:
-                //viewID = new ObjectId().toString();
-                //HomageServer.sh().reportVideoViewStart(viewID,entityType,entityID,userID);
+                viewID = new ObjectId().toString();
+                HomageServer.sh().reportVideoViewStart(viewID,entityType,entityID,userID,originatingScreen);
                 break;
             case H_EVENT_VIDEO_PLAYER_WILL_PLAY:
                 viewID = new ObjectId().toString();
@@ -128,10 +133,26 @@ public class HEvents {
 
                 totalDurationMilSeconds = Integer.parseInt(info.get(HEvents.HK_VIDEO_TOTAL_DURATION).toString());
                 totalDuration = totalDurationMilSeconds / 1000;
-                HomageServer.sh().reportVideoViewStop(viewID,entityType,entityID,userID,playbackTime,totalDuration,originatingScreen);
+
                 props.put("playing_time",Integer.toString(playbackTime));
                 props.put("total_duration",Integer.toString(totalDuration));
-                HMixPanel.sh().track("stop_playing_video",props);
+
+                // time played is greater then significant_view_pct_threshold of total time -> report finished
+                float significant_view_pct_threshold = Float.valueOf(prefs.getString(ConfigParser.SIGNIFICANT_VIEW_PCT_THRESHOLD,"0"));
+                if(playbackTime > (significant_view_pct_threshold * totalDuration)){
+                    props.put("playing_time",Integer.toString(playbackTime));
+                    props.put("total_duration",Integer.toString(totalDuration));
+                    HMixPanel.sh().track("finish_playing_video",props);
+                }
+                else{
+                    props.put("playing_time",Integer.toString(playbackTime));
+                    props.put("total_duration",Integer.toString(totalDuration));
+                    HMixPanel.sh().track("stop_playing_video",props);
+                }
+
+                HomageServer.sh().reportVideoViewStop(viewID,entityType,entityID,userID,
+                        playbackTime,totalDuration,originatingScreen);
+
                 viewID = null;
                 break;
         }

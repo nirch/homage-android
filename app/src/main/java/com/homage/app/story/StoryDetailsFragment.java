@@ -483,7 +483,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         // if there is a file locally play it and not the url (faster!! :))
         File cacheDir = getActivity().getCacheDir();
         File mOutFile = new File(cacheDir,
-                story.name.replace(" ", "_") + ".mp4");
+                story.getStoryVideoLocalFileName());
         if(mOutFile.exists()) {
             b.putString(VideoPlayerFragment.K_FILE_PATH, mOutFile.getPath());
         }

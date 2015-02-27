@@ -1,7 +1,9 @@
 package com.homage.app.main;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,6 +16,7 @@ import com.homage.app.R;
 import com.homage.app.user.LoginActivity;
 import com.homage.model.User;
 import com.homage.networking.analytics.HMixPanel;
+import com.homage.networking.parsers.ConfigParser;
 import com.homage.networking.server.HomageServer;
 import com.homage.views.ActivityHelper;
 
@@ -61,26 +64,25 @@ public class SplashScreenActivity extends Activity {
         ActivityHelper.hideSystemBars(this);
         HMixPanel.sh().track("AppLaunch",null);
 
-
-
         final User user = User.getCurrent();
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
-            if (user == null) {
-                Intent intent = new Intent(SplashScreenActivity.this, LoginActivity.class);
-                intent.putExtra(LoginActivity.SK_ALLOW_GUEST_LOGIN, true);
-                intent.putExtra(LoginActivity.SK_START_MAIN_ACTIVITY_AFTER_LOGIN, true);
-                SplashScreenActivity.this.startActivity(intent);
-                SplashScreenActivity.this.finish();
-                overridePendingTransition(0, 0);
-            } else {
-                Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
-                HomageApplication.getInstance().preferStartingNavigationOn(mainStartsWith);
-                SplashScreenActivity.this.startActivity(intent);
-                SplashScreenActivity.this.finish();
-                overridePendingTransition(0, 0);
-            }
+
+                if (user == null) {
+                    Intent intent = new Intent(SplashScreenActivity.this, LoginActivity.class);
+                    intent.putExtra(LoginActivity.SK_ALLOW_GUEST_LOGIN, true);
+                    intent.putExtra(LoginActivity.SK_START_MAIN_ACTIVITY_AFTER_LOGIN, true);
+                    SplashScreenActivity.this.startActivity(intent);
+                    SplashScreenActivity.this.finish();
+                    overridePendingTransition(0, 0);
+                } else {
+                    Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+                    HomageApplication.getInstance().preferStartingNavigationOn(mainStartsWith);
+                    SplashScreenActivity.this.startActivity(intent);
+                    SplashScreenActivity.this.finish();
+                    overridePendingTransition(0, 0);
+                }
             }
         }, SPLASH_DISPLAY_LENGTH);
     }

@@ -16,14 +16,14 @@
     <!--Conversion-->
 
     <string name="significant_view_pct_threshold">0.5</string>
-    <!--TODO description: The part of a video that should be watched, before it is considered as a significant view.-->
+    <!--description: The part of a video that should be watched, before it is considered as a significant view.-->
 
     <!--Sharing, Links & URLS-->
 
     <string name="share_link_prefix">http://play-test.homage.it</string>
     <!--description: The base url / prefix of url for share links-->
     <bool name="share_app_button">true</bool>
-    <!--TODO description: if the share button of the application should appear in the sidebar-->
+    <!--description: if the share button of the application should appear in the sidebar-->
     <string name="download_app_ios_url">http://bit.ly/1rONZLw</string>
     <!--description: Link for downloading iOS app from the app store-->
     <string name="download_app_android_url">http://bit.ly/1vHOBUK</string>
@@ -34,11 +34,11 @@
     <string name="signup">1</string>
     <!--0: Totally removes signup options from the app on the sidebar.-->
     <!--1: Normal signup (always allowed)-->
-    <!--TODO description: if signup screen should appear-->
+    <!--description: if signup screen should appear-->
     <string name="login_flow_type">0</string>
     <!--0: Login screen when user opens the app. Allows user email, facebook or guest login.-->
     <!--1: Skips login screen (Does auto Login as guest without involving the user)-->
-    <!--TODO description: indicates what flow the app will use regarding login/signup-->
+    <!--description: indicates what flow the app will use regarding login/signup-->
     <bool name="login_flow_skip_intro_video">false</bool>
     <!--description: Indicates if app should display or skip the intro video, after the user signs up.-->
     <bool name="guest_public_as_default">false</bool>
@@ -101,7 +101,7 @@
 
     <!--Misc-->
 
-    <string name="song_loop">song_loop</string>
+    <string name="song_loop"></string>
     <!--description: The name of a local mp3 file that will play in a loop when user is in main screens.-->
     <!--If set, a mute button will appear in top bar.-->
     <!--The playing of the loop will pause when user watches a video or enters the recorder.-->
@@ -109,7 +109,7 @@
 
     <string name="song_loop_volume">0.5</string>
     <!--values: <float> (0.0 - 1.0 range)-->
-    <!--description: The volume of the played song_loop-->
+    <!--TODO description: The volume of the played song_loop-->
 
     <!--End Config-->
 

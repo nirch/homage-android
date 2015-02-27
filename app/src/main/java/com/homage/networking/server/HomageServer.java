@@ -124,6 +124,7 @@ public class HomageServer extends Server {
         // Cache the required urls, according to settings in server_cfg.xml
         ArrayList<Integer> urlIDs = new ArrayList<Integer>();
         urlIDs.add(R.string.url_stories);
+        urlIDs.add(R.string.url_config);
         urlIDs.add(R.string.url_delete_remake);
         urlIDs.add(R.string.url_existing_remake);
         urlIDs.add(R.string.url_footage);
@@ -190,6 +191,8 @@ public class HomageServer extends Server {
         info.put(CAMPAIGN_ID, String.valueOf(HomageApplication.getInstance().getResources().getString(R.string.campaign_id)));
 
         HashMap<String, String> parameters;
+
+        String suffix = HomageApplication.getInstance().getString(R.string.url_config);
 
         super.GET(R.string.url_config, null, null, INTENT_CONFIG, info, new ConfigParser());
     }
