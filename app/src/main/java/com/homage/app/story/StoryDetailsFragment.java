@@ -191,12 +191,12 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
                 // Configure Remake UI
                 AQuery aq = new AQuery(rowView);
                 aq.id(R.id.remakeImage).image(remake.thumbnailURL, true, true, 256, R.drawable.glass_dark);
-                aq.id(R.id.liked_button).clicked(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        updateLikes(remake.getOID().toString());
-                    }
-                });
+//                aq.id(R.id.liked_button).clicked(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        updateLikes(remake.getOID().toString());
+//                    }
+//                });
 
                 updateLikesAndViews(remake, aq);
                 aq.id(R.id.watchRemakeButton).clicked(new View.OnClickListener() {
@@ -315,39 +315,11 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
             );
         }
 
-        ((GridView)aq.id(R.id.remakesGridView).getView()).setOnTouchListener(new View.OnTouchListener() {
+        (aq.id(R.id.remakesGridView).getView()).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                // get last scroll position and current scroll position to figure out if scrolling up or down
-                // then pass that through global variable to onscroll of gridview and only open video when scrolling down
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lastScrollPosition = event.getY();
-                }
-                else if(event.getAction() == MotionEvent.ACTION_MOVE){
-
-                    float currentPosition = event.getY();
-                    if(currentPosition > lastScrollPosition)
-                    {
-                        scrollingUp = false;
-                    }
-                    else{
-                        scrollingUp = true;
-                    }
-
-                    lastScrollPosition = currentPosition;
-                }
-                if(event.getAction() == MotionEvent.ACTION_UP) {
-                    lastScrollPosition = 0;
-                }
-
-                int firstVisibleItem = ((GridView)aq.id(R.id.remakesGridView).getView()).getFirstVisiblePosition();
-
-                if (!firstRun && firstVisibleItem == 0 && !videoIsDisplayed && !scrollingUp) {
-                    openDemoVideo();
-                } else if (!firstRun && firstVisibleItem >= 0 && videoIsDisplayed && scrollingUp) {
-                    closeDemoVideo();
-                }
+                openCloseVideo(event);
 
                 return false;
             }
@@ -381,35 +353,67 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         return rootView;
     }
 
+    private void openCloseVideo(MotionEvent event) {
+        // get last scroll position and current scroll position to figure out if scrolling up or down
+        // then pass that through global variable to onscroll of gridview and only open video when scrolling down
+        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+            lastScrollPosition = event.getY();
+        }
+        else if(event.getAction() == MotionEvent.ACTION_MOVE){
+
+            float currentPosition = event.getY();
+            if(currentPosition > lastScrollPosition)
+            {
+                scrollingUp = false;
+            }
+            else{
+                scrollingUp = true;
+            }
+
+            lastScrollPosition = currentPosition;
+        }
+        if(event.getAction() == MotionEvent.ACTION_UP) {
+            lastScrollPosition = 0;
+        }
+
+        int firstVisibleItem = ((GridView)aq.id(R.id.remakesGridView).getView()).getFirstVisiblePosition();
+
+        if (!firstRun && firstVisibleItem == 0 && !videoIsDisplayed && !scrollingUp) {
+            openDemoVideo();
+        } else if (!firstRun && firstVisibleItem >= 0 && videoIsDisplayed && scrollingUp) {
+            closeDemoVideo();
+        }
+    }
+
     private void openDemoVideo() {
 
         if(!transformingVideo)
-    {
-        transformingVideo = true;
+        {
+            transformingVideo = true;
 
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        final int width = size.x;
-        final int height = size.y;
-        final int portraitheight = (size.x * 9) / 16;
-        //            On first run only animate the gridview to close and display demo video
-        if (!firstRun) {
-            animateStoryDetailsVideoContainer(width, portraitheight, -185f, 120f, 1f, 1f);
-            aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
-            aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
-        } else {
-            animateStoryDetailsVideoContainer(width, portraitheight, 0, 0, 0, 0);
-            aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
-            aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
+            Display display = getActivity().getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            final int width = size.x;
+            final int height = size.y;
+            final int portraitheight = (size.x * 9) / 16;
+            //            On first run only animate the gridview to close and display demo video
+            if (!firstRun) {
+                animateStoryDetailsVideoContainer(width, portraitheight, -185f, 120f, 0.8f, 0.8f);
+                aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
+                aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
+            } else {
+                animateStoryDetailsVideoContainer(width, portraitheight, 0, 0, 0, 0);
+                aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
+                aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
+            }
+
+            videoIsDisplayed = true;
+            videoPlayerFragment.videoIsShowing = true;
+
+    //            Allow screen orientation to rotate demo video into full screen
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         }
-
-        videoIsDisplayed = true;
-        videoPlayerFragment.videoIsShowing = true;
-
-//            Allow screen orientation to rotate demo video into full screen
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-    }
         //        firstRun runs first but never runs again...
         firstRun = false;
     }
@@ -428,7 +432,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
             //            Animate UI
             aq.id(R.id.moreRemakes).getView().animate().yBy(-portraitheight);
             aq.id(R.id.swipe_container).getView().animate().yBy(-portraitheight);
-            animateStoryDetailsVideoContainer(0, 0, 185f, -120f, -1f, -1f);
+            animateStoryDetailsVideoContainer(0, 0, 185f, -120f, -0.8f, -0.8f);
 
             videoIsDisplayed = false;
             videoPlayerFragment.videoIsShowing = false;
@@ -791,15 +795,15 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         }
     }
 
-    private void updateLikes(final String remakeID)
-    {
-//        TODO create updatelikes
-    }
-
-    private void updateViews(final String remakeID)
-    {
-//        TODO create updateViews
-    }
+//    private void updateLikes(final String remakeID)
+//    {
+////        TODO create updatelikes
+//    }
+//
+//    private void updateViews(final String remakeID)
+//    {
+////        TODO create updateViews
+//    }
 
     private void showReportDialogForRemake(final String remakeID)
     {

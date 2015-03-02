@@ -96,11 +96,34 @@ public class MyStoriesFragment extends Fragment {
     }
 
     public void refreshUI(){
+
+        // check for remakes. if there are none display a message.
+        // if the process of fetching is taking place notify the user
+        // if threre are remakes do not display any message.
+        // if there are remakes and the process of fetching is taking place
+        // make sure the progress is spinning to let the use know
         if (MainActivity.remakes.size() == 0) {
             aq.id(R.id.noRemakesMessage).visibility(View.VISIBLE);
+            if(MainActivity.fetchingMyRemakes){
+                aq.id(R.id.noRemakesMessage).getTextView().setText(
+                        getActivity().getResources().getString(R.string.checking_for_remakes));
+                ((MainActivity)getActivity()).showRefreshProgress();
+            }
+            else{
+                aq.id(R.id.noRemakesMessage).getTextView().setText(
+                        getActivity().getResources().getString(R.string.no_remakes));
+                ((MainActivity)getActivity()).hideRefreshProgress();
+            }
         } else {
             aq.id(R.id.noRemakesMessage).visibility(View.GONE);
+            if(MainActivity.fetchingMyRemakes){
+                ((MainActivity)getActivity()).showRefreshProgress();
+            }
+            else{
+                ((MainActivity)getActivity()).hideRefreshProgress();
+            }
         }
+
         HMixPanel.sh().track("MEUserRefresh",null);
         adapter.notifyDataSetChanged();
     }
@@ -311,6 +334,8 @@ public class MyStoriesFragment extends Fragment {
 
         //
         aq.id(R.id.remakeAStoryButton).clicked(onClickedRemakeStories);
+
+        refreshUI();
 
         return rootView;
     }

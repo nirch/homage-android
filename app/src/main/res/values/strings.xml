@@ -29,9 +29,14 @@
 
     <!-- Sharing Remake -->
     <string name="send_to">Share Remake To...</string>
+    <string name="share_your_story">Share your story</string>
+    <string name="share_link_or_video">Share link or video?</string>
+    <string name="share_link">Link</string>
+    <string name="share_video">Video</string>
 
     <!-- List messages -->
     <string name="no_remakes">CREATE YOUR FIRST STORY!</string>
+    <string name="checking_for_remakes">CHECKING FOR REMAKES...</string>
 
     <!-- Buttons and overlay messages -->
     <string name="button_retake_last_scene">RETAKE LAST SCENE</string>

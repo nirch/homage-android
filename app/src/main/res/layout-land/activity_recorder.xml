@@ -355,6 +355,7 @@
         <ImageButton android:id="@+id/warningRecordButton"
             android:layout_width="35dp"
             android:layout_height="35dp"
+            android:scaleType="fitXY"
             android:background="@android:color/transparent"
             android:src="@drawable/selector_warning_button"
             android:layout_marginLeft="-27dp"

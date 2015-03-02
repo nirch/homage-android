@@ -17,6 +17,7 @@ package com.homage.app.main;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -117,7 +118,7 @@ public class MainActivity extends ActionBarActivity
     boolean musicOn = true;
     public static final String MUSIC_STATE = "music state";
 
-    // Download Stories
+    // Download Stories and My Remakes
     private DownloadThread downloadThread;
     public Handler handler;
     List<Story> stories;
@@ -126,6 +127,8 @@ public class MainActivity extends ActionBarActivity
     public static final int MAX_REMAKES_TO_DOWNLOAD = 10;
     public static final boolean RE_DOWNLOAD_REMAKES = false;
     boolean reDownloadStories = false;
+    public static boolean fetchingMyRemakes = false;
+
 
     static public boolean userEnteredRecorder = false;
     static public boolean downloadStopped = false;
@@ -384,13 +387,13 @@ public class MainActivity extends ActionBarActivity
         super.onResume();
 
         ((HomageApplication)context).setCurrentActivity(mainActivity);
-
+//        hideRefreshProgress();
         sillyOnResumeHackDetectingFinishedRemake();
         navigateToSectionIfRequested();
         initObservers();
         updateLoginState();
         updateRenderProgressState();
-        hideRefreshProgress();
+
 
         startMusic(true);
 
@@ -741,13 +744,15 @@ public class MainActivity extends ActionBarActivity
 
         downloadRemakes(0);
 
-        hideRefreshProgress();
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
         if (f!=null) {
             ((MyStoriesFragment)f).refreshUI();
         }
+
+        fetchingMyRemakes = false;
+
+        hideRefreshProgress();
     }
 
     public void refreshMyRemakes() {
@@ -1301,7 +1306,8 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void refetchRemakesForCurrentUser() {
-
+        fetchingMyRemakes = true;
+        showRefreshProgress();
         User user = User.getCurrent();
         if (user==null) return;
         HomageServer.sh().refetchRemakesForUser(user.getOID(), null);
@@ -1678,7 +1684,7 @@ public class MainActivity extends ActionBarActivity
         shareMethods.put("com.instagram.android",            SHARE_METHOD_VIDEO);
     }
 
-    private List<ResolveInfo> getSupportedActivitiesForSharing(boolean sharingVideosAllowed) {
+    private List<ResolveInfo> getSupportedActivitiesForSharing(boolean userChoiceShareLinkOrVideo, boolean sharingVideosAllowed) {
         // Most important: GMail, Email, Whatsapp, Twitter, Facebook, others...
         PackageManager pm = getPackageManager();
         Intent i;
@@ -1713,7 +1719,7 @@ public class MainActivity extends ActionBarActivity
             Log.v(TAG, String.format("Share using >>>> %s %s", appName, info.activityInfo.packageName));
         }
 
-        if(sharingVideosAllowed) {
+        if(userChoiceShareLinkOrVideo && sharingVideosAllowed) {
             // VIDEO MP4
             i = new Intent(Intent.ACTION_SEND);
             i.setType("video/mp4");
@@ -1733,7 +1739,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void shareRemake(final Remake sharedRemake) {
-        PackageManager pm = getPackageManager();
+        final PackageManager pm = getPackageManager();
 
         final Story story = sharedRemake.getStory();
 
@@ -1742,10 +1748,34 @@ public class MainActivity extends ActionBarActivity
         final String androidDownloadLink =
                 prefs.getString(ConfigParser.DOWNLOAD_APP_ANDROID_URL,getResources().getString(R.string.download_app_android_url)); // https://play.google.com/store/apps/details?id=com.homage.app
 
+        // Dialog that asks user if to share video or link
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.share_link_or_video)
+                .setPositiveButton(R.string.share_link, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        shareRemakeDialog(false, sharedRemake, pm, story, iosDownloadLink, androidDownloadLink);
+                    }
+                })
+                .setNegativeButton(R.string.share_video, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        shareRemakeDialog(true, sharedRemake, pm, story, iosDownloadLink, androidDownloadLink);
+                    }
+                });
+        // Create the AlertDialog object and return it
+        Dialog answer = builder.create();
 
-        final List<ResolveInfo> activities = getSupportedActivitiesForSharing(story.sharingVideoAllowed == 1);
+        answer.show();
+
+
+    }
+
+    private void shareRemakeDialog(final boolean userChoiceShareLinkOrVideo, final Remake sharedRemake, PackageManager pm, final Story story, final String iosDownloadLink, final String androidDownloadLink) {
+
+        final List<ResolveInfo> activities = getSupportedActivitiesForSharing(userChoiceShareLinkOrVideo, story.sharingVideoAllowed == 1);
+
         List<String> appNames = new ArrayList<String>();
         List<Drawable> appIcons = new ArrayList<Drawable>();
+
         for (ResolveInfo info : activities) {
             appNames.add(info.loadLabel(pm).toString());
             try {
@@ -1756,7 +1786,7 @@ public class MainActivity extends ActionBarActivity
         }
 
         ListAdapter adapter = new ArrayAdapterWithIcons(this, appNames, appIcons);
-        new AlertDialog.Builder(this).setTitle("Share your story:")
+        new AlertDialog.Builder(this).setTitle(getResources().getString(R.string.share_your_story))
                 .setAdapter(adapter, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int item) {
                                 ResolveInfo info = activities.get(item);
@@ -1824,90 +1854,8 @@ public class MainActivity extends ActionBarActivity
                             }
                         }
 
-                ).
-
-                    show();
-
-
-        /*
-        final Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("text/plain");
-
-        final List<ResolveInfo> activities = getPackageManager().queryIntentActivities(i, 0);
-
-        List<String> appNames = new ArrayList<String>();
-        for (ResolveInfo info : activities) {
-            appNames.add(info.loadLabel(getPackageManager()).toString());
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Complete Action using...");
-        builder.setItems(appNames.toArray(new CharSequence[appNames.size()]), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-                ResolveInfo info = activities.get(item);
-                int share_method = -1;
-
-                if(info.activityInfo.packageName.equals("com.google.android.gm")) {
-                    i.putExtra(Intent.EXTRA_SUBJECT, story.shareMessage);
-                    i.putExtra(Intent.EXTRA_TEXT,
-                            String.format(
-                                    "%s \n keep calm and get Homage at: \n %s" ,
-                                    sharedRemake.shareURL , downloadLink));
-                    share_method = SHARE_METHOD_EMAIL;
-
-                } else {
-                    i.putExtra(Intent.EXTRA_TEXT,
-                            String.format(
-                                    "%s: \n %s \n keep calm and get Homage at: \n %s" ,
-                                    story.shareMessage , sharedRemake.shareURL , downloadLink));
-                }
-
-                if(info.activityInfo.packageName.equals("com.whatsapp")) {
-                    share_method = SHARE_METHOD_WHATS_APP;
-                }
-
-                if(info.activityInfo.packageName.equals("com.google.android.apps.docs")) {
-                    share_method = SHARE_METHOD_COPY_URL;
-                }
-
-                if(info.activityInfo.packageName.equals("com.facebook.katana")) {
-                    share_method = SHARE_METHOD_FACEBOOK;
-                }
-
-                if(info.activityInfo.packageName.equals("com.twitter.android")) {
-                    share_method = SHARE_METHOD_TWITTER;
-                }
-
-                if(info.activityInfo.packageName.equals("com.android.mms")) {
-                    share_method = SHARE_METHOD_MESSAGE;
-                }
-
-                HomageServer.sh().reportRemakeShareForUser(
-                        sharedRemake.getOID(),sharedRemake.userID,share_method);
-
-                HashMap props = new HashMap<String,String>();
-                props.put("story", story.name);
-                props.put("remake_id", sharedRemake.getOID());
-                props.put("share_method", Integer.toString(share_method));
-                HMixPanel.sh().track("MEShareRemake",props);
-
-                // start the selected activity
-                i.setPackage(info.activityInfo.packageName);
-                startActivity(i);
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.show();
-
-        return;
-        */
-
-                /*
-        Drawable icon = getPackageManager().getApplicationIcon("com.example.testnotification");
-imageView.setImageDrawable(icon);
-         */
-
-                }
+                ).show();
+    }
 //endregion
 
 //    region Download and Share
