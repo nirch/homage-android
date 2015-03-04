@@ -441,7 +441,7 @@ public class MainActivity extends ActionBarActivity
     private void setUpActionBar() {
         // Make sure we're running on Honeycomb or higher to use ActionBar APIs
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            aq.id(R.id.navButton).getView().setBackgroundResource(R.drawable.selector_nav_button_kitkat);
+            getActionBar().setDisplayHomeAsUpEnabled(false);
         }
     }
 
