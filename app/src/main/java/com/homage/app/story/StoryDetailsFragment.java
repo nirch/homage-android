@@ -92,6 +92,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     boolean transformingVideo = false;
     boolean firstRun = true;
     boolean finishedPlayingVideo = true;
+    boolean enteredRecorder = false;
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -569,6 +570,10 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     public void onResume() {
         super.onResume();
 
+        if(enteredRecorder){
+            videoPlayerFragment.initializeVideoPlayer(false);
+        }
+
         videoPlayerFragment.remakePlaying = false;
         videoPlayerFragment.storyDetailsPaused = false;
         SetTitle();
@@ -588,18 +593,19 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     public void onPause() {
         super.onPause();
 
-        ((MainActivity)getActivity()).mOnResumeChangeToSection = MainActivity.SECTION_STORY_DETAILS;
         ((MainActivity)getActivity()).lastStory = story;
 
         ((MainActivity)getActivity()).startMusic(true);
-
-        videoPlayerFragment.storyDetailsPaused = true;
-        stopStoryVideo();
-        aq.id(R.id.greyscreen).visibility(View.VISIBLE);
-        handler.removeCallbacks(runPager);
     }
 
-
+    @Override
+    public void onStop() {
+        super.onStop();
+            videoPlayerFragment.storyDetailsPaused = true;
+            stopStoryVideo();
+            aq.id(R.id.greyscreen).visibility(View.VISIBLE);
+            handler.removeCallbacks(runPager);
+    }
 
     public void refreshData() {
         // Just an example of refreshing the data from local storage,
@@ -752,7 +758,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     final View.OnClickListener onClickedMakeYourOwnButton = new View.OnClickListener() {
         @Override
         public void onClick(View button) {
-           MainActivity.userEnteredRecorder = true;
+            enteredRecorder = true;
            ((MainActivity)getActivity()).stopDownloadThread();
 
            videoPlayerFragment.fullStop();

@@ -130,8 +130,6 @@ public class MainActivity extends ActionBarActivity
     boolean reDownloadStories = false;
     public static boolean fetchingMyRemakes = false;
 
-
-    static public boolean userEnteredRecorder = false;
     static public boolean downloadStopped = false;
 
     // resuming from recorder I want to go back to story details so save last story
@@ -191,6 +189,8 @@ public class MainActivity extends ActionBarActivity
 
 //    A flag that says gcm notification has arrived!
     boolean gotPushMessage = false;
+    // check if main is paused and if it is not then receive notification
+    boolean mainPaused;
 
     private Remake lastRemakeSentToRender;
 
@@ -390,7 +390,12 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onResume() {
         super.onResume();
-
+//        mainPaused = false;
+//        if(gotPushMessage)
+//        {
+//            gotPushMessage = false;
+//            refetchRemakesForCurrentUser();
+//        }
         ((HomageApplication)context).setCurrentActivity(mainActivity);
 //        hideRefreshProgress();
         sillyOnResumeHackDetectingFinishedRemake();
@@ -404,8 +409,6 @@ public class MainActivity extends ActionBarActivity
 
         // If requested to change section on resume. navigate to that section.
         if (mOnResumeChangeToSection > -1) handleDrawerSectionSelection(mOnResumeChangeToSection);
-
-        userEnteredRecorder = false;
     }
 
     // TODO: remove this ugly hack after implementing camera flip correctly in recorder
@@ -428,7 +431,7 @@ public class MainActivity extends ActionBarActivity
             showNotificationDialog(getResources().getString(R.string.title_sent_movie_for_render),
                     getResources().getString(R.string.title_sent_movie_for_render_msg));
 //            movieProgressFragment.showProgressForRemake(renderedRemake);
-            mOnResumeChangeToSection = SECTION_STORIES;
+            mOnResumeChangeToSection = SECTION_ME;
 
             RecorderActivity.hackDismissReason = -1;
             RecorderActivity.hackFinishedRemakeOID = null;
@@ -445,6 +448,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onPause() {
         super.onPause();
+//        mainPaused = true;
         removeObservers();
         HMixPanel mp = HMixPanel.sh();
         if (mp != null) mp.flush();
@@ -519,7 +523,7 @@ public class MainActivity extends ActionBarActivity
                 showNotificationDialog(getResources().getString(R.string.title_sent_movie_for_render),
                         getResources().getString(R.string.title_sent_movie_for_render_msg));
 //                movieProgressFragment.showProgressForRemake(renderedRemake);
-                mOnResumeChangeToSection = SECTION_STORIES;
+                mOnResumeChangeToSection = SECTION_ME;
 
                 HashMap props = new HashMap<String,String>();
                 props.put("story" , renderedRemake.getStory().name);
@@ -948,35 +952,35 @@ public class MainActivity extends ActionBarActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             // Got push notification now do something with it
-
             gotPushMessage = true;
-
-            Crashlytics.log("onGetPushMessage");
-            if (pd != null){
-                pd.dismiss();
-            }
+//            if(!mainPaused) {
+                Crashlytics.log("onGetPushMessage");
+                if (pd != null) {
+                    pd.dismiss();
+                }
 
 //            Get info from intent bundle
-            Bundle b = intent.getExtras();
-            Bundle moreInfo = b.getBundle(constants.MORE_INFO);
+                Bundle b = intent.getExtras();
+                Bundle moreInfo = b.getBundle(constants.MORE_INFO);
 
-            // Get data from more info
-            int pushType = Integer.valueOf(moreInfo.getString("push_message_type"));
-            String story_id = moreInfo.getString("story_id");
-            String remake_id = moreInfo.getString("remake_id");
-            Story story = Story.findByOID(story_id);
-            Remake remake = Remake.findByOID(remake_id);
-            String title = moreInfo.getString("title");
-            String text = moreInfo.getString("text");
+                // Get data from more info
+                int pushType = Integer.valueOf(moreInfo.getString("push_message_type"));
+                String story_id = moreInfo.getString("story_id");
+                String remake_id = moreInfo.getString("remake_id");
+                Story story = Story.findByOID(story_id);
+                Remake remake = Remake.findByOID(remake_id);
+                String title = moreInfo.getString("title");
+                String text = moreInfo.getString("text");
 
-            // Download the movie so that the user can enjoy quick sharing.
-            downloadUserRemakeInBackground(story, remake);
+                // Download the movie so that the user can enjoy quick sharing.
+                downloadUserRemakeInBackground(story, remake);
 
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
-            if (f!=null) {
-                refetchRemakesForCurrentUser();
-            }
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+                if (f != null) {
+                    refetchRemakesForCurrentUser();
+                }
+//            }
         }
     };
 

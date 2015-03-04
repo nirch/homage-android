@@ -63,7 +63,7 @@
     <string name="title_got_push_message_msg">Go to My Clips screen to watch your result</string>
 
     <string name="title_sent_movie_for_render">PREPARING MOVIE!</string>
-    <string name="title_sent_movie_for_render_msg">We will notify you as soon as the movie is ready</string>
+    <string name="title_sent_movie_for_render_msg">We will notify you as soon as the movie is ready. Feel free to make more awesome clips!</string>
 
     <string name="back_camera_title">Back Camera</string>
     <string name="front_camera_title">Selfie</string>

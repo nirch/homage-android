@@ -137,6 +137,11 @@ public class VideoPlayerFragment
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         try {
@@ -194,7 +199,7 @@ public class VideoPlayerFragment
     private void initializePlayingVideo() {
         // Initialize playing the video
         pause();
-        initializeVideoPlayer();
+        initializeVideoPlayer(true);
     }
 
 
@@ -204,7 +209,15 @@ public class VideoPlayerFragment
         ib.setImageResource(R.drawable.icon_small_player_disabled);
     }
 
-    private void initializeVideoPlayer() {
+    public void initializeVideoPlayer(boolean startPlaying) {
+
+        if(startPlaying){
+            autoStartPlaying = true;
+        }
+        else{
+            autoStartPlaying = false;
+            showThumbState();
+        }
 
         if (filePath != null) {
 
@@ -404,7 +417,7 @@ public class VideoPlayerFragment
     }
 
     void showThumbState() {
-//        if (videoView != null) videoView.seekTo(0);
+        if (videoView != null) videoView.seekTo(100);
 //        pause();
         if(thumbURL != null) {
             aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
