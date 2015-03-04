@@ -36,6 +36,7 @@ import com.homage.app.R;
 import com.homage.app.recorder.CameraManager;
 import com.homage.model.User;
 import com.homage.networking.analytics.HMixPanel;
+import com.homage.networking.parsers.ConfigParser;
 import com.homage.networking.server.HomageServer;
 import com.homage.networking.server.Server;
 import com.homage.networking.uploader.UploadManager;
@@ -52,7 +53,7 @@ import java.util.TimerTask;
 public class HomageApplication extends SugarApp {
     String TAG = "TAG_" + getClass().getName();
 
-    public static final String GCM_PROJECT_NUMBER = "407919209902";
+//    public static final String GCM_PROJECT_NUMBER = "407919209902";
 
     public static final String SETTINGS_NAME = "homage_settings";
 
@@ -85,7 +86,9 @@ public class HomageApplication extends SugarApp {
 
     private Activity mCurrentActivity = null;
 
-    static public final String GCM_SENDER_ID = "414832899241";
+
+    // get this number from config and whitelabel
+    static public String GCM_SENDER_ID;
 
     public HomageApplication() {
         super();
@@ -122,11 +125,17 @@ public class HomageApplication extends SugarApp {
         // are bound to the application process.
         initSingletons();
 
+        initGcm();
+
         Thread.setDefaultUncaughtExceptionHandler(new HomageUnhandledExceptionHandler());
 
         LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
         lbm.registerReceiver(onFootageUploadSuccess, new IntentFilter(HomageServer.INTENT_FOOTAGE_UPLOAD_SUCCESS));
 
+    }
+
+    private void initGcm() {
+        GCM_SENDER_ID = getResources().getString(R.string.gcm_project_id);
     }
 
     private BroadcastReceiver onFootageUploadSuccess = new BroadcastReceiver() {

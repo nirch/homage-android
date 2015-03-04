@@ -29,13 +29,13 @@
 
     <!-- Sharing Remake -->
     <string name="send_to">Share Remake To...</string>
-    <string name="share_your_story">Share your story</string>
+    <string name="share_your_story">Share your clip</string>
     <string name="share_link_or_video">Share link or video?</string>
     <string name="share_link">Link</string>
     <string name="share_video">Video</string>
 
     <!-- List messages -->
-    <string name="no_remakes">CREATE YOUR FIRST STORY!</string>
+    <string name="no_remakes">CREATE YOUR FIRST CLIP!</string>
     <string name="checking_for_remakes">CHECKING FOR REMAKES...</string>
 
     <!-- Buttons and overlay messages -->
@@ -60,7 +60,7 @@
     <string name="title_improper_msg">For optimal results, use a solid color wall</string>
 
     <string name="title_got_push_message">MOVIE READY!</string>
-    <string name="title_got_push_message_msg">Go to My Stories screen to watch your result</string>
+    <string name="title_got_push_message_msg">Go to My Clips screen to watch your result</string>
 
     <string name="title_sent_movie_for_render">PREPARING MOVIE!</string>
     <string name="title_sent_movie_for_render_msg">We will notify you as soon as the movie is ready</string>
@@ -75,12 +75,12 @@
     <string name="recording_scene_recorded_successfully">Scene recorded successfully</string>
 
     <!-- My Stories -->
-    <string name="remake_a_story_button">REMAKE A STORY!</string>
+    <string name="remake_a_story_button">REMAKE A CLIP!</string>
     <string name="rendering_remake_message">Preparing...</string>
 
     <!-- Videos -->
     <string name="video_title_scene">WATCH OUR SCENE</string>
-    <string name="video_title_story">WATCH OUR STORY</string>
+    <string name="video_title_story">WATCH OUR CLIP</string>
 
     <!-- Dialogues -->
     <string name="recorder_dismiss_title">Leave recorder</string>
@@ -117,12 +117,12 @@
     <string name="welcome_2_message">USE A SOLID COLOR WALL AS BACKGROUND</string>
 
     <!-- Navigation drawer -->
-    <string name="nav_item_1_stories">STORIES</string>
-    <string name="nav_item_2_me">MY STORIES</string>
+    <string name="nav_item_1_stories">CLIPS</string>
+    <string name="nav_item_2_me">MY CLIPS</string>
     <string name="nav_item_3_settings">SETTINGS</string>
     <string name="nav_item_4_howto">HOW TO</string>
     <string name="nav_item_5_share_app">SHARE APP</string>
-    <string name="nav_item_6_storydetails">STORY DETAILS</string>
+    <string name="nav_item_6_storydetails">CLIP DETAILS</string>
     <string name="nav_title_hello_user">Hello Guest</string>
     <string name="nav_join_button">join now</string>
 
@@ -177,8 +177,8 @@
     <string name="settings_uploader_title">Uploader</string>
     <string name="settings_uploader_summary">Turn off/on uploader.</string>
 
-    <string name="settings_skip_story_details_title">Skip Story Details</string>
-    <string name="settings_skip_story_details_summary">Skip the story details screen and immediately open the recorder when selecting a story.</string>
+    <string name="settings_skip_story_details_title">Skip Clip Details</string>
+    <string name="settings_skip_story_details_summary">Skip the clip details screen and immediately open the recorder when selecting a clip.</string>
 
     <string name="settings_export_db_title">Export model db.</string>
 
@@ -201,10 +201,10 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="placeholder_hello_guest">Hello Guest</string>
     <string name="placeholder_join_now">join now</string>
-    <string name="placeholder_story_title">Story title</string>
+    <string name="placeholder_story_title">Clip title</string>
     <string name="placeholder_reset_title">Reset</string>
     <string name="placeholder_delete_title">Delete</string>
-    <string name="placeholder_story_remakes_count">#666</string>
+    <string name="placeholder_story_remakes_count">#667</string>
 
     <!-- debug -->
     <string name="debug_unimplemented_title">Unimplemented</string>

@@ -8,6 +8,8 @@
 
     <string name="mixpanel_token">bab0997e7171d56daf35df751f523962</string>
 
+    <string name="gcm_project_id">360661616085</string>
+
     <string name="app_share_message_subject">Join me in making awesome clips!</string>
     <string name="app_share_message">get Monkey Dance at</string>
 

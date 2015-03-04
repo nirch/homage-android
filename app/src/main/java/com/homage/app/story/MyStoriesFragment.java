@@ -343,7 +343,6 @@ public class MyStoriesFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        UploadManager.sh().checkUploader();
     }
 
     @Override
@@ -477,13 +476,18 @@ public class MyStoriesFragment extends Fragment {
         }
 
         if(motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+
             secondX = motionEvent.getX();
             secondY = motionEvent.getY();
 
+            // if there is an open slide and user scrolls up or down close it.
+            if(Math.abs(secondY - firstY) > Math.abs(secondX - firstX)){
+                closeLastView();
+            }
             // if its not a down or up motion, and it's a big enough motion
             // going right and share is displayed
             // slide share out
-            if(Math.abs(secondY - firstY) < Math.abs(secondX - firstX)
+            else if(shareIsDisplayed && Math.abs(secondY - firstY) < Math.abs(secondX - firstX)
                     && secondX - firstX > 10){
                 closeLastView();
                 slideOutShare(view);
@@ -491,7 +495,7 @@ public class MyStoriesFragment extends Fragment {
             // if its not a down or up motion, and it's a big enough motion
             // going left and share is not displayed
             // slide share in
-            else if(Math.abs(secondY - firstY) < Math.abs(secondX - firstX)
+            else if(!shareIsDisplayed && Math.abs(secondY - firstY) < Math.abs(secondX - firstX)
                     && secondX - firstX < 10){
                 closeLastView();
                 slideInShare(view);

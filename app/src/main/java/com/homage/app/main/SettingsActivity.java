@@ -21,6 +21,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
@@ -109,6 +110,7 @@ public class SettingsActivity extends PreferenceActivity {
         aq.id(R.id.navButton).visibility(View.GONE);
         aq.id(R.id.appTitle).text(R.string.settings_title);
         actionBar.setHomeButtonEnabled(false);
+        ((ImageButton) aq.id(R.id.musicButton).getView()).setVisibility(View.GONE);
     }
 
     private void showProgress() {

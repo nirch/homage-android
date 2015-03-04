@@ -6,7 +6,12 @@
     <string name="campaign_id">544ead1e454c610d1600000f</string>
     <string name="main_font">font/DINOT-CondBold.otf</string>
 
+    String mixPanelToken = prefs.getString(
+    ConfigParser.MIXPANEL_TOKEN, app.getResources().getString(R.string.mixpanel_token));
+
     <string name="mixpanel_token">bab0997e7171d56daf35df751f523962</string>
+
+    <string name="gcm_project_id">414832899241</string>
 
     <string name="app_share_message_subject">Join me in making awesome clips!</string>
     <string name="app_share_message">keep calm and get Homage at</string>

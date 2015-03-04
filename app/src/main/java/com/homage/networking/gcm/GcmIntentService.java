@@ -168,6 +168,7 @@ public class GcmIntentService extends IntentService {
 
             // Send an intent to be caught by main activity and refresh the ME Screen
             // This intent will pass along the status of the remake and the info about it.
+
             mainIntent.putExtra(constants.MORE_INFO, moreInfo);
             LocalBroadcastManager.getInstance(context).sendBroadcast(mainIntent);
 
@@ -194,13 +195,4 @@ public class GcmIntentService extends IntentService {
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
 
     }
-
-
-
-//    private Intent createIntentForTheMessage(int pushType, Bundle extras) {
-//
-//
-//
-//        return intent;
-//    }
 }

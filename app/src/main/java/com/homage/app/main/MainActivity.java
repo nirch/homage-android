@@ -34,6 +34,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
@@ -243,11 +244,15 @@ public class MainActivity extends ActionBarActivity
 
         aq = new AQuery(this);
 
+
+
         // Custom actionbar layout
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.actionbar_view);
         actionAQ = new AQuery(getActionBar().getCustomView());
+
+        setUpActionBar();
 
         // Shared Prefs
         prefs = getSharedPreferences(HomageApplication.SETTINGS_NAME, Context.MODE_PRIVATE);
@@ -427,6 +432,13 @@ public class MainActivity extends ActionBarActivity
 
             RecorderActivity.hackDismissReason = -1;
             RecorderActivity.hackFinishedRemakeOID = null;
+        }
+    }
+
+    private void setUpActionBar() {
+        // Make sure we're running on Honeycomb or higher to use ActionBar APIs
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            aq.id(R.id.navButton).getView().setBackgroundResource(R.drawable.selector_nav_button_kitkat);
         }
     }
 
@@ -1836,7 +1848,7 @@ public class MainActivity extends ActionBarActivity
                                 props.put("share_method", packageName);
                                 HMixPanel.sh().track("MEShareRemake", props);
 
-                                if (story.sharingVideoAllowed == 1 && canShareVideo) {
+                                if (story.sharingVideoAllowed == 1 && canShareVideo && userChoiceShareLinkOrVideo) {
                                     videoInfo.put(constants.MIME_TYPE, "video/mp4");
                                     DownloadVideoAndShare(mainActivity, videoInfo);
                                 } else {
