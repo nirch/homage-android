@@ -60,8 +60,7 @@
                     android:scaleType="fitCenter"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/selector_my_share_button"
+                    android:background="@drawable/selector_my_share_button"
                     />
             </RelativeLayout>
 

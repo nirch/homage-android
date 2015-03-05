@@ -196,6 +196,7 @@ public class MyStoriesFragment extends Fragment {
                     aq.id(R.id.myShareButtonContainer).visibility(View.VISIBLE);
                     aq.id(R.id.loadingRemakeProgress).visibility(View.GONE);
                     aq.id(R.id.myMessageContainer).visibility(View.GONE);
+                    aq.id(R.id.myShareButton).getView().setBackgroundResource(R.drawable.selector_my_share_button);
                 } else if(remake.status == Remake.Status.RENDERING.getValue() ||
                         remake.status == Remake.Status.STARTED_CREATION.getValue()) {
                     aq.id(R.id.storyImage).visibility(View.VISIBLE);
@@ -203,10 +204,12 @@ public class MyStoriesFragment extends Fragment {
                     aq.id(R.id.myShareButtonContainer).visibility(View.GONE);
                     aq.id(R.id.myMessageContainer).visibility(View.VISIBLE);
                     aq.id(R.id.loadingRemakeProgress).visibility(View.VISIBLE);
+                    aq.id(R.id.myShareButton).getView().setBackgroundResource(R.drawable.selector_my_share_button);
                 }else{
                     aq.id(R.id.storyImage).visibility(View.VISIBLE);
                     aq.id(R.id.myPlayButton).visibility(View.GONE);
-                    aq.id(R.id.myShareButtonContainer).visibility(View.GONE);
+                    aq.id(R.id.myShareButtonContainer).visibility(View.VISIBLE);
+                    aq.id(R.id.myShareButton).getView().setBackgroundResource(R.drawable.selector_my_reset_button);
                     aq.id(R.id.loadingRemakeProgress).visibility(View.GONE);
                     aq.id(R.id.myMessageContainer).visibility(View.GONE);
                 }
@@ -434,19 +437,26 @@ public class MyStoriesFragment extends Fragment {
             View shareButton =  aqView.id(R.id.myShareButton).getView();
             View deleteButton =  aqView.id(R.id.myDeleteButton).getView();
             View resetButton =  aqView.id(R.id.myResetButton).getView();
+            View shareButtonContainer = aqView.id(R.id.myShareButtonContainer).getView();
 
             if(shareIsDisplayed && Math.abs(secondY - firstY) < 10
                     && Math.abs(secondX - firstX) < 10){
 
-                if( inViewInBounds(playButton, x, y)){
+                if(playButton.isShown() && inViewInBounds(playButton, x, y)){
 
                     playButton.performClick();
 
                 }
 
-                if( inViewInBounds(shareButton, x, y)){
+
+                if(playButton.isShown() &&  inViewInBounds(shareButton, x, y)){
 
                     shareButton.performClick();
+
+                }
+                else if(!playButton.isShown() &&  inViewInBounds(shareButton, x, y)) {
+
+                    resetButton.performClick();
 
                 }
 
@@ -485,18 +495,18 @@ public class MyStoriesFragment extends Fragment {
                 closeLastView();
             }
             // if its not a down or up motion, and it's a big enough motion
-            // going right and share is displayed
+            // going left and share is displayed
             // slide share out
             else if(shareIsDisplayed && Math.abs(secondY - firstY) < Math.abs(secondX - firstX)
-                    && secondX - firstX > 10){
+                    && secondX - firstX < 10){
                 closeLastView();
                 slideOutShare(view);
             }
             // if its not a down or up motion, and it's a big enough motion
-            // going left and share is not displayed
+            // going right and share is not displayed
             // slide share in
             else if(!shareIsDisplayed && Math.abs(secondY - firstY) < Math.abs(secondX - firstX)
-                    && secondX - firstX < 10){
+                    && secondX - firstX > 10){
                 closeLastView();
                 slideInShare(view);
             }
@@ -518,7 +528,7 @@ public class MyStoriesFragment extends Fragment {
             shareIsDisplayed = false;
 
 
-            ((RelativeLayout) viewTouched.getParent()).findViewById(R.id.mainContainer).animate().xBy(width).setListener(new Animator.AnimatorListener() {
+            ((RelativeLayout) viewTouched.getParent()).findViewById(R.id.mainContainer).animate().xBy(-width).setListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animator) {
 
@@ -561,7 +571,7 @@ public class MyStoriesFragment extends Fragment {
 
             ((RelativeLayout) viewTouched.getParent()).findViewById(R.id.other_controls_container).setVisibility(View.GONE);
 
-            ((RelativeLayout) viewTouched.getParent()).findViewById(R.id.mainContainer).animate().xBy(-width);
+            ((RelativeLayout) viewTouched.getParent()).findViewById(R.id.mainContainer).animate().xBy(width);
 
         }
     }

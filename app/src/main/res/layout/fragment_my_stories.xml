@@ -34,11 +34,13 @@
         />
 
     <Button android:id="@+id/remakeAStoryButton"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:layout_width="match_parent"
-        android:background="@color/darker"
-        android:textColor="@color/impact"
         android:text="@string/remake_a_story_button"
+        android:drawableLeft="@drawable/icon_remake_black"
+        android:drawableStart="@drawable/icon_remake_black"
+        android:layout_gravity="center_horizontal"
+        style="@style/HomageImpactButtonBigTextBlack"
         android:textStyle="bold"
         android:layout_alignParentBottom="true"
 

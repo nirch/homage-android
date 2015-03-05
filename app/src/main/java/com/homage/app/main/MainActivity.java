@@ -709,6 +709,8 @@ public class MainActivity extends ActionBarActivity
         lbm.unregisterReceiver(onShareVideo);
     }
 
+    // region Download Stories and remakes
+
     private BroadcastReceiver onStoriesUpdated = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -730,8 +732,6 @@ public class MainActivity extends ActionBarActivity
             hideRefreshProgress();
         }
     };
-
-    // region Download Stories and remakes
 
     private BroadcastReceiver onRemakesForUserUpdated = new BroadcastReceiver() {
         @Override
