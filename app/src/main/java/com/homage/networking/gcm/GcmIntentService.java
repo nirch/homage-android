@@ -55,7 +55,7 @@ public class GcmIntentService extends IntentService {
     static final int PushMessageTypeGeneralMessage = 3;
 
 
-    public static final int NOTIFICATION_ID = 1;
+    public static int NOTIFICATION_ID = 1;
     private NotificationManager mNotificationManager;
     NotificationCompat.Builder builder;
 
@@ -146,6 +146,8 @@ public class GcmIntentService extends IntentService {
 
         if (pushType == PushMessageTypeMovieReady || pushType == PushMessageTypeMovieFailed) {
 
+            NOTIFICATION_ID += 1;
+
             String storyId = extras.getString("story_id", null);
             String remakeId = extras.getString("remake_id", null);
             intent = new Intent(context, SplashScreenActivity.class);
@@ -154,9 +156,13 @@ public class GcmIntentService extends IntentService {
             moreInfo.putString("push_message_type", String.valueOf(pushType));
             moreInfo.putString("story_id", storyId);
             moreInfo.putString("remake_id", remakeId);
-            moreInfo.putString("title", context.getResources().getString(R.string.title_got_push_message));
-            moreInfo.putString("text", context.getResources().getString(R.string.title_got_push_message_msg));
-
+            if(pushType == PushMessageTypeMovieReady) {
+                moreInfo.putString("title", context.getResources().getString(R.string.title_got_push_message));
+                moreInfo.putString("text", context.getResources().getString(R.string.title_got_push_message_msg));
+            }else if(pushType == PushMessageTypeMovieFailed) {
+                moreInfo.putString("title", context.getResources().getString(R.string.title_got_push_message_failed));
+                moreInfo.putString("text", context.getResources().getString(R.string.title_got_push_message_msg_failed));
+            }
             moreInfo.putString(MainActivity.SK_START_MAIN_WITH, "MyStories");
 
             // Update the remake info.

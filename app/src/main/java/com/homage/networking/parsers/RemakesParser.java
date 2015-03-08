@@ -40,17 +40,34 @@ public class RemakesParser extends Parser {
                 Log.e(TAG, String.format("Failed parsing remake with OID:%s . skipped.", remakeOID) );
             }
         }
-        //        Is this the first page?
 
-        //        If yes delete all remakes not with this pulledAt
-        if(this.requestInfo != null && this.requestInfo.get("skip") == "null"){
-            if (remakeInfo != null) {
-                //        Get Story ID
-                String storyOID = Parser.parseOID(remakeInfo.getJSONObject("story_id"));
-                Story story = Story.findByOID(storyOID);
-                User excludedUser = User.getCurrent();
-                //        Delete Remakes
-                story.deleteRemakes(excludedUser, pulledAt);
+        boolean callFromMEScreen = false;
+        boolean skipValueIsNull = false;
+
+        if(this.requestInfo != null) {
+
+            if (this.requestInfo.get("me") != null) {
+                callFromMEScreen = this.requestInfo.get("me").toString().equals("true");
+            } else {
+                callFromMEScreen = false;
+            }
+            if (this.requestInfo.get("skip") != null) {
+                skipValueIsNull = this.requestInfo.get("skip").toString().equals("null");
+            } else {
+                skipValueIsNull = false;
+            }
+
+            //        Is this the first page?
+            //        If yes delete all remakes not with this pulledAt
+            if (skipValueIsNull && !callFromMEScreen) {
+                if (remakeInfo != null) {
+                    //        Get Story ID
+                    String storyOID = Parser.parseOID(remakeInfo.getJSONObject("story_id"));
+                    Story story = Story.findByOID(storyOID);
+                    User excludedUser = User.getCurrent();
+                    //        Delete Remakes
+                    story.deleteRemakes(excludedUser, pulledAt);
+                }
             }
         }
     }

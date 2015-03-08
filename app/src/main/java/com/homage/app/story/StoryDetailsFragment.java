@@ -587,6 +587,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         // Set title bar
         ((MainActivity) getActivity())
                 .setActionBarTitle(story.name);
+        ((MainActivity) getActivity()).ShouldDisplayHomeUp();
     }
 
     @Override
@@ -758,6 +759,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     final View.OnClickListener onClickedMakeYourOwnButton = new View.OnClickListener() {
         @Override
         public void onClick(View button) {
+            HomageApplication.getInstance().downloadPaused = true;
             enteredRecorder = true;
            ((MainActivity)getActivity()).stopDownloadThread();
 

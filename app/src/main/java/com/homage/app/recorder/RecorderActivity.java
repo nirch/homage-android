@@ -1194,7 +1194,7 @@ public class RecorderActivity extends Activity
         props.put("scene_id", Integer.toString(currentSceneID));
         HMixPanel.sh().track("REStartRecording",props);
 
-        if(!contourLocalUrl.isEmpty()) {
+        if(contourLocalUrl != null && !contourLocalUrl.isEmpty()) {
             HashMap mattingprops = new HashMap<String, String>();
             props.put("contourLocalUrl", contourLocalUrl);
             props.put("cc", Integer.toString(lastcc));

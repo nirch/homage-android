@@ -36,7 +36,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -64,7 +63,6 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.homage.FileHandler.VideoHandler;
 import com.homage.app.Download.DownloadTask;
 import com.homage.app.Download.DownloadThread;
-import com.homage.app.Download.DownloadThreadListener;
 import com.homage.app.R;
 import com.homage.app.Utils.cacheUtil;
 import com.homage.app.Utils.constants;
@@ -87,8 +85,6 @@ import com.homage.networking.server.Server;
 import com.homage.networking.uploader.UploadManager;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -99,8 +95,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends ActionBarActivity
         implements
-            NavigationDrawerFragment.NavigationDrawerCallbacks,
-        DownloadThreadListener {
+            NavigationDrawerFragment.NavigationDrawerCallbacks{
 
     String TAG = "TAG_MainActivity";
 
@@ -117,20 +112,17 @@ public class MainActivity extends ActionBarActivity
     // Audio
     MediaPlayer musicPlayer;
     boolean musicOn = true;
-    public static final String MUSIC_STATE = "music state";
+    public final String MUSIC_STATE = "music state";
 
-    // Download Stories and My Remakes
-    private DownloadThread downloadThread;
-    public Handler handler;
     List<Story> stories;
-    public static List<Remake> remakes;
+    public List<Remake> remakes;
     public static final int MAX_STORIES_TO_DOWNLOAD = 10;
     public static final int MAX_REMAKES_TO_DOWNLOAD = 10;
     public static final boolean RE_DOWNLOAD_REMAKES = false;
     boolean reDownloadStories = false;
-    public static boolean fetchingMyRemakes = false;
+    public boolean fetchingMyRemakes = false;
 
-    static public boolean downloadStopped = false;
+    public boolean downloadStopped = false;
 
     // resuming from recorder I want to go back to story details so save last story
     public Story lastStory;
@@ -306,6 +298,7 @@ public class MainActivity extends ActionBarActivity
         getSupportFragmentManager().addOnBackStackChangedListener(
                 new FragmentManager.OnBackStackChangedListener() {
                     public void onBackStackChanged() {
+
                         if(currentSection == SECTION_ME)
                         {
 //                            going into me screen
@@ -364,21 +357,26 @@ public class MainActivity extends ActionBarActivity
         actionAQ.id(R.id.musicButton).clicked(onClickedMusicButton);
         //endregion
 
-        // Create and launch the download thread
-        setDownloadThread(new DownloadThread(this));
-        getDownloadThread().start();
-
-        // Create the Handler. It will implicitly bind to the Looper
-        // that is internally created for this thread (since it is the UI thread)
-        handler = new Handler();
-
-
         refreshMyRemakes();
         refetchRemakesForCurrentUser();
 
         // Upload service after loading page. Loads Main page more quickly
         UploadManager.sh().checkUploader();
 
+    }
+
+    public void ShouldDisplayHomeUp(){
+        //Enable Up button only  if there are entries in the back stack
+
+        boolean canback = currentSection == SECTION_STORY_DETAILS;
+        getSupportActionBar().setDisplayHomeAsUpEnabled(canback);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        //This method is called when the up button is pressed. Just the pop back stack.
+        getSupportFragmentManager().popBackStack();
+        return true;
     }
 
     private void clearReferences(){
@@ -404,11 +402,16 @@ public class MainActivity extends ActionBarActivity
         updateLoginState();
         updateRenderProgressState();
 
-
         startMusic(true);
 
         // If requested to change section on resume. navigate to that section.
         if (mOnResumeChangeToSection > -1) handleDrawerSectionSelection(mOnResumeChangeToSection);
+
+        if(((HomageApplication)context).downloadPaused){
+            ((HomageApplication)context).downloadPaused = false;
+            downloadStories();
+            downloadRemakes(0);
+        }
     }
 
     // TODO: remove this ugly hack after implementing camera flip correctly in recorder
@@ -474,7 +477,7 @@ public class MainActivity extends ActionBarActivity
         clearReferences();
 
         // request the thread to stop
-        getDownloadThread().requestStop();
+        ((HomageApplication)context).getDownloadThread().requestStop();
 
         if(musicPlayer != null){
             musicPlayer.release();
@@ -773,11 +776,11 @@ public class MainActivity extends ActionBarActivity
 
     public void refreshMyRemakes() {
 
-        if (MainActivity.remakes == null) {
-            MainActivity.remakes = User.getCurrent().allAvailableRemakesLatestOnTop();
+        if (remakes == null) {
+            remakes = User.getCurrent().allAvailableRemakesLatestOnTop();
         } else {
-            MainActivity.remakes.clear();
-            MainActivity.remakes.addAll(User.getCurrent().allAvailableRemakesLatestOnTop());
+            remakes.clear();
+            remakes.addAll(User.getCurrent().allAvailableRemakesLatestOnTop());
         }
 
     }
@@ -785,20 +788,20 @@ public class MainActivity extends ActionBarActivity
     public void downloadRemakes(int numOfVideosToDownload) {
         File cacheDir = getCacheDir();
 
-        int remakeDownloadNum = MainActivity.MAX_REMAKES_TO_DOWNLOAD;
+        int remakeDownloadNum = MAX_REMAKES_TO_DOWNLOAD;
 
         if(numOfVideosToDownload > 0){
             remakeDownloadNum = numOfVideosToDownload;
         }
 
         for (int i = 0; i < remakeDownloadNum; i++) {
-            if (MainActivity.remakes.size() >= i + 1) {
+            if (remakes.size() >= i + 1) {
                 try {
                     File mOutFile = new File(cacheDir,
-                            MainActivity.getLocalVideoFile(MainActivity.remakes.get(i).videoURL));
-                    if (MainActivity.RE_DOWNLOAD_REMAKES || !mOutFile.exists()) {
-                        getDownloadThread().enqueueDownload(new DownloadTask(mOutFile,
-                                new URL(MainActivity.remakes.get(i).videoURL), true));
+                            MainActivity.getLocalVideoFile(remakes.get(i).videoURL));
+                    if (RE_DOWNLOAD_REMAKES || !mOutFile.exists()) {
+                        ((HomageApplication)context).getDownloadThread().enqueueDownload(new DownloadTask(mOutFile,
+                                new URL(remakes.get(i).videoURL), true));
                     }
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -821,28 +824,28 @@ public class MainActivity extends ActionBarActivity
                     File cacheDir = context.getCacheDir();
                     File mOutFile = new File(cacheDir, stories.get(i).getStoryVideoLocalFileName());
                     if (reDownloadStories || !mOutFile.exists()) {
-                        getDownloadThread().enqueueDownload(new DownloadTask(mOutFile,
+                        ((HomageApplication)context).getDownloadThread().enqueueDownload(new DownloadTask(mOutFile,
                                 new URL(stories.get(i).video), true));
                     }
                     for (Scene scene : scenes){
                         if(scene.sceneAudio != null) {
                             File sceneFile = new File(cacheDir,scene.getSceneAudioLocalFileName());
                             if (reDownloadStories || !sceneFile.exists()) {
-                                getDownloadThread().enqueueDownload(new DownloadTask(sceneFile,
+                                ((HomageApplication)context).getDownloadThread().enqueueDownload(new DownloadTask(sceneFile,
                                         new URL(scene.sceneAudio), true));
                             }
                         }
                         if(scene.postSceneAudio != null) {
                             File sceneFile = new File(cacheDir,scene.getPostSceneAudioLocalFileName());
                             if (reDownloadStories || !sceneFile.exists()) {
-                                getDownloadThread().enqueueDownload(new DownloadTask(sceneFile,
+                                ((HomageApplication)context).getDownloadThread().enqueueDownload(new DownloadTask(sceneFile,
                                         new URL(scene.postSceneAudio), true));
                             }
                         }
                         if(scene.directionAudio != null) {
                             File sceneFile = new File(cacheDir,scene.getDirectionAudioLocalFileName());
                             if (reDownloadStories || !sceneFile.exists()) {
-                                getDownloadThread().enqueueDownload(new DownloadTask(sceneFile,
+                                ((HomageApplication)context).getDownloadThread().enqueueDownload(new DownloadTask(sceneFile,
                                         new URL(scene.directionAudio), true));
                             }
                         }
@@ -855,47 +858,13 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    @Override
-    public void handleDownloadThreadUpdate() {
-        // we want to modify the progress bar so we need to do it from the UI thread
-        // how can we make sure the code runs in the UI thread? use the handler!
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                int total = getDownloadThread().getTotalQueued();
-                int completed = getDownloadThread().getTotalCompleted();
-
-//                progressBar.setMax(total);
-//
-//                progressBar.setProgress(0); // need to do it due to a ProgressBar bug
-//                progressBar.setProgress(completed);
-//
-//                statusText.setText(String.format("Downloaded %d/%d", completed, total));
-
-                // vibrate for fun
-//                if (completed == total) {
-//                    ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(100);
-//                }
-            }
-        });
-
-    }
-
     public void stopDownloadThread(){
-        DownloadThread dt = getDownloadThread();
+        DownloadThread dt = ((HomageApplication)context).getDownloadThread();
         // If there are still remakes or stories that have not been downloaded
         if(dt.getTotalCompleted() < dt.getTotalQueued())
         {
             downloadStopped = true;
         }
-    }
-
-    public DownloadThread getDownloadThread() {
-        return downloadThread;
-    }
-
-    public void setDownloadThread(DownloadThread downloadThread) {
-        this.downloadThread = downloadThread;
     }
 
     // endregion
@@ -1204,22 +1173,25 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void showStoryDetails(Story story) {
+        if(!leaveapp) {
 
-        stopMusic(false);
+            stopMusic(false);
 
-        currentSection = SECTION_STORY_DETAILS;
-        currentStory = story;
+            currentSection = SECTION_STORY_DETAILS;
+            currentStory = story;
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fTransaction = fragmentManager.beginTransaction();
-        storyDetailsFragment = (StoryDetailsFragment)fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORY_DETAILS);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fTransaction = fragmentManager.beginTransaction();
+            storyDetailsFragment = (StoryDetailsFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG_STORY_DETAILS);
 
-        fTransaction.replace(R.id.container, storyDetailsFragment = StoryDetailsFragment.newInstance(currentSection, currentStory),FRAGMENT_TAG_STORY_DETAILS);
-        fTransaction.setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out,R.anim.animation_slide_in, R.anim.animation_slide_out);;
-        fTransaction.addToBackStack(null);
-        fTransaction.commitAllowingStateLoss();
+            fTransaction.replace(R.id.container, storyDetailsFragment = StoryDetailsFragment.newInstance(currentSection, currentStory), FRAGMENT_TAG_STORY_DETAILS);
+            fTransaction.setCustomAnimations(R.anim.animation_slide_in, R.anim.animation_slide_out, R.anim.animation_slide_in, R.anim.animation_slide_out);
+            ;
+            fTransaction.addToBackStack(null);
+            fTransaction.commitAllowingStateLoss();
 
-        HMixPanel.sh().track("appMoveToStorieDetailsTab",null);
+            HMixPanel.sh().track("appMoveToStorieDetailsTab", null);
+        }
     }
 
     public void showStories() {
@@ -1237,11 +1209,11 @@ public class MainActivity extends ActionBarActivity
             // If fragment doesn't exist yet, create one
             if (fragment == null) {
                 fTransaction.add(R.id.container, StoriesListFragment.newInstance(currentSection), FRAGMENT_TAG_STORIES);
-                fTransaction.addToBackStack(null);
+//                fTransaction.addToBackStack(null);
                 fTransaction.commitAllowingStateLoss();
             } else { // re-use the old fragment
                 fTransaction.replace(R.id.container, fragment, FRAGMENT_TAG_STORIES);
-                fTransaction.addToBackStack(null);
+//                fTransaction.addToBackStack(null);
                 fTransaction.commitAllowingStateLoss();
             }
 
@@ -1251,34 +1223,36 @@ public class MainActivity extends ActionBarActivity
 
     public void showMyStories() {
 
-        // Show actionbar
-        showActionBar();
+        if(!leaveapp) {
 
-        User user = User.getCurrent();
-        if (user==null) return;
+            // Show actionbar
+            showActionBar();
 
-        currentSection = SECTION_ME;
-        currentStory = null;
+            User user = User.getCurrent();
+            if (user == null) return;
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fTransaction = fragmentManager.beginTransaction();
-        Fragment fragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+            currentSection = SECTION_ME;
+            currentStory = null;
 
-        // If fragment doesn't exist yet, create one
-        if (fragment == null) {
-            fTransaction.add(R.id.container, MyStoriesFragment.newInstance(currentSection, user), FRAGMENT_TAG_ME);
-            fTransaction.setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout,R.anim.animation_fadein, R.anim.animation_fadeout);
-            fTransaction.addToBackStack(null);
-            fTransaction.commitAllowingStateLoss();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fTransaction = fragmentManager.beginTransaction();
+            Fragment fragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
+
+            // If fragment doesn't exist yet, create one
+            if (fragment == null) {
+                fTransaction.add(R.id.container, MyStoriesFragment.newInstance(currentSection, user), FRAGMENT_TAG_ME);
+                fTransaction.setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout, R.anim.animation_fadein, R.anim.animation_fadeout);
+                fTransaction.addToBackStack(null);
+                fTransaction.commitAllowingStateLoss();
+            } else if(!fragment.isAdded()){ // re-use the old fragment
+                fTransaction.replace(R.id.container, fragment, FRAGMENT_TAG_ME);
+                fTransaction.setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout, R.anim.animation_fadein, R.anim.animation_fadeout);
+                fTransaction.addToBackStack(null);
+                fTransaction.commitAllowingStateLoss();
+            }
+
+            HMixPanel.sh().track("appMoveToMeTab", null);
         }
-        else { // re-use the old fragment
-            fTransaction.replace(R.id.container, fragment, FRAGMENT_TAG_ME);
-            fTransaction.setCustomAnimations(R.anim.animation_fadein, R.anim.animation_fadeout,R.anim.animation_fadein, R.anim.animation_fadeout);
-            fTransaction.addToBackStack(null);
-            fTransaction.commitAllowingStateLoss();
-        }
-
-        HMixPanel.sh().track("appMoveToMeTab",null);
     }
 
     public void showSettings() {
@@ -1311,7 +1285,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void refetchAllRemakesForStory(Story story) {
-        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, null, null,null); // Implement partial fetch
+        HomageServer.sh().refetchRemakesForStory(story.getOID(), null, null, null, null); // Implement partial fetch
         showRefreshProgress();
     }
 
@@ -1609,49 +1583,49 @@ public class MainActivity extends ActionBarActivity
 
     public void onBackPressed() {
         Log.d(TAG, "Pressed back button");
-        if(currentSection == SECTION_ME)
-        {
-            showStories();
-            //                          Set Stories title
-            setActionBarTitle(getResources().getString(R.string.nav_item_1_stories));
-            currentSection = SECTION_STORIES;
-            lastSection = SECTION_ME;
-            goingOutOfMeScreen = false;
-        }
+        if(!leaveapp) {
+            if (currentSection == SECTION_ME) {
+                showStories();
+                //                          Set Stories title
+                setActionBarTitle(getResources().getString(R.string.nav_item_1_stories));
+                currentSection = SECTION_STORIES;
+                lastSection = SECTION_ME;
+                goingOutOfMeScreen = false;
+            }
 //                        Going into story details
-        else if(currentSection == SECTION_STORY_DETAILS) {
+            else if (currentSection == SECTION_STORY_DETAILS) {
 
-            showStories();
-            //                          Set Stories title
-            setActionBarTitle(getResources().getString(R.string.nav_item_1_stories));
-            currentSection = SECTION_STORIES;
-            lastSection = SECTION_STORY_DETAILS;
-            goingOutOfStoryDetailsScreen = false;
-        }
-        else if(currentSection == SECTION_STORIES){
-            new AlertDialog.Builder(mainActivity)
-                    .setTitle("Close Homage?")
-                    .setMessage("Do you really want to exit?")
-                    .setPositiveButton("YES",
-                            new DialogInterface.OnClickListener() {
+                showStories();
+                //                          Set Stories title
+                setActionBarTitle(getResources().getString(R.string.nav_item_1_stories));
+                currentSection = SECTION_STORIES;
+                lastSection = SECTION_STORY_DETAILS;
+                goingOutOfStoryDetailsScreen = false;
+            } else if (currentSection == SECTION_STORIES) {
+                new AlertDialog.Builder(mainActivity)
+                        .setTitle("Close Homage?")
+                        .setMessage("Do you really want to exit?")
+                        .setPositiveButton("YES",
+                                new DialogInterface.OnClickListener() {
 
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    finish();
-                                    MainActivity.super.onBackPressed();
-                                }
-                            })
-                    .setNegativeButton("NO",
-                            new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which) {
+                                        leaveapp = true;
+                                        finish();
+                                    }
+                                })
+                        .setNegativeButton("NO",
+                                new DialogInterface.OnClickListener() {
 
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    showStories();
-                                }
-                            }).show();
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which) {
+                                        showStories();
+                                    }
+                                }).show();
 
+            }
         }
     }
 
@@ -1912,15 +1886,17 @@ public class MainActivity extends ActionBarActivity
     }
 
     public static String getLocalVideoFile(String url) {
-        String fileName = url.substring(url.lastIndexOf('/') + 1, url.length());
-        if(!fileName.isEmpty()) {
-            fileName = fileName.replace("%20", "_");
-            String fileLocalUrl = fileName;
-            return fileLocalUrl;
+        if (url != null) {
+            String fileName = url.substring(url.lastIndexOf('/') + 1, url.length());
+            if (!fileName.isEmpty()) {
+                fileName = fileName.replace("%20", "_");
+                String fileLocalUrl = fileName;
+                return fileLocalUrl;
+            } else {
+                return null;
+            }
         }
-        else{
-            return null;
-        }
+        else{return null;}
     }
     //endregion
 

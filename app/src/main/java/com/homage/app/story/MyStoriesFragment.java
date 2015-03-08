@@ -102,9 +102,9 @@ public class MyStoriesFragment extends Fragment {
         // if threre are remakes do not display any message.
         // if there are remakes and the process of fetching is taking place
         // make sure the progress is spinning to let the use know
-        if (MainActivity.remakes.size() == 0) {
+        if (((MainActivity)getActivity()).remakes.size() == 0) {
             aq.id(R.id.noRemakesMessage).visibility(View.VISIBLE);
-            if(MainActivity.fetchingMyRemakes){
+            if(((MainActivity)getActivity()).fetchingMyRemakes){
                 aq.id(R.id.noRemakesMessage).getTextView().setText(
                         getActivity().getResources().getString(R.string.checking_for_remakes));
                 ((MainActivity)getActivity()).showRefreshProgress();
@@ -116,7 +116,7 @@ public class MyStoriesFragment extends Fragment {
             }
         } else {
             aq.id(R.id.noRemakesMessage).visibility(View.GONE);
-            if(MainActivity.fetchingMyRemakes){
+            if(((MainActivity)getActivity()).fetchingMyRemakes){
                 ((MainActivity)getActivity()).showRefreshProgress();
             }
             else{
@@ -155,12 +155,12 @@ public class MyStoriesFragment extends Fragment {
     BaseAdapter adapter = new BaseAdapter() {
         @Override
         public int getCount() {
-            return MainActivity.remakes.size();
+            return ((MainActivity)getActivity()).remakes.size();
         }
 
         @Override
         public Object getItem(int i) {
-            return MainActivity.remakes.get(i);
+            return ((MainActivity)getActivity()).remakes.get(i);
         }
 
         @Override
@@ -267,6 +267,10 @@ public class MyStoriesFragment extends Fragment {
                         MainActivity mainActivity = (MainActivity) getActivity();
 
                         switch (remake.status) {
+                            case 0: // NEW
+                                // Open recorder with this remake.
+                                mainActivity.askUserIfWantToContinueRemake(remake);
+                                break;
                             case 1: // IN PROGRESS
                                 // Open recorder with this remake.
                                 mainActivity.askUserIfWantToContinueRemake(remake);
@@ -276,16 +280,21 @@ public class MyStoriesFragment extends Fragment {
                                 mainActivity.askUserIfWantToContinueRemake(remake);
                                 break;
 
-                            case 4: // TIMEOUT
-                                // Open recorder with this remake.
-                                mainActivity.askUserIfWantToContinueRemake(remake);
-                                break;
-
                             case 3: // DONE
                                 // Open recorder with a new remake.
                                 openRecorderForNewRemake(story);
                                 props.put("remake_id", remake.getOID());
                                 HMixPanel.sh().track("MEDoRemake", props);
+                                break;
+
+                            case 4: // TIMEOUT
+                                // Open recorder with this remake.
+                                mainActivity.askUserIfWantToContinueRemake(remake);
+                                break;
+
+                            case 8: // FAILED
+                                // Open recorder with this remake.
+                                mainActivity.askUserIfWantToContinueRemake(remake);
                                 break;
 
                             default:
@@ -302,7 +311,7 @@ public class MyStoriesFragment extends Fragment {
 
         @Override
         public boolean isEmpty() {
-            return MainActivity.remakes.size() == 0;
+            return ((MainActivity)getActivity()).remakes.size() == 0;
         }
     };
 

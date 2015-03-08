@@ -48,15 +48,15 @@ android {
 
         Homage{
             applicationId "com.homage.app"
-            versionCode 10230
-            versionName "1.3.1"
+            versionCode 10236
+            versionName "1.3.5.t"
             flavorDimension "white_label"
         }
 
         Monkey_Dance{
             applicationId "com.homage.app.monkeydance"
-            versionCode 10000
-            versionName "0.0.1"
+            versionCode 10100
+            versionName "0.1.2"
             flavorDimension "white_label"
         }
     }

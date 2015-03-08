@@ -14,7 +14,7 @@
     <color name="darker">#222222</color>
     <color name="very_dark">#000000</color>
     <color name="darkest">#000000</color>
-    <color name="dark_overlay">#22000000</color>
+    <color name="dark_overlay">#88000000</color>
     <color name="error">#FF2523</color>
     <color name="faded1">#B8B8B8</color>
     <color name="faded2">#686868</color>

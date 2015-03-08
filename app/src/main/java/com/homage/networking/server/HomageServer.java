@@ -344,9 +344,13 @@ public class HomageServer extends Server {
         if (userInfo != null) info.putAll(userInfo);
 
         // The GET request
+        RemakesParser remakesParser = new RemakesParser();
+        remakesParser.requestInfo.put("me","true");
+
+        // The GET request
         super.GET(
                 R.string.url_user_remakes, userOID, null,
-                INTENT_USER_REMAKES, info, new RemakesParser()
+                INTENT_USER_REMAKES, info, remakesParser
         );
     }
 

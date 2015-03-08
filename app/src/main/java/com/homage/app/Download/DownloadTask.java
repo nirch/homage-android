@@ -16,6 +16,7 @@ import java.util.Random;
 import android.content.Context;
 import android.util.Log;
 
+import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 
 
@@ -39,7 +40,7 @@ public class DownloadTask implements Runnable {
 
     @Override
     public void run() {
-        if (mOverwrite || !mOutFile.exists()) {
+        if (!HomageApplication.getInstance().downloadPaused && (mOverwrite || !mOutFile.exists())) {
             try {
 
                 Log.d(TAG, "Downloading: " + mOutFile.getName());

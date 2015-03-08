@@ -32,6 +32,8 @@ import android.util.Log;
 
 import com.androidquery.callback.BitmapAjaxCallback;
 import com.homage.CustomViews.FontsOverride;
+import com.homage.app.Download.DownloadThread;
+import com.homage.app.Download.DownloadThreadListener;
 import com.homage.app.R;
 import com.homage.app.recorder.CameraManager;
 import com.homage.model.User;
@@ -50,7 +52,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class HomageApplication extends SugarApp {
+public class HomageApplication extends SugarApp implements DownloadThreadListener {
     String TAG = "TAG_" + getClass().getName();
 
 //    public static final String GCM_PROJECT_NUMBER = "407919209902";
@@ -85,6 +87,11 @@ public class HomageApplication extends SugarApp {
     private String startingNavigationOn;
 
     private Activity mCurrentActivity = null;
+
+    // Download Stories and My Remakes
+    public DownloadThread downloadThread;
+    public Handler handler;
+    public boolean downloadPaused = false;
 
 
     // get this number from config and whitelabel
@@ -190,8 +197,23 @@ public class HomageApplication extends SugarApp {
     }
 
     protected void initServer() {
+        // Create the Handler. It will implicitly bind to the Looper
+        // that is internally created for this thread (since it is the UI thread)
+        handler = new Handler();
+
+        // Create and launch the download thread
+        setDownloadThread(new DownloadThread(this));
+        getDownloadThread().start();
         // Homage Server
         HomageServer.sh().init(this);
+    }
+
+    public DownloadThread getDownloadThread() {
+        return downloadThread;
+    }
+
+    public void setDownloadThread(DownloadThread downloadThread) {
+        this.downloadThread = downloadThread;
     }
 
     protected void initSingletons() {
@@ -320,6 +342,32 @@ public class HomageApplication extends SugarApp {
             userID = "";
         }
         return userID;
+    }
+
+    @Override
+    public void handleDownloadThreadUpdate() {
+        // we want to modify the progress bar so we need to do it from the UI thread
+        // how can we make sure the code runs in the UI thread? use the handler!
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                int total = getDownloadThread().getTotalQueued();
+                int completed = getDownloadThread().getTotalCompleted();
+
+//                progressBar.setMax(total);
+//
+//                progressBar.setProgress(0); // need to do it due to a ProgressBar bug
+//                progressBar.setProgress(completed);
+//
+//                statusText.setText(String.format("Downloaded %d/%d", completed, total));
+
+                // vibrate for fun
+//                if (completed == total) {
+//                    ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(100);
+//                }
+            }
+        });
+
     }
 
     private class HomageUnhandledExceptionHandler implements Thread.UncaughtExceptionHandler {

@@ -56,7 +56,8 @@ public class Remake extends SugarRecord<Remake> {
         DONE(3),
         TIMEOUT(4),
         DELETED(5),
-        STARTED_CREATION(6);
+        STARTED_CREATION(6),
+        FAILED(8);
 
         private final int value;
 

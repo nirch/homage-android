@@ -192,6 +192,8 @@ public class StoriesListFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        ((MainActivity)getActivity()).ShouldDisplayHomeUp();
+
         // Set title bar
         ((MainActivity)getActivity()).setActionBarTitle(((MainActivity)getActivity()).getResources()
                 .getString(R.string.nav_item_1_stories));

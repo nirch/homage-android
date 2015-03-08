@@ -211,48 +211,50 @@ public class VideoPlayerFragment
 
     public void initializeVideoPlayer(boolean startPlaying) {
 
-        if(startPlaying){
-            autoStartPlaying = true;
-        }
-        else{
-            autoStartPlaying = false;
-            showThumbState();
-        }
+        if (videoView != null){
 
-        if (filePath != null) {
+            if (startPlaying) {
+                autoStartPlaying = true;
+            } else {
+                autoStartPlaying = false;
+                showThumbState();
+            }
 
-            try {
-
-                FileInputStream fis = new FileInputStream (new File(filePath));
+            if (filePath != null) {
 
                 try {
-                    // play from file
-                    videoView.setVideoFD(fis.getFD());
-                } catch (IOException e) {
-                    // if it doesn't work play from url
-                    videoView.setVideoURI(Uri.parse(fileURL));
+
+                    FileInputStream fis = new FileInputStream(new File(filePath));
+
+                    try {
+                        // play from file
+                        videoView.setVideoFD(fis.getFD());
+                    } catch (IOException e) {
+                        // if it doesn't work play from url
+                        videoView.setVideoURI(Uri.parse(fileURL));
+                        e.printStackTrace();
+                    }
+
+                } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
 
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            } else if (fileURL != null) {
+
+                // A remote video with a given URL.
+                videoView.setVideoURI(Uri.parse(fileURL));
+//            videoView.start();
             }
 
-        } else if (fileURL != null) {
 
-            // A remote video with a given URL.
-            videoView.setVideoURI(Uri.parse(fileURL));
-//            videoView.start();
-        }
-
-
-        videoView.setOnPreparedListener(this);
-        videoView.setOnErrorListener(this);
-        videoView.setOnCompletionListener(this);
+            videoView.setOnPreparedListener(this);
+            videoView.setOnErrorListener(this);
+            videoView.setOnCompletionListener(this);
 //        if (Build.VERSION.SDK_INT > 16) {
 //            // Only available in API 17 and up.
 //            videoView.setOnInfoListener(this);
 //        }
+        }
     }
     //endregion
 
@@ -417,15 +419,17 @@ public class VideoPlayerFragment
     }
 
     void showThumbState() {
-        if (videoView != null) videoView.seekTo(100);
+        if(aq != null) {
+            if (videoView != null) videoView.seekTo(100);
 //        pause();
-        if(thumbURL != null) {
-            aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
-        }
-        aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
-        aq.id(R.id.videoBigStopButton).visibility(View.GONE);
+            if (thumbURL != null) {
+                aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
+            }
+            aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+            aq.id(R.id.videoBigStopButton).visibility(View.GONE);
 //        aq.id(R.id.videoView).visibility(View.INVISIBLE);
-        aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
+            aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
+        }
     }
 
     void showThumbWhileLoading() {
