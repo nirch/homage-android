@@ -27,12 +27,12 @@ import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.TextView;
 import com.androidquery.AQuery;
-import com.homage.CustomViews.GestureListener;
+import com.homage.CustomViews.ExpandableHeightGridView;
 import com.homage.CustomViews.SwipeRefreshLayoutBottom;
 import com.homage.app.R;
+import com.homage.app.Utils.conversions;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.player.RemakeVideoFragmentActivity;
@@ -60,7 +60,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     View rootView;
     LayoutInflater inflater;
     AQuery aq;
-    GridView remakesGridView;
+    ExpandableHeightGridView remakesGridView;
 
     private final Handler handler = new Handler();
     private Runnable runPager;
@@ -153,9 +153,9 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         public int getCount() {
             int count = remakes.size();
             if (count > 0) {
-                aq.id(R.id.loadingLayout).visibility(View.INVISIBLE);
+                aq.id(R.id.noRemakesMessage).visibility(View.INVISIBLE);
             } else {
-                aq.id(R.id.loadingLayout).visibility(View.VISIBLE);
+                aq.id(R.id.noRemakesMessage).visibility(View.VISIBLE);
             }
             return remakes.size();
         }
@@ -302,29 +302,29 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         storyDetailsVideoContainer = (FrameLayout)aq.id(R.id.storyDetailsVideoContainer).getView();
 
 //        Flings the UI into correct position after loading
-        if(rootView != null) {
-            rootView.post(new Runnable() {
-                              @Override
-                              public void run() {
-                                  // code you want to run when view is visible for the first time
-                                  if (firstRun) {
-                                      openDemoVideo();
-                                      firstRun = false;
-                                  }
-                              }
-                          }
-            );
-        }
-
-        (aq.id(R.id.remakesGridView).getView()).setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                openCloseVideo(event);
-
-                return false;
-            }
-        });
+//        if(rootView != null) {
+//            rootView.post(new Runnable() {
+//                              @Override
+//                              public void run() {
+//                                  // code you want to run when view is visible for the first time
+//                                  if (firstRun) {
+//                                      openDemoVideo();
+//                                      firstRun = false;
+//                                  }
+//                              }
+//                          }
+//            );
+//        }
+//
+//        (aq.id(R.id.remakesGridView).getView()).setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//
+//                openCloseVideo(event);
+//
+//                return false;
+//            }
+//        });
     }
 
     private void refreshRemakesAdapter() {
@@ -333,7 +333,8 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         List<Remake> remakes = story.getRemakes(excludedUser);
 //      Set gridview adapter
         adapter = new RemakesAdapter(getActivity(), remakes);
-        remakesGridView = (GridView)aq.id(R.id.remakesGridView).getGridView();
+        remakesGridView = (ExpandableHeightGridView)aq.id(R.id.remakesGridView).getGridView();
+        remakesGridView.setExpanded(true);
         remakesGridView.setAdapter(adapter);
     }
 
@@ -346,140 +347,137 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_story_details, container, false);
 
-
         initialize();
-
-
 
         return rootView;
     }
 
-    private void openCloseVideo(MotionEvent event) {
-        // get last scroll position and current scroll position to figure out if scrolling up or down
-        // then pass that through global variable to onscroll of gridview and only open video when scrolling down
-        if(event.getAction() == MotionEvent.ACTION_DOWN) {
-            lastScrollPosition = event.getY();
-        }
-        else if(event.getAction() == MotionEvent.ACTION_MOVE){
-
-            float currentPosition = event.getY();
-            if(currentPosition > lastScrollPosition)
-            {
-                scrollingUp = false;
-            }
-            else{
-                scrollingUp = true;
-            }
-
-            lastScrollPosition = currentPosition;
-        }
-        if(event.getAction() == MotionEvent.ACTION_UP) {
-            lastScrollPosition = 0;
-        }
-
-        int firstVisibleItem = ((GridView)aq.id(R.id.remakesGridView).getView()).getFirstVisiblePosition();
-
-        if (!firstRun && firstVisibleItem == 0 && !videoIsDisplayed && !scrollingUp) {
-            openDemoVideo();
-        } else if (!firstRun && firstVisibleItem >= 0 && videoIsDisplayed && scrollingUp) {
-            closeDemoVideo();
-        }
-    }
-
-    private void openDemoVideo() {
-
-        if(!transformingVideo)
-        {
-            transformingVideo = true;
-
-            Display display = getActivity().getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            final int width = size.x;
-            final int height = size.y;
-            final int portraitheight = (size.x * 9) / 16;
-            //            On first run only animate the gridview to close and display demo video
-            if (!firstRun) {
-                animateStoryDetailsVideoContainer(width, portraitheight, -185f, 120f, 0.8f, 0.8f);
-                aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
-                aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
-            } else {
-                animateStoryDetailsVideoContainer(width, portraitheight, 0, 0, 0, 0);
-                aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
-                aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
-            }
-
-            videoIsDisplayed = true;
-            videoPlayerFragment.videoIsShowing = true;
-
-    //            Allow screen orientation to rotate demo video into full screen
-            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-        }
-        //        firstRun runs first but never runs again...
-        firstRun = false;
-    }
-
-    private void closeDemoVideo() {
-
-        if(!transformingVideo) {
-            transformingVideo = true;
-
-            Display display = getActivity().getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            final int width = size.x;
-            final int height = size.y;
-            final int portraitheight = (size.x * 9) / 16;
-            //            Animate UI
-            aq.id(R.id.moreRemakes).getView().animate().yBy(-portraitheight);
-            aq.id(R.id.swipe_container).getView().animate().yBy(-portraitheight);
-            animateStoryDetailsVideoContainer(0, 0, 185f, -120f, -0.8f, -0.8f);
-
-            videoIsDisplayed = false;
-            videoPlayerFragment.videoIsShowing = false;
-
-//            Video is closed so don't allow flip screen! And close video if playing
-            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-            videoPlayerFragment.fullStop();
-
-            //        firstRun runs first but never runs again...
-            firstRun = false;
-        }
-    }
-
-    private void animateStoryDetailsVideoContainer(final int width, final int height, float xby,
-                                                   float yby, float scalexby, float scaleyby) {
-//        Scale and move the video container
-        storyDetailsVideoContainer.animate().xBy(xby).yBy(yby).scaleXBy(scalexby)
-                .scaleYBy(scaleyby).setListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-//                If the video is open set it's height and width
-                if(height != 0) {
-                    videoPlayerFragment.getView().getLayoutParams().height = height;
-                    videoPlayerFragment.getView().getLayoutParams().width = width;
-                }
-                transformingVideo = false;
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-    }
-
-//    endregion
+//    private void openCloseVideo(MotionEvent event) {
+//        // get last scroll position and current scroll position to figure out if scrolling up or down
+//        // then pass that through global variable to onscroll of gridview and only open video when scrolling down
+//        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+//            lastScrollPosition = event.getY();
+//        }
+//        else if(event.getAction() == MotionEvent.ACTION_MOVE){
+//
+//            float currentPosition = event.getY();
+//            if(currentPosition > lastScrollPosition)
+//            {
+//                scrollingUp = false;
+//            }
+//            else{
+//                scrollingUp = true;
+//            }
+//
+//            lastScrollPosition = currentPosition;
+//        }
+//        if(event.getAction() == MotionEvent.ACTION_UP) {
+//            lastScrollPosition = 0;
+//        }
+//
+//        int firstVisibleItem = ((GridView)aq.id(R.id.remakesGridView).getView()).getFirstVisiblePosition();
+//
+//        if (!firstRun && firstVisibleItem == 0 && !videoIsDisplayed && !scrollingUp) {
+//            openDemoVideo();
+//        } else if (!firstRun && firstVisibleItem >= 0 && videoIsDisplayed && scrollingUp) {
+//            closeDemoVideo();
+//        }
+//    }
+//
+//    private void openDemoVideo() {
+//
+//        if(!transformingVideo)
+//        {
+//            transformingVideo = true;
+//
+//            Display display = getActivity().getWindowManager().getDefaultDisplay();
+//            Point size = new Point();
+//            display.getSize(size);
+//            final int width = size.x;
+//            final int height = size.y;
+//            final int portraitheight = (size.x * 9) / 16;
+//            //            On first run only animate the gridview to close and display demo video
+//            if (!firstRun) {
+//                animateStoryDetailsVideoContainer(width, portraitheight, -185f, 120f, 0.8f, 0.8f);
+//                aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
+//                aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
+//            } else {
+//                animateStoryDetailsVideoContainer(width, portraitheight, 0, 0, 0, 0);
+//                aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
+//                aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
+//            }
+//
+//            videoIsDisplayed = true;
+//            videoPlayerFragment.videoIsShowing = true;
+//
+//    //            Allow screen orientation to rotate demo video into full screen
+//            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+//        }
+//        //        firstRun runs first but never runs again...
+//        firstRun = false;
+//    }
+//
+//    private void closeDemoVideo() {
+//
+//        if(!transformingVideo) {
+//            transformingVideo = true;
+//
+//            Display display = getActivity().getWindowManager().getDefaultDisplay();
+//            Point size = new Point();
+//            display.getSize(size);
+//            final int width = size.x;
+//            final int height = size.y;
+//            final int portraitheight = (size.x * 9) / 16;
+//            //            Animate UI
+//            aq.id(R.id.moreRemakes).getView().animate().yBy(-portraitheight);
+//            aq.id(R.id.swipe_container).getView().animate().yBy(-portraitheight);
+//            animateStoryDetailsVideoContainer(0, 0, 185f, -120f, -0.8f, -0.8f);
+//
+//            videoIsDisplayed = false;
+//            videoPlayerFragment.videoIsShowing = false;
+//
+////            Video is closed so don't allow flip screen! And close video if playing
+//            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+//            videoPlayerFragment.fullStop();
+//
+//            //        firstRun runs first but never runs again...
+//            firstRun = false;
+//        }
+//    }
+//
+//    private void animateStoryDetailsVideoContainer(final int width, final int height, float xby,
+//                                                   float yby, float scalexby, float scaleyby) {
+////        Scale and move the video container
+//        storyDetailsVideoContainer.animate().xBy(xby).yBy(yby).scaleXBy(scalexby)
+//                .scaleYBy(scaleyby).setListener(new Animator.AnimatorListener() {
+//            @Override
+//            public void onAnimationStart(Animator animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+////                If the video is open set it's height and width
+//                if(height != 0) {
+//                    videoPlayerFragment.getView().getLayoutParams().height = height;
+//                    videoPlayerFragment.getView().getLayoutParams().width = width;
+//                }
+//                transformingVideo = false;
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animation) {
+//
+//            }
+//        });
+//    }
+//
+////    endregion
 
     private void loadVideoPlayer() {
         // Initialize the video of the story we need to show in the fragment.
@@ -553,7 +551,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if(videoIsDisplayed) {
+//        if(videoIsDisplayed) {
             if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
                 handleEmbeddedVideoConfiguration(newConfig);
                 ActionBar action = getActivity().getActionBar();
@@ -563,7 +561,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
                 ActionBar action = getActivity().getActionBar();
                 if (action != null) action.hide();
             }
-        }
+//        }
     }
 
     @Override
@@ -613,7 +611,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         // after it was fetched from server and parsed.
 
         adapter.notifyDataSetChanged();
-        aq.id(R.id.loadingRemakesProgress).visibility(View.INVISIBLE);
     }
     //endregion
 
@@ -633,17 +630,17 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 
 // fetchmoreremakesprogress
     private void showFetchMoreRemakesProgress() {
-        aq.id(R.id.loadingLayout).getView().setVisibility(View.VISIBLE);
-        aq.id(R.id.swipe_container).getView().setPadding(0,0,0,25);
+//        aq.id(R.id.noRemakesMessage).visibility(View.VISIBLE);
+        aq.id(R.id.scroll_container).getView().setPadding(0,0,0, conversions.pixelsToDp(getActivity(), 75));
         aq.id(R.id.fetchMoreRemakesProgress).getView().setVisibility(View.VISIBLE);
         ((SmoothProgressBar) aq.id(R.id.fetchMoreRemakesProgress).getView()).progressiveStart();
     }
 
     private void hideFetchMoreRemakesProgress() {
         swipeLayout.setRefreshing(false);
-        aq.id(R.id.loadingLayout).getView().setVisibility(View.GONE);
+//        aq.id(R.id.loadingLayout).visibility(View.GONE);
         ((SmoothProgressBar)aq.id(R.id.fetchMoreRemakesProgress).getView()).progressiveStop();
-        aq.id(R.id.swipe_container).getView().setPadding(0,0,0,0);
+        aq.id(R.id.scroll_container).getView().setPadding(0,0,0,conversions.pixelsToDp(getActivity(), 50));
     }
     //endregion
 
@@ -654,9 +651,9 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 
         switch (orientation) {
             case Configuration.ORIENTATION_LANDSCAPE:
-                if(videoIsDisplayed) {
+//                if(videoIsDisplayed) {
                     enterFullScreen();
-                }
+//                }
                 break;
 
             case Configuration.ORIENTATION_PORTRAIT:
@@ -671,10 +668,13 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         // Hide everything else
         aq.id(R.id.makeYourOwnButton).visibility(View.GONE);
         aq.id(R.id.storyHead).visibility(View.GONE);
-        aq.id(R.id.swipe_container).visibility(View.GONE);
-        aq.id(R.id.loadingLayout).visibility(View.GONE);
+        aq.id(R.id.remakesGridView).visibility(View.GONE);
+        aq.id(R.id.moreRemakes).visibility(View.GONE);
+//        aq.id(R.id.loadingLayout).visibility(View.GONE);
         aq.id(R.id.moreRemakes).visibility(View.GONE);
         aq.id(R.id.fetchMoreRemakesProgress).visibility(View.GONE);
+
+        aq.id(R.id.scroll_container).getView().setPadding(0,0,0,0);
 
         // Show the video in full screen.
         View container = aq.id(R.id.storyDetailsVideoContainer).getView();
@@ -702,10 +702,13 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         // Hide everything else
         aq.id(R.id.makeYourOwnButton).visibility(View.VISIBLE);
         aq.id(R.id.storyHead).visibility(View.VISIBLE);
-        aq.id(R.id.swipe_container).visibility(View.VISIBLE);
-        aq.id(R.id.loadingLayout).visibility(View.VISIBLE);
+        aq.id(R.id.remakesGridView).visibility(View.VISIBLE);
+        aq.id(R.id.moreRemakes).visibility(View.VISIBLE);
+//        aq.id(R.id.loadingLayout).visibility(View.VISIBLE);
         aq.id(R.id.moreRemakes).visibility(View.VISIBLE);
         aq.id(R.id.fetchMoreRemakesProgress).visibility(View.VISIBLE);
+
+        aq.id(R.id.scroll_container).getView().setPadding(0,0,0, conversions.pixelsToDp(getActivity(), 50));
 
         // Return to original layout
         View container = aq.id(R.id.storyDetailsVideoContainer).getView();

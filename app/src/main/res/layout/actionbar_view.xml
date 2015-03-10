@@ -3,7 +3,8 @@
     android:id="@+id/action_bar_layout"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/actionBarSize"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@android:color/transparent">
 
     <View
         android:layout_width="match_parent"

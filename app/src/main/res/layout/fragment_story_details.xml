@@ -24,58 +24,43 @@
 
     </LinearLayout>
 
+    <com.homage.CustomViews.SwipeRefreshLayoutBottom
+        android:id="@+id/swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/storyHead"
+        android:layout_alignParentBottom="true"
+        android:overScrollMode="always"
+
+        >
+
+    <ScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="50dp">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
     <FrameLayout android:id="@+id/storyDetailsVideoContainer"
         android:layout_width="wrap_content"
         android:layout_height="216dp"
-        android:layout_below="@+id/storyHead"
+        android:layout_alignParentTop="true"
         >
     </FrameLayout>
 
     <TextView android:id="@+id/moreRemakes"
         style="@style/headerText"
         android:text="@string/more_remakes"
-        android:layout_below="@+id/storyHead"
+        android:layout_below="@+id/storyDetailsVideoContainer"
         />
 
-    <FrameLayout
-        android:id="@+id/loadingLayout"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:layout_above="@+id/makeYourOwnButton"
-        >
-        <TextView android:id="@+id/noRemakesMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/dark"
-            android:text="@string/no_remakes"
-            android:textSize="14sp"
-            android:gravity="center"
-            android:visibility="visible"
-            />
-
-        <ProgressBar android:id="@+id/loadingRemakesProgress"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="visible"
-            android:layout_gravity="center"
-            />
-
-    </FrameLayout>
-
-    <com.homage.CustomViews.SwipeRefreshLayoutBottom
-            android:id="@+id/swipe_container"
+        <com.homage.CustomViews.ExpandableHeightGridView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/moreRemakes"
-            android:layout_above="@+id/makeYourOwnButton"
-            android:overScrollMode="always"
-            >
-
-        <GridView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:gravity="center"
             android:id="@+id/remakesGridView"
             tools:listitem="@android:layout/simple_list_item_2"
@@ -89,33 +74,40 @@
             android:descendantFocusability="beforeDescendants"
             />
 
+    </RelativeLayout>
+    </ScrollView>
     </com.homage.CustomViews.SwipeRefreshLayoutBottom>
 
-    <FrameLayout
-        android:id="@+id/fetchMoreRemakesProgressWrapper"
+    <TextView android:id="@+id/noRemakesMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/swipe_container">
-        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/fetchMoreRemakesProgress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            app:spb_sections_count="4"
-            app:spb_colors="@array/progressbar_colors"
-            app:spb_speed="2.0"
-            app:spb_stroke_width="4dp"
-            app:spb_stroke_separator_length="4dp"
-            app:spb_reversed="false"
-            app:spb_mirror_mode="false"
-            app:spb_progressiveStart_activated="false"
-            app:spb_progressiveStart_speed="1.5"
-            app:spb_progressiveStop_speed="3.4"
-            android:visibility="gone"
-            />
-    </FrameLayout>
+        style="@style/headerText"
+        android:text="@string/no_remakes"
+        android:visibility="visible"
+        android:layout_above="@+id/fetchMoreRemakesProgress"
+        android:layout_centerHorizontal="true"
+        />
+
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/fetchMoreRemakesProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/makeYourOwnButton"
+        android:indeterminate="true"
+        app:spb_sections_count="4"
+        app:spb_colors="@array/progressbar_colors"
+        app:spb_speed="2.0"
+        app:spb_stroke_width="4dp"
+        app:spb_stroke_separator_length="4dp"
+        app:spb_reversed="false"
+        app:spb_mirror_mode="false"
+        app:spb_progressiveStart_activated="false"
+        app:spb_progressiveStart_speed="1.5"
+        app:spb_progressiveStop_speed="3.4"
+        android:visibility="gone"
+        />
 
     <Button android:id="@+id/makeYourOwnButton"
         android:layout_width="match_parent"
