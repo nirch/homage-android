@@ -171,7 +171,7 @@ public class VideoViewInternal extends SurfaceView implements MediaPlayerControl
     }
 
 
-    private void openVideo() {
+    private void openVideo() throws SecurityException {
         if ((mUri == null && mFd==null) || mSurfaceHolder == null) {
             // not ready for playback just yet, will try again later
             return;

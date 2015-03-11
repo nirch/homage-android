@@ -1,7 +1,6 @@
 package com.homage.app.player;
 
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.media.MediaPlayer;
@@ -137,6 +136,14 @@ public class VideoPlayerFragment
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+    }
+
+
+
+    @Override
     public void onDetach() {
         super.onDetach();
     }
@@ -147,15 +154,11 @@ public class VideoPlayerFragment
         try {
             fullStop();
         } catch(Exception ex) {}
-        // Allow orientation change.
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // Allow orientation change.
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
 
     @Override
@@ -192,7 +195,7 @@ public class VideoPlayerFragment
     private void initializePlayingVideo() {
         // Initialize playing the video
         pause();
-        initializeVideoPlayer(true);
+        loadVideoFromFileOrUrl(true);
     }
 
 
@@ -202,7 +205,7 @@ public class VideoPlayerFragment
         ib.setImageResource(R.drawable.icon_small_player_disabled);
     }
 
-    public void initializeVideoPlayer(boolean startPlaying) {
+    public void loadVideoFromFileOrUrl(boolean startPlaying) {
 
         if (videoView != null){
 
