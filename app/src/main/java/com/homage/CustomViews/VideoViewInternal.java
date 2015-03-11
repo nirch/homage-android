@@ -152,7 +152,7 @@ public class VideoViewInternal extends SurfaceView implements MediaPlayerControl
         invalidate();
     }
 
-    public void setVideoFD(FileDescriptor fd) {
+    public void setVideoFD(FileDescriptor fd) throws SecurityException{
         this.mFd = fd;
         mUri = null;
         mStartWhenPrepared = false;
@@ -212,9 +212,6 @@ public class VideoViewInternal extends SurfaceView implements MediaPlayerControl
             Log.w("VideoView", "Unable to open content: " + mUri, ex);
             return;
         } catch (IllegalArgumentException ex) {
-            Log.w("VideoView", "Unable to open content: " + mUri, ex);
-            return;
-        } catch (SecurityException ex){
             Log.w("VideoView", "Unable to open content: " + mUri, ex);
             return;
         }

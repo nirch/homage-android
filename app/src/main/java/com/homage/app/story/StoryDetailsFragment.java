@@ -1,6 +1,5 @@
 package com.homage.app.story;
 
-import android.animation.Animator;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,18 +8,13 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Point;
-import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Display;
-import android.view.GestureDetector;
 import android.view.InflateException;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -88,8 +82,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     float lastScrollPosition = 400;
 
 //    Animation related variables
-    boolean videoIsDisplayed = false;
-    boolean transformingVideo = false;
     boolean firstRun = true;
     boolean finishedPlayingVideo = true;
     boolean enteredRecorder = false;
@@ -243,8 +235,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         viewsCount.setText(Integer.toString(viewsCountdb));
     }
 
-    ;
-
     public static StoryDetailsFragment newInstance(int sectionNumber, Story story) {
         StoryDetailsFragment fragment;
         fragment = new StoryDetailsFragment();
@@ -258,21 +248,19 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 
     private void initialize() {
 
-        aq = new AQuery(rootView);
-        aq.id(R.id.storyDescription).text(story.description);
-
-        // Aspect Ratio
-        MainActivity activity = (MainActivity)getActivity();
-        rowHeight = (activity.screenWidth * 9) / 16;
-
-        refreshRemakesAdapter();
-
         //region *** Bind to UI event handlers ***
         /**********************************/
         /** Binding to UI event handlers **/
         /**********************************/
+        aq = new AQuery(rootView);
+        aq.id(R.id.storyDescription).text(story.description);
         aq.id(R.id.makeYourOwnButton).clicked(onClickedMakeYourOwnButton);
+        storyDetailsVideoContainer = (FrameLayout)aq.id(R.id.storyDetailsVideoContainer).getView();
         //endregion
+
+        // Aspect Ratio
+        MainActivity activity = (MainActivity)getActivity();
+        rowHeight = (activity.screenWidth * 9) / 16;
 
         // Add embedded video player fragment.
         videoPlayerFragment = new VideoPlayerFragment();
@@ -289,17 +277,14 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         };
         handler.post(runPager);
 
+        setVideoFragmentLayout(true);
+
+        refreshRemakesAdapter();
+
         loadVideoPlayer();
-
-
-        // Allow orientation change.
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-
 
         swipeLayout = (SwipeRefreshLayoutBottom)aq.id(R.id.swipe_container).getView();
         swipeLayout.setOnRefreshListener(this);
-
-        storyDetailsVideoContainer = (FrameLayout)aq.id(R.id.storyDetailsVideoContainer).getView();
     }
 
     private void refreshRemakesAdapter() {
@@ -337,13 +322,12 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
             b.putString(VideoPlayerFragment.K_FILE_PATH, mOutFile.getPath());
         }
 
-
         b.putString(VideoPlayerFragment.K_FILE_URL, story.video);
         b.putBoolean(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
         b.putBoolean(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
         b.putBoolean(VideoPlayerFragment.K_IS_EMBEDDED, true);
         b.putString(VideoPlayerFragment.K_THUMB_URL, story.thumbnail);
-
+        b.putBoolean(VideoPlayerFragment.K_AUTO_START_PLAYING, false);
         b.putString(HEvents.HK_VIDEO_ENTITY_ID, story.getOID().toString());
         b.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_STORY);
         b.putInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
@@ -414,6 +398,8 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     public void onResume() {
         super.onResume();
 
+        videoPlayerFragment.videoShouldNotPlay = false;
+
         if(enteredRecorder){
             videoPlayerFragment.initializeVideoPlayer(false);
         }
@@ -425,6 +411,9 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         ((MainActivity) getActivity()).lastSection = MainActivity.SECTION_STORY_DETAILS;
 
         aq.id(R.id.greyscreen).visibility(View.GONE);
+
+        // Allow orientation change.
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
 
     public void SetTitle() {
@@ -445,9 +434,16 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     public void onPause() {
         super.onPause();
 
+        // Allow orientation change.
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+
+        videoPlayerFragment.videoShouldNotPlay = true;
+
         ((MainActivity)getActivity()).lastStory = story;
 
         ((MainActivity)getActivity()).startMusic(true);
+
+
     }
 
     @Override
@@ -523,25 +519,14 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         aq.id(R.id.storyHead).visibility(View.GONE);
         aq.id(R.id.remakesGridView).visibility(View.GONE);
         aq.id(R.id.moreRemakes).visibility(View.GONE);
-//        aq.id(R.id.loadingLayout).visibility(View.GONE);
+        aq.id(R.id.noRemakesMessage).visibility(View.GONE);
         aq.id(R.id.moreRemakes).visibility(View.GONE);
         aq.id(R.id.fetchMoreRemakesProgress).visibility(View.GONE);
 
         aq.id(R.id.scroll_container).getView().setPadding(0,0,0,0);
 
         // Show the video in full screen.
-        View container = aq.id(R.id.storyDetailsVideoContainer).getView();
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
-        container.getLayoutParams().width = width;
-        container.getLayoutParams().height = height;
-        if (videoPlayerFragment != null && videoPlayerFragment.getView() != null && videoPlayerFragment.getView().getLayoutParams() != null) {
-            videoPlayerFragment.getView().getLayoutParams().width = width;
-            videoPlayerFragment.getView().getLayoutParams().height = height;
-        }
+        setVideoFragmentLayout(false);
 
         // Actionbar
         ActionBar action = getActivity().getActionBar();
@@ -564,6 +549,15 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         aq.id(R.id.scroll_container).getView().setPadding(0,0,0, conversions.pixelsToDp(getActivity(), 50));
 
         // Return to original layout
+        setVideoFragmentLayout(true);
+
+        // Actionbar
+        MainActivity mainActivity = (MainActivity)getActivity();
+        mainActivity.showActionBar();
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    private void setVideoFragmentLayout(boolean portraitOrLandscape) {
         View container = aq.id(R.id.storyDetailsVideoContainer).getView();
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -573,15 +567,18 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         int portraitheight = (size.x * 9) / 16;
         container.getLayoutParams().width = width;
         container.getLayoutParams().height = portraitheight;
-        if(videoPlayerFragment != null && videoPlayerFragment.getView().getLayoutParams() != null) {
-            videoPlayerFragment.getView().getLayoutParams().width = width;
-            videoPlayerFragment.getView().getLayoutParams().height = portraitheight;
+        int setHeight;
+        if(portraitOrLandscape){
+            setHeight = portraitheight;
+        }
+        else{
+            setHeight = height;
         }
 
-        // Actionbar
-        MainActivity mainActivity = (MainActivity)getActivity();
-        mainActivity.showActionBar();
-        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if(videoPlayerFragment != null && videoPlayerFragment.getView() != null && videoPlayerFragment.getView().getLayoutParams() != null) {
+            videoPlayerFragment.getView().getLayoutParams().width = width;
+            videoPlayerFragment.getView().getLayoutParams().height = setHeight;
+        }
     }
 
     //endregion

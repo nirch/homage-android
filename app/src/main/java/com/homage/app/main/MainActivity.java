@@ -188,7 +188,7 @@ public class MainActivity extends ActionBarActivity
 
 //    A flag to know if user has requested to leave the app and not load fragments
 //    If that is the case then when back pressed the app should exit
-    boolean leaveapp = false;
+    public boolean leaveapp = false;
 
     public int currentSection;
     public int lastSection = SECTION_STORIES;
@@ -389,6 +389,10 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+        if(leaveapp){
+            finish();
+        }
 //        mainPaused = false;
 //        if(gotPushMessage)
 //        {
@@ -1745,23 +1749,29 @@ public class MainActivity extends ActionBarActivity
         final String androidDownloadLink =
                 prefs.getString(ConfigParser.DOWNLOAD_APP_ANDROID_URL,getResources().getString(R.string.download_app_android_url)); // https://play.google.com/store/apps/details?id=com.homage.app
 
-        // Dialog that asks user if to share video or link
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.share_link_or_video)
-                .setPositiveButton(R.string.share_link, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        shareRemakeDialog(false, sharedRemake, pm, story, iosDownloadLink, androidDownloadLink);
-                    }
-                })
-                .setNegativeButton(R.string.share_video, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        shareRemakeDialog(true, sharedRemake, pm, story, iosDownloadLink, androidDownloadLink);
-                    }
-                });
-        // Create the AlertDialog object and return it
-        Dialog answer = builder.create();
+        // if video allowed show question, else just display choices.
+        if(story.sharingVideoAllowed == 1) {
+            // Dialog that asks user if to share video or link
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.share_link_or_video)
+                    .setPositiveButton(R.string.share_link, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            shareRemakeDialog(false, sharedRemake, pm, story, iosDownloadLink, androidDownloadLink);
+                        }
+                    })
+                    .setNegativeButton(R.string.share_video, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            shareRemakeDialog(true, sharedRemake, pm, story, iosDownloadLink, androidDownloadLink);
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            Dialog answer = builder.create();
 
-        answer.show();
+            answer.show();
+        }
+        else{
+            shareRemakeDialog(false, sharedRemake, pm, story, iosDownloadLink, androidDownloadLink);
+        }
 
 
     }
