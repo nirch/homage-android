@@ -338,6 +338,7 @@ public class MainActivity extends ActionBarActivity
                                 if (f != null) {
                                     //                          Set Stories title
                                     setActionBarTitle(getResources().getString(R.string.nav_item_1_stories));
+                                    setActionBarNavBackgroundResource(R.drawable.selector_nav_button);
                                     currentSection = SECTION_STORIES;
                                     goingOutOfStoriesScreen = true;
                                 }
@@ -1461,10 +1462,15 @@ public class MainActivity extends ActionBarActivity
     private View.OnClickListener onClickedNavButton = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (mNavigationDrawerFragment.isDrawerOpen()) {
-                mNavigationDrawerFragment.close();
-            } else {
-                mNavigationDrawerFragment.open();
+            if(currentSection == SECTION_STORY_DETAILS) {
+                showStories();
+            }
+            else {
+                if (mNavigationDrawerFragment.isDrawerOpen()) {
+                    mNavigationDrawerFragment.close();
+                } else {
+                    mNavigationDrawerFragment.open();
+                }
             }
         }
     };
@@ -1598,6 +1604,7 @@ public class MainActivity extends ActionBarActivity
                 showStories();
                 //                          Set Stories title
                 setActionBarTitle(getResources().getString(R.string.nav_item_1_stories));
+                setActionBarNavBackgroundResource(R.drawable.selector_nav_button);
                 currentSection = SECTION_STORIES;
                 lastSection = SECTION_STORY_DETAILS;
                 goingOutOfStoryDetailsScreen = false;
@@ -1900,10 +1907,14 @@ public class MainActivity extends ActionBarActivity
     }
     //endregion
 
-//    region utility functions
+//    region set actionbar functions
 
     public void setActionBarTitle(String title){
         aq.id(R.id.appTitle).getTextView().setText(title);
+    }
+
+    public void setActionBarNavBackgroundResource(int resource){
+        aq.id(R.id.navButton).getView().setBackgroundResource(resource);
     }
 
 //    endregion

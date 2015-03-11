@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Canvas;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.net.Uri;

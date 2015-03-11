@@ -197,6 +197,7 @@ public class StoriesListFragment extends Fragment {
         // Set title bar
         ((MainActivity)getActivity()).setActionBarTitle(((MainActivity)getActivity()).getResources()
                 .getString(R.string.nav_item_1_stories));
+        ((MainActivity)getActivity()).setActionBarNavBackgroundResource(R.drawable.selector_nav_button);
 
         if (storiesListView.getAdapter() == null) {
             storiesListView.setAdapter(adapter);

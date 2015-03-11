@@ -300,31 +300,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         swipeLayout.setOnRefreshListener(this);
 
         storyDetailsVideoContainer = (FrameLayout)aq.id(R.id.storyDetailsVideoContainer).getView();
-
-//        Flings the UI into correct position after loading
-//        if(rootView != null) {
-//            rootView.post(new Runnable() {
-//                              @Override
-//                              public void run() {
-//                                  // code you want to run when view is visible for the first time
-//                                  if (firstRun) {
-//                                      openDemoVideo();
-//                                      firstRun = false;
-//                                  }
-//                              }
-//                          }
-//            );
-//        }
-//
-//        (aq.id(R.id.remakesGridView).getView()).setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//
-//                openCloseVideo(event);
-//
-//                return false;
-//            }
-//        });
     }
 
     private void refreshRemakesAdapter() {
@@ -347,137 +322,8 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.fragment_story_details, container, false);
 
-        initialize();
-
         return rootView;
     }
-
-//    private void openCloseVideo(MotionEvent event) {
-//        // get last scroll position and current scroll position to figure out if scrolling up or down
-//        // then pass that through global variable to onscroll of gridview and only open video when scrolling down
-//        if(event.getAction() == MotionEvent.ACTION_DOWN) {
-//            lastScrollPosition = event.getY();
-//        }
-//        else if(event.getAction() == MotionEvent.ACTION_MOVE){
-//
-//            float currentPosition = event.getY();
-//            if(currentPosition > lastScrollPosition)
-//            {
-//                scrollingUp = false;
-//            }
-//            else{
-//                scrollingUp = true;
-//            }
-//
-//            lastScrollPosition = currentPosition;
-//        }
-//        if(event.getAction() == MotionEvent.ACTION_UP) {
-//            lastScrollPosition = 0;
-//        }
-//
-//        int firstVisibleItem = ((GridView)aq.id(R.id.remakesGridView).getView()).getFirstVisiblePosition();
-//
-//        if (!firstRun && firstVisibleItem == 0 && !videoIsDisplayed && !scrollingUp) {
-//            openDemoVideo();
-//        } else if (!firstRun && firstVisibleItem >= 0 && videoIsDisplayed && scrollingUp) {
-//            closeDemoVideo();
-//        }
-//    }
-//
-//    private void openDemoVideo() {
-//
-//        if(!transformingVideo)
-//        {
-//            transformingVideo = true;
-//
-//            Display display = getActivity().getWindowManager().getDefaultDisplay();
-//            Point size = new Point();
-//            display.getSize(size);
-//            final int width = size.x;
-//            final int height = size.y;
-//            final int portraitheight = (size.x * 9) / 16;
-//            //            On first run only animate the gridview to close and display demo video
-//            if (!firstRun) {
-//                animateStoryDetailsVideoContainer(width, portraitheight, -185f, 120f, 0.8f, 0.8f);
-//                aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
-//                aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
-//            } else {
-//                animateStoryDetailsVideoContainer(width, portraitheight, 0, 0, 0, 0);
-//                aq.id(R.id.moreRemakes).getView().animate().yBy(portraitheight);
-//                aq.id(R.id.swipe_container).getView().animate().yBy(portraitheight);
-//            }
-//
-//            videoIsDisplayed = true;
-//            videoPlayerFragment.videoIsShowing = true;
-//
-//    //            Allow screen orientation to rotate demo video into full screen
-//            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-//        }
-//        //        firstRun runs first but never runs again...
-//        firstRun = false;
-//    }
-//
-//    private void closeDemoVideo() {
-//
-//        if(!transformingVideo) {
-//            transformingVideo = true;
-//
-//            Display display = getActivity().getWindowManager().getDefaultDisplay();
-//            Point size = new Point();
-//            display.getSize(size);
-//            final int width = size.x;
-//            final int height = size.y;
-//            final int portraitheight = (size.x * 9) / 16;
-//            //            Animate UI
-//            aq.id(R.id.moreRemakes).getView().animate().yBy(-portraitheight);
-//            aq.id(R.id.swipe_container).getView().animate().yBy(-portraitheight);
-//            animateStoryDetailsVideoContainer(0, 0, 185f, -120f, -0.8f, -0.8f);
-//
-//            videoIsDisplayed = false;
-//            videoPlayerFragment.videoIsShowing = false;
-//
-////            Video is closed so don't allow flip screen! And close video if playing
-//            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-//            videoPlayerFragment.fullStop();
-//
-//            //        firstRun runs first but never runs again...
-//            firstRun = false;
-//        }
-//    }
-//
-//    private void animateStoryDetailsVideoContainer(final int width, final int height, float xby,
-//                                                   float yby, float scalexby, float scaleyby) {
-////        Scale and move the video container
-//        storyDetailsVideoContainer.animate().xBy(xby).yBy(yby).scaleXBy(scalexby)
-//                .scaleYBy(scaleyby).setListener(new Animator.AnimatorListener() {
-//            @Override
-//            public void onAnimationStart(Animator animation) {
-//
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-////                If the video is open set it's height and width
-//                if(height != 0) {
-//                    videoPlayerFragment.getView().getLayoutParams().height = height;
-//                    videoPlayerFragment.getView().getLayoutParams().width = width;
-//                }
-//                transformingVideo = false;
-//            }
-//
-//            @Override
-//            public void onAnimationCancel(Animator animation) {
-//
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animator animation) {
-//
-//            }
-//        });
-//    }
-//
-////    endregion
 
     private void loadVideoPlayer() {
         // Initialize the video of the story we need to show in the fragment.
@@ -582,10 +428,17 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     }
 
     public void SetTitle() {
-        // Set title bar
+        // Set action bar
         ((MainActivity) getActivity())
                 .setActionBarTitle(story.name);
-        ((MainActivity) getActivity()).ShouldDisplayHomeUp();
+        ((MainActivity) getActivity())
+                .setActionBarNavBackgroundResource(R.drawable.selector_up_button);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        initialize();
     }
 
     @Override
