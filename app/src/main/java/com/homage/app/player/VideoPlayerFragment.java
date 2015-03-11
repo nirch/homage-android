@@ -138,10 +138,11 @@ public class VideoPlayerFragment
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
+        if(videoShouldNotPlay){
+            autoStartPlaying = false;
+            pause();
+        }
     }
-
-
 
     @Override
     public void onDetach() {
@@ -224,7 +225,10 @@ public class VideoPlayerFragment
 
                     try {
                         // play from file
-                        videoView.setVideoFD(fis.getFD());
+                        boolean result = videoView.setVideoFD(fis.getFD());
+                        if(!result){
+                            videoView.setVideoURI(Uri.parse(fileURL));
+                        }
                     } catch (IOException e) {
                         // if it doesn't work play from url
                         videoView.setVideoURI(Uri.parse(fileURL));
@@ -261,13 +265,12 @@ public class VideoPlayerFragment
         entityType = b.getInt(HEvents.HK_VIDEO_ENTITY_TYPE);
         entityID = b.getString(HEvents.HK_VIDEO_ENTITY_ID);
         originatingScreen = b.getInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN);
-
-        if (filePath == null) {
-            fileURL = b.getString(K_FILE_URL);
-            if (fileURL == null) return;
+        fileURL = b.getString(K_FILE_URL);
+        if(fileURL != null) {
             info.put(HEvents.HK_VIDEO_FILE_URL, fileURL);
-        } else {
-            info.put(HEvents.HK_VIDEO_FILE_PATH,filePath);
+        }
+        if(filePath != null) {
+            info.put(HEvents.HK_VIDEO_FILE_PATH, filePath);
         }
         info.put(HEvents.HK_VIDEO_INIT_TIME, initTime);
         info.put(HEvents.HK_VIDEO_ENTITY_TYPE, entityType);
@@ -277,7 +280,7 @@ public class VideoPlayerFragment
         // More settings
         allowToggleFullscreen = b.getBoolean(K_ALLOW_TOGGLE_FULLSCREEN, true);
         finishOnCompletion = b.getBoolean(K_FINISH_ON_COMPLETION, false);
-        autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, true);
+        autoStartPlaying = b.getBoolean(K_AUTO_START_PLAYING, !videoShouldNotPlay);
         isEmbedded = b.getBoolean(K_IS_EMBEDDED, false);
         thumbURL = b.getString(K_THUMB_URL, null);
         if (filePath != null){thumbURL = null;}
@@ -393,17 +396,19 @@ public class VideoPlayerFragment
     }
 
     void start() {
-        if(thumbURL != null) {
-            aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
-        }
-        aq.id(R.id.videoView).visibility(View.VISIBLE);
-        if (videoView != null) {
-            HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYING, info);
-            videoView.start();
-            autoStartPlaying = false;
-        }
-        if (onStartedPlayback != null) {
-            new Handler().post(onStartedPlayback);
+        if(!videoShouldNotPlay) {
+            if (thumbURL != null) {
+                aq.id(R.id.videoThumbnailImage).visibility(View.INVISIBLE);
+            }
+            aq.id(R.id.videoView).visibility(View.VISIBLE);
+            if (videoView != null) {
+                HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYING, info);
+                videoView.start();
+                autoStartPlaying = false;
+            }
+            if (onStartedPlayback != null) {
+                new Handler().post(onStartedPlayback);
+            }
         }
     }
 

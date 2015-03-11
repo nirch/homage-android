@@ -142,24 +142,26 @@ public class VideoViewInternal extends SurfaceView implements MediaPlayerControl
         setVideoURI(Uri.parse(path));
     }
 
-    public void setVideoURI(Uri uri) {
+    public boolean setVideoURI(Uri uri) {
         mUri = uri;
         mFd = null;
         mStartWhenPrepared = false;
         mSeekWhenPrepared = 0;
-        openVideo();
+        boolean result = openVideo();
         requestLayout();
         invalidate();
+        return result;
     }
 
-    public void setVideoFD(FileDescriptor fd) throws SecurityException{
+    public boolean setVideoFD(FileDescriptor fd) throws SecurityException{
         this.mFd = fd;
         mUri = null;
         mStartWhenPrepared = false;
         mSeekWhenPrepared = 0;
-        openVideo();
+        boolean result = openVideo();
         requestLayout();
         invalidate();
+        return result;
     }
 
     public void stopPlayback() {
@@ -171,10 +173,10 @@ public class VideoViewInternal extends SurfaceView implements MediaPlayerControl
     }
 
 
-    private void openVideo() throws SecurityException {
-        if ((mUri == null && mFd==null) || mSurfaceHolder == null) {
+    private boolean openVideo() throws SecurityException {
+        if ((mUri == null && mFd==null)){// || mSurfaceHolder == null) {
             // not ready for playback just yet, will try again later
-            return;
+            return false;
         }
         // Tell the music playback service to pause
         // TODO: these constants need to be published somewhere in the framework.
@@ -210,11 +212,14 @@ public class VideoViewInternal extends SurfaceView implements MediaPlayerControl
             attachMediaController();
         } catch (IOException ex) {
             Log.w("VideoView", "Unable to open content: " + mUri, ex);
-            return;
+            return false;
         } catch (IllegalArgumentException ex) {
             Log.w("VideoView", "Unable to open content: " + mUri, ex);
-            return;
+            return false;
+        }catch(SecurityException se){
+            return false;
         }
+        return true;
     }
 
     public void setMediaController(MediaController controller) {

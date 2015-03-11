@@ -401,7 +401,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         videoPlayerFragment.videoShouldNotPlay = false;
 
         if(enteredRecorder){
-            videoPlayerFragment.initializeVideoPlayer(false);
+            videoPlayerFragment.loadVideoFromFileOrUrl(false);
         }
 
         videoPlayerFragment.remakePlaying = false;
