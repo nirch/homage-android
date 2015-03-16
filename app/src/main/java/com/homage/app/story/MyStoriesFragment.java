@@ -507,7 +507,7 @@ public class MyStoriesFragment extends Fragment {
             // going left and share is displayed
             // slide share out
             else if(shareIsDisplayed && Math.abs(secondY - firstY) < Math.abs(secondX - firstX)
-                    && secondX - firstX < 100){
+                    && secondX - firstX < -100){
                 closeLastView();
                 slideOutShare(view);
             }
