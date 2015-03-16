@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.IconButton;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -112,6 +113,7 @@ public class StoryDetailsFragment extends Fragment implements
     boolean videoShouldNotPlay  = false;
     boolean firstVideoPlay = true;
     boolean firstRemakesLoad = true;
+    FileInputStream fis;
 
 
     @Override
@@ -288,6 +290,11 @@ public class StoryDetailsFragment extends Fragment implements
         swipeLayout.setOnRefreshListener(this);
         mainVideo = (VideoViewInternal)aq.id(R.id.mainVideo).getView();
 
+        //Creating MediaController
+//        MediaController mediaController= new MediaController(getActivity());
+//        mediaController.setAnchorView(mainVideo);
+//        mainVideo.setMediaController(mediaController);
+
         mainVideo.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -451,6 +458,13 @@ public class StoryDetailsFragment extends Fragment implements
 
         mainVideo.pause();
         aq.id(R.id.greyscreen).visibility(View.VISIBLE);
+        if(fis!=null) {
+            try {
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -458,6 +472,8 @@ public class StoryDetailsFragment extends Fragment implements
         super.onStop();
 
     }
+
+
 
     public void refreshData() {
         // Just an example of refreshing the data from local storage,
@@ -675,51 +691,65 @@ public class StoryDetailsFragment extends Fragment implements
 
             if (filePath != null) {
 
-                try {
-
-                    FileInputStream fis = new FileInputStream(new File(filePath));
-
+                File f = new File(filePath);
+                if (f.isFile() && f.canRead()) {
                     try {
-                        // get file descriptor
-                        FileDescriptor fd = fis.getFD();
 
-                        // tests if the file is valid
-                        if(!fd.valid()){
+                        Log.d(TAG, "Entered FD");
+                        fis = new FileInputStream(new File(filePath));
+
+                        try {
+                                // get file descriptor
+                                FileDescriptor fd = fis.getFD();
+                                if(fd.valid()) {
+                                    mainVideo.setVideoFD(fd);
+                                    Log.d(TAG, "Finished FD");
+                                }else if (fileURL != null) {
+                                    mainVideo.setVideoURI(Uri.parse(fileURL));
+                                } else {
+                                    Toast.makeText(getActivity(), "Video Unavilable, Try again later", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (IOException e) {
                             // if it doesn't work play from url
-                            mainVideo.setVideoURI(Uri.parse(fileURL));
-                        }
-                        // play from file
-                        else if(!mainVideo.setVideoFD(fis.getFD())){
-                            // if it doesn't work play from url
-                            mainVideo.setVideoURI(Uri.parse(fileURL));
-                        }
-                    } catch (IOException e) {
-                        // if it doesn't work play from url
-                        mainVideo.setVideoURI(Uri.parse(fileURL));
+                                if (fileURL != null) {
+                                    mainVideo.setVideoURI(Uri.parse(fileURL));
+                                } else {
+                                    Toast.makeText(getActivity(), "Video Unavilable, Try again later", Toast.LENGTH_SHORT).show();
+                                }
+                                e.printStackTrace();
+                                Log.d(TAG, "IOException" + e.getMessage());
+                            }
+//                        finally {
+//                            try {
+//                                fis.close();
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+
+                    } catch (FileNotFoundException e) {
                         e.printStackTrace();
-                    }catch (SecurityException se) {
-                        // if it doesn't work play from url
+                    }
+                }else{
+                    if (fileURL != null) {
                         mainVideo.setVideoURI(Uri.parse(fileURL));
-                        se.printStackTrace();
+                    } else {
+                        Toast.makeText(getActivity(), "Video Unavilable, Try again later", Toast.LENGTH_SHORT).show();
                     }
 
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
                 }
 
-            } else if (fileURL != null) {
+                } else if (fileURL != null) {
+                    mainVideo.setVideoURI(Uri.parse(fileURL));
+                } else {
+                    Toast.makeText(getActivity(), "Video Unavilable, Try again later", Toast.LENGTH_SHORT).show();
+                }
 
-                // A remote video with a given URL.
-                mainVideo.setVideoURI(Uri.parse(fileURL));
-            }
-            else{
-                Toast.makeText(getActivity(),"Video Error, can't play main video, retry later",Toast.LENGTH_SHORT).show();
-            }
 
             mainVideo.setOnPreparedListener(this);
             mainVideo.setOnErrorListener(this);
             mainVideo.setOnCompletionListener(this);
-            Log.d(TAG, String.valueOf(mainVideo));
+            Log.d(TAG, "Finished loading : " + String.valueOf(mainVideo));
         }
     }
 
@@ -864,14 +894,9 @@ public class StoryDetailsFragment extends Fragment implements
         } else {
             videoShouldNotPlay = false;
             mainVideo.start();
-            ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_pause);
+            ((IconButton) aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_pause);
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             showControls();
-            if(!mainVideo.isPlaying()){
-                initialize();
-                ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
-                aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
-            }
         }
         firstVideoPlay = false;
     }

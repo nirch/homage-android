@@ -228,10 +228,7 @@ public class VideoPlayerFragment
 
                     try {
                         // play from file
-                        boolean result = videoView.setVideoFD(fis.getFD());
-                        if(!result){
-                            videoView.setVideoURI(Uri.parse(fileURL));
-                        }
+                        videoView.setVideoFD(fis.getFD());
                     } catch (IOException e) {
                         // if it doesn't work play from url
                         videoView.setVideoURI(Uri.parse(fileURL));

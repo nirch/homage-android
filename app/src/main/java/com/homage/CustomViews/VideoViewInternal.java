@@ -37,6 +37,7 @@ import java.io.IOException;
  * such as scaling and tinting.
  */
 public class VideoViewInternal extends SurfaceView implements MediaPlayerControl {
+    public final String TAG = "TAG_VideoViewInternal";
     // settable by the client
     private Uri         mUri;
 
@@ -142,18 +143,17 @@ public class VideoViewInternal extends SurfaceView implements MediaPlayerControl
         setVideoURI(Uri.parse(path));
     }
 
-    public boolean setVideoURI(Uri uri) {
+    public void setVideoURI(Uri uri) {
         mUri = uri;
         mFd = null;
         mStartWhenPrepared = false;
         mSeekWhenPrepared = 0;
-        boolean result = openVideo();
+        openVideo();
         requestLayout();
         invalidate();
-        return result;
     }
 
-    public boolean setVideoFD(FileDescriptor fd) throws SecurityException{
+    public boolean setVideoFD(FileDescriptor fd) {
         this.mFd = fd;
         mUri = null;
         mStartWhenPrepared = false;
@@ -173,53 +173,63 @@ public class VideoViewInternal extends SurfaceView implements MediaPlayerControl
     }
 
 
-    private boolean openVideo() throws SecurityException {
+    private boolean openVideo(){
+        boolean result = true;
+        Log.d(TAG, "Entered OpenVideo");
         if ((mUri == null && mFd==null)){// || mSurfaceHolder == null) {
             // not ready for playback just yet, will try again later
-            return false;
+            result = false;
         }
-        // Tell the music playback service to pause
-        // TODO: these constants need to be published somewhere in the framework.
-        Intent i = new Intent("com.android.music.musicservicecommand");
-        i.putExtra("command", "pause");
-        mContext.sendBroadcast(i);
+        else {
+            Log.d(TAG, "Passed first if");
+            // Tell the music playback service to pause
+            // TODO: these constants need to be published somewhere in the framework.
+            Intent i = new Intent("com.android.music.musicservicecommand");
+            i.putExtra("command", "pause");
+            mContext.sendBroadcast(i);
 
-        if (mMediaPlayer != null) {
-            mMediaPlayer.reset();
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
-        try {
-            mMediaPlayer = new MediaPlayer();
-            mMediaPlayer.setOnPreparedListener(mPreparedListener);
-            mIsPrepared = false;
-            mMediaPlayer.setOnCompletionListener(mCompletionListener);
-            mMediaPlayer.setOnErrorListener(mErrorListener);
-            mMediaPlayer.setOnBufferingUpdateListener(mBufferingUpdateListener);
-            mCurrentBufferPercentage = 0;
-            if(mUri != null)
-            {
-                mMediaPlayer.setDataSource(mContext, mUri);
+            if (mMediaPlayer != null) {
+                mMediaPlayer.reset();
+                mMediaPlayer.release();
+                mMediaPlayer = null;
             }
-            else
-            {
-                mMediaPlayer.setDataSource(mFd);
+            try {
+                Log.d(TAG, "Entered Try Openvideo");
+                mMediaPlayer = new MediaPlayer();
+                mMediaPlayer.setOnPreparedListener(mPreparedListener);
+                mIsPrepared = false;
+                mMediaPlayer.setOnCompletionListener(mCompletionListener);
+                mMediaPlayer.setOnErrorListener(mErrorListener);
+                mMediaPlayer.setOnBufferingUpdateListener(mBufferingUpdateListener);
+                mCurrentBufferPercentage = 0;
+                if (mUri != null) {
+                    mMediaPlayer.setDataSource(mContext, mUri);
+                } else {
+                    mMediaPlayer.setDataSource(mFd);
+                }
+                mMediaPlayer.setDisplay(mSurfaceHolder);
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mMediaPlayer.setScreenOnWhilePlaying(true);
+                Log.d(TAG, "mFd: " + String.valueOf(mFd));
+                if(String.valueOf(mFd).equals("FileDescriptor[-1]")){
+                    result = false;
+                }else {
+                    mMediaPlayer.prepareAsync();
+                }
+                attachMediaController();
+                Log.d(TAG, "Finished Try Openvideo");
+            } catch (IOException ex) {
+                Log.d(TAG, "IOException Openvideo" + ex.getMessage());
+                Log.w("VideoView", "Unable to open content: " + mUri, ex);
+                result = false;
+            } catch (IllegalArgumentException ex) {
+                Log.d(TAG, "IllegalArgumentException Openvideo" + ex.getMessage());
+                Log.w("VideoView", "Unable to open content: " + mUri, ex);
+                result = false;
             }
-            mMediaPlayer.setDisplay(mSurfaceHolder);
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mMediaPlayer.setScreenOnWhilePlaying(true);
-            mMediaPlayer.prepareAsync();
-            attachMediaController();
-        } catch (IOException ex) {
-            Log.w("VideoView", "Unable to open content: " + mUri, ex);
-            return false;
-        } catch (IllegalArgumentException ex) {
-            Log.w("VideoView", "Unable to open content: " + mUri, ex);
-            return false;
-        }catch(SecurityException se){
-            return false;
+            Log.d(TAG, "Finished OpenVideo successfully");
         }
-        return true;
+        return result;
     }
 
     public void setMediaController(MediaController controller) {
@@ -506,6 +516,10 @@ public class VideoViewInternal extends SurfaceView implements MediaPlayerControl
             return mMediaPlayer.getDuration();
         }
         return -1;
+    }
+
+    public boolean getIsPrepared(){
+        return mIsPrepared;
     }
 
     public int getCurrentPosition() {
