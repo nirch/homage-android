@@ -15,9 +15,9 @@
         android:orientation="vertical"
         android:layout_alignParentTop="true">
 
-    <TextView android:id="@+id/storyDescription"
-        style="@style/storyDetailsText"
-        />
+        <TextView android:id="@+id/storyDescription"
+            style="@style/storyDetailsText"
+            />
 
         <View
             style="@style/greyDivider"/>
@@ -34,48 +34,71 @@
 
         >
 
-    <ScrollView
-        android:id="@+id/scroll_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="50dp">
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-    <FrameLayout android:id="@+id/storyDetailsVideoContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="216dp"
-        android:layout_alignParentTop="true"
-        >
-    </FrameLayout>
-
-    <TextView android:id="@+id/moreRemakes"
-        style="@style/headerText"
-        android:text="@string/more_remakes"
-        android:layout_below="@+id/storyDetailsVideoContainer"
-        />
-
-        <com.homage.CustomViews.ExpandableHeightGridView
+        <ScrollView
+            android:id="@+id/scroll_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/moreRemakes"
-            android:gravity="center"
-            android:id="@+id/remakesGridView"
-            tools:listitem="@android:layout/simple_list_item_2"
-            android:numColumns="2"
-            android:verticalSpacing="2dp"
-            android:horizontalSpacing="2dp"
-            android:isScrollContainer="false"
-            android:stretchMode="columnWidth"
-            android:clickable="true"
-            android:visibility="visible"
-            android:descendantFocusability="beforeDescendants"
-            />
+            android:paddingBottom="50dp">
 
-    </RelativeLayout>
-    </ScrollView>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:adjustViewBounds="true">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainVideoWrapper">
+
+                    <com.homage.CustomViews.VideoViewInternal android:id="@+id/mainVideo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        />
+
+                    <ProgressBar android:id="@+id/videoFragmentLoading"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_centerInParent="true"
+                        />
+
+                    <android.widget.IconButton
+                        android:id="@+id/videoBigPlayButton"
+                        style="@style/remakeText"
+                        android:textSize="34sp"
+                        android:layout_centerInParent="true"
+                        android:clickable="true"
+                        android:visibility="gone"
+                        />
+
+                </RelativeLayout>
+
+                <TextView android:id="@+id/moreRemakes"
+                    style="@style/headerText"
+                    android:text="@string/more_remakes"
+                    android:layout_below="@+id/mainVideoWrapper"
+                    />
+
+                <com.homage.CustomViews.ExpandableHeightGridView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/moreRemakes"
+                    android:gravity="center"
+                    android:id="@+id/remakesGridView"
+                    tools:listitem="@android:layout/simple_list_item_2"
+                    android:numColumns="2"
+                    android:verticalSpacing="2dp"
+                    android:horizontalSpacing="2dp"
+                    android:isScrollContainer="false"
+                    android:stretchMode="columnWidth"
+                    android:clickable="true"
+                    android:visibility="visible"
+                    android:descendantFocusability="beforeDescendants"
+                    />
+
+            </RelativeLayout>
+        </ScrollView>
     </com.homage.CustomViews.SwipeRefreshLayoutBottom>
 
     <TextView android:id="@+id/noRemakesMessage"

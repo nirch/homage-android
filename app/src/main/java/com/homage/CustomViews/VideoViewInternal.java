@@ -394,8 +394,9 @@ public class VideoViewInternal extends SurfaceView implements MediaPlayerControl
                 if (mSeekWhenPrepared != 0) {
                     mMediaPlayer.seekTo(mSeekWhenPrepared);
                 }
-                mMediaPlayer.start();
+
                 if (mMediaController != null) {
+                    mMediaPlayer.start();
                     mMediaController.show();
                 }
             }

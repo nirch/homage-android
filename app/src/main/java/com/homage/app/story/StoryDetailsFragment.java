@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -15,22 +17,23 @@ import android.util.Log;
 import android.view.Display;
 import android.view.InflateException;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
+import android.widget.IconButton;
 import android.widget.TextView;
 import com.androidquery.AQuery;
 import com.homage.CustomViews.ExpandableHeightGridView;
 import com.homage.CustomViews.SwipeRefreshLayoutBottom;
+import com.homage.CustomViews.VideoViewInternal;
 import com.homage.app.R;
 import com.homage.app.Utils.conversions;
 import com.homage.app.main.HomageApplication;
 import com.homage.app.main.MainActivity;
 import com.homage.app.player.RemakeVideoFragmentActivity;
-import com.homage.app.player.VideoPlayerFragment;
 import com.homage.model.Remake;
 import com.homage.model.Story;
 import com.homage.model.User;
@@ -40,28 +43,33 @@ import com.homage.networking.server.HomageServer;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
-public class StoryDetailsFragment extends Fragment implements com.homage.CustomViews.SwipeRefreshLayoutBottom.OnRefreshListener{
+public class StoryDetailsFragment extends Fragment implements
+        com.homage.CustomViews.SwipeRefreshLayoutBottom.OnRefreshListener,
+        MediaPlayer.OnErrorListener,
+        MediaPlayer.OnPreparedListener,
+        MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnInfoListener
+{
     public String TAG = "TAG_StoryDetailsFragment";
 
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private static final String VIDEO_FRAGMENT_TAG = "videoPlayerFragment";
 
     View rootView;
     LayoutInflater inflater;
     AQuery aq;
     ExpandableHeightGridView remakesGridView;
 
-    private final Handler handler = new Handler();
-    private Runnable runPager;
-
     public Story story;
     boolean shouldFetchMoreRemakes = false;
-    VideoPlayerFragment videoPlayerFragment;
+    //    VideoPlayerFragment videoPlayerFragment;
     int rowHeight;
 
     TextView likesCount;
@@ -73,18 +81,35 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     int skipRemakes = NUMBERTOREFRESH;
 
     RemakesAdapter adapter;
-    FrameLayout storyDetailsVideoContainer;
 
     SwipeRefreshLayoutBottom swipeLayout;
 
-    //    Gesture stuff
-    boolean scrollingUp;
-    float lastScrollPosition = 400;
-
-//    Animation related variables
-    boolean firstRun = true;
-    boolean finishedPlayingVideo = true;
+    //    Animation related variables
     boolean enteredRecorder = false;
+
+    // videoview section
+    VideoViewInternal mainVideo;
+    String filePath;
+    String fileURL;
+    String thumbURL;
+    String entityID;
+    int entityType;
+    int originatingScreen;
+
+    // Info
+    HashMap<String, Object> info;
+    long initTime;
+
+    // More settings
+    boolean allowToggleFullscreen = false;
+    boolean finishOnCompletion = false;
+    boolean autoHideControls = true;
+    boolean autoStartPlaying = false;
+    boolean isEmbedded = false;
+    boolean videoShouldNotPlay  = false;
+    boolean firstVideoPlay = true;
+    boolean firstRemakesLoad = true;
+
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -103,10 +128,10 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
                 Log.d(TAG, "Will fetch more remakes.");
 //                Get remakes from server and update the number to skip
                 MainActivity activity = (MainActivity)getActivity();
-                    if(activity != null && story != null) {
-                        activity.refetchMoreRemakesForStory(story, fetchRemakes, skipRemakes, User.getCurrent().getOID());
-                        skipRemakes += fetchRemakes;
-                    }
+                if(activity != null && story != null) {
+                    activity.refetchMoreRemakesForStory(story, fetchRemakes, skipRemakes, User.getCurrent().getOID());
+                    skipRemakes += fetchRemakes;
+                }
 
             }
         }, 5000);
@@ -219,7 +244,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         }
     }
 
-//    Update likes and views UI from remake
+    //    Update likes and views UI from remake
     private void updateLikesAndViews(Remake remake, AQuery aq) {
 
         likesCount = aq.id(R.id.likes_count).getTextView();
@@ -255,36 +280,36 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         aq = new AQuery(rootView);
         aq.id(R.id.storyDescription).text(story.description);
         aq.id(R.id.makeYourOwnButton).clicked(onClickedMakeYourOwnButton);
-        storyDetailsVideoContainer = (FrameLayout)aq.id(R.id.storyDetailsVideoContainer).getView();
+        mainVideo = (VideoViewInternal)aq.id(R.id.mainVideo).getView();
+
+        mainVideo.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                togglePlayPause();
+                showControls();
+                return false;
+            }
+        });
         //endregion
 
         // Aspect Ratio
         MainActivity activity = (MainActivity)getActivity();
         rowHeight = (activity.screenWidth * 9) / 16;
 
-        // Add embedded video player fragment.
-        videoPlayerFragment = new VideoPlayerFragment();
-        runPager = new Runnable() {
-
-            @Override
-            public void run()
-            {
-
-                getFragmentManager().beginTransaction().add(R.id.storyDetailsVideoContainer,
-                        videoPlayerFragment,
-                        VIDEO_FRAGMENT_TAG).commit();
-            }
-        };
-        handler.post(runPager);
-
         setVideoFragmentLayout(true);
 
-        refreshRemakesAdapter();
+        if(firstRemakesLoad) {
+            refreshRemakesAdapter();
+            firstRemakesLoad = false;
+        }
 
         loadVideoPlayer();
 
+        loadVideoFromFileOrUrl(true);
+
         swipeLayout = (SwipeRefreshLayoutBottom)aq.id(R.id.swipe_container).getView();
         swipeLayout.setOnRefreshListener(this);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
     }
 
     private void refreshRemakesAdapter() {
@@ -314,47 +339,37 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         // Initialize the video of the story we need to show in the fragment.
         Bundle b = new Bundle();
 
+        info = new HashMap<String, Object>();
+        initTime = System.currentTimeMillis();
+
         // if there is a file locally play it and not the url (faster!! :))
         File cacheDir = getActivity().getCacheDir();
         File mOutFile = new File(cacheDir,
                 story.getStoryVideoLocalFileName());
         if(mOutFile.exists()) {
-            b.putString(VideoPlayerFragment.K_FILE_PATH, mOutFile.getPath());
+            filePath = mOutFile.getPath();
         }
 
-        b.putString(VideoPlayerFragment.K_FILE_URL, story.video);
-        b.putBoolean(VideoPlayerFragment.K_ALLOW_TOGGLE_FULLSCREEN, true);
-        b.putBoolean(VideoPlayerFragment.K_FINISH_ON_COMPLETION, false);
-        b.putBoolean(VideoPlayerFragment.K_IS_EMBEDDED, true);
-        b.putString(VideoPlayerFragment.K_THUMB_URL, story.thumbnail);
-        b.putBoolean(VideoPlayerFragment.K_AUTO_START_PLAYING, false);
-        b.putString(HEvents.HK_VIDEO_ENTITY_ID, story.getOID().toString());
-        b.putInt(HEvents.HK_VIDEO_ENTITY_TYPE, HEvents.H_STORY);
-        b.putInt(HEvents.HK_VIDEO_ORIGINATING_SCREEN, HomageApplication.HM_STORY_DETAILS_TAB);
+        fileURL = story.video;
+        allowToggleFullscreen = true;
+        finishOnCompletion = false;
+        isEmbedded = true;
+        thumbURL = story.thumbnail;
+        autoStartPlaying = false;
+        entityID = story.getOID().toString();
+        entityType = HEvents.H_STORY;
+        originatingScreen = HomageApplication.HM_STORY_DETAILS_TAB;
 
-        videoPlayerFragment.setArguments(b);
-
-        // When video not playing, don't allow orientation changes.
-        videoPlayerFragment.setOnFinishedPlayback(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                    finishedPlayingVideo = true;
-                } catch (Exception e) {}
-            }
-        });
-
-        // When video playing, allow orientation changes.
-        videoPlayerFragment.setOnStartedPlayback(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-                    finishedPlayingVideo = false;
-                } catch (Exception e) {}
-            }
-        });
+        if(fileURL != null) {
+            info.put(HEvents.HK_VIDEO_FILE_URL, fileURL);
+        }
+        if(filePath != null) {
+            info.put(HEvents.HK_VIDEO_FILE_PATH, filePath);
+        }
+        info.put(HEvents.HK_VIDEO_INIT_TIME, initTime);
+        info.put(HEvents.HK_VIDEO_ENTITY_TYPE, entityType);
+        info.put(HEvents.HK_VIDEO_ENTITY_ID, entityID);
+        info.put(HEvents.HK_VIDEO_ORIGINATING_SCREEN, originatingScreen);
     }
 
     @Override
@@ -381,7 +396,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-//        if(videoIsDisplayed) {
+        if(!videoShouldNotPlay) {
             if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
                 handleEmbeddedVideoConfiguration(newConfig);
                 ActionBar action = getActivity().getActionBar();
@@ -391,29 +406,22 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
                 ActionBar action = getActivity().getActionBar();
                 if (action != null) action.hide();
             }
-//        }
+        }else{
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        videoPlayerFragment.videoShouldNotPlay = false;
-
-        if(enteredRecorder){
-            videoPlayerFragment.loadVideoFromFileOrUrl(false);
-        }
-
-        videoPlayerFragment.remakePlaying = false;
-        videoPlayerFragment.storyDetailsPaused = false;
+        initialize();
         SetTitle();
 
         ((MainActivity) getActivity()).lastSection = MainActivity.SECTION_STORY_DETAILS;
 
         aq.id(R.id.greyscreen).visibility(View.GONE);
 
-        // Allow orientation change.
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
 
     public void SetTitle() {
@@ -427,32 +435,24 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     @Override
     public void onStart() {
         super.onStart();
-        initialize();
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        // Allow orientation change.
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-
-        videoPlayerFragment.videoShouldNotPlay = true;
-
         ((MainActivity)getActivity()).lastStory = story;
 
         ((MainActivity)getActivity()).startMusic(true);
 
-
+        mainVideo.pause();
+        aq.id(R.id.greyscreen).visibility(View.VISIBLE);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-            videoPlayerFragment.storyDetailsPaused = true;
-            stopStoryVideo();
-            aq.id(R.id.greyscreen).visibility(View.VISIBLE);
-            handler.removeCallbacks(runPager);
+
     }
 
     public void refreshData() {
@@ -463,23 +463,13 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     }
     //endregion
 
-    private void stopStoryVideo() {
-        // Stop the video
-        if (videoPlayerFragment != null) {
-            try {
-                videoPlayerFragment.fullStop();
-            } catch (Exception ex) {}
-        }
-    }
-
     //region *** UI event handlers ***
     // -------------------
     // UI handlers.
     // -------------------
 
-// fetchmoreremakesprogress
+    // fetchmoreremakesprogress
     private void showFetchMoreRemakesProgress() {
-//        aq.id(R.id.noRemakesMessage).visibility(View.VISIBLE);
         aq.id(R.id.scroll_container).getView().setPadding(0,0,0, conversions.pixelsToDp(getActivity(), 75));
         aq.id(R.id.fetchMoreRemakesProgress).getView().setVisibility(View.VISIBLE);
         ((SmoothProgressBar) aq.id(R.id.fetchMoreRemakesProgress).getView()).progressiveStart();
@@ -487,7 +477,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 
     private void hideFetchMoreRemakesProgress() {
         swipeLayout.setRefreshing(false);
-//        aq.id(R.id.loadingLayout).visibility(View.GONE);
         ((SmoothProgressBar)aq.id(R.id.fetchMoreRemakesProgress).getView()).progressiveStop();
         aq.id(R.id.scroll_container).getView().setPadding(0,0,0,conversions.pixelsToDp(getActivity(), 50));
     }
@@ -501,7 +490,7 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         switch (orientation) {
             case Configuration.ORIENTATION_LANDSCAPE:
 //                if(videoIsDisplayed) {
-                    enterFullScreen();
+                enterFullScreen();
 //                }
                 break;
 
@@ -558,15 +547,13 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
     }
 
     private void setVideoFragmentLayout(boolean portraitOrLandscape) {
-        View container = aq.id(R.id.storyDetailsVideoContainer).getView();
+        View container = aq.id(R.id.mainVideoWrapper).getView();
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
         int height = size.y;
         int portraitheight = (size.x * 9) / 16;
-        container.getLayoutParams().width = width;
-        container.getLayoutParams().height = portraitheight;
         int setHeight;
         if(portraitOrLandscape){
             setHeight = portraitheight;
@@ -575,9 +562,9 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
             setHeight = height;
         }
 
-        if(videoPlayerFragment != null && videoPlayerFragment.getView() != null && videoPlayerFragment.getView().getLayoutParams() != null) {
-            videoPlayerFragment.getView().getLayoutParams().width = width;
-            videoPlayerFragment.getView().getLayoutParams().height = setHeight;
+        if(container != null){
+            container.getLayoutParams().width = width;
+            container.getLayoutParams().height = setHeight;
         }
     }
 
@@ -585,8 +572,9 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 
     //region video player calls
     private void playRemakeMovie(String remakeID, int remakeGridviwId) {
-        videoPlayerFragment.remakePlaying = true;
-        stopStoryVideo();
+        videoShouldNotPlay = true;
+        mainVideo.pause();
+        mainVideo.stopPlayback();
         hideFetchMoreRemakesProgress();
 
         if(remakeID != null && !remakeID.isEmpty()) {
@@ -614,10 +602,12 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         public void onClick(View button) {
             HomageApplication.getInstance().downloadPaused = true;
             enteredRecorder = true;
-           ((MainActivity)getActivity()).stopDownloadThread();
+            ((MainActivity)getActivity()).stopDownloadThread();
 
-           videoPlayerFragment.fullStop();
-           createNewRemake();
+            videoShouldNotPlay = true;
+            mainVideo.pause();
+            mainVideo.stopPlayback();
+            createNewRemake();
         }
     };
 
@@ -632,8 +622,6 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
 
     private void createNewRemake() {
         if (story == null) return;
-
-        stopStoryVideo();
 
         User user = User.getCurrent();
         if (user == null) return;
@@ -687,12 +675,154 @@ public class StoryDetailsFragment extends Fragment implements com.homage.CustomV
         builder.create().show();
     }
 
-
-
     private void reportAsInappropriate(String remakeID)
     {
         HomageServer.sh().reportRemakeAsInappropriate(remakeID);
     }
-}
+
+
+    // *********************
+    // VIDEO SECTION
+    // *********************
+    // Video file path / url
+
+    public void loadVideoFromFileOrUrl(boolean startPlaying) {
+
+        if (mainVideo != null){
+
+            if (startPlaying) {
+                autoStartPlaying = true;
+            } else {
+                autoStartPlaying = false;
+                showThumbState();
+            }
+
+            if (filePath != null) {
+
+                try {
+
+                    FileInputStream fis = new FileInputStream(new File(filePath));
+
+                    try {
+                        // play from file
+                        mainVideo.setVideoFD(fis.getFD());
+                    } catch (IOException e) {
+                        // if it doesn't work play from url
+                        mainVideo.setVideoURI(Uri.parse(fileURL));
+                        e.printStackTrace();
+                    }catch (SecurityException se) {
+                        // if it doesn't work play from url
+                        mainVideo.setVideoURI(Uri.parse(fileURL));
+                        se.printStackTrace();
+                    }
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            } else if (fileURL != null) {
+
+                // A remote video with a given URL.
+                mainVideo.setVideoURI(Uri.parse(fileURL));
+            }
+
+            mainVideo.setOnPreparedListener(this);
+            mainVideo.setOnErrorListener(this);
+            mainVideo.setOnCompletionListener(this);
+        }
+    }
+
+    void showThumbState() {
+        if(aq != null) {
+            if (mainVideo != null) mainVideo.seekTo(100);
+//        pause();
+            if (thumbURL != null) {
+                aq.id(R.id.videoThumbnailImage).visibility(View.VISIBLE);
+            }
+            aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+            aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mediaPlayer) {
+        mainVideo.seekTo(100);
+        mainVideo.pause();
+        autoStartPlaying = false;
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        info.put(HEvents.HK_VIDEO_PLAYBACK_TIME, mainVideo.getCurrentPosition());
+        info.put(HEvents.HK_VIDEO_TOTAL_DURATION, mainVideo.getDuration());
+        HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_FINISH, info);
+
+    }
+
+    @Override
+    public boolean onError(MediaPlayer mediaPlayer, int i, int i2) {
+        return false;
+    }
+
+    @Override
+    public boolean onInfo(MediaPlayer mediaPlayer, int i, int i2) {
+        return false;
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
+        if(autoStartPlaying){
+            if(firstVideoPlay) {
+                mainVideo.start();
+                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                firstVideoPlay = false;
+                HEvents.sh().track(HEvents.H_EVENT_VIDEO_WILL_AUTO_PLAY, info);
+            }
+            else{
+                mainVideo.seekTo(100);
+            }
+        }
+        else{
+            mainVideo.seekTo(100);
+        }
+    }
+
+    //region *** Controls ***
+    void showControls() {
+        aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
+
+        if (autoHideControls) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    hideControls();
+                }
+            }, 1000);
+        }
+    }
+
+    void hideControls() {
+        aq.id(R.id.videoBigPlayButton).visibility(View.GONE);
+    }
+
+    void togglePlayPause() {
+        if (mainVideo.isPlaying()) {
+            videoShouldNotPlay = true;
+            mainVideo.pause();
+            ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_pause);
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PAUSE, info);
+            info.put(HEvents.HK_VIDEO_PLAYBACK_TIME, mainVideo.getCurrentPosition());
+            info.put(HEvents.HK_VIDEO_TOTAL_DURATION, mainVideo.getDuration());
+            HEvents.sh().track(HEvents.H_EVENT_VIDEO_PLAYER_FINISH, info);
+        } else {
+            videoShouldNotPlay = false;
+            mainVideo.start();
+            ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        }
+        firstVideoPlay = false;
+    }
 //endregion
+}
+
 

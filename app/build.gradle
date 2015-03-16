@@ -46,8 +46,8 @@ android {
 
         Homage{
             applicationId "com.homage.app"
-            versionCode 10236
-            versionName "1.3.5.t"
+            versionCode 10300
+            versionName "1.3.7.t"
             flavorDimension "white_label"
         }
 
