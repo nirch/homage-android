@@ -25,6 +25,8 @@ import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.IconButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.androidquery.AQuery;
 import com.homage.CustomViews.ExpandableHeightGridView;
 import com.homage.CustomViews.SwipeRefreshLayoutBottom;
@@ -43,6 +45,7 @@ import com.homage.networking.server.HomageServer;
 import com.homage.app.player.FullScreenVideoPlayerActivity;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -280,13 +283,15 @@ public class StoryDetailsFragment extends Fragment implements
         aq = new AQuery(rootView);
         aq.id(R.id.storyDescription).text(story.description);
         aq.id(R.id.makeYourOwnButton).clicked(onClickedMakeYourOwnButton);
+        aq.id(R.id.videoBigPlayButton).clicked(onClickedPlayVideoButton);
+        swipeLayout = (SwipeRefreshLayoutBottom)aq.id(R.id.swipe_container).getView();
+        swipeLayout.setOnRefreshListener(this);
         mainVideo = (VideoViewInternal)aq.id(R.id.mainVideo).getView();
 
         mainVideo.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 togglePlayPause();
-                showControls();
                 return false;
             }
         });
@@ -307,8 +312,7 @@ public class StoryDetailsFragment extends Fragment implements
 
         loadVideoFromFileOrUrl(true);
 
-        swipeLayout = (SwipeRefreshLayoutBottom)aq.id(R.id.swipe_container).getView();
-        swipeLayout.setOnRefreshListener(this);
+
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
     }
 
@@ -611,6 +615,15 @@ public class StoryDetailsFragment extends Fragment implements
         }
     };
 
+    //
+    final View.OnClickListener onClickedPlayVideoButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View button) {
+            togglePlayPause();
+        }
+    };
+
+
     final View.OnClickListener onClickedPlayStoryVideo = new View.OnClickListener() {
         @Override
         public void onClick(View button) {
@@ -644,43 +657,6 @@ public class StoryDetailsFragment extends Fragment implements
         }
     }
 
-//    private void updateLikes(final String remakeID)
-//    {
-////        TODO create updatelikes
-//    }
-//
-//    private void updateViews(final String remakeID)
-//    {
-////        TODO create updateViews
-//    }
-
-    private void showReportDialogForRemake(final String remakeID)
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-        builder.setTitle(R.string.report_abusive_remake_title);
-        builder.setItems(
-                new CharSequence[] {"yes" , "no"},
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0:
-                                reportAsInappropriate(remakeID);
-                                break;
-                            case 1:
-                                break;
-
-                        }
-                    }
-                });
-        builder.create().show();
-    }
-
-    private void reportAsInappropriate(String remakeID)
-    {
-        HomageServer.sh().reportRemakeAsInappropriate(remakeID);
-    }
-
-
     // *********************
     // VIDEO SECTION
     // *********************
@@ -704,8 +680,16 @@ public class StoryDetailsFragment extends Fragment implements
                     FileInputStream fis = new FileInputStream(new File(filePath));
 
                     try {
+                        // get file descriptor
+                        FileDescriptor fd = fis.getFD();
+
+                        // tests if the file is valid
+                        if(!fd.valid()){
+                            // if it doesn't work play from url
+                            mainVideo.setVideoURI(Uri.parse(fileURL));
+                        }
                         // play from file
-                        if(!mainVideo.setVideoFD(fis.getFD())){
+                        else if(!mainVideo.setVideoFD(fis.getFD())){
                             // if it doesn't work play from url
                             mainVideo.setVideoURI(Uri.parse(fileURL));
                         }
@@ -728,10 +712,14 @@ public class StoryDetailsFragment extends Fragment implements
                 // A remote video with a given URL.
                 mainVideo.setVideoURI(Uri.parse(fileURL));
             }
+            else{
+                Toast.makeText(getActivity(),"Video Error, can't play main video, retry later",Toast.LENGTH_SHORT).show();
+            }
 
             mainVideo.setOnPreparedListener(this);
             mainVideo.setOnErrorListener(this);
             mainVideo.setOnCompletionListener(this);
+            Log.d(TAG, String.valueOf(mainVideo));
         }
     }
 
@@ -753,6 +741,8 @@ public class StoryDetailsFragment extends Fragment implements
         mainVideo.pause();
         autoStartPlaying = false;
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
+        aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
 
         info.put(HEvents.HK_VIDEO_PLAYBACK_TIME, mainVideo.getCurrentPosition());
         info.put(HEvents.HK_VIDEO_TOTAL_DURATION, mainVideo.getDuration());
@@ -762,12 +752,61 @@ public class StoryDetailsFragment extends Fragment implements
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i2) {
-        return false;
+        Log.d(TAG, String.format("Error playing video: %d %d %s %s", i, i2, filePath, fileURL));
+
+        Toast.makeText(
+                getActivity(),
+                String.format("Video playing error %d %d", i, i2),
+                Toast.LENGTH_SHORT).show();
+
+        return true;
     }
 
     @Override
-    public boolean onInfo(MediaPlayer mediaPlayer, int i, int i2) {
-        return false;
+    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        switch (what) {
+            case MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING:
+                Log.v(TAG, "media track lagging");
+                break;
+
+            case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                Log.v(TAG, "media buffering start");
+                HEvents.sh().track(HEvents.H_EVENT_VIDEO_BUFFERING_START, info);
+                aq.id(R.id.videoFragmentLoading).visibility(View.VISIBLE);
+                break;
+
+            case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
+                Log.v(TAG, "media rendering start");
+                aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
+                break;
+
+            case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                Log.v(TAG, "media buffering end");
+                HEvents.sh().track(HEvents.H_EVENT_VIDEO_BUFFERING_END, info);
+                aq.id(R.id.videoFragmentLoading).visibility(View.GONE);
+                break;
+
+            case MediaPlayer.MEDIA_INFO_BAD_INTERLEAVING:
+                Log.v(TAG, "media bad interleaving");
+                break;
+
+            case MediaPlayer.MEDIA_INFO_NOT_SEEKABLE:
+                Log.v(TAG, "media not seekable");
+                break;
+
+            case MediaPlayer.MEDIA_INFO_METADATA_UPDATE:
+                Log.v(TAG, "media meta data update");
+                break;
+
+            case MediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE:
+                Log.v(TAG, "media unsupported subtitle");
+                break;
+
+            case MediaPlayer.MEDIA_INFO_SUBTITLE_TIMED_OUT:
+                Log.v(TAG, "media subtitle timed out");
+                break;
+        }
+        return true;
     }
 
     @Override
@@ -781,10 +820,14 @@ public class StoryDetailsFragment extends Fragment implements
                 HEvents.sh().track(HEvents.H_EVENT_VIDEO_WILL_AUTO_PLAY, info);
             }
             else{
+                ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
+                aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
                 mainVideo.seekTo(100);
             }
         }
         else{
+            ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
+            aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
             mainVideo.seekTo(100);
         }
     }
@@ -799,7 +842,7 @@ public class StoryDetailsFragment extends Fragment implements
                 public void run() {
                     hideControls();
                 }
-            }, 1000);
+            }, 1500);
         }
     }
 
@@ -811,7 +854,8 @@ public class StoryDetailsFragment extends Fragment implements
         if (mainVideo.isPlaying()) {
             videoShouldNotPlay = true;
             mainVideo.pause();
-            ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_pause);
+            ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
+            aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             HEvents.sh().track(HEvents.H_EVENT_VIDEO_USER_PRESSED_PAUSE, info);
             info.put(HEvents.HK_VIDEO_PLAYBACK_TIME, mainVideo.getCurrentPosition());
@@ -820,8 +864,14 @@ public class StoryDetailsFragment extends Fragment implements
         } else {
             videoShouldNotPlay = false;
             mainVideo.start();
-            ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
+            ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_pause);
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+            showControls();
+            if(!mainVideo.isPlaying()){
+                initialize();
+                ((IconButton)aq.id(R.id.videoBigPlayButton).getView()).setText(R.string.icon_play);
+                aq.id(R.id.videoBigPlayButton).visibility(View.VISIBLE);
+            }
         }
         firstVideoPlay = false;
     }
