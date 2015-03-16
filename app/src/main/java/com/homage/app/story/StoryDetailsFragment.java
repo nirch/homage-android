@@ -296,7 +296,7 @@ public class StoryDetailsFragment extends Fragment implements
         MainActivity activity = (MainActivity)getActivity();
         rowHeight = (activity.screenWidth * 9) / 16;
 
-        setVideoFragmentLayout(true);
+        setVideoLayout(true);
 
         if(firstRemakesLoad) {
             refreshRemakesAdapter();
@@ -515,7 +515,7 @@ public class StoryDetailsFragment extends Fragment implements
         aq.id(R.id.scroll_container).getView().setPadding(0,0,0,0);
 
         // Show the video in full screen.
-        setVideoFragmentLayout(false);
+        setVideoLayout(false);
 
         // Actionbar
         ActionBar action = getActivity().getActionBar();
@@ -538,7 +538,7 @@ public class StoryDetailsFragment extends Fragment implements
         aq.id(R.id.scroll_container).getView().setPadding(0,0,0, conversions.pixelsToDp(getActivity(), 50));
 
         // Return to original layout
-        setVideoFragmentLayout(true);
+        setVideoLayout(true);
 
         // Actionbar
         MainActivity mainActivity = (MainActivity)getActivity();
@@ -546,7 +546,7 @@ public class StoryDetailsFragment extends Fragment implements
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
-    private void setVideoFragmentLayout(boolean portraitOrLandscape) {
+    private void setVideoLayout(boolean portraitOrLandscape) {
         View container = aq.id(R.id.mainVideoWrapper).getView();
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -705,7 +705,10 @@ public class StoryDetailsFragment extends Fragment implements
 
                     try {
                         // play from file
-                        mainVideo.setVideoFD(fis.getFD());
+                        if(!mainVideo.setVideoFD(fis.getFD())){
+                            // if it doesn't work play from url
+                            mainVideo.setVideoURI(Uri.parse(fileURL));
+                        }
                     } catch (IOException e) {
                         // if it doesn't work play from url
                         mainVideo.setVideoURI(Uri.parse(fileURL));
