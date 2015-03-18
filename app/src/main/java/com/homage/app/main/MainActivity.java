@@ -573,6 +573,9 @@ public class MainActivity extends ActionBarActivity
             refetchRemakesForCurrentUser();
             mOnResumeChangeToSection = SECTION_ME;
             defaultSelection = SECTION_ME;
+            if(gotPushMessage){
+                gotPushMessage = false;
+            }
         }
         app.clearStartingNavigationOn();
     }
