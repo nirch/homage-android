@@ -570,6 +570,7 @@ public class MainActivity extends ActionBarActivity
         final String mainStartsWith = app.getStartingNavigationOn();
         defaultSelection = SECTION_STORIES;
         if (mainStartsWith != null && mainStartsWith.equals("MyStories")) {
+            refetchRemakesForCurrentUser();
             mOnResumeChangeToSection = SECTION_ME;
             defaultSelection = SECTION_ME;
         }
@@ -951,7 +952,6 @@ public class MainActivity extends ActionBarActivity
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
                 if (f != null) {
-                    refreshMyRemakes();
                     refetchRemakesForCurrentUser();
                 }
 //            }
