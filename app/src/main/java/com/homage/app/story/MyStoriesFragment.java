@@ -101,7 +101,7 @@ public class MyStoriesFragment extends Fragment {
         // if the process of fetching is taking place notify the user
         // if threre are remakes do not display any message.
         // if there are remakes and the process of fetching is taking place
-        // make sure the progress is spinning to let the use know
+        // make sure the progress is spinning to let the user know
         if (((MainActivity)getActivity()).remakes.size() == 0) {
             aq.id(R.id.noRemakesMessage).visibility(View.VISIBLE);
             if(((MainActivity)getActivity()).fetchingMyRemakes){

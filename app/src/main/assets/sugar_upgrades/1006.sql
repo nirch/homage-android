@@ -1,0 +1,3 @@
+alter table SCENE add SCENE_AUDIO TEXT;
+alter table SCENE add POST_SCENE_AUDIO TEXT;
+alter table SCENE add DIRECTION_AUDIO TEXT;

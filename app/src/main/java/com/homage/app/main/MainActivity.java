@@ -396,7 +396,6 @@ public class MainActivity extends ActionBarActivity
 //        mainPaused = false;
 //        if(gotPushMessage)
 //        {
-//            gotPushMessage = false;
 //            refetchRemakesForCurrentUser();
 //        }
         ((HomageApplication)context).setCurrentActivity(mainActivity);
@@ -952,6 +951,7 @@ public class MainActivity extends ActionBarActivity
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 Fragment f = fragmentManager.findFragmentByTag(FRAGMENT_TAG_ME);
                 if (f != null) {
+                    refreshMyRemakes();
                     refetchRemakesForCurrentUser();
                 }
 //            }
@@ -1868,7 +1868,7 @@ public class MainActivity extends ActionBarActivity
 //    region Download and Share
 
     public void downloadUserRemakeInBackground(Story story, Remake remake) {
-        if(story.sharingVideoAllowed == 1) {
+//        if(story.sharingVideoAllowed == 1) {
             VideoHandler vh = new VideoHandler();
             HashMap<String, String> videoInfo = new HashMap<String, String>();
 
@@ -1882,7 +1882,7 @@ public class MainActivity extends ActionBarActivity
             videoInfo.put(constants.SHARE_VIDEO, "false");
             videoInfo.put(constants.DOWNLOAD_IN_BACKGROUND, "true");
             MainActivity.DownloadVideoAndShare(mainActivity, videoInfo);
-        }
+//        }
     }
 
     public static void DownloadVideoAndShare(Context context, HashMap<String, String> videoInfo) {
